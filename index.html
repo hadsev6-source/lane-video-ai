@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LANE VIDEO AI — Your Song. Your Story. Your Movie.</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: white;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 75% 25%, #41205d 0%, transparent 40%),
+        radial-gradient(ellipse at 20% 80%, #142c54 0%, transparent 45%),
+        #080912;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 7%;
+    }
+    .logo { font-size: 25px; font-weight: 900; letter-spacing: 2px; }
+    .logo span { color: #b68cff; }
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 14px;
+    }
+    main {
+      min-height: 75vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .tag {
+      color: #c49cff;
+      letter-spacing: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    h1 {
+      font-size: clamp(42px, 8vw, 88px);
+      line-height: 1.05;
+      margin: 25px 0;
+      max-width: 950px;
+    }
+    h1 span {
+      background: linear-gradient(90deg, #a879ff, #ff79bd, #ffb36b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .subtitle {
+      color: #c5c2d1;
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 650px;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 35px;
+      padding: 17px 34px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #874dff, #e64caa);
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+    .features {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 20px 7% 65px;
+    }
+    .feature {
+      border: 1px solid #373044;
+      background: #141321;
+      border-radius: 14px;
+      padding: 25px;
+      width: 250px;
+      color: #ddd;
+    }
+    .feature h3 { color: white; }
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #858092;
+      border-top: 1px solid #292536;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">LANE <span>VIDEO AI</span></div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#create">Create</a>
+    </nav>
+  </header>
+
+  <main id="create">
+    <div class="tag">YOUR MUSIC. REIMAGINED.</div>
+    <h1>TURN YOUR SONG<br>INTO A <span>MOVIE.</span></h1>
+    <p class="subtitle">
+      Create cinematic AI music videos and dramatic stories
+      from your favorite songs. Your imagination becomes a movie.
+    </p>
+    <a class="button" href="#features">CREATE YOUR MOVIE</a>
+  </main>
+
+  <section class="features" id="features">
+    <div class="feature">
+      <h3>🎵 AI MUSIC VIDEOS</h3>
+      <p>Transform your songs into cinematic music videos.</p>
+    </div>
+    <div class="feature">
+      <h3>🎬 DRAMATIC STORIES</h3>
+      <p>Turn music into emotional stories with characters and scenes.</p>
+    </div>
+    <div class="feature">
+      <h3>✨ YOUR CREATIVE WORLD</h3>
+      <p>Bring your vision to life with AI-powered filmmaking.</p>
+    </div>
+  </section>
+
+  <footer>© 2026 LANE VIDEO AI — Your Song. Your Story. Your Movie.</footer>
+</body>
+</html>
