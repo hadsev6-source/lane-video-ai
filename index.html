@@ -4,195 +4,54 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LANE VIDEO AI — Create Anything</title>
-<meta name="description" content="Create amazing AI movies, mini-series, animations and music videos from your imagination.">
+<meta name="description" content="Create amazing AI movies, mini-series, animations and music videos.">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --red:#ff2638;
-  --black:#080808;
-  --panel:#151515;
-  --white:#f7f7f7;
-}
-* {box-sizing:border-box}
-html {scroll-behavior:smooth}
-body {
-  margin:0;
-  background:var(--black);
-  color:var(--white);
-  font-family:Arial,Helvetica,sans-serif;
-}
-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 6%;
-  border-bottom:1px solid #292929;
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:rgba(8,8,8,.96);
-}
-.logo {
-  font-size:24px;
-  font-weight:900;
-  letter-spacing:2px;
-}
-.logo span {color:var(--red)}
-nav {display:flex;gap:22px;align-items:center}
-nav a {color:#ddd;text-decoration:none;font-size:14px}
-nav a:hover {color:var(--red)}
-button {
-  cursor:pointer;
-  border:0;
-  border-radius:7px;
-  padding:12px 19px;
-  font-weight:bold;
-}
-.red-button {
-  color:white;
-  background:var(--red);
-}
-.red-button:hover {background:#d91528}
-.hero {
-  min-height:480px;
-  padding:100px 7% 85px;
-  text-align:center;
-  background:
-    radial-gradient(ellipse at center,#4a080e 0%,#160609 42%,#080808 75%);
-}
-.eyebrow {
-  color:var(--red);
-  letter-spacing:4px;
-  font-size:12px;
-  font-weight:bold;
-}
-h1 {
-  font-size:clamp(38px,7vw,76px);
-  line-height:1.04;
-  margin:22px auto;
-  max-width:950px;
-  font-weight:900;
-}
-h1 span {color:var(--red)}
-.hero p {
-  color:#c5c5c5;
-  font-size:17px;
-  line-height:1.7;
-  max-width:680px;
-  margin:0 auto 30px;
-}
-section {padding:65px 6%}
-.section-heading {text-align:center;margin-bottom:35px}
-.section-heading h2 {font-size:32px;margin:0 0 12px}
-.section-heading p {color:#999;margin:0}
-.category-grid {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:20px;
-}
-.category {
-  position:relative;
-  min-height:205px;
-  overflow:hidden;
-  border:1px solid #343434;
-  border-radius:13px;
-  background:linear-gradient(135deg,#31070d,#171717 60%,#080808);
-  text-align:left;
-  color:white;
-  padding:0;
-  transition:.25s;
-}
-.category:hover {
-  transform:translateY(-5px);
-  border-color:var(--red);
-  box-shadow:0 0 25px #ff263833;
-}
-.category video {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity:.65;
-}
-.category::after {
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05));
-}
-.category-content {
-  position:absolute;
-  z-index:2;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:20px;
-}
-.category h3 {font-size:19px;margin:0 0 7px}
-.category p {font-size:13px;color:#ccc;margin:0;line-height:1.4}
-.studio {
-  max-width:850px;
-  margin:auto;
-  padding:30px;
-  border:1px solid #333;
-  background:var(--panel);
-  border-radius:14px;
-}
-label {display:block;margin:17px 0 8px;font-weight:bold}
-input,textarea,select {
-  width:100%;
-  padding:14px;
-  color:white;
-  background:#090909;
-  border:1px solid #444;
-  border-radius:7px;
-  font:inherit;
-}
-textarea {min-height:125px;resize:vertical}
-.studio .red-button {width:100%;margin-top:20px}
-.account {
-  max-width:600px;
-  margin:auto;
-  padding:25px;
-  background:var(--panel);
-  border:1px solid #333;
-  border-radius:12px;
-}
-.account button {margin-top:12px}
-.status {color:#bbb;font-size:13px;line-height:1.5;margin-top:12px}
-.upload-area {
-  padding:24px;
-  background:#090909;
-  border:1px dashed #777;
-  border-radius:10px;
-  text-align:center;
-}
-footer {
-  text-align:center;
-  padding:35px 15px;
-  border-top:1px solid #292929;
-  color:#888;
-  font-size:13px;
-}
-@media(max-width:800px) {
-  .category-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
-  nav {gap:10px}
-  nav a {font-size:12px}
-}
-@media(max-width:540px) {
-  header {padding:16px 4%;flex-wrap:wrap;gap:14px}
-  .logo {font-size:20px}
-  nav {width:100%;justify-content:space-between}
-  .category-grid {grid-template-columns:1fr}
-  .hero {padding:75px 6%}
-  section {padding:48px 5%}
-  .studio {padding:20px}
-}
+:root{--red:#ff2638;--black:#080808;--panel:#151515;--white:#f7f7f7}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 6%;border-bottom:1px solid #292929;position:sticky;top:0;z-index:10;background:rgba(8,8,8,.96)}
+.logo{font-size:24px;font-weight:900;letter-spacing:2px}
+.logo span{color:var(--red)}
+nav{display:flex;gap:22px;align-items:center}
+nav a{color:#ddd;text-decoration:none;font-size:14px}
+nav a:hover{color:var(--red)}
+button{cursor:pointer;border:0;border-radius:7px;padding:12px 19px;font-weight:bold}
+.red-button{color:white;background:var(--red)}
+.red-button:hover{background:#d91528}
+.hero{min-height:480px;padding:100px 7% 85px;text-align:center;background:radial-gradient(ellipse at center,#4a080e 0%,#160609 42%,#080808 75%)}
+.eyebrow{color:var(--red);letter-spacing:4px;font-size:12px;font-weight:bold}
+h1{font-size:clamp(38px,7vw,76px);line-height:1.04;margin:22px auto;max-width:950px;font-weight:900}
+h1 span{color:var(--red)}
+.hero p{color:#c5c5c5;font-size:17px;line-height:1.7;max-width:680px;margin:0 auto 30px}
+section{padding:65px 6%}
+.section-heading{text-align:center;margin-bottom:35px}
+.section-heading h2{font-size:32px;margin:0 0 12px}
+.section-heading p{color:#999;margin:0}
+.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.category{position:relative;min-height:205px;overflow:hidden;border:1px solid #343434;border-radius:13px;background:linear-gradient(135deg,#31070d,#171717 60%,#080808);text-align:left;color:white;padding:0;transition:.25s}
+.category:hover{transform:translateY(-5px);border-color:var(--red);box-shadow:0 0 25px #ff263833}
+.category video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72}
+.category::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05))}
+.category-content{position:absolute;z-index:2;bottom:0;left:0;right:0;padding:20px}
+.category h3{font-size:19px;margin:0 0 7px}
+.category p{font-size:13px;color:#ccc;margin:0;line-height:1.4}
+.studio{max-width:850px;margin:auto;padding:30px;border:1px solid #333;background:var(--panel);border-radius:14px}
+label{display:block;margin:17px 0 8px;font-weight:bold}
+input,textarea,select{width:100%;padding:14px;color:white;background:#090909;border:1px solid #444;border-radius:7px;font:inherit}
+textarea{min-height:125px;resize:vertical}
+.studio .red-button{width:100%;margin-top:20px}
+.account{max-width:600px;margin:auto;padding:25px;background:var(--panel);border:1px solid #333;border-radius:12px}
+.account button{margin-top:12px}
+.status{color:#bbb;font-size:13px;line-height:1.5;margin-top:12px}
+.upload-area{padding:24px;background:#090909;border:1px dashed #777;border-radius:10px;text-align:center}
+footer{text-align:center;padding:35px 15px;border-top:1px solid #292929;color:#888;font-size:13px}
+@media(max-width:800px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}nav{gap:10px}nav a{font-size:12px}}
+@media(max-width:540px){header{padding:16px 4%;flex-wrap:wrap;gap:14px}.logo{font-size:20px}nav{width:100%;justify-content:space-between}.category-grid{grid-template-columns:1fr}.hero{padding:75px 6%}section{padding:48px 5%}.studio{padding:20px}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">LANE <span>VIDEO AI</span></div>
   <nav>
@@ -203,156 +62,157 @@ footer {
 </header>
 
 <main>
-  <section class="hero">
-    <div class="eyebrow">YOUR IMAGINATION. YOUR MOVIE.</div>
-    <h1>TURN YOUR IDEAS<br>INTO <span>VIDEOS</span></h1>
-    <p>Create Amazing AI Movies, Mini-Series, Dramas, Animations & Music Videos from Your Imagination.</p>
-    <a href="#studio"><button class="red-button">START CREATING</button></a>
-  </section>
+<section class="hero">
+  <div class="eyebrow">YOUR IMAGINATION. YOUR MOVIE.</div>
+  <h1>TURN YOUR IDEAS<br>INTO <span>VIDEOS</span></h1>
+  <p>Create Amazing AI Movies, Mini-Series, Dramas, Animations & Music Videos from Your Imagination.</p>
+  <a href="#studio"><button class="red-button">START CREATING</button></a>
+</section>
 
-  <section id="categories">
-    <div class="section-heading">
-      <h2>Explore Your Creative Universe</h2>
-      <p>Choose a world. Imagine a story. Create something extraordinary.</p>
+<section id="categories">
+  <div class="section-heading">
+    <h2>Explore Your Creative Universe</h2>
+    <p>Choose a world. Imagine a story. Create something extraordinary.</p>
+  </div>
+  <div class="category-grid">
+
+    <button class="category" data-category="Movies & Mini-Series">
+      <div class="category-content"><h3>Movies & Mini-Series</h3><p>Cinematic stories, films and episodes</p></div>
+    </button>
+
+    <button class="category" data-category="Drama & Romance">
+      <div class="category-content"><h3>Drama & Romance</h3><p>Love, emotions and unforgettable stories</p></div>
+    </button>
+
+    <button class="category" data-category="Comedy & Fun">
+      <div class="category-content"><h3>Comedy & Fun</h3><p>Funny moments and entertaining adventures</p></div>
+    </button>
+
+    <button class="category" data-category="Animals & Animation">
+      <div class="category-content"><h3>Animals & Animation</h3><p>Animated worlds and amazing creatures</p></div>
+    </button>
+
+    <button class="category" data-category="Fantasy & Sci-Fi">
+      <div class="category-content"><h3>Fantasy & Sci-Fi</h3><p>Magic, futuristic worlds and imagination</p></div>
+    </button>
+
+    <button class="category" data-category="Action & Adventure">
+      <div class="category-content"><h3>Action & Adventure</h3><p>Epic journeys and spectacular action</p></div>
+    </button>
+
+    <button class="category" data-category="Singers & Performers">
+      <video autoplay muted loop playsinline preload="metadata">
+        <source src="WhatsApp%20Video%202026-11-15%20at%2012.43.19.mp4" type="video/mp4">
+      </video>
+      <div class="category-content"><h3>Singers & Performers</h3><p>Singers, stage performances and concerts</p></div>
+    </button>
+
+    <button class="category" data-category="Music & Dance">
+      <video autoplay muted loop playsinline preload="metadata">
+        <source src="WhatsApp%20Video%202026-11-15%20at%2013.09.31.mp4" type="video/mp4">
+      </video>
+      <div class="category-content"><h3>Music & Dance</h3><p>Music videos, dance and choreography</p></div>
+    </button>
+
+    <button class="category" data-category="Musicians & Bands">
+      <div class="category-content"><h3>Musicians & Bands</h3><p>Musicians, instruments and orchestras</p></div>
+    </button>
+
+    <button class="category" data-category="Historical & Adventure">
+      <div class="category-content"><h3>Historical & Adventure</h3><p>Historical worlds and epic adventures</p></div>
+    </button>
+
+    <button class="category" data-category="Fashion & Lifestyle">
+      <div class="category-content"><h3>Fashion & Lifestyle</h3><p>Fashion, beauty and luxury lifestyle</p></div>
+    </button>
+
+    <button class="category" data-category="Advertising & Promos">
+      <div class="category-content"><h3>Advertising & Promos</h3><p>Creative commercials and brand videos</p></div>
+    </button>
+
+  </div>
+</section>
+
+<section id="studio">
+  <div class="section-heading">
+    <h2>YOUR AI VIDEO STUDIO</h2>
+    <p>Describe what you want to see. Your imagination leads the way.</p>
+  </div>
+  <div class="studio">
+    <label for="categorySelect">Choose your category</label>
+    <select id="categorySelect">
+      <option>Movies & Mini-Series</option>
+      <option>Drama & Romance</option>
+      <option>Comedy & Fun</option>
+      <option>Animals & Animation</option>
+      <option>Fantasy & Sci-Fi</option>
+      <option>Action & Adventure</option>
+      <option>Singers & Performers</option>
+      <option>Music & Dance</option>
+      <option>Musicians & Bands</option>
+      <option>Historical & Adventure</option>
+      <option>Fashion & Lifestyle</option>
+      <option>Advertising & Promos</option>
+    </select>
+
+    <label for="idea">Describe your video idea</label>
+    <textarea id="idea" placeholder="Imagine your own movie, music video, characters, story and world..."></textarea>
+
+    <label for="style">Choose a visual style</label>
+    <select id="style">
+      <option>Cinematic Realistic</option>
+      <option>Hollywood Movie</option>
+      <option>Fantasy</option>
+      <option>Science Fiction</option>
+      <option>Animation</option>
+      <option>Documentary</option>
+      <option>Music Video</option>
+      <option>Vintage Film</option>
+    </select>
+
+    <label for="duration">Video duration</label>
+    <select id="duration">
+      <option>Short Clip</option>
+      <option>30 Seconds</option>
+      <option>1 Minute</option>
+      <option>3 Minutes</option>
+      <option>5 Minutes</option>
+      <option>Mini-Series Episode</option>
+    </select>
+
+    <button class="red-button" onclick="prepareVideo()">CREATE MY VIDEO</button>
+    <p class="status" id="studioStatus">Your AI video creation tools will appear here as they are connected.</p>
+  </div>
+</section>
+
+<section id="account">
+  <div class="section-heading">
+    <h2>Your LANE Account</h2>
+    <p>Sign in to access your account and upload your music.</p>
+  </div>
+  <div class="account">
+    <label for="email">Email address</label>
+    <input id="email" type="email" placeholder="Your email">
+
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="Your password">
+
+    <button class="red-button" onclick="signUp()">CREATE ACCOUNT</button>
+    <button class="red-button" onclick="signIn()">SIGN IN</button>
+    <button class="red-button" onclick="googleSignIn()">CONTINUE WITH GOOGLE</button>
+    <button onclick="signOut()" style="background:#333;color:white">SIGN OUT</button>
+
+    <p class="status" id="accountStatus">Connect to your LANE VIDEO AI account.</p>
+
+    <div class="upload-area">
+      <h3>Upload Your Music</h3>
+      <p class="status">Choose an MP3 or WAV audio file.</p>
+      <input id="songFile" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav">
+      <button class="red-button" onclick="uploadSong()">UPLOAD MY SONG</button>
+      <p class="status" id="uploadStatus">Please sign in before uploading music.</p>
     </div>
-
-    <div class="category-grid">
-
-      <button class="category" data-category="Movies & Mini-Series">
-        <div class="category-content"><h3>Movies & Mini-Series</h3><p>Cinematic stories, films and episodes</p></div>
-      </button>
-
-      <button class="category" data-category="Drama & Romance">
-        <div class="category-content"><h3>Drama & Romance</h3><p>Love, emotions and unforgettable stories</p></div>
-      </button>
-
-      <button class="category" data-category="Comedy & Fun">
-        <div class="category-content"><h3>Comedy & Fun</h3><p>Funny moments and entertaining adventures</p></div>
-      </button>
-
-      <button class="category" data-category="Animals & Animation">
-        <div class="category-content"><h3>Animals & Animation</h3><p>Animated worlds and amazing creatures</p></div>
-      </button>
-
-      <button class="category" data-category="Fantasy & Sci-Fi">
-        <div class="category-content"><h3>Fantasy & Sci-Fi</h3><p>Magic, futuristic worlds and imagination</p></div>
-      </button>
-
-      <button class="category" data-category="Action & Adventure">
-        <div class="category-content"><h3>Action & Adventure</h3><p>Epic journeys and spectacular action</p></div>
-      </button>
-
-      <button class="category" data-category="Singers & Performers">
-        <video autoplay muted loop playsinline preload="metadata">
-          <source src="WhatsApp%20Video%202026-11-15%20at%2012.43.19.mp4" type="video/mp4">
-        </video>
-        <div class="category-content"><h3>Singers & Performers</h3><p>Singers, stage performances and concerts</p></div>
-      </button>
-
-      <button class="category" data-category="Music & Dance">
-        <div class="category-content"><h3>Music & Dance</h3><p>Music videos, dance and choreography</p></div>
-      </button>
-
-      <button class="category" data-category="Musicians & Bands">
-        <div class="category-content"><h3>Musicians & Bands</h3><p>Musicians, instruments and orchestras</p></div>
-      </button>
-
-      <button class="category" data-category="Historical & Adventure">
-        <div class="category-content"><h3>Historical & Adventure</h3><p>Historical worlds and epic adventures</p></div>
-      </button>
-
-      <button class="category" data-category="Fashion & Lifestyle">
-        <div class="category-content"><h3>Fashion & Lifestyle</h3><p>Fashion, beauty and luxury lifestyle</p></div>
-      </button>
-
-      <button class="category" data-category="Advertising & Promos">
-        <div class="category-content"><h3>Advertising & Promos</h3><p>Creative commercials and brand videos</p></div>
-      </button>
-
-    </div>
-  </section>
-
-  <section id="studio">
-    <div class="section-heading">
-      <h2>YOUR AI VIDEO STUDIO</h2>
-      <p>Describe what you want to see. Your imagination leads the way.</p>
-    </div>
-    <div class="studio">
-      <label for="categorySelect">Choose your category</label>
-      <select id="categorySelect">
-        <option>Movies & Mini-Series</option>
-        <option>Drama & Romance</option>
-        <option>Comedy & Fun</option>
-        <option>Animals & Animation</option>
-        <option>Fantasy & Sci-Fi</option>
-        <option>Action & Adventure</option>
-        <option>Singers & Performers</option>
-        <option>Music & Dance</option>
-        <option>Musicians & Bands</option>
-        <option>Historical & Adventure</option>
-        <option>Fashion & Lifestyle</option>
-        <option>Advertising & Promos</option>
-      </select>
-
-      <label for="idea">Describe your video idea</label>
-      <textarea id="idea" placeholder="Imagine your own movie, music video, characters, story and world..."></textarea>
-
-      <label for="style">Choose a visual style</label>
-      <select id="style">
-        <option>Cinematic Realistic</option>
-        <option>Hollywood Movie</option>
-        <option>Fantasy</option>
-        <option>Science Fiction</option>
-        <option>Animation</option>
-        <option>Documentary</option>
-        <option>Music Video</option>
-        <option>Vintage Film</option>
-      </select>
-
-      <label for="duration">Video duration</label>
-      <select id="duration">
-        <option>Short Clip</option>
-        <option>30 Seconds</option>
-        <option>1 Minute</option>
-        <option>3 Minutes</option>
-        <option>5 Minutes</option>
-        <option>Mini-Series Episode</option>
-      </select>
-
-      <button class="red-button" onclick="prepareVideo()">CREATE MY VIDEO</button>
-      <p class="status" id="studioStatus">Your AI video creation tools will appear here as they are connected.</p>
-    </div>
-  </section>
-
-  <section id="account">
-    <div class="section-heading">
-      <h2>Your LANE Account</h2>
-      <p>Sign in to access your account and upload your music.</p>
-    </div>
-
-    <div class="account">
-      <label for="email">Email address</label>
-      <input id="email" type="email" placeholder="Your email">
-
-      <label for="password">Password</label>
-      <input id="password" type="password" placeholder="Your password">
-
-      <button class="red-button" onclick="signUp()">CREATE ACCOUNT</button>
-      <button class="red-button" onclick="signIn()">SIGN IN</button>
-      <button class="red-button" onclick="googleSignIn()">CONTINUE WITH GOOGLE</button>
-      <button onclick="signOut()" style="background:#333;color:white">SIGN OUT</button>
-
-      <p class="status" id="accountStatus">Connect to your LANE VIDEO AI account.</p>
-
-      <div class="upload-area">
-        <h3>Upload Your Music</h3>
-        <p class="status">Choose an MP3 or WAV audio file.</p>
-        <input id="songFile" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav">
-        <button class="red-button" onclick="uploadSong()">UPLOAD MY SONG</button>
-        <p class="status" id="uploadStatus">Please sign in before uploading music.</p>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 </main>
 
 <footer>
@@ -372,8 +232,7 @@ const supabaseClient = window.supabase.createClient(
 
 document.querySelectorAll(".category").forEach(card => {
   card.addEventListener("click", () => {
-    const chosen = card.dataset.category;
-    document.getElementById("categorySelect").value = chosen;
+    document.getElementById("categorySelect").value = card.dataset.category;
     document.getElementById("studio").scrollIntoView({behavior:"smooth"});
   });
 });
@@ -388,8 +247,7 @@ function prepareVideo() {
     return;
   }
 
-  status.textContent =
-    "Your " + category + " idea is ready! AI video generation will be connected in a future update.";
+  status.textContent = "Your " + category + " idea is ready! AI video generation will be connected in a future update.";
 }
 
 async function signUp() {
