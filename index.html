@@ -254,6 +254,7 @@ textarea { min-height:125px; resize:vertical; }
   align-items:center;
   gap:8px;
   flex-shrink:0;
+  flex-wrap:wrap;
 }
 .small-button {
   color:white;
@@ -261,6 +262,12 @@ textarea { min-height:125px; resize:vertical; }
   padding:9px 12px;
 }
 .small-button:hover { background:#555; }
+.delete-button {
+  color:white;
+  background:#b51224;
+  padding:9px 12px;
+}
+.delete-button:hover { background:#e01830; }
 .music-player {
   margin-top:18px;
   padding:16px;
@@ -309,8 +316,8 @@ footer {
   .hero { padding:75px 6%; }
   section { padding:48px 5%; }
   .studio, .account, .files-panel { padding:20px; }
-  .file-item { align-items:flex-start; }
-  .file-actions { flex-direction:column; }
+  .file-item { align-items:flex-start; flex-direction:column; }
+  .file-actions { flex-direction:row; }
 }
 </style>
 </head>
@@ -699,6 +706,7 @@ const supabaseClient = window.supabase.createClient(
 
 let currentFiles = [];
 let currentAudioUrl = null;
+let deletingFile = false;
 
 document.querySelectorAll(".category").forEach(card => {
   card.addEventListener("click", () => {
@@ -790,6 +798,7 @@ function prepareVideo() {
   if (mode === "music") {
     const songSelect = document.getElementById("musicFileSelect");
     const selectedSong = songSelect.options[songSelect.selectedIndex];
+
     if (!songSelect.value) {
       status.textContent = "Please select a song from My Files first.";
       songSelect.focus();
@@ -946,11 +955,6 @@ async function playSong(fileName) {
     return;
   }
 
-  if (currentAudioUrl) {
-    URL.revokeObjectURL(currentAudioUrl);
-    currentAudioUrl = null;
-  }
-
   player.pause();
   player.src = data.signedUrl;
   player.style.display = "block";
@@ -971,11 +975,72 @@ function stopSongPreview() {
   player.removeAttribute("src");
   player.load();
   player.style.display = "none";
+
   document.getElementById("playerStatus").textContent =
     "Choose PLAY beside a song to listen to it.";
+
   if (currentAudioUrl) {
     URL.revokeObjectURL(currentAudioUrl);
     currentAudioUrl = null;
+  }
+}
+
+/* DELETE A SONG FROM THE USER'S PRIVATE STORAGE */
+async function deleteSong(fileName, button) {
+  if (deletingFile) return;
+
+  const confirmed = window.confirm(
+    'Are you sure you want to permanently delete "' + fileName + '"?'
+  );
+
+  if (!confirmed) return;
+
+  deletingFile = true;
+  button.disabled = true;
+  button.textContent = "DELETING...";
+
+  const status = document.getElementById("fileListStatus");
+
+  try {
+    const { data: { user }, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+      status.textContent = "Please sign in before deleting a song.";
+      return;
+    }
+
+    const filePath = user.id + "/" + fileName;
+
+    const { error } = await supabaseClient.storage
+      .from("user-songs")
+      .remove([filePath]);
+
+    if (error) {
+      status.textContent = "Could not delete the song: " + error.message;
+      return;
+    }
+
+    const player = document.getElementById("songPlayer");
+
+    if (player.src && player.src.includes(encodeURIComponent(fileName))) {
+      stopSongPreview();
+    }
+
+    const musicSelect = document.getElementById("musicFileSelect");
+
+    if (musicSelect.value === fileName) {
+      musicSelect.value = "";
+    }
+
+    status.textContent = "✓ Song deleted successfully: " + fileName;
+
+    await loadMyFiles();
+
+  } catch (error) {
+    status.textContent = "Delete error: " + error.message;
+  } finally {
+    deletingFile = false;
   }
 }
 
@@ -1077,15 +1142,21 @@ async function loadMyFiles() {
         "Selected song: " + file.name + ". Describe the music video you want to create.";
     });
 
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-button";
+    deleteButton.textContent = "DELETE";
+    deleteButton.addEventListener("click", () => deleteSong(file.name, deleteButton));
+
     actions.appendChild(playButton);
     actions.appendChild(selectButton);
+    actions.appendChild(deleteButton);
 
     row.appendChild(left);
     row.appendChild(actions);
     list.appendChild(row);
   });
 
-  status.textContent = "Your uploaded songs are displayed above. Use PLAY to listen or USE IN STUDIO to select a song.";
+  status.textContent = "Your uploaded songs are displayed above. Use PLAY to listen, USE IN STUDIO to select a song, or DELETE to remove a song.";
 }
 
 async function uploadSong() {
