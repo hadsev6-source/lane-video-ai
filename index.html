@@ -4,278 +4,313 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LANE VIDEO AI — Create Anything</title>
-<meta name="description" content="Create amazing AI movies, mini-series, animations, music videos and product advertisements.">
-
+<meta name="description" content="Create AI movies, mini-series, animations, music videos and advertisements.">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
-  --red: #ff2638;
-  --black: #080808;
-  --panel: #151515;
-  --white: #f7f7f7;
+  --red:#ff2638;
+  --black:#080808;
+  --panel:#151515;
+  --white:#f7f7f7;
 }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; scroll-padding-top:100px; }
 body {
-  margin: 0;
-  background: var(--black);
-  color: var(--white);
-  font-family: Arial, Helvetica, sans-serif;
+  margin:0;
+  background:var(--black);
+  color:var(--white);
+  font-family:Arial,Helvetica,sans-serif;
 }
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 6%;
-  border-bottom: 1px solid #292929;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(8,8,8,.97);
-  gap: 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 6%;
+  border-bottom:1px solid #292929;
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(8,8,8,.97);
+  gap:20px;
 }
 .logo {
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  white-space: nowrap;
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:2px;
+  white-space:nowrap;
 }
-.logo span { color: var(--red); }
+.logo span { color:var(--red); }
 nav {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap;
+  display:flex;
+  gap:20px;
+  align-items:center;
+  flex-wrap:wrap;
 }
 nav a {
-  color: #ddd;
-  text-decoration: none;
-  font-size: 14px;
-  white-space: nowrap;
+  color:#ddd;
+  text-decoration:none;
+  font-size:14px;
+  white-space:nowrap;
 }
-nav a:hover { color: var(--red); }
+nav a:hover { color:var(--red); }
 nav .files-link {
-  color: white;
-  background: var(--red);
-  padding: 10px 14px;
-  border-radius: 7px;
-  font-weight: bold;
+  color:white;
+  background:var(--red);
+  padding:10px 14px;
+  border-radius:7px;
+  font-weight:bold;
 }
 button {
-  cursor: pointer;
-  border: 0;
-  border-radius: 7px;
-  padding: 12px 19px;
-  font-weight: bold;
+  cursor:pointer;
+  border:0;
+  border-radius:7px;
+  padding:12px 19px;
+  font-weight:bold;
 }
-.red-button { color: white; background: var(--red); }
-.red-button:hover { background: #d91528; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+.red-button { color:white; background:var(--red); }
+.red-button:hover { background:#d91528; }
 .google-button {
-  width: 100%;
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: #fff;
-  color: #3c4043;
-  border: 1px solid #dadce0;
-  border-radius: 7px;
-  padding: 13px 19px;
-  font-size: 15px;
-  font-weight: 600;
+  width:100%;
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  background:#fff;
+  color:#3c4043;
+  border:1px solid #dadce0;
+  padding:13px 19px;
+  font-size:15px;
 }
-.google-button:hover { background: #f5f5f5; }
-.google-button svg { width: 20px; height: 20px; }
+.google-button svg { width:20px; height:20px; }
 .hero {
-  min-height: 480px;
-  padding: 100px 7% 85px;
-  text-align: center;
-  background: radial-gradient(ellipse at center,#4a080e 0%,#160609 42%,#080808 75%);
+  min-height:480px;
+  padding:100px 7% 85px;
+  text-align:center;
+  background:radial-gradient(ellipse at center,#4a080e 0%,#160609 42%,#080808 75%);
 }
 .eyebrow {
-  color: var(--red);
-  letter-spacing: 4px;
-  font-size: 12px;
-  font-weight: bold;
+  color:var(--red);
+  letter-spacing:4px;
+  font-size:12px;
+  font-weight:bold;
 }
 h1 {
-  font-size: clamp(38px,7vw,76px);
-  line-height: 1.04;
-  margin: 22px auto;
-  max-width: 950px;
-  font-weight: 900;
+  font-size:clamp(38px,7vw,76px);
+  line-height:1.04;
+  margin:22px auto;
+  max-width:950px;
+  font-weight:900;
 }
-h1 span { color: var(--red); }
+h1 span { color:var(--red); }
 .hero p {
-  color: #c5c5c5;
-  font-size: 17px;
-  line-height: 1.7;
-  max-width: 680px;
-  margin: 0 auto 30px;
+  color:#c5c5c5;
+  font-size:17px;
+  line-height:1.7;
+  max-width:680px;
+  margin:0 auto 30px;
 }
-section { padding: 65px 6%; }
-.section-heading { text-align: center; margin-bottom: 35px; }
-.section-heading h2 { font-size: 32px; margin: 0 0 12px; }
-.section-heading p { color: #999; margin: 0; }
+.hero a { text-decoration:none; }
+section { padding:65px 6%; }
+.section-heading { text-align:center; margin-bottom:35px; }
+.section-heading h2 { font-size:32px; margin:0 0 12px; }
+.section-heading p { color:#999; margin:0; line-height:1.6; }
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  gap: 20px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:20px;
 }
 .category {
-  position: relative;
-  min-height: 205px;
-  overflow: hidden;
-  border: 1px solid #343434;
-  border-radius: 13px;
-  background: linear-gradient(135deg,#31070d,#171717 60%,#080808);
-  text-align: left;
-  color: white;
-  padding: 0;
-  transition: .25s;
+  position:relative;
+  min-height:205px;
+  overflow:hidden;
+  border:1px solid #343434;
+  border-radius:13px;
+  background:linear-gradient(135deg,#31070d,#171717 60%,#080808);
+  text-align:left;
+  color:white;
+  padding:0;
+  transition:.25s;
 }
 .category:hover {
-  transform: translateY(-5px);
-  border-color: var(--red);
-  box-shadow: 0 0 25px #ff263833;
+  transform:translateY(-5px);
+  border-color:var(--red);
+  box-shadow:0 0 25px #ff263833;
 }
 .category video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: .72;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:.72;
 }
 .category::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05));
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05));
 }
 .category-content {
-  position: absolute;
-  z-index: 2;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20px;
+  position:absolute;
+  z-index:2;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:20px;
 }
-.category h3 { font-size: 19px; margin: 0 0 7px; }
-.category p { font-size: 13px; color: #ccc; margin: 0; line-height: 1.4; }
+.category h3 { font-size:19px; margin:0 0 7px; }
+.category p { font-size:13px; color:#ccc; margin:0; line-height:1.4; }
 .studio, .account, .files-panel {
-  max-width: 850px;
-  margin: auto;
-  padding: 30px;
-  border: 1px solid #333;
-  background: var(--panel);
-  border-radius: 14px;
+  max-width:900px;
+  margin:auto;
+  padding:30px;
+  border:1px solid #333;
+  background:var(--panel);
+  border-radius:14px;
 }
-.account { max-width: 600px; }
-label { display: block; margin: 17px 0 8px; font-weight: bold; }
+.account { max-width:600px; }
+label {
+  display:block;
+  margin:17px 0 8px;
+  font-weight:bold;
+}
 input, textarea, select {
-  width: 100%;
-  padding: 14px;
-  color: white;
-  background: #090909;
-  border: 1px solid #444;
-  border-radius: 7px;
-  font: inherit;
+  width:100%;
+  padding:14px;
+  color:white;
+  background:#090909;
+  border:1px solid #444;
+  border-radius:7px;
+  font:inherit;
 }
-input[type="file"] { padding: 12px; }
-textarea { min-height: 125px; resize: vertical; }
-.studio .red-button { width: 100%; margin-top: 20px; }
-.account button { margin-top: 12px; }
+input[type="file"] { padding:12px; }
+textarea { min-height:125px; resize:vertical; }
+.studio .red-button { width:100%; margin-top:20px; }
+.account button { margin-top:12px; }
 .status {
-  color: #bbb;
-  font-size: 13px;
-  line-height: 1.5;
-  margin-top: 12px;
-  overflow-wrap: anywhere;
+  color:#bbb;
+  font-size:13px;
+  line-height:1.5;
+  margin-top:12px;
+  overflow-wrap:anywhere;
 }
 .signed-in {
-  display: none;
-  border: 1px solid #276b42;
-  background: #10251a;
-  padding: 16px;
-  border-radius: 8px;
-  margin-top: 15px;
+  display:none;
+  border:1px solid #276b42;
+  background:#10251a;
+  padding:16px;
+  border-radius:8px;
+  margin-top:15px;
 }
-.signed-in strong { color: #65dc91; }
+.signed-in strong { color:#65dc91; }
 .upload-area {
-  padding: 24px;
-  background: #090909;
-  border: 1px dashed #777;
-  border-radius: 10px;
-  text-align: center;
-  margin-top: 22px;
+  padding:24px;
+  background:#090909;
+  border:1px dashed #777;
+  border-radius:10px;
+  text-align:center;
+  margin-top:22px;
 }
-.files-panel { max-width: 850px; }
 .files-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
 }
-.files-top h3 { margin: 0; }
+.files-top h3 { margin:0; }
 .file-list {
-  display: grid;
-  gap: 10px;
-  margin-top: 18px;
+  display:grid;
+  gap:10px;
+  margin-top:18px;
 }
 .file-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: #090909;
-  border: 1px solid #333;
-  border-radius: 8px;
-  overflow-wrap: anywhere;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  background:#090909;
+  border:1px solid #333;
+  border-radius:8px;
+  overflow-wrap:anywhere;
 }
-.file-name { font-weight: bold; }
-.file-details { color: #999; font-size: 12px; margin-top: 5px; }
+.file-name { font-weight:bold; }
+.file-details { color:#999; font-size:12px; margin-top:5px; }
 .empty-files {
-  color: #999;
-  background: #090909;
-  border: 1px dashed #444;
-  border-radius: 8px;
-  padding: 24px;
-  text-align: center;
+  color:#999;
+  background:#090909;
+  border:1px dashed #444;
+  border-radius:8px;
+  padding:24px;
+  text-align:center;
 }
-.file-icon { font-size: 24px; }
+.file-actions {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+.small-button {
+  color:white;
+  background:#333;
+  padding:9px 12px;
+}
+.small-button:hover { background:#555; }
+.music-player {
+  margin-top:18px;
+  padding:16px;
+  border:1px solid #444;
+  border-radius:9px;
+  background:#090909;
+}
+.music-player audio { width:100%; margin-top:10px; }
+.studio-subpanel {
+  margin-top:24px;
+  padding:20px;
+  border:1px solid #3a2528;
+  border-radius:10px;
+  background:#100b0c;
+}
+.studio-subpanel h3 { margin:0 0 8px; color:#ff5260; }
+.helper {
+  color:#999;
+  font-size:12px;
+  line-height:1.5;
+}
 footer {
-  text-align: center;
-  padding: 35px 15px;
-  border-top: 1px solid #292929;
-  color: #888;
-  font-size: 13px;
+  text-align:center;
+  padding:35px 15px;
+  border-top:1px solid #292929;
+  color:#888;
+  font-size:13px;
 }
 @media(max-width:800px) {
-  .category-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  header { align-items: flex-start; }
-  nav { gap: 10px; }
-  nav a { font-size: 12px; }
+  .category-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  header { align-items:flex-start; }
+  nav { gap:10px; }
+  nav a { font-size:12px; }
 }
 @media(max-width:540px) {
-  header { padding: 14px 4%; flex-wrap: wrap; gap: 12px; }
-  .logo { font-size: 20px; }
+  header { padding:14px 4%; flex-wrap:wrap; gap:12px; }
+  .logo { font-size:20px; }
   nav {
-    width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 5px;
+    width:100%;
+    justify-content:flex-start;
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    padding-bottom:5px;
   }
-  .category-grid { grid-template-columns: 1fr; }
-  .hero { padding: 75px 6%; }
-  section { padding: 48px 5%; }
-  .studio, .account, .files-panel { padding: 20px; }
+  .category-grid { grid-template-columns:1fr; }
+  .hero { padding:75px 6%; }
+  section { padding:48px 5%; }
+  .studio, .account, .files-panel { padding:20px; }
+  .file-item { align-items:flex-start; }
+  .file-actions { flex-direction:column; }
 }
 </style>
 </head>
@@ -395,7 +430,7 @@ footer {
       </video>
       <div class="category-content">
         <h3>Advertising & Promos</h3>
-        <p>Luxury product commercials, perfume ads, brand promotions and creative campaigns</p>
+        <p>Luxury product commercials, brand promotions and creative campaigns</p>
       </div>
     </button>
 
@@ -405,10 +440,17 @@ footer {
 <section id="studio">
   <div class="section-heading">
     <h2>YOUR AI VIDEO STUDIO</h2>
-    <p>Describe what you want to see. Your imagination leads the way.</p>
+    <p>Describe exactly what you want to create. Your imagination leads the way.</p>
   </div>
 
   <div class="studio">
+
+    <label for="projectMode">What would you like to create?</label>
+    <select id="projectMode">
+      <option value="general">General AI Video Studio</option>
+      <option value="music">AI MUSIC VIDEO STUDIO</option>
+    </select>
+
     <label for="categorySelect">Choose your category</label>
     <select id="categorySelect">
       <option>Movies & Mini-Series</option>
@@ -422,16 +464,104 @@ footer {
       <option>Advertising & Promos</option>
     </select>
 
-    <label for="idea">Describe your video idea</label>
-    <textarea id="idea" placeholder="Describe exactly what you want to happen in your video."></textarea>
+    <div id="musicStudio" class="studio-subpanel" style="display:none">
+      <h3>AI MUSIC VIDEO STUDIO</h3>
+      <p class="helper">Choose a song from My Files, then describe the music video you want. You can use an AI performer rather than appearing in the video yourself.</p>
+
+      <label for="musicVideoType">Type of music video</label>
+      <select id="musicVideoType">
+        <option>Music Video</option>
+        <option>Cinematic Music Video</option>
+        <option>Music Video with Dancers</option>
+        <option>Live Stage Performance</option>
+        <option>Lyrics Video</option>
+        <option>Mini Drama / Story</option>
+        <option>Romantic Music Video</option>
+        <option>Action Music Video</option>
+        <option>Nightlife & Party</option>
+        <option>Fantasy Music Video</option>
+        <option>Animated Music Video</option>
+        <option>My Own Idea</option>
+      </select>
+
+      <label for="musicFileSelect">Choose a song from My Files</label>
+      <select id="musicFileSelect">
+        <option value="">Sign in and upload a song first</option>
+      </select>
+      <p class="helper">Your selected song will be used as the music for the planned video.</p>
+
+      <label for="performer">AI singer / performer</label>
+      <select id="performer">
+        <option>Female AI singer</option>
+        <option>Male AI singer</option>
+        <option>AI singing group</option>
+        <option>Band with musicians</option>
+        <option>Instrumental video — no singer</option>
+        <option>No performer — story only</option>
+        <option>My own uploaded character / person</option>
+      </select>
+
+      <label for="dancers">Dancers and additional performers</label>
+      <select id="dancers">
+        <option>No dancers</option>
+        <option>Two dancers</option>
+        <option>Small dance group</option>
+        <option>Large dance crew</option>
+        <option>Musicians and dancers</option>
+        <option>My own idea</option>
+      </select>
+
+      <label for="musicScene">Stage / location</label>
+      <select id="musicScene">
+        <option>Grand concert stage</option>
+        <option>Luxury music video set</option>
+        <option>Nightclub</option>
+        <option>Beach at sunset</option>
+        <option>Beautiful natural landscape</option>
+        <option>Romantic location</option>
+        <option>City streets at night</option>
+        <option>Fantasy world</option>
+        <option>Studio performance</option>
+        <option>My own location</option>
+      </select>
+
+      <label for="wardrobe">Performer clothing / appearance</label>
+      <select id="wardrobe">
+        <option>Elegant stage outfit</option>
+        <option>Luxury fashion outfit</option>
+        <option>Modern pop star style</option>
+        <option>Rock star style</option>
+        <option>Hip-hop street style</option>
+        <option>Romantic elegant look</option>
+        <option>Fantasy costume</option>
+        <option>My own description</option>
+      </select>
+
+      <label for="musicEffects">Lighting and visual effects</label>
+      <select id="musicEffects">
+        <option>Cinematic stage lighting</option>
+        <option>Laser lights and LED screens</option>
+        <option>Fireworks and special effects</option>
+        <option>Soft romantic lighting</option>
+        <option>Neon nightclub lighting</option>
+        <option>Dreamlike fantasy effects</option>
+        <option>Natural daylight</option>
+        <option>My own idea</option>
+      </select>
+    </div>
+
+    <label for="idea">Describe your video idea in detail</label>
+    <textarea id="idea" placeholder="Describe exactly what you want to happen. Include characters, appearance, actions, locations, scenes, camera movements, atmosphere and any details that matter to you."></textarea>
 
     <label for="style">Choose a visual style</label>
     <select id="style">
       <option>Cinematic Realistic</option>
+      <option>Photorealistic</option>
       <option>Hollywood Movie</option>
       <option>Fantasy</option>
       <option>Science Fiction</option>
-      <option>Animation</option>
+      <option>3D Animation</option>
+      <option>Artistic / Dreamlike</option>
       <option>Documentary</option>
       <option>Music Video</option>
       <option>Vintage Film</option>
@@ -441,24 +571,30 @@ footer {
     <label for="duration">Video duration</label>
     <select id="duration">
       <option>Short Clip</option>
+      <option>15 Seconds</option>
       <option>30 Seconds</option>
       <option>1 Minute</option>
+      <option>2 Minutes</option>
       <option>3 Minutes</option>
       <option>5 Minutes</option>
       <option>Mini-Series Episode</option>
     </select>
 
-    <p class="status">Need a file for your project? <a href="#files" style="color:#ff5260">Open My Files</a></p>
+    <label for="extraFiles">Optional: add another image, video or audio file</label>
+    <input id="extraFiles" type="file" accept="image/*,video/*,audio/*" multiple>
+    <p class="helper">This additional upload field is a visual placeholder for now. Uploading images and videos will be enabled after the storage settings are expanded. Your current My Files upload supports MP3 and WAV.</p>
 
-    <button class="red-button" onclick="prepareVideo()">CREATE MY VIDEO</button>
-    <p class="status" id="studioStatus">AI video generation will be connected in a future update.</p>
+    <p class="status">You can manage your uploaded songs in <a href="#files" style="color:#ff5260">My Files</a>.</p>
+
+    <button class="red-button" onclick="prepareVideo()">PREPARE MY VIDEO PROJECT</button>
+    <p class="status" id="studioStatus">AI video generation is not connected yet. Your project settings can be prepared here.</p>
   </div>
 </section>
 
 <section id="files">
   <div class="section-heading">
     <h2>MY FILES</h2>
-    <p>Upload and view your music files in one place.</p>
+    <p>Upload, listen to and select your music files in one place.</p>
   </div>
 
   <div class="files-panel">
@@ -476,6 +612,12 @@ footer {
       <input id="songFile" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav">
       <button class="red-button" onclick="uploadSong()">UPLOAD MY SONG</button>
       <p class="status" id="uploadStatus">Please sign in before uploading music.</p>
+    </div>
+
+    <div class="music-player">
+      <strong>SONG PREVIEW</strong>
+      <p class="status" id="playerStatus">Choose PLAY beside a song to listen to it.</p>
+      <audio id="songPlayer" controls preload="none" style="display:none"></audio>
     </div>
 
     <div style="margin-top:30px">
@@ -555,11 +697,23 @@ const supabaseClient = window.supabase.createClient(
   }
 );
 
+let currentFiles = [];
+let currentAudioUrl = null;
+
 document.querySelectorAll(".category").forEach(card => {
   card.addEventListener("click", () => {
     document.getElementById("categorySelect").value = card.dataset.category;
     document.getElementById("studio").scrollIntoView({behavior:"smooth"});
   });
+});
+
+document.getElementById("projectMode").addEventListener("change", event => {
+  const musicMode = event.target.value === "music";
+  document.getElementById("musicStudio").style.display = musicMode ? "block" : "none";
+  if (musicMode) {
+    document.getElementById("categorySelect").value = "Music & Dance";
+    refreshMusicFileOptions();
+  }
 });
 
 function showSignedIn(user) {
@@ -587,6 +741,8 @@ function showSignedOut(message) {
   document.getElementById("fileList").innerHTML =
     '<div class="empty-files">Sign in to see your uploaded files.</div>';
   document.getElementById("fileCount").textContent = "0 files";
+  document.getElementById("musicFileSelect").innerHTML =
+    '<option value="">Sign in and upload a song first</option>';
 }
 
 async function refreshAuthState() {
@@ -617,17 +773,42 @@ function prepareVideo() {
   const category = document.getElementById("categorySelect").value;
   const style = document.getElementById("style").value;
   const duration = document.getElementById("duration").value;
+  const mode = document.getElementById("projectMode").value;
   const status = document.getElementById("studioStatus");
 
   if (!idea) {
     status.textContent = "Please describe your video idea first.";
+    document.getElementById("idea").focus();
     return;
   }
 
-  status.textContent =
-    "Your " + category + " idea is ready! Style: " + style +
-    ". Duration: " + duration +
-    ". AI video generation will be connected in a future update.";
+  let summary = "Your project settings are ready. ";
+  summary += "Category: " + category + ". ";
+  summary += "Style: " + style + ". ";
+  summary += "Duration: " + duration + ". ";
+
+  if (mode === "music") {
+    const songSelect = document.getElementById("musicFileSelect");
+    const selectedSong = songSelect.options[songSelect.selectedIndex];
+    if (!songSelect.value) {
+      status.textContent = "Please select a song from My Files first.";
+      songSelect.focus();
+      return;
+    }
+
+    summary += "Music video type: " + document.getElementById("musicVideoType").value + ". ";
+    summary += "Song: " + selectedSong.text + ". ";
+    summary += "AI performer: " + document.getElementById("performer").value + ". ";
+    summary += "Dancers: " + document.getElementById("dancers").value + ". ";
+    summary += "Location: " + document.getElementById("musicScene").value + ". ";
+    summary += "Wardrobe: " + document.getElementById("wardrobe").value + ". ";
+    summary += "Lighting: " + document.getElementById("musicEffects").value + ". ";
+  }
+
+  summary += "Your description: " + idea + " ";
+  summary += "AI video generation is not connected yet. No video has been generated.";
+
+  status.textContent = summary;
 }
 
 async function signUp() {
@@ -684,9 +865,7 @@ async function googleSignIn() {
 
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
-    options: {
-      redirectTo: SITE_URL
-    }
+    options: { redirectTo: SITE_URL }
   });
 
   if (error) {
@@ -705,6 +884,8 @@ async function signOut() {
     return;
   }
 
+  stopSongPreview();
+  currentFiles = [];
   showSignedOut("You have signed out successfully.");
 }
 
@@ -713,6 +894,89 @@ function formatFileSize(bytes) {
   if (bytes < 1024) return bytes + " B";
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
   return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function refreshMusicFileOptions() {
+  const select = document.getElementById("musicFileSelect");
+  const previousValue = select.value;
+
+  select.innerHTML = "";
+
+  if (!currentFiles.length) {
+    select.innerHTML = '<option value="">No songs uploaded yet</option>';
+    return;
+  }
+
+  select.innerHTML = '<option value="">Choose a song...</option>';
+
+  currentFiles.forEach(file => {
+    const option = document.createElement("option");
+    option.value = file.name;
+    option.textContent = file.name;
+    select.appendChild(option);
+  });
+
+  if (currentFiles.some(file => file.name === previousValue)) {
+    select.value = previousValue;
+  }
+}
+
+async function playSong(fileName) {
+  const status = document.getElementById("playerStatus");
+  const player = document.getElementById("songPlayer");
+
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !user) {
+    status.textContent = "Please sign in to play your music.";
+    return;
+  }
+
+  status.textContent = "Preparing song preview...";
+
+  const filePath = user.id + "/" + fileName;
+
+  const { data, error } = await supabaseClient.storage
+    .from("user-songs")
+    .createSignedUrl(filePath, 3600);
+
+  if (error || !data || !data.signedUrl) {
+    status.textContent = "Could not open this song: " + (error ? error.message : "Unknown error");
+    return;
+  }
+
+  if (currentAudioUrl) {
+    URL.revokeObjectURL(currentAudioUrl);
+    currentAudioUrl = null;
+  }
+
+  player.pause();
+  player.src = data.signedUrl;
+  player.style.display = "block";
+  player.load();
+
+  status.textContent = "Now playing: " + fileName;
+
+  try {
+    await player.play();
+  } catch (error) {
+    status.textContent = "Song is ready. Press PLAY in the audio player.";
+  }
+}
+
+function stopSongPreview() {
+  const player = document.getElementById("songPlayer");
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
+  player.style.display = "none";
+  document.getElementById("playerStatus").textContent =
+    "Choose PLAY beside a song to listen to it.";
+  if (currentAudioUrl) {
+    URL.revokeObjectURL(currentAudioUrl);
+    currentAudioUrl = null;
+  }
 }
 
 async function loadMyFiles() {
@@ -727,6 +991,8 @@ async function loadMyFiles() {
     list.innerHTML = '<div class="empty-files">Please sign in to see your uploaded files.</div>';
     count.textContent = "0 files";
     status.textContent = "Sign in to view your personal files.";
+    currentFiles = [];
+    refreshMusicFileOptions();
     return;
   }
 
@@ -736,8 +1002,8 @@ async function loadMyFiles() {
   const { data, error } = await supabaseClient.storage
     .from("user-songs")
     .list(user.id, {
-      limit: 100,
-      sortBy: { column: "created_at", order: "desc" }
+      limit:100,
+      sortBy:{column:"created_at",order:"desc"}
     });
 
   if (error) {
@@ -746,9 +1012,13 @@ async function loadMyFiles() {
     return;
   }
 
-  const files = (data || []).filter(item => item.name && item.id);
+  const files = (data || []).filter(item =>
+    item.name && item.id && item.name !== ".emptyFolderPlaceholder"
+  );
 
+  currentFiles = files;
   count.textContent = files.length + (files.length === 1 ? " file" : " files");
+  refreshMusicFileOptions();
 
   if (files.length === 0) {
     list.innerHTML = '<div class="empty-files">You have not uploaded any music yet. Your files will appear here after uploading.</div>';
@@ -785,16 +1055,37 @@ async function loadMyFiles() {
     left.appendChild(name);
     left.appendChild(details);
 
-    const icon = document.createElement("div");
-    icon.className = "file-icon";
-    icon.textContent = "🎵";
+    const actions = document.createElement("div");
+    actions.className = "file-actions";
+
+    const playButton = document.createElement("button");
+    playButton.className = "small-button";
+    playButton.textContent = "▶ PLAY";
+    playButton.addEventListener("click", () => playSong(file.name));
+
+    const selectButton = document.createElement("button");
+    selectButton.className = "small-button";
+    selectButton.textContent = "USE IN STUDIO";
+    selectButton.addEventListener("click", () => {
+      document.getElementById("projectMode").value = "music";
+      document.getElementById("musicStudio").style.display = "block";
+      document.getElementById("categorySelect").value = "Music & Dance";
+      refreshMusicFileOptions();
+      document.getElementById("musicFileSelect").value = file.name;
+      document.getElementById("studio").scrollIntoView({behavior:"smooth"});
+      document.getElementById("studioStatus").textContent =
+        "Selected song: " + file.name + ". Describe the music video you want to create.";
+    });
+
+    actions.appendChild(playButton);
+    actions.appendChild(selectButton);
 
     row.appendChild(left);
-    row.appendChild(icon);
+    row.appendChild(actions);
     list.appendChild(row);
   });
 
-  status.textContent = "Your uploaded files are displayed above.";
+  status.textContent = "Your uploaded songs are displayed above. Use PLAY to listen or USE IN STUDIO to select a song.";
 }
 
 async function uploadSong() {
@@ -807,16 +1098,16 @@ async function uploadSong() {
     return;
   }
 
-  const allowedTypes = [
-    "audio/mpeg",
-    "audio/wav",
-    "audio/x-wav"
-  ];
-
+  const allowedTypes = ["audio/mpeg","audio/wav","audio/x-wav"];
   const extension = file.name.split(".").pop().toLowerCase();
 
-  if (!allowedTypes.includes(file.type) && !["mp3", "wav"].includes(extension)) {
+  if (!allowedTypes.includes(file.type) && !["mp3","wav"].includes(extension)) {
     status.textContent = "Please choose an MP3 or WAV audio file.";
+    return;
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+    status.textContent = "The file is too large. Maximum allowed size is 50 MB.";
     return;
   }
 
@@ -848,16 +1139,15 @@ async function uploadSong() {
   await loadMyFiles();
 }
 
-/* Listen for login, logout and Google OAuth return. */
 supabaseClient.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
     showSignedIn(session.user);
   } else if (event === "SIGNED_OUT") {
+    stopSongPreview();
     showSignedOut("You have signed out successfully.");
   }
 });
 
-/* Check for an existing session when the page opens. */
 refreshAuthState();
 </script>
 
