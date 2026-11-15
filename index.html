@@ -1,500 +1,606 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LANE VIDEO AI — Create Anything</title>
-<meta name="description" content="Create AI movies, mini-series, animations, music videos and advertisements.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LANE VIDEO AI — Create Anything You Can Imagine</title>
+  <meta name="description" content="Create AI movies, mini-series, music videos, animations and advertisements with LANE VIDEO AI.">
 
-<style>
-:root {
-  --red:#ff2638;
-  --black:#080808;
-  --panel:#151515;
-  --white:#f7f7f7;
-}
-* { box-sizing:border-box; }
-html { scroll-behavior:smooth; scroll-padding-top:100px; }
-body {
-  margin:0;
-  background:var(--black);
-  color:var(--white);
-  font-family:Arial,Helvetica,sans-serif;
-}
-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:18px 6%;
-  border-bottom:1px solid #292929;
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:rgba(8,8,8,.97);
-  gap:20px;
-}
-.logo {
-  font-size:24px;
-  font-weight:900;
-  letter-spacing:2px;
-  white-space:nowrap;
-}
-.logo span { color:var(--red); }
-nav {
-  display:flex;
-  gap:20px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-nav a {
-  color:#ddd;
-  text-decoration:none;
-  font-size:14px;
-  white-space:nowrap;
-}
-nav a:hover { color:var(--red); }
-nav .files-link {
-  color:white;
-  background:var(--red);
-  padding:10px 14px;
-  border-radius:7px;
-  font-weight:bold;
-}
-button {
-  cursor:pointer;
-  border:0;
-  border-radius:7px;
-  padding:12px 19px;
-  font-weight:bold;
-}
-button:disabled { opacity:.5; cursor:not-allowed; }
-.red-button { color:white; background:var(--red); }
-.red-button:hover { background:#d91528; }
-.google-button {
-  width:100%;
-  margin-top:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  background:#fff;
-  color:#3c4043;
-  border:1px solid #dadce0;
-  padding:13px 19px;
-  font-size:15px;
-}
-.google-button svg { width:20px; height:20px; }
-.hero {
-  min-height:480px;
-  padding:100px 7% 85px;
-  text-align:center;
-  background:radial-gradient(ellipse at center,#4a080e 0%,#160609 42%,#080808 75%);
-}
-.eyebrow {
-  color:var(--red);
-  letter-spacing:4px;
-  font-size:12px;
-  font-weight:bold;
-}
-h1 {
-  font-size:clamp(38px,7vw,76px);
-  line-height:1.04;
-  margin:22px auto;
-  max-width:950px;
-  font-weight:900;
-}
-h1 span { color:var(--red); }
-.hero p {
-  color:#c5c5c5;
-  font-size:17px;
-  line-height:1.7;
-  max-width:680px;
-  margin:0 auto 30px;
-}
-.hero a { text-decoration:none; }
-section { padding:65px 6%; }
-.section-heading { text-align:center; margin-bottom:35px; }
-.section-heading h2 { font-size:32px; margin:0 0 12px; }
-.section-heading p { color:#999; margin:0; line-height:1.6; }
-.category-grid {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:20px;
-}
-.category {
-  position:relative;
-  min-height:205px;
-  overflow:hidden;
-  border:1px solid #343434;
-  border-radius:13px;
-  background:linear-gradient(135deg,#31070d,#171717 60%,#080808);
-  text-align:left;
-  color:white;
-  padding:0;
-  transition:.25s;
-}
-.category:hover {
-  transform:translateY(-5px);
-  border-color:var(--red);
-  box-shadow:0 0 25px #ff263833;
-}
-.category video {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity:.72;
-}
-.category::after {
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05));
-}
-.category-content {
-  position:absolute;
-  z-index:2;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:20px;
-}
-.category h3 { font-size:19px; margin:0 0 7px; }
-.category p { font-size:13px; color:#ccc; margin:0; line-height:1.4; }
-.studio, .account, .files-panel {
-  max-width:900px;
-  margin:auto;
-  padding:30px;
-  border:1px solid #333;
-  background:var(--panel);
-  border-radius:14px;
-}
-.account { max-width:600px; }
-label {
-  display:block;
-  margin:17px 0 8px;
-  font-weight:bold;
-}
-input, textarea, select {
-  width:100%;
-  padding:14px;
-  color:white;
-  background:#090909;
-  border:1px solid #444;
-  border-radius:7px;
-  font:inherit;
-}
-input[type="file"] { padding:12px; }
-input[type="checkbox"] {
-  width:auto;
-  margin-right:9px;
-  accent-color:var(--red);
-}
-textarea { min-height:125px; resize:vertical; }
-.studio .red-button { width:100%; margin-top:20px; }
-.account button { margin-top:12px; }
-.status {
-  color:#bbb;
-  font-size:13px;
-  line-height:1.5;
-  margin-top:12px;
-  overflow-wrap:anywhere;
-}
-.signed-in {
-  display:none;
-  border:1px solid #276b42;
-  background:#10251a;
-  padding:16px;
-  border-radius:8px;
-  margin-top:15px;
-}
-.signed-in strong { color:#65dc91; }
-.upload-area {
-  padding:24px;
-  background:#090909;
-  border:1px dashed #777;
-  border-radius:10px;
-  text-align:center;
-  margin-top:22px;
-}
-.files-top {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:20px;
-}
-.files-top h3 { margin:0; }
-.file-list {
-  display:grid;
-  gap:10px;
-  margin-top:18px;
-}
-.file-item {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  padding:14px;
-  background:#090909;
-  border:1px solid #333;
-  border-radius:8px;
-  overflow-wrap:anywhere;
-}
-.file-name { font-weight:bold; }
-.file-details { color:#999; font-size:12px; margin-top:5px; }
-.empty-files {
-  color:#999;
-  background:#090909;
-  border:1px dashed #444;
-  border-radius:8px;
-  padding:24px;
-  text-align:center;
-}
-.file-actions {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink:0;
-  flex-wrap:wrap;
-}
-.small-button {
-  color:white;
-  background:#333;
-  padding:9px 12px;
-}
-.small-button:hover { background:#555; }
-.delete-button {
-  color:white;
-  background:#b51224;
-  padding:9px 12px;
-}
-.delete-button:hover { background:#e01830; }
-.music-player {
-  margin-top:18px;
-  padding:16px;
-  border:1px solid #444;
-  border-radius:9px;
-  background:#090909;
-}
-.music-player audio { width:100%; margin-top:10px; }
-.studio-subpanel {
-  margin-top:24px;
-  padding:20px;
-  border:1px solid #3a2528;
-  border-radius:10px;
-  background:#100b0c;
-}
-.studio-subpanel h3 { margin:0 0 8px; color:#ff5260; }
-.helper {
-  color:#999;
-  font-size:12px;
-  line-height:1.5;
-}
-.checkbox-row {
-  display:flex;
-  align-items:flex-start;
-  gap:8px;
-  margin-top:17px;
-  color:#eee;
-  line-height:1.5;
-}
-.checkbox-row label {
-  display:inline;
-  margin:0;
-  font-weight:normal;
-}
-footer {
-  text-align:center;
-  padding:35px 15px;
-  border-top:1px solid #292929;
-  color:#888;
-  font-size:13px;
-}
-@media(max-width:800px) {
-  .category-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  header { align-items:flex-start; }
-  nav { gap:10px; }
-  nav a { font-size:12px; }
-}
-@media(max-width:540px) {
-  header { padding:14px 4%; flex-wrap:wrap; gap:12px; }
-  .logo { font-size:20px; }
-  nav {
-    width:100%;
-    justify-content:flex-start;
-    overflow-x:auto;
-    flex-wrap:nowrap;
-    padding-bottom:5px;
-  }
-  .category-grid { grid-template-columns:1fr; }
-  .hero { padding:75px 6%; }
-  section { padding:48px 5%; }
-  .studio, .account, .files-panel { padding:20px; }
-  .file-item { align-items:flex-start; flex-direction:column; }
-  .file-actions { flex-direction:row; }
-}
-</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --red: #e50914;
+      --red-light: #ff303a;
+      --bg: #080808;
+      --panel: #141414;
+      --panel-light: #1c1c1c;
+      --border: #303030;
+      --text: #ffffff;
+      --muted: #aaa;
+      --green: #20c878;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5,5,5,.96);
+      border-bottom: 1px solid #292929;
+      padding: 15px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo span {
+      color: var(--red);
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: var(--red-light);
+    }
+
+    .hero {
+      min-height: 440px;
+      padding: 100px 20px 80px;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.48), #080808),
+        radial-gradient(ellipse at center, #471014 0%, #160809 45%, #080808 80%);
+    }
+
+    .hero h1 {
+      font-size: clamp(35px, 7vw, 72px);
+      margin: 0 0 15px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .hero h1 span {
+      color: var(--red);
+    }
+
+    .hero h2 {
+      font-size: clamp(20px, 3vw, 30px);
+      margin: 0 0 20px;
+    }
+
+    .hero p {
+      color: #ccc;
+      max-width: 760px;
+      line-height: 1.7;
+      margin: 0 auto 30px;
+    }
+
+    .primary-btn {
+      display: inline-block;
+      border: 0;
+      border-radius: 6px;
+      padding: 15px 26px;
+      background: var(--red);
+      color: white;
+      font-weight: bold;
+      transition: .2s;
+    }
+
+    .primary-btn:hover {
+      background: #ff2631;
+      transform: translateY(-2px);
+    }
+
+    .secondary-btn {
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 11px 17px;
+      color: white;
+      background: #252525;
+    }
+
+    .secondary-btn:hover {
+      background: #383838;
+    }
+
+    .section {
+      padding: 55px 5%;
+      max-width: 1450px;
+      margin: auto;
+    }
+
+    .section-title {
+      font-size: 30px;
+      margin: 0 0 12px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .category-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #171717;
+      transition: .25s;
+      cursor: pointer;
+    }
+
+    .category-card:hover {
+      border-color: var(--red);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(229,9,20,.18);
+    }
+
+    .category-card video {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: #222;
+    }
+
+    .category-card h3 {
+      padding: 15px;
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .panel h3 {
+      margin-top: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 17px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #eee;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      color: white;
+      background: #090909;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 13px;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--red);
+    }
+
+    select option {
+      background: #111;
+      color: white;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 115px;
+      line-height: 1.5;
+    }
+
+    .hint {
+      color: #999;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .notice {
+      border-left: 4px solid var(--red);
+      background: #211012;
+      color: #ddd;
+      padding: 14px 16px;
+      border-radius: 5px;
+      line-height: 1.6;
+      margin: 18px 0;
+      font-size: 13px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #101010;
+      padding: 15px;
+      border: 1px solid #383838;
+      border-radius: 7px;
+    }
+
+    .checkbox-row input {
+      width: auto;
+      margin-top: 3px;
+      accent-color: var(--red);
+    }
+
+    .checkbox-row label {
+      line-height: 1.5;
+    }
+
+    .checkbox-row .hint {
+      display: block;
+      margin-top: 5px;
+      font-weight: normal;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      background: #101010;
+      border: 1px solid #333;
+      border-radius: 7px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .file-name {
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .file-actions button {
+      font-size: 12px;
+      padding: 9px 12px;
+    }
+
+    .danger-btn {
+      background: #551014;
+      border: 1px solid #8d2028;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .danger-btn:hover {
+      background: #8b111b;
+    }
+
+    .success-panel {
+      background: #0e2419;
+      border: 1px solid #216b43;
+      color: #baf3d0;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .project-output {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #080808;
+      border: 1px solid #444;
+      border-radius: 7px;
+      padding: 18px;
+      line-height: 1.6;
+      color: #ddd;
+      margin-top: 20px;
+    }
+
+    .account-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    footer {
+      text-align: center;
+      border-top: 1px solid #292929;
+      padding: 35px 15px;
+      color: #888;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 800px) {
+      .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      header {
+        justify-content: center;
+      }
+
+      nav {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .category-grid, .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 40px 5%;
+      }
+
+      .panel {
+        padding: 17px;
+      }
+
+      .hero {
+        padding-top: 70px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
   <div class="logo">LANE <span>VIDEO AI</span></div>
+
   <nav>
     <a href="#categories">Categories</a>
     <a href="#studio">AI Studio</a>
-    <a href="#files" class="files-link">My Files</a>
+    <a href="#myfiles">My Files</a>
     <a href="#account">Account</a>
   </nav>
 </header>
 
-<main>
-
 <section class="hero">
-  <div class="eyebrow">YOUR IMAGINATION. YOUR MOVIE.</div>
-  <h1>TURN YOUR IDEAS<br>INTO <span>VIDEOS</span></h1>
-  <p>Create Amazing AI Movies, Mini-Series, Dramas, Animations, Music Videos & Product Advertisements from Your Imagination.</p>
-  <a href="#studio"><button class="red-button">START CREATING</button></a>
+  <h1>YOUR IMAGINATION. <span>YOUR MOVIE.</span></h1>
+  <h2>TURN YOUR IDEAS INTO VIDEOS</h2>
+  <p>
+    Create Amazing AI Movies, Mini-Series, Dramas, Animations,
+    Music Videos & Product Advertisements from Your Imagination.
+  </p>
+  <a href="#studio" class="primary-btn">ENTER AI STUDIO</a>
 </section>
 
-<section id="categories">
-  <div class="section-heading">
-    <h2>Explore Your Creative Universe</h2>
-    <p>Choose a world. Imagine a story. Create something extraordinary.</p>
-  </div>
+<section class="section" id="categories">
+  <h2 class="section-title">Explore Video Categories</h2>
+  <p class="section-description">
+    Choose the type of video project you want to create.
+  </p>
 
   <div class="category-grid">
 
-    <button class="category" data-category="Movies & Mini-Series">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2013.28.21.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Movies & Mini-Series')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.28.21.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Movies & Mini-Series</h3>
-        <p>Cinematic stories, films and episodes</p>
-      </div>
-    </button>
+      <h3>Movies & Mini-Series</h3>
+    </div>
 
-    <button class="category" data-category="Drama & Romance">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2013.52.06.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Drama & Romance')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.52.06.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Drama & Romance</h3>
-        <p>Love, emotions and unforgettable stories</p>
-      </div>
-    </button>
+      <h3>Drama & Romance</h3>
+    </div>
 
-    <button class="category" data-category="Comedy & Fun">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2014.00.02.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Comedy & Fun')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.00.02.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Comedy & Fun</h3>
-        <p>Funny animals, hilarious moments and entertaining adventures</p>
-      </div>
-    </button>
+      <h3>Comedy & Fun</h3>
+    </div>
 
-    <button class="category" data-category="Animals & Animation">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2014.07.34.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Animals & Animation')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.07.34.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Animals & Animation</h3>
-        <p>Animated animals, magical creatures and exciting adventures</p>
-      </div>
-    </button>
+      <h3>Animals & Animation</h3>
+    </div>
 
-    <button class="category" data-category="Fantasy & Sci-Fi">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2013.20.47.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Fantasy & Sci-Fi')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.20.47.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Fantasy & Sci-Fi</h3>
-        <p>Magic, futuristic worlds and imagination</p>
-      </div>
-    </button>
+      <h3>Fantasy & Sci-Fi</h3>
+    </div>
 
-    <button class="category" data-category="Action & Adventure">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2013.38.21.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Action & Adventure')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.38.21.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Action & Adventure</h3>
-        <p>Epic journeys and spectacular action</p>
-      </div>
-    </button>
+      <h3>Action & Adventure</h3>
+    </div>
 
-    <button class="category" data-category="Singers & Performers">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2012.43.19.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Singers & Performers')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 12.43.19.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Singers & Performers</h3>
-        <p>Singers, stage performances and concerts</p>
-      </div>
-    </button>
+      <h3>Singers & Performers</h3>
+    </div>
 
-    <button class="category" data-category="Music & Dance">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2013.09.31.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Music & Dance')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.09.31.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Music & Dance</h3>
-        <p>Music videos, dance and choreography</p>
-      </div>
-    </button>
+      <h3>Music & Dance</h3>
+    </div>
 
-    <button class="category" data-category="Advertising & Promos">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="WhatsApp%20Video%202026-11-15%20at%2014.17.22.mp4" type="video/mp4">
+    <div class="category-card" onclick="chooseCategory('Advertising & Promos')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.17.22.mp4" type="video/mp4">
       </video>
-      <div class="category-content">
-        <h3>Advertising & Promos</h3>
-        <p>Luxury product commercials, brand promotions and creative campaigns</p>
-      </div>
-    </button>
+      <h3>Advertising & Promos</h3>
+    </div>
 
   </div>
 </section>
 
-<section id="studio">
-  <div class="section-heading">
-    <h2>YOUR AI VIDEO STUDIO</h2>
-    <p>Describe exactly what you want to create. Your imagination leads the way.</p>
+<section class="section" id="studio">
+  <h2 class="section-title">AI Video Studio</h2>
+  <p class="section-description">
+    Describe your idea and prepare your video project.
+  </p>
+
+  <div class="panel">
+    <div class="field">
+      <label for="category">Video Category</label>
+      <select id="category">
+        <option value="General Studio">General Studio</option>
+        <option>Movies & Mini-Series</option>
+        <option>Drama & Romance</option>
+        <option>Comedy & Fun</option>
+        <option>Animals & Animation</option>
+        <option>Fantasy & Sci-Fi</option>
+        <option>Action & Adventure</option>
+        <option>Singers & Performers</option>
+        <option>Music & Dance</option>
+        <option>Advertising & Promos</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="prompt">Describe Your Video Idea</label>
+      <textarea id="prompt" placeholder="Describe exactly what happens in your video. Include the scenes, characters, actions, camera movements, emotions and story..."></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="style">Visual Style</label>
+        <select id="style">
+          <option>Realistic / Photorealistic</option>
+          <option>Hollywood Cinematic</option>
+          <option>Animated / 3D</option>
+          <option>Anime</option>
+          <option>Dreamlike / Surreal</option>
+          <option>Documentary</option>
+          <option>Vintage Film</option>
+          <option>My Own Idea</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="duration">Video Duration</label>
+        <select id="duration">
+          <option>15 seconds</option>
+          <option>30 seconds</option>
+          <option>1 minute</option>
+          <option>2 minutes</option>
+          <option>5 minutes</option>
+          <option>10 minutes</option>
+          <option>Long-form project</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="extraFiles">Additional Images or Videos (Optional)</label>
+      <input id="extraFiles" type="file" accept="image/*,video/*" multiple disabled>
+      <span class="hint">
+        This upload option is not enabled yet. It will be connected in a future update.
+      </span>
+    </div>
+
+    <button class="primary-btn" onclick="prepareVideo()">
+      PREPARE MY VIDEO PROJECT
+    </button>
+
+    <div id="generalProjectOutput" class="project-output hidden"></div>
   </div>
 
-  <div class="studio">
+  <div class="panel" id="musicStudio">
+    <h2>AI Music Video Studio</h2>
+    <p class="section-description">
+      Prepare a music video concept with a singer, dancers, stage,
+      costumes, lighting and synchronized performance.
+    </p>
 
-    <label for="projectMode">What would you like to create?</label>
-    <select id="projectMode">
-      <option value="general">General AI Video Studio</option>
-      <option value="music">AI MUSIC VIDEO STUDIO</option>
-    </select>
+    <div class="notice">
+      <strong>Important:</strong> These settings currently prepare your
+      project brief only. AI video generation and Lip-Sync are not yet
+      connected to a generation provider. They will become active after
+      the required AI services are integrated.
+    </div>
 
-    <label for="categorySelect">Choose your category</label>
-    <select id="categorySelect">
-      <option>Movies & Mini-Series</option>
-      <option>Drama & Romance</option>
-      <option>Comedy & Fun</option>
-      <option>Animals & Animation</option>
-      <option>Fantasy & Sci-Fi</option>
-      <option>Action & Adventure</option>
-      <option>Singers & Performers</option>
-      <option>Music & Dance</option>
-      <option>Advertising & Promos</option>
-    </select>
-
-    <div id="musicStudio" class="studio-subpanel" style="display:none">
-      <h3>AI MUSIC VIDEO STUDIO</h3>
-      <p class="helper">Choose a song from My Files, then describe the music video you want. You can use an AI performer rather than appearing in the video yourself.</p>
-
-      <label for="musicVideoType">Type of music video</label>
-      <select id="musicVideoType">
+    <div class="field">
+      <label for="musicType">Music Video Type</label>
+      <select id="musicType">
         <option>Music Video</option>
         <option>Cinematic Music Video</option>
         <option>Music Video with Dancers</option>
@@ -503,778 +609,846 @@ footer {
         <option>Mini Drama / Story</option>
         <option>Romantic Music Video</option>
         <option>Action Music Video</option>
-        <option>Nightlife & Party</option>
+        <option>Nightlife Music Video</option>
         <option>Fantasy Music Video</option>
         <option>Animated Music Video</option>
         <option>My Own Idea</option>
       </select>
+    </div>
 
-      <label for="musicFileSelect">Choose a song from My Files</label>
+    <div class="field">
+      <label for="musicMode">Music Source</label>
+      <select id="musicMode">
+        <option value="upload">Use a song from My Files</option>
+        <option value="concept">Create a music video concept without selecting a song</option>
+      </select>
+    </div>
+
+    <div class="field" id="musicFileField">
+      <label for="musicFileSelect">Select Your Uploaded Song</label>
       <select id="musicFileSelect">
-        <option value="">Sign in and upload a song first</option>
+        <option value="">Sign in and upload a song in My Files first</option>
       </select>
-      <p class="helper">Your selected song will be used as the music for the planned video.</p>
-
-      <label for="musicGenre">Music genre</label>
-      <select id="musicGenre">
-        <option>Pop</option>
-        <option>Rock</option>
-        <option>Hip-Hop</option>
-        <option>R&B</option>
-        <option>Dance / Electronic</option>
-        <option>House</option>
-        <option>Disco</option>
-        <option>Ballad</option>
-        <option>Romantic</option>
-        <option>Country</option>
-        <option>Jazz</option>
-        <option>Classical</option>
-        <option>Folk / Traditional</option>
-        <option>Metal</option>
-        <option>Reggae</option>
-        <option>Other / My Own Genre</option>
-      </select>
-
-      <label for="performer">AI singer / performer</label>
-      <select id="performer">
-        <option>Female AI singer</option>
-        <option>Male AI singer</option>
-        <option>AI singing group</option>
-        <option>Band with musicians</option>
-        <option>Instrumental video — no singer</option>
-        <option>No performer — story only</option>
-        <option>My own uploaded character / person</option>
-      </select>
-
-      <label for="performerDescription">AI performer's appearance</label>
-      <textarea id="performerDescription" placeholder="Describe the singer: approximate age, hairstyle, hair colour, appearance, personality, facial expression and other details."></textarea>
-
-      <div class="checkbox-row">
-        <input type="checkbox" id="lipSync" checked>
-        <label for="lipSync">REALISTIC LIP-SYNC — synchronize the AI singer's lips and facial expressions with the uploaded song.</label>
-      </div>
-      <p class="helper">Lip-Sync will become active when a compatible AI video service is connected.</p>
-
-      <label for="dancers">Dancers and additional performers</label>
-      <select id="dancers">
-        <option>No dancers</option>
-        <option>Two dancers</option>
-        <option>Small dance group</option>
-        <option>Large dance crew</option>
-        <option>Musicians and dancers</option>
-        <option>My own idea</option>
-      </select>
-
-      <label for="musicScene">Stage / location</label>
-      <select id="musicScene">
-        <option>Grand concert stage</option>
-        <option>Luxury music video set</option>
-        <option>Nightclub</option>
-        <option>Beach at sunset</option>
-        <option>Beautiful natural landscape</option>
-        <option>Romantic location</option>
-        <option>City streets at night</option>
-        <option>Fantasy world</option>
-        <option>Studio performance</option>
-        <option>My own location</option>
-      </select>
-
-      <label for="wardrobe">Performer clothing / appearance</label>
-      <select id="wardrobe">
-        <option>Elegant stage outfit</option>
-        <option>Luxury fashion outfit</option>
-        <option>Modern pop star style</option>
-        <option>Rock star style</option>
-        <option>Hip-hop street style</option>
-        <option>Romantic elegant look</option>
-        <option>Fantasy costume</option>
-        <option>My own description</option>
-      </select>
-
-      <label for="musicEffects">Lighting and visual effects</label>
-      <select id="musicEffects">
-        <option>Cinematic stage lighting</option>
-        <option>Laser lights and LED screens</option>
-        <option>Fireworks and special effects</option>
-        <option>Soft romantic lighting</option>
-        <option>Neon nightclub lighting</option>
-        <option>Dreamlike fantasy effects</option>
-        <option>Natural daylight</option>
-        <option>My own idea</option>
-      </select>
+      <span class="hint">
+        Upload your MP3 or WAV song in the My Files section below.
+      </span>
     </div>
 
-    <label for="idea">Describe your video idea in detail</label>
-    <textarea id="idea" placeholder="Describe exactly what you want to happen. Include characters, appearance, actions, locations, scenes, camera movements, atmosphere and any details that matter to you."></textarea>
+    <div class="form-grid">
+      <div class="field">
+        <label for="musicGenre">Music Genre</label>
+        <select id="musicGenre">
+          <option>Pop</option>
+          <option>Rock</option>
+          <option>Hip-Hop / Rap</option>
+          <option>R&B / Soul</option>
+          <option>Dance / EDM</option>
+          <option>Ballad</option>
+          <option>Classical</option>
+          <option>Country</option>
+          <option>Jazz</option>
+          <option>Folk</option>
+          <option>Metal</option>
+          <option>Reggaeton</option>
+          <option>Other / My Own Idea</option>
+        </select>
+      </div>
 
-    <label for="style">Choose a visual style</label>
-    <select id="style">
-      <option>Cinematic Realistic</option>
-      <option>Photorealistic</option>
-      <option>Hollywood Movie</option>
-      <option>Fantasy</option>
-      <option>Science Fiction</option>
-      <option>3D Animation</option>
-      <option>Artistic / Dreamlike</option>
-      <option>Documentary</option>
-      <option>Music Video</option>
-      <option>Vintage Film</option>
-      <option>Luxury Commercial</option>
-    </select>
+      <div class="field">
+        <label for="performerType">AI Performer</label>
+        <select id="performerType">
+          <option>Male Singer</option>
+          <option>Female Singer</option>
+          <option>Male and Female Duo</option>
+          <option>Music Group / Band</option>
+          <option>Multiple Singers</option>
+          <option>No Singer</option>
+        </select>
+      </div>
 
-    <label for="duration">Video duration</label>
-    <select id="duration">
-      <option>Short Clip</option>
-      <option>15 Seconds</option>
-      <option>30 Seconds</option>
-      <option>1 Minute</option>
-      <option>2 Minutes</option>
-      <option>3 Minutes</option>
-      <option>5 Minutes</option>
-      <option>Mini-Series Episode</option>
-    </select>
+      <div class="field">
+        <label for="dancers">Dancers</label>
+        <select id="dancers">
+          <option>No Dancers</option>
+          <option>One Male Dancer</option>
+          <option>One Female Dancer</option>
+          <option>Male and Female Dancers</option>
+          <option>Small Dance Group</option>
+          <option>Large Professional Dance Group</option>
+          <option>Choreographed Dance Team</option>
+        </select>
+      </div>
 
-    <label for="extraFiles">Optional: add another image, video or audio file</label>
-    <input id="extraFiles" type="file" accept="image/*,video/*,audio/*" multiple>
-    <p class="helper">This additional upload field is a visual placeholder for now. Uploading images and videos will be enabled after the storage settings are expanded. Your current My Files upload supports MP3 and WAV.</p>
+      <div class="field">
+        <label for="stage">Stage / Location</label>
+        <select id="stage">
+          <option>Luxury Concert Stage</option>
+          <option>Huge Stadium Concert</option>
+          <option>Nightclub</option>
+          <option>Rooftop at Night</option>
+          <option>Luxury Mansion</option>
+          <option>Beach at Sunset</option>
+          <option>Beautiful Nature</option>
+          <option>City Streets</option>
+          <option>Hollywood Film Set</option>
+          <option>Dark Cinematic Studio</option>
+          <option>Fantasy World</option>
+          <option>My Own Location</option>
+        </select>
+      </div>
 
-    <p class="status">You can manage your uploaded songs in <a href="#files" style="color:#ff5260">My Files</a>.</p>
+      <div class="field">
+        <label for="wardrobe">Singer's Wardrobe / Style</label>
+        <select id="wardrobe">
+          <option>Luxury Fashion</option>
+          <option>Elegant Evening Outfit</option>
+          <option>Modern Pop Star Style</option>
+          <option>Rock Star Outfit</option>
+          <option>Hip-Hop Streetwear</option>
+          <option>Classic / Vintage</option>
+          <option>Futuristic Costume</option>
+          <option>Fantasy Costume</option>
+          <option>Casual Modern Style</option>
+          <option>My Own Design</option>
+        </select>
+      </div>
 
-    <button class="red-button" onclick="prepareVideo()">PREPARE MY VIDEO PROJECT</button>
-    <p class="status" id="studioStatus">AI video generation is not connected yet. Your project settings can be prepared here.</p>
+      <div class="field">
+        <label for="lighting">Lighting / Special Effects</label>
+        <select id="lighting">
+          <option>Cinematic Concert Lighting</option>
+          <option>Laser Lights and Smoke</option>
+          <option>Neon Lights</option>
+          <option>Fire and Sparks</option>
+          <option>Soft Romantic Lighting</option>
+          <option>Golden Sunset Lighting</option>
+          <option>Futuristic Visual Effects</option>
+          <option>Fireworks and Stage Effects</option>
+          <option>Dark Dramatic Lighting</option>
+          <option>My Own Idea</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="performerDescription">Describe the AI Singer / Performer</label>
+      <textarea id="performerDescription" placeholder="Describe the singer's appearance, age range, hairstyle, clothing, personality, facial features and stage presence. Example: A realistic young male singer with dark hair, wearing an elegant black suit..."></textarea>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="lipSync">
+      <div>
+        <label for="lipSync">
+          Synchronize the AI singer's lips with the song (Lip-Sync)
+        </label>
+        <span class="hint">
+          The singer's mouth movements, facial expressions and emotions
+          should match the vocals and music. This option will be activated
+          after AI Lip-Sync integration.
+        </span>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:18px">
+      <label for="musicPrompt">Detailed Music Video Instructions</label>
+      <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides. The lights change with the rhythm. The singer performs with emotional facial expressions..."></textarea>
+      <span class="hint">
+        Your detailed instructions control the story and actions.
+        The selections above are additional creative guidance.
+      </span>
+    </div>
+
+    <button class="primary-btn" onclick="prepareMusicVideo()">
+      PREPARE MY AI MUSIC VIDEO PROJECT
+    </button>
+
+    <div id="musicProjectOutput" class="project-output hidden"></div>
   </div>
 </section>
 
-<section id="files">
-  <div class="section-heading">
-    <h2>MY FILES</h2>
-    <p>Upload, listen to and select your music files in one place.</p>
+<section class="section" id="myfiles">
+  <h2 class="section-title">My Files</h2>
+  <p class="section-description">
+    Upload and manage your personal music files.
+  </p>
+
+  <div class="panel">
+    <h3>Upload Your Music</h3>
+
+    <div class="field">
+      <label for="songUpload">Choose MP3 or WAV file</label>
+      <input id="songUpload" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav">
+      <span class="hint">Maximum file size: 50 MB. MP3 and WAV only.</span>
+    </div>
+
+    <button class="primary-btn" id="uploadButton" onclick="uploadSong()">
+      UPLOAD SONG
+    </button>
+
+    <button class="secondary-btn" onclick="loadMyFiles()" style="margin-left:8px">
+      REFRESH MY FILES
+    </button>
+
+    <div id="fileMessage" class="hint" style="margin-top:15px"></div>
   </div>
 
-  <div class="files-panel">
-    <div class="files-top">
-      <h3>Upload Your Music</h3>
-      <button class="red-button" onclick="loadMyFiles()">REFRESH FILES</button>
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center">
+      <h3>My Music Library</h3>
+      <button class="secondary-btn" onclick="loadMyFiles()">Refresh</button>
     </div>
 
-    <p class="status">Choose an MP3 or WAV audio file. Your uploaded files will appear below.</p>
-
-    <div class="upload-area">
-      <div style="font-size:36px">☁️</div>
-      <h3>Upload Your Music</h3>
-      <p class="status">Select an MP3 or WAV file from your device.</p>
-      <input id="songFile" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav">
-      <button class="red-button" onclick="uploadSong()">UPLOAD MY SONG</button>
-      <p class="status" id="uploadStatus">Please sign in before uploading music.</p>
+    <div id="myFilesList">
+      <p class="hint">Sign in to see your uploaded songs.</p>
     </div>
 
-    <div class="music-player">
-      <strong>SONG PREVIEW</strong>
-      <p class="status" id="playerStatus">Choose PLAY beside a song to listen to it.</p>
-      <audio id="songPlayer" controls preload="none" style="display:none"></audio>
-    </div>
-
-    <div style="margin-top:30px">
-      <div class="files-top">
-        <h3>My Uploaded Files</h3>
-        <span class="status" id="fileCount">0 files</span>
-      </div>
-      <div id="fileList" class="file-list">
-        <div class="empty-files">Sign in to see your uploaded files.</div>
-      </div>
-      <p class="status" id="fileListStatus">Your uploaded files will appear here.</p>
-    </div>
+    <audio id="audioPlayer" controls class="hidden" style="width:100%;margin-top:20px"></audio>
   </div>
 </section>
 
-<section id="account">
-  <div class="section-heading">
-    <h2>Your LANE Account</h2>
-    <p>Sign in to access your account and uploaded files.</p>
-  </div>
+<section class="section" id="account">
+  <h2 class="section-title">Your Account</h2>
 
-  <div class="account">
-    <div id="authControls">
-      <label for="email">Email address</label>
-      <input id="email" type="email" placeholder="Your email" autocomplete="email">
+  <div class="panel">
+    <div id="signedOut">
+      <h3>Sign In or Create an Account</h3>
 
-      <label for="password">Password</label>
-      <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" placeholder="Your email address">
+      </div>
 
-      <button class="red-button" onclick="signUp()">CREATE ACCOUNT</button>
-      <button class="red-button" onclick="signIn()">SIGN IN</button>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Your password">
+      </div>
 
-      <button class="google-button" id="googleButton" onclick="googleSignIn()">
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.7c3.9-3.6 6-8.8 6-15z"/>
-          <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.7-5.1c-1.8 1.2-4.1 2-6.8 2-5.2 0-9.6-3.5-11.2-8.2H5.9v5.3A20 20 0 0 0 24 44z"/>
-          <path fill="#FBBC05" d="M12.8 27.8a12 12 0 0 1 0-7.6v-5.3H5.9a20 20 0 0 0 0 18.2z"/>
-          <path fill="#EA4335" d="M24 12.1c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 6 29.5 4 24 4A20 20 0 0 0 5.9 14.9l6.9 5.3c1.6-4.7 6-8.1 11.2-8.1z"/>
-        </svg>
-        <span>Sign in with Google</span>
-      </button>
+      <div class="account-buttons">
+        <button class="primary-btn" onclick="signUp()">CREATE ACCOUNT</button>
+        <button class="secondary-btn" onclick="signIn()">SIGN IN</button>
+        <button class="secondary-btn" onclick="googleSignIn()">CONTINUE WITH GOOGLE</button>
+      </div>
+
+      <div id="authMessage" class="hint" style="margin-top:15px"></div>
     </div>
 
-    <div class="signed-in" id="signedInPanel">
-      <strong>✓ You are signed in!</strong>
-      <p class="status" id="signedInEmail"></p>
-      <button onclick="signOut()" style="background:#333;color:white">SIGN OUT</button>
-    </div>
+    <div id="signedIn" class="hidden">
+      <div class="success-panel">
+        <strong>You are successfully signed in!</strong>
+        <p id="userEmail" style="margin-bottom:0"></p>
+      </div>
 
-    <p class="status" id="accountStatus" role="status" aria-live="polite">Connect to your LANE VIDEO AI account.</p>
+      <button class="danger-btn" onclick="signOut()">SIGN OUT</button>
+    </div>
   </div>
 </section>
-
-</main>
 
 <footer>
-  <div class="logo">LANE <span>VIDEO AI</span></div>
-  <p>CREATE ANYTHING YOU CAN IMAGINE.</p>
-  <p>© 2026 LANE VIDEO AI. All rights reserved.</p>
+  <strong>LANE VIDEO AI</strong><br>
+  CREATE ANYTHING YOU CAN IMAGINE.<br>
+  <span>© 2026 LANE VIDEO AI. All rights reserved.</span>
 </footer>
 
 <script>
-const SUPABASE_URL = "https://lguqdvdjtkgepbhqznts.supabase.co";
-const SUPABASE_KEY = "sb_publishable_2QSiZlHF3xdTGVpiwRjvrw_h3oLC6CI";
-const SITE_URL = "https://lane-video-ai.vercel.app/";
+  // SUPABASE CONFIGURATION
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      flowType: "implicit"
+  const SUPABASE_URL = "https://lguqdvdjtkgepbhqznts.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_2QSiZlHF3xdTGVpiwRjvrw_h3oLC6CI";
+  const SITE_URL = "https://lane-video-ai.vercel.app/";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: "implicit"
+      }
     }
-  }
-);
-
-let currentFiles = [];
-let currentAudioUrl = null;
-let deletingFile = false;
-
-document.querySelectorAll(".category").forEach(card => {
-  card.addEventListener("click", () => {
-    document.getElementById("categorySelect").value = card.dataset.category;
-    document.getElementById("studio").scrollIntoView({behavior:"smooth"});
-  });
-});
-
-document.getElementById("projectMode").addEventListener("change", event => {
-  const musicMode = event.target.value === "music";
-  document.getElementById("musicStudio").style.display = musicMode ? "block" : "none";
-
-  if (musicMode) {
-    document.getElementById("categorySelect").value = "Music & Dance";
-    refreshMusicFileOptions();
-  }
-});
-
-function showSignedIn(user) {
-  document.getElementById("authControls").style.display = "none";
-  document.getElementById("signedInPanel").style.display = "block";
-  document.getElementById("signedInEmail").textContent =
-    user.email || "Your Google account is connected.";
-
-  document.getElementById("accountStatus").textContent =
-    "Your LANE VIDEO AI account is active.";
-
-  document.getElementById("uploadStatus").textContent =
-    "You are signed in. You can now upload your music.";
-
-  loadMyFiles();
-}
-
-function showSignedOut(message) {
-  document.getElementById("authControls").style.display = "block";
-  document.getElementById("signedInPanel").style.display = "none";
-  document.getElementById("accountStatus").textContent =
-    message || "Please sign in to your LANE VIDEO AI account.";
-
-  document.getElementById("uploadStatus").textContent =
-    "Please sign in before uploading music.";
-
-  document.getElementById("fileList").innerHTML =
-    '<div class="empty-files">Sign in to see your uploaded files.</div>';
-
-  document.getElementById("fileCount").textContent = "0 files";
-
-  document.getElementById("musicFileSelect").innerHTML =
-    '<option value="">Sign in and upload a song first</option>';
-}
-
-async function refreshAuthState() {
-  const status = document.getElementById("accountStatus");
-  status.textContent = "Checking your account...";
-
-  try {
-    const { data, error } = await supabaseClient.auth.getSession();
-
-    if (error) {
-      showSignedOut("Session check error: " + error.message);
-      return;
-    }
-
-    if (data && data.session && data.session.user) {
-      showSignedIn(data.session.user);
-    } else {
-      showSignedOut("You are not signed in. Please sign in below.");
-    }
-  } catch (error) {
-    showSignedOut("Could not check your session. Please try again.");
-    console.error("Session check error:", error);
-  }
-}
-
-function prepareVideo() {
-  const idea = document.getElementById("idea").value.trim();
-  const category = document.getElementById("categorySelect").value;
-  const style = document.getElementById("style").value;
-  const duration = document.getElementById("duration").value;
-  const mode = document.getElementById("projectMode").value;
-  const status = document.getElementById("studioStatus");
-
-  if (!idea) {
-    status.textContent = "Please describe your video idea first.";
-    document.getElementById("idea").focus();
-    return;
-  }
-
-  let summary = "Your project settings are ready. ";
-  summary += "Category: " + category + ". ";
-  summary += "Style: " + style + ". ";
-  summary += "Duration: " + duration + ". ";
-
-  if (mode === "music") {
-    const songSelect = document.getElementById("musicFileSelect");
-    const selectedSong = songSelect.options[songSelect.selectedIndex];
-
-    if (!songSelect.value) {
-      status.textContent = "Please select a song from My Files first.";
-      songSelect.focus();
-      return;
-    }
-
-    summary += "Music video type: " + document.getElementById("musicVideoType").value + ". ";
-    summary += "Song: " + selectedSong.text + ". ";
-    summary += "Music genre: " + document.getElementById("musicGenre").value + ". ";
-    summary += "AI performer: " + document.getElementById("performer").value + ". ";
-    summary += "Performer appearance: " + document.getElementById("performerDescription").value + ". ";
-    summary += "Lip-Sync requested: " + (document.getElementById("lipSync").checked ? "Yes" : "No") + ". ";
-    summary += "Dancers: " + document.getElementById("dancers").value + ". ";
-    summary += "Location: " + document.getElementById("musicScene").value + ". ";
-    summary += "Wardrobe: " + document.getElementById("wardrobe").value + ". ";
-    summary += "Lighting: " + document.getElementById("musicEffects").value + ". ";
-  }
-
-  summary += "Your description: " + idea + " ";
-  summary += "AI video generation is not connected yet. No video has been generated.";
-
-  status.textContent = summary;
-}
-
-async function signUp() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const status = document.getElementById("accountStatus");
-
-  if (!email || !password) {
-    status.textContent = "Please enter your email and password.";
-    return;
-  }
-
-  const { data, error } = await supabaseClient.auth.signUp({
-    email,
-    password,
-    options: { emailRedirectTo: SITE_URL }
-  });
-
-  status.textContent = error
-    ? error.message
-    : "Account created! Check your email if confirmation is required.";
-
-  if (data && data.session && data.user) showSignedIn(data.user);
-}
-
-async function signIn() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const status = document.getElementById("accountStatus");
-
-  if (!email || !password) {
-    status.textContent = "Please enter your email and password.";
-    return;
-  }
-
-  status.textContent = "Signing in...";
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    status.textContent = "Sign-in error: " + error.message;
-    return;
-  }
-
-  if (data && data.user) showSignedIn(data.user);
-}
-
-async function googleSignIn() {
-  const status = document.getElementById("accountStatus");
-  status.textContent = "Connecting to Google...";
-
-  const { error } = await supabaseClient.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: SITE_URL }
-  });
-
-  if (error) {
-    status.textContent = "Google sign-in error: " + error.message;
-  }
-}
-
-async function signOut() {
-  const status = document.getElementById("accountStatus");
-  status.textContent = "Signing out...";
-
-  const { error } = await supabaseClient.auth.signOut();
-
-  if (error) {
-    status.textContent = "Sign-out error: " + error.message;
-    return;
-  }
-
-  stopSongPreview();
-  currentFiles = [];
-  showSignedOut("You have signed out successfully.");
-}
-
-function formatFileSize(bytes) {
-  if (!bytes && bytes !== 0) return "";
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-}
-
-function refreshMusicFileOptions() {
-  const select = document.getElementById("musicFileSelect");
-  const previousValue = select.value;
-
-  select.innerHTML = "";
-
-  if (!currentFiles.length) {
-    select.innerHTML = '<option value="">No songs uploaded yet</option>';
-    return;
-  }
-
-  select.innerHTML = '<option value="">Choose a song...</option>';
-
-  currentFiles.forEach(file => {
-    const option = document.createElement("option");
-    option.value = file.name;
-    option.textContent = file.name;
-    select.appendChild(option);
-  });
-
-  if (currentFiles.some(file => file.name === previousValue)) {
-    select.value = previousValue;
-  }
-}
-
-async function playSong(fileName) {
-  const status = document.getElementById("playerStatus");
-  const player = document.getElementById("songPlayer");
-
-  const { data: { user }, error: authError } =
-    await supabaseClient.auth.getUser();
-
-  if (authError || !user) {
-    status.textContent = "Please sign in to play your music.";
-    return;
-  }
-
-  status.textContent = "Preparing song preview...";
-
-  const filePath = user.id + "/" + fileName;
-
-  const { data, error } = await supabaseClient.storage
-    .from("user-songs")
-    .createSignedUrl(filePath, 3600);
-
-  if (error || !data || !data.signedUrl) {
-    status.textContent = "Could not open this song: " + (error ? error.message : "Unknown error");
-    return;
-  }
-
-  player.pause();
-  player.src = data.signedUrl;
-  player.style.display = "block";
-  player.load();
-
-  status.textContent = "Now playing: " + fileName;
-
-  try {
-    await player.play();
-  } catch (error) {
-    status.textContent = "Song is ready. Press PLAY in the audio player.";
-  }
-}
-
-function stopSongPreview() {
-  const player = document.getElementById("songPlayer");
-  player.pause();
-  player.removeAttribute("src");
-  player.load();
-  player.style.display = "none";
-
-  document.getElementById("playerStatus").textContent =
-    "Choose PLAY beside a song to listen to it.";
-
-  if (currentAudioUrl) {
-    URL.revokeObjectURL(currentAudioUrl);
-    currentAudioUrl = null;
-  }
-}
-
-/* DELETE A SONG FROM THE USER'S PRIVATE STORAGE */
-async function deleteSong(fileName, button) {
-  if (deletingFile) return;
-
-  const confirmed = window.confirm(
-    'Are you sure you want to permanently delete "' + fileName + '"?'
   );
 
-  if (!confirmed) return;
+  let currentUser = null;
+  let currentFiles = [];
+  let currentAudioUrl = null;
+  let deletingFile = false;
 
-  deletingFile = true;
-  button.disabled = true;
-  button.textContent = "DELETING...";
+  // CATEGORY SELECTION
 
-  const status = document.getElementById("fileListStatus");
+  function chooseCategory(category) {
+    document.getElementById("category").value = category;
+    document.getElementById("studio").scrollIntoView({
+      behavior: "smooth"
+    });
+  }
 
-  try {
-    const { data: { user }, error: authError } =
-      await supabaseClient.auth.getUser();
+  // GENERAL VIDEO PROJECT
 
-    if (authError || !user) {
-      status.textContent = "Please sign in before deleting a song.";
+  function prepareVideo() {
+    const category = document.getElementById("category").value;
+    const prompt = document.getElementById("prompt").value.trim();
+    const style = document.getElementById("style").value;
+    const duration = document.getElementById("duration").value;
+
+    if (!prompt) {
+      alert("Please describe your video idea first.");
       return;
     }
 
-    const filePath = user.id + "/" + fileName;
+    const summary =
+`LANE VIDEO AI — VIDEO PROJECT
+
+Category: ${category}
+
+Visual Style: ${style}
+
+Duration: ${duration}
+
+Detailed Video Instructions:
+${prompt}
+
+Additional Images/Videos:
+Not enabled yet.
+
+PROJECT STATUS:
+Project settings prepared successfully.
+AI video generation is not connected yet.`;
+
+    const output = document.getElementById("generalProjectOutput");
+    output.textContent = summary;
+    output.classList.remove("hidden");
+
+    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // MUSIC VIDEO PROJECT
+
+  function prepareMusicVideo() {
+    const musicMode = document.getElementById("musicMode").value;
+    const selectedSong = document.getElementById("musicFileSelect").value;
+
+    if (musicMode === "upload" && !selectedSong) {
+      alert("Please select a song from My Files, or choose the concept-only option.");
+      return;
+    }
+
+    const musicType = document.getElementById("musicType").value;
+    const genre = document.getElementById("musicGenre").value;
+    const performer = document.getElementById("performerType").value;
+    const dancers = document.getElementById("dancers").value;
+    const stage = document.getElementById("stage").value;
+    const wardrobe = document.getElementById("wardrobe").value;
+    const lighting = document.getElementById("lighting").value;
+    const performerDescription =
+      document.getElementById("performerDescription").value.trim();
+    const lipSync = document.getElementById("lipSync").checked;
+    const prompt = document.getElementById("musicPrompt").value.trim();
+
+    if (!prompt) {
+      alert("Please describe your music video scenes and actions.");
+      return;
+    }
+
+    const summary =
+`LANE VIDEO AI — AI MUSIC VIDEO PROJECT
+
+Music Video Type:
+${musicType}
+
+Music Source:
+${musicMode === "upload" ? selectedSong : "Concept only — no song selected"}
+
+Music Genre:
+${genre}
+
+AI Performer:
+${performer}
+
+Dancers:
+${dancers}
+
+Stage / Location:
+${stage}
+
+Singer's Wardrobe:
+${wardrobe}
+
+Lighting / Special Effects:
+${lighting}
+
+Lip-Sync:
+${lipSync ? "REQUESTED — synchronize mouth movements, facial expressions and emotions with the song." : "Not requested"}
+
+AI Performer Description:
+${performerDescription || "No additional description provided."}
+
+DETAILED MUSIC VIDEO INSTRUCTIONS:
+${prompt}
+
+PROJECT STATUS:
+Your music video project settings have been prepared.
+
+IMPORTANT:
+AI video generation, realistic AI singer creation, dance animation and Lip-Sync are not connected yet.
+These settings are a project brief and will be used when an AI generation provider is integrated.`;
+
+    const output = document.getElementById("musicProjectOutput");
+    output.textContent = summary;
+    output.classList.remove("hidden");
+
+    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // MUSIC MODE
+
+  document.getElementById("musicMode").addEventListener("change", function() {
+    const field = document.getElementById("musicFileField");
+
+    if (this.value === "concept") {
+      field.classList.add("hidden");
+    } else {
+      field.classList.remove("hidden");
+    }
+  });
+
+  // AUTHENTICATION
+
+  async function signUp() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      showAuthMessage("Please enter your email and password.");
+      return;
+    }
+
+    showAuthMessage("Creating your account...");
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      showAuthMessage(error.message);
+      return;
+    }
+
+    if (data.session) {
+      showAuthMessage("Account created successfully!");
+      await refreshAuthState();
+    } else {
+      showAuthMessage("Account created. Please check your email if confirmation is required.");
+    }
+  }
+
+  async function signIn() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      showAuthMessage("Please enter your email and password.");
+      return;
+    }
+
+    showAuthMessage("Signing in...");
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      showAuthMessage(error.message);
+      return;
+    }
+
+    showAuthMessage("Signed in successfully!");
+    await refreshAuthState();
+  }
+
+  async function googleSignIn() {
+    showAuthMessage("Connecting to Google...");
+
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: SITE_URL
+      }
+    });
+
+    if (error) {
+      showAuthMessage(error.message);
+    }
+  }
+
+  async function signOut() {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    currentUser = null;
+    currentFiles = [];
+    stopSongPreview();
+    await refreshAuthState();
+  }
+
+  function showAuthMessage(message) {
+    document.getElementById("authMessage").textContent = message;
+  }
+
+  async function refreshAuthState() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error) {
+      console.error(error);
+    }
+
+    currentUser = data?.user || null;
+
+    const signedIn = document.getElementById("signedIn");
+    const signedOut = document.getElementById("signedOut");
+
+    if (currentUser) {
+      signedIn.classList.remove("hidden");
+      signedOut.classList.add("hidden");
+
+      document.getElementById("userEmail").textContent =
+        currentUser.email || "";
+
+      await loadMyFiles();
+    } else {
+      signedIn.classList.add("hidden");
+      signedOut.classList.remove("hidden");
+
+      currentFiles = [];
+
+      document.getElementById("myFilesList").innerHTML =
+        '<p class="hint">Please sign in to see your uploaded songs.</p>';
+
+      refreshMusicFileOptions();
+    }
+  }
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "TOKEN_REFRESHED") {
+      setTimeout(() => {
+        refreshAuthState();
+      }, 0);
+    }
+  });
+
+  // FILE MESSAGES
+
+  function showFileMessage(message, isError = false) {
+    const element = document.getElementById("fileMessage");
+    element.textContent = message;
+    element.style.color = isError ? "#ff7777" : "#20c878";
+  }
+
+  // UPLOAD SONG
+
+  async function uploadSong() {
+    if (!currentUser) {
+      showFileMessage("Please sign in before uploading a song.", true);
+      return;
+    }
+
+    const input = document.getElementById("songUpload");
+    const file = input.files[0];
+
+    if (!file) {
+      showFileMessage("Please select an MP3 or WAV file.", true);
+      return;
+    }
+
+    const allowedTypes = [
+      "audio/mpeg",
+      "audio/wav",
+      "audio/x-wav"
+    ];
+
+    const lowerName = file.name.toLowerCase();
+    const validExtension =
+      lowerName.endsWith(".mp3") || lowerName.endsWith(".wav");
+
+    if (!allowedTypes.includes(file.type) && !validExtension) {
+      showFileMessage("Only MP3 and WAV files are allowed.", true);
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      showFileMessage("The maximum file size is 50 MB.", true);
+      return;
+    }
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const filePath = currentUser.id + "/" + Date.now() + "_" + safeName;
+
+    const button = document.getElementById("uploadButton");
+    button.disabled = true;
+    button.textContent = "UPLOADING...";
+
+    showFileMessage("Uploading your song...");
+
+    const { error } = await supabaseClient.storage
+      .from("user-songs")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || "audio/mpeg"
+      });
+
+    button.disabled = false;
+    button.textContent = "UPLOAD SONG";
+
+    if (error) {
+      showFileMessage("Upload failed: " + error.message, true);
+      return;
+    }
+
+    input.value = "";
+
+    showFileMessage("Your song was uploaded successfully!");
+
+    await loadMyFiles();
+  }
+
+  // LOAD MY FILES
+
+  async function loadMyFiles() {
+    if (!currentUser) {
+      return;
+    }
+
+    const list = document.getElementById("myFilesList");
+
+    list.innerHTML = '<p class="hint">Loading your music files...</p>';
+
+    const { data, error } = await supabaseClient.storage
+      .from("user-songs")
+      .list(currentUser.id, {
+        limit: 100,
+        sortBy: {
+          column: "created_at",
+          order: "desc"
+        }
+      });
+
+    if (error) {
+      list.innerHTML =
+        '<p class="hint">Could not load files: ' + escapeHTML(error.message) + '</p>';
+      return;
+    }
+
+    currentFiles = (data || []).filter(file => file.name);
+
+    refreshMusicFileOptions();
+
+    if (currentFiles.length === 0) {
+      list.innerHTML =
+        '<p class="hint">You have not uploaded any songs yet. Upload your first MP3 or WAV file above.</p>';
+      return;
+    }
+
+    list.innerHTML = "";
+
+    currentFiles.forEach(file => {
+      const row = document.createElement("div");
+      row.className = "file-row";
+
+      const name = document.createElement("div");
+      name.className = "file-name";
+      name.textContent = file.name;
+
+      const actions = document.createElement("div");
+      actions.className = "file-actions";
+
+      const playButton = document.createElement("button");
+      playButton.className = "secondary-btn";
+      playButton.textContent = "PLAY";
+      playButton.onclick = () => playSong(file.name);
+
+      const useButton = document.createElement("button");
+      useButton.className = "secondary-btn";
+      useButton.textContent = "USE IN STUDIO";
+      useButton.onclick = () => useSongInStudio(file.name);
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "danger-btn";
+      deleteButton.textContent = "DELETE";
+      deleteButton.onclick = () => deleteSong(file.name);
+
+      actions.appendChild(playButton);
+      actions.appendChild(useButton);
+      actions.appendChild(deleteButton);
+
+      row.appendChild(name);
+      row.appendChild(actions);
+
+      list.appendChild(row);
+    });
+  }
+
+  // UPDATE MUSIC FILE SELECT
+
+  function refreshMusicFileOptions() {
+    const select = document.getElementById("musicFileSelect");
+
+    select.innerHTML = "";
+
+    if (!currentUser) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Sign in to select your songs";
+      select.appendChild(option);
+      return;
+    }
+
+    if (!currentFiles.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No uploaded songs yet";
+      select.appendChild(option);
+      return;
+    }
+
+    const firstOption = document.createElement("option");
+    firstOption.value = "";
+    firstOption.textContent = "Choose a song...";
+    select.appendChild(firstOption);
+
+    currentFiles.forEach(file => {
+      const option = document.createElement("option");
+      option.value = file.name;
+      option.textContent = file.name;
+      select.appendChild(option);
+    });
+  }
+
+  // USE SONG IN STUDIO
+
+  function useSongInStudio(fileName) {
+    document.getElementById("musicMode").value = "upload";
+    document.getElementById("musicFileField").classList.remove("hidden");
+
+    const select = document.getElementById("musicFileSelect");
+
+    select.value = fileName;
+
+    document.getElementById("musicStudio").scrollIntoView({
+      behavior: "smooth"
+    });
+  }
+
+  // PLAY SONG
+
+  async function playSong(fileName) {
+    if (!currentUser) {
+      alert("Please sign in first.");
+      return;
+    }
+
+    const filePath = currentUser.id + "/" + fileName;
+
+    const { data, error } = await supabaseClient.storage
+      .from("user-songs")
+      .createSignedUrl(filePath, 3600);
+
+    if (error) {
+      alert("Could not play this song: " + error.message);
+      return;
+    }
+
+    const player = document.getElementById("audioPlayer");
+
+    currentAudioUrl = data.signedUrl;
+    player.src = currentAudioUrl;
+    player.classList.remove("hidden");
+
+    player.play().catch(() => {
+      alert("Press the play button in the audio player to listen.");
+    });
+  }
+
+  // STOP SONG PREVIEW
+
+  function stopSongPreview() {
+    const player = document.getElementById("audioPlayer");
+
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    player.classList.add("hidden");
+
+    currentAudioUrl = null;
+  }
+
+  // DELETE SONG
+
+  async function deleteSong(fileName) {
+    if (!currentUser || deletingFile) {
+      return;
+    }
+
+    const confirmed = confirm(
+      'Are you sure you want to permanently delete "' + fileName + '"?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    deletingFile = true;
+
+    showFileMessage("Deleting song...");
+
+    const filePath = currentUser.id + "/" + fileName;
 
     const { error } = await supabaseClient.storage
       .from("user-songs")
       .remove([filePath]);
 
+    deletingFile = false;
+
     if (error) {
-      status.textContent = "Could not delete the song: " + error.message;
+      showFileMessage("Could not delete file: " + error.message, true);
       return;
     }
 
-    const player = document.getElementById("songPlayer");
-
-    if (player.src && player.src.includes(encodeURIComponent(fileName))) {
+    if (currentAudioUrl) {
       stopSongPreview();
     }
 
-    const musicSelect = document.getElementById("musicFileSelect");
-
-    if (musicSelect.value === fileName) {
-      musicSelect.value = "";
-    }
-
-    status.textContent = "✓ Song deleted successfully: " + fileName;
+    showFileMessage("Song deleted successfully.");
 
     await loadMyFiles();
-
-  } catch (error) {
-    status.textContent = "Delete error: " + error.message;
-  } finally {
-    deletingFile = false;
-  }
-}
-
-async function loadMyFiles() {
-  const list = document.getElementById("fileList");
-  const count = document.getElementById("fileCount");
-  const status = document.getElementById("fileListStatus");
-
-  const { data: { user }, error: authError } =
-    await supabaseClient.auth.getUser();
-
-  if (authError || !user) {
-    list.innerHTML = '<div class="empty-files">Please sign in to see your uploaded files.</div>';
-    count.textContent = "0 files";
-    status.textContent = "Sign in to view your personal files.";
-    currentFiles = [];
-    refreshMusicFileOptions();
-    return;
   }
 
-  list.innerHTML = '<div class="empty-files">Loading your files...</div>';
-  status.textContent = "Checking your uploaded files...";
+  // BASIC HTML ESCAPING
 
-  const { data, error } = await supabaseClient.storage
-    .from("user-songs")
-    .list(user.id, {
-      limit:100,
-      sortBy:{column:"created_at",order:"desc"}
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, function(character) {
+      const replacements = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return replacements[character];
     });
-
-  if (error) {
-    list.innerHTML = '<div class="empty-files">Could not load your files.</div>';
-    status.textContent = "File list error: " + error.message;
-    return;
   }
 
-  const files = (data || []).filter(item =>
-    item.name && item.id && item.name !== ".emptyFolderPlaceholder"
-  );
+  // INITIAL LOAD
 
-  currentFiles = files;
-  count.textContent = files.length + (files.length === 1 ? " file" : " files");
-  refreshMusicFileOptions();
+  refreshAuthState();
 
-  if (files.length === 0) {
-    list.innerHTML = '<div class="empty-files">You have not uploaded any music yet. Your files will appear here after uploading.</div>';
-    status.textContent = "Your personal file list is ready.";
-    return;
-  }
-
-  list.innerHTML = "";
-
-  files.forEach(file => {
-    const row = document.createElement("div");
-    row.className = "file-item";
-
-    const left = document.createElement("div");
-    left.style.minWidth = "0";
-
-    const name = document.createElement("div");
-    name.className = "file-name";
-    name.textContent = file.name;
-
-    const details = document.createElement("div");
-    details.className = "file-details";
-
-    const size = file.metadata && file.metadata.size
-      ? formatFileSize(file.metadata.size)
-      : "Audio file";
-
-    const date = file.created_at
-      ? new Date(file.created_at).toLocaleString()
-      : "";
-
-    details.textContent = size + (date ? " • " + date : "");
-
-    left.appendChild(name);
-    left.appendChild(details);
-
-    const actions = document.createElement("div");
-    actions.className = "file-actions";
-
-    const playButton = document.createElement("button");
-    playButton.className = "small-button";
-    playButton.textContent = "▶ PLAY";
-    playButton.addEventListener("click", () => playSong(file.name));
-
-    const selectButton = document.createElement("button");
-    selectButton.className = "small-button";
-    selectButton.textContent = "USE IN STUDIO";
-    selectButton.addEventListener("click", () => {
-      document.getElementById("projectMode").value = "music";
-      document.getElementById("musicStudio").style.display = "block";
-      document.getElementById("categorySelect").value = "Music & Dance";
-      refreshMusicFileOptions();
-      document.getElementById("musicFileSelect").value = file.name;
-      document.getElementById("studio").scrollIntoView({behavior:"smooth"});
-      document.getElementById("studioStatus").textContent =
-        "Selected song: " + file.name + ". Describe the music video you want to create.";
-    });
-
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "delete-button";
-    deleteButton.textContent = "DELETE";
-    deleteButton.addEventListener("click", () => deleteSong(file.name, deleteButton));
-
-    actions.appendChild(playButton);
-    actions.appendChild(selectButton);
-    actions.appendChild(deleteButton);
-
-    row.appendChild(left);
-    row.appendChild(actions);
-    list.appendChild(row);
-  });
-
-  status.textContent = "Your uploaded songs are displayed above. Use PLAY to listen, USE IN STUDIO to select a song, or DELETE to remove a song.";
-}
-
-async function uploadSong() {
-  const status = document.getElementById("uploadStatus");
-  const fileInput = document.getElementById("songFile");
-  const file = fileInput.files[0];
-
-  if (!file) {
-    status.textContent = "Please choose an audio file first.";
-    return;
-  }
-
-  const allowedTypes = ["audio/mpeg","audio/wav","audio/x-wav"];
-  const extension = file.name.split(".").pop().toLowerCase();
-
-  if (!allowedTypes.includes(file.type) && !["mp3","wav"].includes(extension)) {
-    status.textContent = "Please choose an MP3 or WAV audio file.";
-    return;
-  }
-
-  if (file.size > 50 * 1024 * 1024) {
-    status.textContent = "The file is too large. Maximum allowed size is 50 MB.";
-    return;
-  }
-
-  const { data: { user }, error: authError } =
-    await supabaseClient.auth.getUser();
-
-  if (authError || !user) {
-    status.textContent = "Please sign in before uploading.";
-    return;
-  }
-
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const filePath = user.id + "/" + Date.now() + "_" + safeName;
-
-  status.textContent = "Uploading your music...";
-
-  const { error } = await supabaseClient.storage
-    .from("user-songs")
-    .upload(filePath, file);
-
-  if (error) {
-    status.textContent = "Upload failed: " + error.message;
-    return;
-  }
-
-  status.textContent = "✓ Your music has been uploaded successfully!";
-  fileInput.value = "";
-
-  await loadMyFiles();
-}
-
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (session && session.user) {
-    showSignedIn(session.user);
-  } else if (event === "SIGNED_OUT") {
-    stopSongPreview();
-    showSignedOut("You have signed out successfully.");
-  }
-});
-
-refreshAuthState();
 </script>
 
 </body>
