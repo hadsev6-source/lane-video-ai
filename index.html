@@ -16,7 +16,7 @@
   --white: #f7f7f7;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 body {
   margin: 0;
   background: var(--black);
@@ -27,26 +27,41 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 6%;
+  padding: 18px 6%;
   border-bottom: 1px solid #292929;
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(8,8,8,.96);
+  background: rgba(8,8,8,.97);
+  gap: 20px;
 }
 .logo {
   font-size: 24px;
   font-weight: 900;
   letter-spacing: 2px;
+  white-space: nowrap;
 }
 .logo span { color: var(--red); }
-nav { display: flex; gap: 22px; align-items: center; }
+nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 nav a {
   color: #ddd;
   text-decoration: none;
   font-size: 14px;
+  white-space: nowrap;
 }
 nav a:hover { color: var(--red); }
+nav .files-link {
+  color: white;
+  background: var(--red);
+  padding: 10px 14px;
+  border-radius: 7px;
+  font-weight: bold;
+}
 button {
   cursor: pointer;
   border: 0;
@@ -150,7 +165,7 @@ section { padding: 65px 6%; }
 }
 .category h3 { font-size: 19px; margin: 0 0 7px; }
 .category p { font-size: 13px; color: #ccc; margin: 0; line-height: 1.4; }
-.studio {
+.studio, .account, .files-panel {
   max-width: 850px;
   margin: auto;
   padding: 30px;
@@ -158,6 +173,7 @@ section { padding: 65px 6%; }
   background: var(--panel);
   border-radius: 14px;
 }
+.account { max-width: 600px; }
 label { display: block; margin: 17px 0 8px; font-weight: bold; }
 input, textarea, select {
   width: 100%;
@@ -168,16 +184,9 @@ input, textarea, select {
   border-radius: 7px;
   font: inherit;
 }
+input[type="file"] { padding: 12px; }
 textarea { min-height: 125px; resize: vertical; }
 .studio .red-button { width: 100%; margin-top: 20px; }
-.account {
-  max-width: 600px;
-  margin: auto;
-  padding: 25px;
-  background: var(--panel);
-  border: 1px solid #333;
-  border-radius: 12px;
-}
 .account button { margin-top: 12px; }
 .status {
   color: #bbb;
@@ -203,6 +212,43 @@ textarea { min-height: 125px; resize: vertical; }
   text-align: center;
   margin-top: 22px;
 }
+.files-panel { max-width: 850px; }
+.files-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.files-top h3 { margin: 0; }
+.file-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #090909;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.file-name { font-weight: bold; }
+.file-details { color: #999; font-size: 12px; margin-top: 5px; }
+.empty-files {
+  color: #999;
+  background: #090909;
+  border: 1px dashed #444;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+}
+.file-icon { font-size: 24px; }
 footer {
   text-align: center;
   padding: 35px 15px;
@@ -212,17 +258,24 @@ footer {
 }
 @media(max-width:800px) {
   .category-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  header { align-items: flex-start; }
   nav { gap: 10px; }
   nav a { font-size: 12px; }
 }
 @media(max-width:540px) {
-  header { padding: 16px 4%; flex-wrap: wrap; gap: 14px; }
+  header { padding: 14px 4%; flex-wrap: wrap; gap: 12px; }
   .logo { font-size: 20px; }
-  nav { width: 100%; justify-content: space-between; }
+  nav {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 5px;
+  }
   .category-grid { grid-template-columns: 1fr; }
   .hero { padding: 75px 6%; }
   section { padding: 48px 5%; }
-  .studio { padding: 20px; }
+  .studio, .account, .files-panel { padding: 20px; }
 }
 </style>
 </head>
@@ -234,6 +287,7 @@ footer {
   <nav>
     <a href="#categories">Categories</a>
     <a href="#studio">AI Studio</a>
+    <a href="#files" class="files-link">My Files</a>
     <a href="#account">Account</a>
   </nav>
 </header>
@@ -394,19 +448,56 @@ footer {
       <option>Mini-Series Episode</option>
     </select>
 
+    <p class="status">Need a file for your project? <a href="#files" style="color:#ff5260">Open My Files</a></p>
+
     <button class="red-button" onclick="prepareVideo()">CREATE MY VIDEO</button>
     <p class="status" id="studioStatus">AI video generation will be connected in a future update.</p>
+  </div>
+</section>
+
+<section id="files">
+  <div class="section-heading">
+    <h2>MY FILES</h2>
+    <p>Upload and view your music files in one place.</p>
+  </div>
+
+  <div class="files-panel">
+    <div class="files-top">
+      <h3>Upload Your Music</h3>
+      <button class="red-button" onclick="loadMyFiles()">REFRESH FILES</button>
+    </div>
+
+    <p class="status">Choose an MP3 or WAV audio file. Your uploaded files will appear below.</p>
+
+    <div class="upload-area">
+      <div style="font-size:36px">☁️</div>
+      <h3>Upload Your Music</h3>
+      <p class="status">Select an MP3 or WAV file from your device.</p>
+      <input id="songFile" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav">
+      <button class="red-button" onclick="uploadSong()">UPLOAD MY SONG</button>
+      <p class="status" id="uploadStatus">Please sign in before uploading music.</p>
+    </div>
+
+    <div style="margin-top:30px">
+      <div class="files-top">
+        <h3>My Uploaded Files</h3>
+        <span class="status" id="fileCount">0 files</span>
+      </div>
+      <div id="fileList" class="file-list">
+        <div class="empty-files">Sign in to see your uploaded files.</div>
+      </div>
+      <p class="status" id="fileListStatus">Your uploaded files will appear here.</p>
+    </div>
   </div>
 </section>
 
 <section id="account">
   <div class="section-heading">
     <h2>Your LANE Account</h2>
-    <p>Sign in to access your account and upload your music.</p>
+    <p>Sign in to access your account and uploaded files.</p>
   </div>
 
   <div class="account">
-
     <div id="authControls">
       <label for="email">Email address</label>
       <input id="email" type="email" placeholder="Your email" autocomplete="email">
@@ -435,15 +526,6 @@ footer {
     </div>
 
     <p class="status" id="accountStatus" role="status" aria-live="polite">Connect to your LANE VIDEO AI account.</p>
-
-    <div class="upload-area">
-      <h3>Upload Your Music</h3>
-      <p class="status">Choose an MP3 or WAV audio file.</p>
-      <input id="songFile" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav">
-      <button class="red-button" onclick="uploadSong()">UPLOAD MY SONG</button>
-      <p class="status" id="uploadStatus">Please sign in before uploading music.</p>
-    </div>
-
   </div>
 </section>
 
@@ -491,6 +573,8 @@ function showSignedIn(user) {
 
   document.getElementById("uploadStatus").textContent =
     "You are signed in. You can now upload your music.";
+
+  loadMyFiles();
 }
 
 function showSignedOut(message) {
@@ -500,6 +584,9 @@ function showSignedOut(message) {
     message || "Please sign in to your LANE VIDEO AI account.";
   document.getElementById("uploadStatus").textContent =
     "Please sign in before uploading music.";
+  document.getElementById("fileList").innerHTML =
+    '<div class="empty-files">Sign in to see your uploaded files.</div>';
+  document.getElementById("fileCount").textContent = "0 files";
 }
 
 async function refreshAuthState() {
@@ -563,7 +650,7 @@ async function signUp() {
     ? error.message
     : "Account created! Check your email if confirmation is required.";
 
-  if (data && data.session) showSignedIn(data.user);
+  if (data && data.session && data.user) showSignedIn(data.user);
 }
 
 async function signIn() {
@@ -621,12 +708,115 @@ async function signOut() {
   showSignedOut("You have signed out successfully.");
 }
 
+function formatFileSize(bytes) {
+  if (!bytes && bytes !== 0) return "";
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+async function loadMyFiles() {
+  const list = document.getElementById("fileList");
+  const count = document.getElementById("fileCount");
+  const status = document.getElementById("fileListStatus");
+
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !user) {
+    list.innerHTML = '<div class="empty-files">Please sign in to see your uploaded files.</div>';
+    count.textContent = "0 files";
+    status.textContent = "Sign in to view your personal files.";
+    return;
+  }
+
+  list.innerHTML = '<div class="empty-files">Loading your files...</div>';
+  status.textContent = "Checking your uploaded files...";
+
+  const { data, error } = await supabaseClient.storage
+    .from("user-songs")
+    .list(user.id, {
+      limit: 100,
+      sortBy: { column: "created_at", order: "desc" }
+    });
+
+  if (error) {
+    list.innerHTML = '<div class="empty-files">Could not load your files.</div>';
+    status.textContent = "File list error: " + error.message;
+    return;
+  }
+
+  const files = (data || []).filter(item => item.name && item.id);
+
+  count.textContent = files.length + (files.length === 1 ? " file" : " files");
+
+  if (files.length === 0) {
+    list.innerHTML = '<div class="empty-files">You have not uploaded any music yet. Your files will appear here after uploading.</div>';
+    status.textContent = "Your personal file list is ready.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  files.forEach(file => {
+    const row = document.createElement("div");
+    row.className = "file-item";
+
+    const left = document.createElement("div");
+    left.style.minWidth = "0";
+
+    const name = document.createElement("div");
+    name.className = "file-name";
+    name.textContent = file.name;
+
+    const details = document.createElement("div");
+    details.className = "file-details";
+
+    const size = file.metadata && file.metadata.size
+      ? formatFileSize(file.metadata.size)
+      : "Audio file";
+
+    const date = file.created_at
+      ? new Date(file.created_at).toLocaleString()
+      : "";
+
+    details.textContent = size + (date ? " • " + date : "");
+
+    left.appendChild(name);
+    left.appendChild(details);
+
+    const icon = document.createElement("div");
+    icon.className = "file-icon";
+    icon.textContent = "🎵";
+
+    row.appendChild(left);
+    row.appendChild(icon);
+    list.appendChild(row);
+  });
+
+  status.textContent = "Your uploaded files are displayed above.";
+}
+
 async function uploadSong() {
   const status = document.getElementById("uploadStatus");
-  const file = document.getElementById("songFile").files[0];
+  const fileInput = document.getElementById("songFile");
+  const file = fileInput.files[0];
 
   if (!file) {
     status.textContent = "Please choose an audio file first.";
+    return;
+  }
+
+  const allowedTypes = [
+    "audio/mpeg",
+    "audio/wav",
+    "audio/x-wav"
+  ];
+
+  const extension = file.name.split(".").pop().toLowerCase();
+
+  if (!allowedTypes.includes(file.type) && !["mp3", "wav"].includes(extension)) {
+    status.textContent = "Please choose an MP3 or WAV audio file.";
     return;
   }
 
@@ -647,9 +837,15 @@ async function uploadSong() {
     .from("user-songs")
     .upload(filePath, file);
 
-  status.textContent = error
-    ? "Upload failed: " + error.message
-    : "Your music has been uploaded successfully!";
+  if (error) {
+    status.textContent = "Upload failed: " + error.message;
+    return;
+  }
+
+  status.textContent = "✓ Your music has been uploaded successfully!";
+  fileInput.value = "";
+
+  await loadMyFiles();
 }
 
 /* Listen for login, logout and Google OAuth return. */
