@@ -187,6 +187,11 @@ input, textarea, select {
   font:inherit;
 }
 input[type="file"] { padding:12px; }
+input[type="checkbox"] {
+  width:auto;
+  margin-right:9px;
+  accent-color:var(--red);
+}
 textarea { min-height:125px; resize:vertical; }
 .studio .red-button { width:100%; margin-top:20px; }
 .account button { margin-top:12px; }
@@ -288,6 +293,19 @@ textarea { min-height:125px; resize:vertical; }
   color:#999;
   font-size:12px;
   line-height:1.5;
+}
+.checkbox-row {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-top:17px;
+  color:#eee;
+  line-height:1.5;
+}
+.checkbox-row label {
+  display:inline;
+  margin:0;
+  font-weight:normal;
 }
 footer {
   text-align:center;
@@ -497,6 +515,26 @@ footer {
       </select>
       <p class="helper">Your selected song will be used as the music for the planned video.</p>
 
+      <label for="musicGenre">Music genre</label>
+      <select id="musicGenre">
+        <option>Pop</option>
+        <option>Rock</option>
+        <option>Hip-Hop</option>
+        <option>R&B</option>
+        <option>Dance / Electronic</option>
+        <option>House</option>
+        <option>Disco</option>
+        <option>Ballad</option>
+        <option>Romantic</option>
+        <option>Country</option>
+        <option>Jazz</option>
+        <option>Classical</option>
+        <option>Folk / Traditional</option>
+        <option>Metal</option>
+        <option>Reggae</option>
+        <option>Other / My Own Genre</option>
+      </select>
+
       <label for="performer">AI singer / performer</label>
       <select id="performer">
         <option>Female AI singer</option>
@@ -507,6 +545,15 @@ footer {
         <option>No performer — story only</option>
         <option>My own uploaded character / person</option>
       </select>
+
+      <label for="performerDescription">AI performer's appearance</label>
+      <textarea id="performerDescription" placeholder="Describe the singer: approximate age, hairstyle, hair colour, appearance, personality, facial expression and other details."></textarea>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="lipSync" checked>
+        <label for="lipSync">REALISTIC LIP-SYNC — synchronize the AI singer's lips and facial expressions with the uploaded song.</label>
+      </div>
+      <p class="helper">Lip-Sync will become active when a compatible AI video service is connected.</p>
 
       <label for="dancers">Dancers and additional performers</label>
       <select id="dancers">
@@ -718,6 +765,7 @@ document.querySelectorAll(".category").forEach(card => {
 document.getElementById("projectMode").addEventListener("change", event => {
   const musicMode = event.target.value === "music";
   document.getElementById("musicStudio").style.display = musicMode ? "block" : "none";
+
   if (musicMode) {
     document.getElementById("categorySelect").value = "Music & Dance";
     refreshMusicFileOptions();
@@ -744,11 +792,15 @@ function showSignedOut(message) {
   document.getElementById("signedInPanel").style.display = "none";
   document.getElementById("accountStatus").textContent =
     message || "Please sign in to your LANE VIDEO AI account.";
+
   document.getElementById("uploadStatus").textContent =
     "Please sign in before uploading music.";
+
   document.getElementById("fileList").innerHTML =
     '<div class="empty-files">Sign in to see your uploaded files.</div>';
+
   document.getElementById("fileCount").textContent = "0 files";
+
   document.getElementById("musicFileSelect").innerHTML =
     '<option value="">Sign in and upload a song first</option>';
 }
@@ -807,7 +859,10 @@ function prepareVideo() {
 
     summary += "Music video type: " + document.getElementById("musicVideoType").value + ". ";
     summary += "Song: " + selectedSong.text + ". ";
+    summary += "Music genre: " + document.getElementById("musicGenre").value + ". ";
     summary += "AI performer: " + document.getElementById("performer").value + ". ";
+    summary += "Performer appearance: " + document.getElementById("performerDescription").value + ". ";
+    summary += "Lip-Sync requested: " + (document.getElementById("lipSync").checked ? "Yes" : "No") + ". ";
     summary += "Dancers: " + document.getElementById("dancers").value + ". ";
     summary += "Location: " + document.getElementById("musicScene").value + ". ";
     summary += "Wardrobe: " + document.getElementById("wardrobe").value + ". ";
