@@ -15,17 +15,14 @@
   --panel: #151515;
   --white: #f7f7f7;
 }
-
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-
 body {
   margin: 0;
   background: var(--black);
   color: var(--white);
   font-family: Arial, Helvetica, sans-serif;
 }
-
 header {
   display: flex;
   justify-content: space-between;
@@ -37,29 +34,19 @@ header {
   z-index: 10;
   background: rgba(8,8,8,.96);
 }
-
 .logo {
   font-size: 24px;
   font-weight: 900;
   letter-spacing: 2px;
 }
-
 .logo span { color: var(--red); }
-
-nav {
-  display: flex;
-  gap: 22px;
-  align-items: center;
-}
-
+nav { display: flex; gap: 22px; align-items: center; }
 nav a {
   color: #ddd;
   text-decoration: none;
   font-size: 14px;
 }
-
 nav a:hover { color: var(--red); }
-
 button {
   cursor: pointer;
   border: 0;
@@ -67,14 +54,8 @@ button {
   padding: 12px 19px;
   font-weight: bold;
 }
-
-.red-button {
-  color: white;
-  background: var(--red);
-}
-
+.red-button { color: white; background: var(--red); }
 .red-button:hover { background: #d91528; }
-
 .google-button {
   width: 100%;
   margin-top: 12px;
@@ -89,31 +70,21 @@ button {
   padding: 13px 19px;
   font-size: 15px;
   font-weight: 600;
-  font-family: Arial, Helvetica, sans-serif;
 }
-
 .google-button:hover { background: #f5f5f5; }
-
-.google-button svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
+.google-button svg { width: 20px; height: 20px; }
 .hero {
   min-height: 480px;
   padding: 100px 7% 85px;
   text-align: center;
   background: radial-gradient(ellipse at center,#4a080e 0%,#160609 42%,#080808 75%);
 }
-
 .eyebrow {
   color: var(--red);
   letter-spacing: 4px;
   font-size: 12px;
   font-weight: bold;
 }
-
 h1 {
   font-size: clamp(38px,7vw,76px);
   line-height: 1.04;
@@ -121,9 +92,7 @@ h1 {
   max-width: 950px;
   font-weight: 900;
 }
-
 h1 span { color: var(--red); }
-
 .hero p {
   color: #c5c5c5;
   font-size: 17px;
@@ -131,30 +100,15 @@ h1 span { color: var(--red); }
   max-width: 680px;
   margin: 0 auto 30px;
 }
-
 section { padding: 65px 6%; }
-
-.section-heading {
-  text-align: center;
-  margin-bottom: 35px;
-}
-
-.section-heading h2 {
-  font-size: 32px;
-  margin: 0 0 12px;
-}
-
-.section-heading p {
-  color: #999;
-  margin: 0;
-}
-
+.section-heading { text-align: center; margin-bottom: 35px; }
+.section-heading h2 { font-size: 32px; margin: 0 0 12px; }
+.section-heading p { color: #999; margin: 0; }
 .category-grid {
   display: grid;
   grid-template-columns: repeat(3,minmax(0,1fr));
   gap: 20px;
 }
-
 .category {
   position: relative;
   min-height: 205px;
@@ -167,13 +121,11 @@ section { padding: 65px 6%; }
   padding: 0;
   transition: .25s;
 }
-
 .category:hover {
   transform: translateY(-5px);
   border-color: var(--red);
   box-shadow: 0 0 25px #ff263833;
 }
-
 .category video {
   position: absolute;
   inset: 0;
@@ -182,14 +134,12 @@ section { padding: 65px 6%; }
   object-fit: cover;
   opacity: .72;
 }
-
 .category::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05));
 }
-
 .category-content {
   position: absolute;
   z-index: 2;
@@ -198,19 +148,8 @@ section { padding: 65px 6%; }
   right: 0;
   padding: 20px;
 }
-
-.category h3 {
-  font-size: 19px;
-  margin: 0 0 7px;
-}
-
-.category p {
-  font-size: 13px;
-  color: #ccc;
-  margin: 0;
-  line-height: 1.4;
-}
-
+.category h3 { font-size: 19px; margin: 0 0 7px; }
+.category p { font-size: 13px; color: #ccc; margin: 0; line-height: 1.4; }
 .studio {
   max-width: 850px;
   margin: auto;
@@ -219,13 +158,7 @@ section { padding: 65px 6%; }
   background: var(--panel);
   border-radius: 14px;
 }
-
-label {
-  display: block;
-  margin: 17px 0 8px;
-  font-weight: bold;
-}
-
+label { display: block; margin: 17px 0 8px; font-weight: bold; }
 input, textarea, select {
   width: 100%;
   padding: 14px;
@@ -235,17 +168,8 @@ input, textarea, select {
   border-radius: 7px;
   font: inherit;
 }
-
-textarea {
-  min-height: 125px;
-  resize: vertical;
-}
-
-.studio .red-button {
-  width: 100%;
-  margin-top: 20px;
-}
-
+textarea { min-height: 125px; resize: vertical; }
+.studio .red-button { width: 100%; margin-top: 20px; }
 .account {
   max-width: 600px;
   margin: auto;
@@ -254,24 +178,31 @@ textarea {
   border: 1px solid #333;
   border-radius: 12px;
 }
-
 .account button { margin-top: 12px; }
-
 .status {
   color: #bbb;
   font-size: 13px;
   line-height: 1.5;
   margin-top: 12px;
+  overflow-wrap: anywhere;
 }
-
+.signed-in {
+  display: none;
+  border: 1px solid #276b42;
+  background: #10251a;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+.signed-in strong { color: #65dc91; }
 .upload-area {
   padding: 24px;
   background: #090909;
   border: 1px dashed #777;
   border-radius: 10px;
   text-align: center;
+  margin-top: 22px;
 }
-
 footer {
   text-align: center;
   padding: 35px 15px;
@@ -279,27 +210,15 @@ footer {
   color: #888;
   font-size: 13px;
 }
-
 @media(max-width:800px) {
   .category-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   nav { gap: 10px; }
   nav a { font-size: 12px; }
 }
-
 @media(max-width:540px) {
-  header {
-    padding: 16px 4%;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-
+  header { padding: 16px 4%; flex-wrap: wrap; gap: 14px; }
   .logo { font-size: 20px; }
-
-  nav {
-    width: 100%;
-    justify-content: space-between;
-  }
-
+  nav { width: 100%; justify-content: space-between; }
   .category-grid { grid-template-columns: 1fr; }
   .hero { padding: 75px 6%; }
   section { padding: 48px 5%; }
@@ -436,7 +355,6 @@ footer {
   </div>
 
   <div class="studio">
-
     <label for="categorySelect">Choose your category</label>
     <select id="categorySelect">
       <option>Movies & Mini-Series</option>
@@ -451,7 +369,7 @@ footer {
     </select>
 
     <label for="idea">Describe your video idea</label>
-    <textarea id="idea" placeholder="Describe exactly what you want to happen in your video. For example: A luxury perfume bottle slowly rotates in dramatic golden light..."></textarea>
+    <textarea id="idea" placeholder="Describe exactly what you want to happen in your video."></textarea>
 
     <label for="style">Choose a visual style</label>
     <select id="style">
@@ -477,8 +395,7 @@ footer {
     </select>
 
     <button class="red-button" onclick="prepareVideo()">CREATE MY VIDEO</button>
-    <p class="status" id="studioStatus">Your AI video creation tools will appear here as they are connected.</p>
-
+    <p class="status" id="studioStatus">AI video generation will be connected in a future update.</p>
   </div>
 </section>
 
@@ -490,28 +407,34 @@ footer {
 
   <div class="account">
 
-    <label for="email">Email address</label>
-    <input id="email" type="email" placeholder="Your email">
+    <div id="authControls">
+      <label for="email">Email address</label>
+      <input id="email" type="email" placeholder="Your email" autocomplete="email">
 
-    <label for="password">Password</label>
-    <input id="password" type="password" placeholder="Your password">
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
 
-    <button class="red-button" onclick="signUp()">CREATE ACCOUNT</button>
-    <button class="red-button" onclick="signIn()">SIGN IN</button>
+      <button class="red-button" onclick="signUp()">CREATE ACCOUNT</button>
+      <button class="red-button" onclick="signIn()">SIGN IN</button>
 
-    <button class="google-button" onclick="googleSignIn()">
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" transform="translate(0 5)"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.42 37.9 46.98 31.82 46.98 24.55z"/>
-        <path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19z" transform="translate(0 0)"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.9 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-      </svg>
-      <span>Sign in with Google</span>
-    </button>
+      <button class="google-button" id="googleButton" onclick="googleSignIn()">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.7c3.9-3.6 6-8.8 6-15z"/>
+          <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.7-5.1c-1.8 1.2-4.1 2-6.8 2-5.2 0-9.6-3.5-11.2-8.2H5.9v5.3A20 20 0 0 0 24 44z"/>
+          <path fill="#FBBC05" d="M12.8 27.8a12 12 0 0 1 0-7.6v-5.3H5.9a20 20 0 0 0 0 18.2z"/>
+          <path fill="#EA4335" d="M24 12.1c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 6 29.5 4 24 4A20 20 0 0 0 5.9 14.9l6.9 5.3c1.6-4.7 6-8.1 11.2-8.1z"/>
+        </svg>
+        <span>Sign in with Google</span>
+      </button>
+    </div>
 
-    <button onclick="signOut()" style="background:#333;color:white">SIGN OUT</button>
+    <div class="signed-in" id="signedInPanel">
+      <strong>✓ You are signed in!</strong>
+      <p class="status" id="signedInEmail"></p>
+      <button onclick="signOut()" style="background:#333;color:white">SIGN OUT</button>
+    </div>
 
-    <p class="status" id="accountStatus">Connect to your LANE VIDEO AI account.</p>
+    <p class="status" id="accountStatus" role="status" aria-live="polite">Connect to your LANE VIDEO AI account.</p>
 
     <div class="upload-area">
       <h3>Upload Your Music</h3>
@@ -535,13 +458,19 @@ footer {
 <script>
 const SUPABASE_URL = "https://lguqdvdjtkgepbhqznts.supabase.co";
 const SUPABASE_KEY = "sb_publishable_2QSiZlHF3xdTGVpiwRjvrw_h3oLC6CI";
-
-// Always return Google sign-ins to the published website.
 const SITE_URL = "https://lane-video-ai.vercel.app/";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
-  SUPABASE_KEY
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: "implicit"
+    }
+  }
 );
 
 document.querySelectorAll(".category").forEach(card => {
@@ -550,6 +479,51 @@ document.querySelectorAll(".category").forEach(card => {
     document.getElementById("studio").scrollIntoView({behavior:"smooth"});
   });
 });
+
+function showSignedIn(user) {
+  document.getElementById("authControls").style.display = "none";
+  document.getElementById("signedInPanel").style.display = "block";
+  document.getElementById("signedInEmail").textContent =
+    user.email || "Your Google account is connected.";
+
+  document.getElementById("accountStatus").textContent =
+    "Your LANE VIDEO AI account is active.";
+
+  document.getElementById("uploadStatus").textContent =
+    "You are signed in. You can now upload your music.";
+}
+
+function showSignedOut(message) {
+  document.getElementById("authControls").style.display = "block";
+  document.getElementById("signedInPanel").style.display = "none";
+  document.getElementById("accountStatus").textContent =
+    message || "Please sign in to your LANE VIDEO AI account.";
+  document.getElementById("uploadStatus").textContent =
+    "Please sign in before uploading music.";
+}
+
+async function refreshAuthState() {
+  const status = document.getElementById("accountStatus");
+  status.textContent = "Checking your account...";
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      showSignedOut("Session check error: " + error.message);
+      return;
+    }
+
+    if (data && data.session && data.session.user) {
+      showSignedIn(data.session.user);
+    } else {
+      showSignedOut("You are not signed in. Please sign in below.");
+    }
+  } catch (error) {
+    showSignedOut("Could not check your session. Please try again.");
+    console.error("Session check error:", error);
+  }
+}
 
 function prepareVideo() {
   const idea = document.getElementById("idea").value.trim();
@@ -579,11 +553,17 @@ async function signUp() {
     return;
   }
 
-  const {error} = await supabaseClient.auth.signUp({email, password});
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: SITE_URL }
+  });
 
   status.textContent = error
     ? error.message
     : "Account created! Check your email if confirmation is required.";
+
+  if (data && data.session) showSignedIn(data.user);
 }
 
 async function signIn() {
@@ -596,19 +576,26 @@ async function signIn() {
     return;
   }
 
-  const {error} = await supabaseClient.auth.signInWithPassword({
+  status.textContent = "Signing in...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
 
-  status.textContent = error ? error.message : "You are signed in!";
+  if (error) {
+    status.textContent = "Sign-in error: " + error.message;
+    return;
+  }
+
+  if (data && data.user) showSignedIn(data.user);
 }
 
 async function googleSignIn() {
   const status = document.getElementById("accountStatus");
   status.textContent = "Connecting to Google...";
 
-  const {error} = await supabaseClient.auth.signInWithOAuth({
+  const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: SITE_URL
@@ -621,13 +608,17 @@ async function googleSignIn() {
 }
 
 async function signOut() {
-  const {error} = await supabaseClient.auth.signOut();
+  const status = document.getElementById("accountStatus");
+  status.textContent = "Signing out...";
 
-  document.getElementById("accountStatus").textContent =
-    error ? error.message : "You have signed out.";
+  const { error } = await supabaseClient.auth.signOut();
 
-  document.getElementById("uploadStatus").textContent =
-    "Please sign in before uploading music.";
+  if (error) {
+    status.textContent = "Sign-out error: " + error.message;
+    return;
+  }
+
+  showSignedOut("You have signed out successfully.");
 }
 
 async function uploadSong() {
@@ -639,7 +630,7 @@ async function uploadSong() {
     return;
   }
 
-  const {data: {user}, error: authError} =
+  const { data: { user }, error: authError } =
     await supabaseClient.auth.getUser();
 
   if (authError || !user) {
@@ -650,7 +641,9 @@ async function uploadSong() {
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const filePath = user.id + "/" + Date.now() + "_" + safeName;
 
-  const {error} = await supabaseClient.storage
+  status.textContent = "Uploading your music...";
+
+  const { error } = await supabaseClient.storage
     .from("user-songs")
     .upload(filePath, file);
 
@@ -659,33 +652,17 @@ async function uploadSong() {
     : "Your music has been uploaded successfully!";
 }
 
-// Update the page when a user signs in or out,
-// including after returning from Google.
+/* Listen for login, logout and Google OAuth return. */
 supabaseClient.auth.onAuthStateChange((event, session) => {
-  const accountStatus = document.getElementById("accountStatus");
-  const uploadStatus = document.getElementById("uploadStatus");
-
   if (session && session.user) {
-    accountStatus.textContent = "You are signed in!";
-    uploadStatus.textContent = "You can now upload your music.";
+    showSignedIn(session.user);
   } else if (event === "SIGNED_OUT") {
-    accountStatus.textContent = "You have signed out.";
-    uploadStatus.textContent = "Please sign in before uploading music.";
+    showSignedOut("You have signed out successfully.");
   }
 });
 
-supabaseClient.auth.getSession().then(({data, error}) => {
-  if (error) {
-    document.getElementById("accountStatus").textContent = error.message;
-    return;
-  }
-
-  if (data.session) {
-    document.getElementById("accountStatus").textContent = "You are signed in!";
-    document.getElementById("uploadStatus").textContent =
-      "You can now upload your music.";
-  }
-});
+/* Check for an existing session when the page opens. */
+refreshAuthState();
 </script>
 
 </body>
