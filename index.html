@@ -148,5 +148,35 @@
     SUPABASE_KEY
   );
 </script>
+<script>
+  const songInput = document.querySelector('input[type="file"]');
+
+  songInput.addEventListener('change', async function () {
+    const file = songInput.files[0];
+
+    if (!file) return;
+
+    const { data: { user }, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+      alert('Please sign in before uploading your song.');
+      return;
+    }
+
+    const filePath = user.id + '/' + Date.now() + '-' + file.name;
+
+    const { data, error } = await supabaseClient.storage
+      .from('user-songs')
+      .upload(filePath, file);
+
+    if (error) {
+      alert('Upload failed: ' + error.message);
+      return;
+    }
+
+    alert('Your song was uploaded successfully!');
+  });
+</script>
 </body>
 </html>
