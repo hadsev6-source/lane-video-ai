@@ -94,7 +94,10 @@ footer{text-align:center;padding:35px 15px;border-top:1px solid #292929;color:#8
     </button>
 
     <button class="category" data-category="Comedy & Fun">
-      <div class="category-content"><h3>Comedy & Fun</h3><p>Funny moments and entertaining adventures</p></div>
+      <video autoplay muted loop playsinline preload="metadata">
+        <source src="WhatsApp%20Video%202026-11-15%20at%2014.00.02.mp4" type="video/mp4">
+      </video>
+      <div class="category-content"><h3>Comedy & Fun</h3><p>Funny animals, hilarious moments and entertaining adventures</p></div>
     </button>
 
     <button class="category" data-category="Animals & Animation">
@@ -172,7 +175,7 @@ footer{text-align:center;padding:35px 15px;border-top:1px solid #292929;color:#8
     </select>
 
     <label for="idea">Describe your video idea</label>
-    <textarea id="idea" placeholder="Imagine your own movie, music video, characters, story and world..."></textarea>
+    <textarea id="idea" placeholder="Describe exactly what you want to happen in your video. For example: A funny little dog steals its owner's socks and runs away..."></textarea>
 
     <label for="style">Choose a visual style</label>
     <select id="style">
@@ -257,6 +260,8 @@ document.querySelectorAll(".category").forEach(card => {
 function prepareVideo() {
   const idea = document.getElementById("idea").value.trim();
   const category = document.getElementById("categorySelect").value;
+  const style = document.getElementById("style").value;
+  const duration = document.getElementById("duration").value;
   const status = document.getElementById("studioStatus");
 
   if (!idea) {
@@ -264,7 +269,7 @@ function prepareVideo() {
     return;
   }
 
-  status.textContent = "Your " + category + " idea is ready! AI video generation will be connected in a future update.";
+  status.textContent = "Your " + category + " idea is ready! Style: " + style + ". Duration: " + duration + ". AI video generation will be connected in a future update.";
 }
 
 async function signUp() {
