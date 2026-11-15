@@ -14,20 +14,14 @@
       --red-light: #ff303a;
       --bg: #080808;
       --panel: #141414;
-      --panel-light: #1c1c1c;
       --border: #303030;
       --text: #ffffff;
       --muted: #aaa;
-      --green: #20c878;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -36,13 +30,8 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    button, input, textarea, select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
 
     header {
       position: sticky;
@@ -64,9 +53,7 @@
       letter-spacing: 2px;
     }
 
-    .logo span {
-      color: var(--red);
-    }
+    .logo span { color: var(--red); }
 
     nav {
       display: flex;
@@ -81,9 +68,7 @@
       font-size: 14px;
     }
 
-    nav a:hover {
-      color: var(--red-light);
-    }
+    nav a:hover { color: var(--red-light); }
 
     .hero {
       min-height: 440px;
@@ -101,9 +86,7 @@
       letter-spacing: 2px;
     }
 
-    .hero h1 span {
-      color: var(--red);
-    }
+    .hero h1 span { color: var(--red); }
 
     .hero h2 {
       font-size: clamp(20px, 3vw, 30px);
@@ -141,9 +124,7 @@
       background: #252525;
     }
 
-    .secondary-btn:hover {
-      background: #383838;
-    }
+    .secondary-btn:hover { background: #383838; }
 
     .section {
       padding: 55px 5%;
@@ -169,7 +150,6 @@
     }
 
     .category-card {
-      position: relative;
       overflow: hidden;
       min-height: 220px;
       border: 1px solid #333;
@@ -207,9 +187,7 @@
       margin-bottom: 25px;
     }
 
-    .panel h3 {
-      margin-top: 0;
-    }
+    .panel h3 { margin-top: 0; }
 
     .form-grid {
       display: grid;
@@ -224,9 +202,7 @@
       margin-bottom: 17px;
     }
 
-    .field.full {
-      grid-column: 1 / -1;
-    }
+    .field.full { grid-column: 1 / -1; }
 
     label {
       font-weight: bold;
@@ -292,9 +268,7 @@
       accent-color: var(--red);
     }
 
-    .checkbox-row label {
-      line-height: 1.5;
-    }
+    .checkbox-row label { line-height: 1.5; }
 
     .checkbox-row .hint {
       display: block;
@@ -336,11 +310,10 @@
       border: 1px solid #8d2028;
       color: white;
       border-radius: 5px;
+      padding: 9px 12px;
     }
 
-    .danger-btn:hover {
-      background: #8b111b;
-    }
+    .danger-btn:hover { background: #8b111b; }
 
     .success-panel {
       background: #0e2419;
@@ -351,9 +324,7 @@
       margin: 15px 0;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
     .project-output {
       white-space: pre-wrap;
@@ -365,6 +336,19 @@
       line-height: 1.6;
       color: #ddd;
       margin-top: 20px;
+    }
+
+    .selected-file {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      margin-top: 8px;
+      background: #151515;
+      border: 1px solid #333;
+      border-radius: 6px;
+      overflow-wrap: anywhere;
     }
 
     .account-buttons {
@@ -386,31 +370,15 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      header {
-        justify-content: center;
-      }
-
-      nav {
-        justify-content: center;
-      }
+      header { justify-content: center; }
+      nav { justify-content: center; }
     }
 
     @media (max-width: 550px) {
-      .category-grid, .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .section {
-        padding: 40px 5%;
-      }
-
-      .panel {
-        padding: 17px;
-      }
-
-      .hero {
-        padding-top: 70px;
-      }
+      .category-grid, .form-grid { grid-template-columns: 1fr; }
+      .section { padding: 40px 5%; }
+      .panel { padding: 17px; }
+      .hero { padding-top: 70px; }
     }
   </style>
 </head>
@@ -419,7 +387,6 @@
 
 <header>
   <div class="logo">LANE <span>VIDEO AI</span></div>
-
   <nav>
     <a href="#categories">Categories</a>
     <a href="#studio">AI Studio</a>
@@ -445,7 +412,6 @@
   </p>
 
   <div class="category-grid">
-
     <div class="category-card" onclick="chooseCategory('Movies & Mini-Series')">
       <video muted autoplay loop playsinline preload="metadata">
         <source src="WhatsApp Video 2026-11-15 at 13.28.21.mp4" type="video/mp4">
@@ -508,7 +474,6 @@
       </video>
       <h3>Advertising & Promos</h3>
     </div>
-
   </div>
 </section>
 
@@ -571,10 +536,28 @@
 
     <div class="field">
       <label for="extraFiles">Additional Images or Videos (Optional)</label>
-      <input id="extraFiles" type="file" accept="image/*,video/*" multiple disabled>
+      <input
+        id="extraFiles"
+        type="file"
+        accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
+        multiple
+      >
       <span class="hint">
-        This upload option is not enabled yet. It will be connected in a future update.
+        Choose JPG, PNG, WEBP, MP4 or MOV files from your device.
+        Files are selected temporarily and are not saved in your account.
+        They will only be sent to an AI provider after integration.
       </span>
+
+      <div id="selectedFilesList" class="project-output hidden"></div>
+
+      <button
+        type="button"
+        class="secondary-btn"
+        id="clearSelectedFiles"
+        style="margin-top:10px"
+      >
+        CLEAR ALL SELECTED FILES
+      </button>
     </div>
 
     <button class="primary-btn" onclick="prepareVideo()">
@@ -594,8 +577,7 @@
     <div class="notice">
       <strong>Important:</strong> These settings currently prepare your
       project brief only. AI video generation and Lip-Sync are not yet
-      connected to a generation provider. They will become active after
-      the required AI services are integrated.
+      connected to a generation provider.
     </div>
 
     <div class="field">
@@ -732,7 +714,7 @@
 
     <div class="field">
       <label for="performerDescription">Describe the AI Singer / Performer</label>
-      <textarea id="performerDescription" placeholder="Describe the singer's appearance, age range, hairstyle, clothing, personality, facial features and stage presence. Example: A realistic young male singer with dark hair, wearing an elegant black suit..."></textarea>
+      <textarea id="performerDescription" placeholder="Describe the singer's appearance, age range, hairstyle, clothing, personality, facial features and stage presence..."></textarea>
     </div>
 
     <div class="checkbox-row">
@@ -751,7 +733,7 @@
 
     <div class="field" style="margin-top:18px">
       <label for="musicPrompt">Detailed Music Video Instructions</label>
-      <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides. The lights change with the rhythm. The singer performs with emotional facial expressions..."></textarea>
+      <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides..."></textarea>
       <span class="hint">
         Your detailed instructions control the story and actions.
         The selections above are additional creative guidance.
@@ -874,10 +856,157 @@
   let currentAudioUrl = null;
   let deletingFile = false;
 
+  // TEMPORARY PROJECT FILES
+  // These files stay in the browser and are not uploaded to Supabase.
+
+  let selectedExtraFiles = [];
+
+  const extraFilesInput = document.getElementById("extraFiles");
+  const selectedFilesList = document.getElementById("selectedFilesList");
+  const clearSelectedFilesButton = document.getElementById("clearSelectedFiles");
+
+  const MAX_EXTRA_FILE_SIZE = 100 * 1024 * 1024;
+  const MAX_EXTRA_TOTAL_SIZE = 300 * 1024 * 1024;
+
+  const ALLOWED_EXTRA_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "video/mp4",
+    "video/quicktime"
+  ];
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024 * 1024) {
+      return Math.round(bytes / 1024) + " KB";
+    }
+
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  function showSelectedExtraFiles() {
+    selectedFilesList.innerHTML = "";
+
+    if (selectedExtraFiles.length === 0) {
+      selectedFilesList.classList.add("hidden");
+      return;
+    }
+
+    selectedFilesList.classList.remove("hidden");
+
+    const heading = document.createElement("strong");
+    heading.textContent = "Selected reference files:";
+    selectedFilesList.appendChild(heading);
+
+    selectedExtraFiles.forEach((file, index) => {
+      const row = document.createElement("div");
+      row.className = "selected-file";
+
+      const details = document.createElement("span");
+      details.textContent = file.name + " — " + formatFileSize(file.size);
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "danger-btn";
+      removeButton.textContent = "REMOVE";
+
+      removeButton.addEventListener("click", function() {
+        selectedExtraFiles.splice(index, 1);
+        updateExtraFileInput();
+        showSelectedExtraFiles();
+      });
+
+      row.appendChild(details);
+      row.appendChild(removeButton);
+      selectedFilesList.appendChild(row);
+    });
+
+    const totalSize = selectedExtraFiles.reduce(
+      (total, file) => total + file.size,
+      0
+    );
+
+    const total = document.createElement("p");
+    total.className = "hint";
+    total.textContent =
+      selectedExtraFiles.length + " file(s) selected — " +
+      formatFileSize(totalSize) + " total";
+
+    selectedFilesList.appendChild(total);
+  }
+
+  function updateExtraFileInput() {
+    const transfer = new DataTransfer();
+
+    selectedExtraFiles.forEach(file => {
+      transfer.items.add(file);
+    });
+
+    extraFilesInput.files = transfer.files;
+  }
+
+  extraFilesInput.addEventListener("change", function() {
+    const incomingFiles = Array.from(this.files);
+
+    for (const file of incomingFiles) {
+      if (!ALLOWED_EXTRA_TYPES.includes(file.type)) {
+        alert("Only JPG, PNG, WEBP, MP4 and MOV files are allowed.");
+        updateExtraFileInput();
+        return;
+      }
+
+      if (file.size > MAX_EXTRA_FILE_SIZE) {
+        alert("Each reference file must be no larger than 100 MB.");
+        updateExtraFileInput();
+        return;
+      }
+    }
+
+    const existingNames = new Set(
+      selectedExtraFiles.map(file => file.name + "|" + file.size + "|" + file.lastModified)
+    );
+
+    for (const file of incomingFiles) {
+      const key = file.name + "|" + file.size + "|" + file.lastModified;
+
+      if (!existingNames.has(key)) {
+        selectedExtraFiles.push(file);
+        existingNames.add(key);
+      }
+    }
+
+    const totalSize = selectedExtraFiles.reduce(
+      (total, file) => total + file.size,
+      0
+    );
+
+    if (totalSize > MAX_EXTRA_TOTAL_SIZE) {
+      selectedExtraFiles = selectedExtraFiles.filter(file => {
+        return incomingFiles.indexOf(file) === -1;
+      });
+
+      updateExtraFileInput();
+      showSelectedExtraFiles();
+
+      alert("The combined size of selected files cannot exceed 300 MB.");
+      return;
+    }
+
+    updateExtraFileInput();
+    showSelectedExtraFiles();
+  });
+
+  clearSelectedFilesButton.addEventListener("click", function() {
+    selectedExtraFiles = [];
+    extraFilesInput.value = "";
+    showSelectedExtraFiles();
+  });
+
   // CATEGORY SELECTION
 
   function chooseCategory(category) {
     document.getElementById("category").value = category;
+
     document.getElementById("studio").scrollIntoView({
       behavior: "smooth"
     });
@@ -896,6 +1025,12 @@
       return;
     }
 
+    const fileSummary = selectedExtraFiles.length
+      ? selectedExtraFiles.map(file =>
+          "- " + file.name + " (" + formatFileSize(file.size) + ")"
+        ).join("\n")
+      : "No reference files selected.";
+
     const summary =
 `LANE VIDEO AI — VIDEO PROJECT
 
@@ -908,18 +1043,25 @@ Duration: ${duration}
 Detailed Video Instructions:
 ${prompt}
 
-Additional Images/Videos:
-Not enabled yet.
+Additional Reference Files:
+${fileSummary}
+
+FILE STORAGE:
+Reference files are currently selected in this browser only.
+They have not been uploaded or permanently stored.
 
 PROJECT STATUS:
 Project settings prepared successfully.
-AI video generation is not connected yet.`;
+AI video generation and reference-file processing are not connected yet.`;
 
     const output = document.getElementById("generalProjectOutput");
     output.textContent = summary;
     output.classList.remove("hidden");
 
-    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    output.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
   }
 
   // MUSIC VIDEO PROJECT
@@ -940,8 +1082,10 @@ AI video generation is not connected yet.`;
     const stage = document.getElementById("stage").value;
     const wardrobe = document.getElementById("wardrobe").value;
     const lighting = document.getElementById("lighting").value;
+
     const performerDescription =
       document.getElementById("performerDescription").value.trim();
+
     const lipSync = document.getElementById("lipSync").checked;
     const prompt = document.getElementById("musicPrompt").value.trim();
 
@@ -997,7 +1141,10 @@ These settings are a project brief and will be used when an AI generation provid
     output.textContent = summary;
     output.classList.remove("hidden");
 
-    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    output.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
   }
 
   // MUSIC MODE
@@ -1094,6 +1241,7 @@ These settings are a project brief and will be used when an AI generation provid
     currentUser = null;
     currentFiles = [];
     stopSongPreview();
+
     await refreshAuthState();
   }
 
@@ -1135,7 +1283,11 @@ These settings are a project brief and will be used when an AI generation provid
   }
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "TOKEN_REFRESHED") {
+    if (
+      event === "SIGNED_IN" ||
+      event === "SIGNED_OUT" ||
+      event === "TOKEN_REFRESHED"
+    ) {
       setTimeout(() => {
         refreshAuthState();
       }, 0);
@@ -1226,7 +1378,6 @@ These settings are a project brief and will be used when an AI generation provid
     }
 
     const list = document.getElementById("myFilesList");
-
     list.innerHTML = '<p class="hint">Loading your music files...</p>';
 
     const { data, error } = await supabaseClient.storage
@@ -1241,7 +1392,8 @@ These settings are a project brief and will be used when an AI generation provid
 
     if (error) {
       list.innerHTML =
-        '<p class="hint">Could not load files: ' + escapeHTML(error.message) + '</p>';
+        '<p class="hint">Could not load files: ' +
+        escapeHTML(error.message) + '</p>';
       return;
     }
 
@@ -1336,9 +1488,7 @@ These settings are a project brief and will be used when an AI generation provid
     document.getElementById("musicMode").value = "upload";
     document.getElementById("musicFileField").classList.remove("hidden");
 
-    const select = document.getElementById("musicFileSelect");
-
-    select.value = fileName;
+    document.getElementById("musicFileSelect").value = fileName;
 
     document.getElementById("musicStudio").scrollIntoView({
       behavior: "smooth"
@@ -1404,7 +1554,6 @@ These settings are a project brief and will be used when an AI generation provid
     }
 
     deletingFile = true;
-
     showFileMessage("Deleting song...");
 
     const filePath = currentUser.id + "/" + fileName;
@@ -1448,7 +1597,6 @@ These settings are a project brief and will be used when an AI generation provid
   // INITIAL LOAD
 
   refreshAuthState();
-
 </script>
 
 </body>
