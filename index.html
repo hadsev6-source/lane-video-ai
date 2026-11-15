@@ -178,5 +178,67 @@
     alert('Your song was uploaded successfully!');
   });
 </script>
+<section id="account" class="features">
+  <h2>YOUR LANE VIDEO AI ACCOUNT</h2>
+
+  <input
+    type="email"
+    id="user-email"
+    placeholder="Your email address"
+  >
+
+  <br><br>
+
+  <input
+    type="password"
+    id="user-password"
+    placeholder="Your password"
+  >
+
+  <br><br>
+
+  <button onclick="signUp()">CREATE ACCOUNT</button>
+
+  <button onclick="signIn()">LOG IN</button>
+
+  <button onclick="signOut()">LOG OUT</button>
+
+  <p id="account-message"></p>
+</section>
+
+<script>
+  async function signUp() {
+    const email = document.getElementById('user-email').value;
+    const password = document.getElementById('user-password').value;
+
+    const { error } = await supabaseClient.auth.signUp({
+      email,
+      password
+    });
+
+    document.getElementById('account-message').textContent =
+      error ? error.message : 'Check your email to confirm your account.';
+  }
+
+  async function signIn() {
+    const email = document.getElementById('user-email').value;
+    const password = document.getElementById('user-password').value;
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    document.getElementById('account-message').textContent =
+      error ? error.message : 'You are now logged in!';
+  }
+
+  async function signOut() {
+    const { error } = await supabaseClient.auth.signOut();
+
+    document.getElementById('account-message').textContent =
+      error ? error.message : 'You have logged out.';
+  }
+</script>
 </body>
 </html>
