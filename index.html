@@ -454,7 +454,7 @@
       .panel { padding: 17px; }
       .hero { padding-top: 70px; }
     }
-
+  
 /* LANE VIDEO AI — expanded studio and account UI */
 .account-menu { position:relative; }
 .account-menu summary { list-style:none; cursor:pointer; border:1px solid #444; border-radius:7px; padding:10px 14px; color:#fff; background:#171717; font-weight:bold; }
@@ -492,13 +492,23 @@
     <a href="#musicGenerator">AI Music</a>
     <a href="#pricing">Plans & Credits</a>
     <a href="#myfiles">My Files</a>
+    <details class="notification-menu">
+      <summary aria-label="Notifications">🔔 NOTIFICATIONS</summary>
+      <div class="notification-dropdown">
+        <strong>Notifications</strong>
+        <p>Song upload updates will appear here.</p>
+        <p>Video processing and completed project updates will appear here.</p>
+        <p>Credit and account alerts will appear here.</p>
+        <span class="mini-note">Live notifications are visual placeholders until a notification service is connected.</span>
+      </div>
+    </details>
     <details class="account-menu">
       <summary>MY ACCOUNT ▾</summary>
       <div class="account-dropdown">
         <a href="#account">Account Overview</a>
         <a href="#subscriptions">My Subscription</a>
         <a href="#credits">My Credits & Limits</a>
-                <a href="#credits">Buy More Credits</a>
+        <a href="#credits">Buy More Credits</a>
         <a href="#billing">Billing & Payments</a>
         <a href="#usage">Usage History</a>
         <a href="#myfiles">My Files</a>
@@ -520,7 +530,7 @@
 
 <section class="section" id="categories">
   <h2 class="section-title">Explore Video Categories</h2>
-  <p class="section-description">
+ <p class="section-description">
     Choose the type of video project you want to create.
   </p>
 
@@ -915,6 +925,12 @@
     <div class="field"><label for="imagePrompt">Describe Your Image</label>
       <textarea id="imagePrompt" placeholder="Describe the subject, environment, composition, lighting, camera angle, mood and details..."></textarea>
     </div>
+    <div class="field">
+      <label for="imageReference">Upload Reference Image (Optional)</label>
+      <input id="imageReference" type="file" accept="image/jpeg,image/png,image/webp">
+      <span class="upload-drop-note">Choose a JPG, PNG or WEBP image from your device. This reference is selected in your browser only; it is not uploaded or saved until image-storage integration is added.</span>
+      <div id="imageReferenceName" class="hint" aria-live="polite">No reference image selected.</div>
+    </div>
     <div class="form-grid">
       <div class="field"><label for="imageStyle">Visual Style</label>
         <select id="imageStyle"><option>Photorealistic</option><option>Cinematic</option><option>3D Render</option><option>Anime</option><option>Illustration</option><option>Fantasy</option><option>Product Photography</option><option>My Own Style</option></select>
@@ -996,10 +1012,10 @@
   <p class="section-description">One unified credit balance for video, image and music projects. All figures below are the agreed working prices, pending provider-cost validation and payment integration.</p>
   <div class="notice">1 credit = €0.01. Credits are not deducted by these preview forms. Payment processing and live credit balances are not connected yet.</div>
   <div class="price-grid" id="subscriptions">
-    <div class="price-card"><h3>Starter</h3><div class="price">€3.99 <small>/ month</small></div><strong>399 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul></div>
-    <div class="price-card featured"><h3>Creator</h3><div class="price">€9.99 <small>/ month</small></div><strong>999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul></div>
-        <div class="price-card"><h3>Pro</h3><div class="price">€19.99 <small>/ month</small></div><strong>1,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul></div>
-    <div class="price-card"><h3>Ultimate</h3><div class="price">€39.99 <small>/ month</small></div><strong>3,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul></div>
+    <div class="price-card"><h3>Starter</h3><div class="price">€3.99 <small>/ month</small></div><strong>399 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
+    <div class="price-card featured"><h3>Creator</h3><div class="price">€9.99 <small>/ month</small></div><strong>999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
+    <div class="price-card"><h3>Pro</h3><div class="price">€19.99 <small>/ month</small></div><strong>1,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
+    <div class="price-card"><h3>Ultimate</h3><div class="price">€39.99 <small>/ month</small></div><strong>3,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
   </div>
   <div class="panel" style="margin-top:22px">
     <strong>Credit rules (planned)</strong>
@@ -1007,10 +1023,10 @@
   </div>
   <h3 id="credits" style="margin-top:32px">Buy More Credits</h3>
   <div class="price-grid">
-    <div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong></div>
-    <div class="price-card"><h3>Medium</h3><div class="price">€5</div><strong>500 credits</strong></div>
-    <div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits</strong></div>
-    <div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits</strong></div>
+    <div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Medium</h3><div class="price">€5</div><strong>500 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
   </div>
   <h3 style="margin-top:32px">Generation Tariffs</h3>
   <div class="panel">
@@ -1046,13 +1062,12 @@
     <button type="button" class="library-filter" data-library-filter="thumbnail" onclick="filterMyFiles('thumbnail', this)">My Thumbnails</button>
     <button type="button" class="library-filter" data-library-filter="text" onclick="filterMyFiles('text', this)">Project Text</button>
   </div>
-
-  <div class="panel">
+ <div class="panel">
     <h3>Upload Your Music</h3>
     <div class="field">
-      <label for="songUpload">Choose MP3 or WAV file</label>
-      <input id="songUpload" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav">
-      <span class="hint">Maximum file size: 50 MB. MP3 and WAV only.</span>
+      <label for="songUpload">Choose MP3 file</label>
+      <input id="songUpload" type="file" accept=".mp3,audio/mpeg">
+      <span class="hint">Maximum file size: 50 MB. MP3 files only.</span>
     </div>
     <button class="primary-btn" id="uploadButton" onclick="uploadSong()">UPLOAD SONG</button>
     <button class="secondary-btn" onclick="loadMyFiles()" style="margin-left:8px">REFRESH MY FILES</button>
@@ -1096,6 +1111,7 @@
     <audio id="audioPlayer" controls class="hidden" style="width:100%;margin-top:20px"></audio>
   </div>
 </section>
+
 <section class="section" id="account">
   <h2 class="section-title">Your Account</h2>
 
@@ -1510,15 +1526,25 @@ These settings are a project brief and will be used when an AI generation provid
   document.getElementById("duration").addEventListener("change", updateVideoCost);
   updateVideoCost();
 
+  const imageReferenceInput = document.getElementById("imageReference");
+  if (imageReferenceInput) {
+    imageReferenceInput.addEventListener("change", function() {
+      const file = this.files && this.files[0];
+      document.getElementById("imageReferenceName").textContent = file ? "Selected: " + file.name : "No reference image selected.";
+    });
+  }
+
   function prepareImageProject() {
     const prompt = document.getElementById("imagePrompt").value.trim();
     if (!prompt) { alert("Please describe your image first."); return; }
     const quantity = Number(document.getElementById("imageQuantity").value);
     const style = document.getElementById("imageStyle").value;
     const credits = quantity * 7;
+    const reference = document.getElementById("imageReference").files[0];
     const output = document.getElementById("imageProjectOutput");
     output.textContent = "LANE VIDEO AI — IMAGE PROJECT\n\nPrompt:\n" + prompt +
       "\n\nVisual style: " + style + "\nQuantity: " + quantity +
+      "\nReference image: " + (reference ? reference.name : "None") +
       "\nEstimated cost: " + credits + " credits (€" + (credits / 100).toFixed(2) +
       ")\n\nStatus: Project brief prepared. AI image generation is not connected.";
     output.classList.remove("hidden");
@@ -1566,8 +1592,7 @@ These settings are a project brief and will be used when an AI generation provid
       email,
       password
     });
-
-    if (error) {
+  if (error) {
       showAuthMessage(error.message);
       return;
     }
@@ -1595,7 +1620,8 @@ These settings are a project brief and will be used when an AI generation provid
       email,
       password
     });
-       if (error) {
+
+    if (error) {
       showAuthMessage(error.message);
       return;
     }
@@ -1704,22 +1730,15 @@ These settings are a project brief and will be used when an AI generation provid
     const file = input.files[0];
 
     if (!file) {
-      showFileMessage("Please select an MP3 or WAV file.", true);
+      showFileMessage("Please select an MP3 file.", true);
       return;
     }
 
-    const allowedTypes = [
-      "audio/mpeg",
-      "audio/wav",
-      "audio/x-wav"
-    ];
-
     const lowerName = file.name.toLowerCase();
-    const validExtension =
-      lowerName.endsWith(".mp3") || lowerName.endsWith(".wav");
+    const validExtension = lowerName.endsWith(".mp3");
 
-    if (!allowedTypes.includes(file.type) && !validExtension) {
-      showFileMessage("Only MP3 and WAV files are allowed.", true);
+    if (!validExtension || (file.type && file.type !== "audio/mpeg")) {
+      showFileMessage("Only MP3 files are allowed.", true);
       return;
     }
 
@@ -1887,7 +1906,7 @@ These settings are a project brief and will be used when an AI generation provid
 
     if (currentFiles.length === 0) {
       list.innerHTML =
-        '<div class="library-empty"><strong>No audio files yet</strong>Upload an MP3 or WAV song above to add it to My Files.</div>';
+        '<div class="library-empty"><strong>No audio files yet</strong>Upload an MP3 song above to add it to My Files.</div>';
       updateLibraryCounts();
       filterMyFiles(activeLibraryFilter);
       return;
@@ -2105,3 +2124,4 @@ These settings are a project brief and will be used when an AI generation provid
 
 </body>
 </html>
+          
