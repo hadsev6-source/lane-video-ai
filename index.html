@@ -33,56 +33,60 @@
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    .site-header {
+      position: relative;
+      z-index: 20;
       background: linear-gradient(90deg, rgba(5,5,5,.97), rgba(35,5,9,.94), rgba(5,5,5,.97));
       border: 1px solid #9d1722;
       border-left: 0;
       border-right: 0;
-      box-shadow: 0 4px 24px rgba(229,9,20,.18);
-      padding: 15px 5%;
+      box-shadow: 0 4px 24px rgba(229,9,20,.14);
+      padding: 11px 5%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
+      gap: 16px;
     }
 
-    .logo {
-      font-size: 25px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
-
+    .logo { font-size: 25px; font-weight: 900; letter-spacing: 2px; }
     .logo span { color: var(--red); }
 
-    nav {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: center;
+    .main-menu { position: relative; }
+    .main-menu > summary {
+      list-style: none; cursor: pointer; user-select: none;
+      display: flex; align-items: center; gap: 9px;
+      color: #fff; font-size: 14px; font-weight: 800; letter-spacing: .5px;
+      padding: 10px 16px; border: 1px solid #e50914; border-radius: 7px;
+      background: #19090c; box-shadow: 0 0 12px #e5091422;
     }
-
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 14px;
-      padding: 9px 11px;
-      border: 1px solid rgba(229,9,20,.65);
-      border-radius: 6px;
-      background: rgba(8,8,8,.88);
-      box-shadow: inset 0 0 10px rgba(229,9,20,.06);
-      transition: .2s;
+    .main-menu > summary::-webkit-details-marker { display: none; }
+    .main-menu > summary:hover, .main-menu[open] > summary { background: #351014; }
+    .menu-icon { color: #ff303a; font-size: 18px; line-height: 1; }
+    .main-menu-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; z-index: 200;
+      display: none; flex-direction: column; align-items: stretch; gap: 5px;
+      width: min(290px, calc(100vw - 30px)); max-height: min(75vh, 620px); overflow-y: auto;
+      padding: 11px; background: #10090a; border: 1px solid #e50914; border-radius: 10px;
+      box-shadow: 0 16px 40px #000d, 0 0 20px #e5091422;
     }
-
-    nav a:hover {
-      color: #fff;
-      border-color: #ff303a;
-      background: #3a0d12;
-      box-shadow: 0 0 14px rgba(229,9,20,.28);
+    .main-menu[open] .main-menu-dropdown { display: flex; }
+    .main-menu-dropdown > a, .main-menu-dropdown > details > summary {
+      display: block; color: #fff; text-decoration: none; font-size: 14px;
+      padding: 11px 12px; border: 1px solid rgba(229,9,20,.45); border-radius: 6px;
+      background: #171012; cursor: pointer; list-style: none;
     }
+    .main-menu-dropdown > a:hover, .main-menu-dropdown > details > summary:hover { background: #351014; border-color: #ff303a; }
+    .main-menu-dropdown details > summary::-webkit-details-marker { display: none; }
+    .notification-dropdown, .account-dropdown {
+      display: none; position: static; min-width: 0; margin: 5px 0 2px;
+      padding: 10px; background: #090909; border: 1px solid #76202a; border-radius: 7px;
+      color: #eee; box-shadow: none; gap: 5px;
+    }
+    .notification-menu[open] .notification-dropdown,
+    .account-menu[open] .account-dropdown { display: grid; }
+    .account-dropdown a { display: block; padding: 9px 10px; color: #eee; text-decoration: none; border-radius: 5px; font-size: 13px; }
+    .account-dropdown a:hover { background: #351014; color: #fff; }
+    .notification-dropdown p { margin: 5px 0; font-size: 13px; color: #ccc; }
 
     .hero {
       min-height: 440px;
@@ -467,12 +471,7 @@
     }
 
     @media (max-width: 800px) {
-      .category-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      header { justify-content: center; }
-      nav { justify-content: center; }
+      .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 550px) {
@@ -484,13 +483,6 @@
     }
   
 /* LANE VIDEO AI — expanded studio and account UI */
-.account-menu { position:relative; }
-.account-menu summary { list-style:none; cursor:pointer; border:1px solid #e50914; border-radius:7px; padding:10px 14px; color:#fff; background:#19090c; font-weight:bold; box-shadow:0 0 12px #e5091422; }
-.account-menu summary::-webkit-details-marker { display:none; }
-.account-menu[open] .account-dropdown { display:grid; }
-.account-dropdown { display:none; position:absolute; right:0; top:calc(100% + 9px); z-index:150; min-width:230px; padding:9px; background:#12090b; border:1px solid #e50914; border-radius:9px; box-shadow:0 14px 35px #000b, 0 0 18px #e5091422; gap:4px; }
-.account-dropdown a { display:block; padding:10px 12px; color:#eee; text-decoration:none; border-radius:5px; font-size:13px; }
-.account-dropdown a:hover { background:#351014; color:#fff; }
 .price-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
 .price-card { background:#121212; border:1px solid #383838; border-radius:10px; padding:19px; min-width:0; }
 .price-card.featured { border-color:var(--red); box-shadow:0 0 22px #e5091420; }
@@ -504,46 +496,64 @@
 .studio-tabs a { color:#fff; text-decoration:none; padding:9px 13px; background:#222; border:1px solid #444; border-radius:6px; font-size:13px; }
 .studio-tabs a:hover { border-color:var(--red); }
 @media(max-width:950px) { .price-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media(max-width:550px) { .price-grid { grid-template-columns:1fr; } .account-dropdown { right:-20px; } }
+@media(max-width:550px) { .price-grid { grid-template-columns:1fr; } .site-header { padding:10px 4%; } .logo { font-size:20px; } }
+
+
+    .payment-modal { display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.82); padding:20px; align-items:center; justify-content:center; }
+    .payment-modal.open { display:flex; }
+    .payment-dialog { width:min(520px,100%); max-height:90vh; overflow:auto; background:#100b0c; color:#fff; border:1px solid #e50914; border-radius:14px; padding:24px; box-shadow:0 20px 70px #000; }
+    .payment-dialog h2 { margin:0 36px 8px 0; }
+    .payment-close { float:right; border:1px solid #713039; color:#fff; background:#1c1012; border-radius:7px; padding:6px 11px; }
+    .payment-choice { display:flex; align-items:center; gap:12px; border:1px solid #713039; background:#180f11; padding:14px; border-radius:9px; margin:10px 0; cursor:pointer; }
+    .payment-choice:has(input:checked) { border-color:#ff303a; background:#2a1014; box-shadow:0 0 0 1px #e50914; }
+    .payment-choice input { accent-color:#e50914; width:18px; height:18px; }
+    .payment-choice strong { display:block; }
+    .payment-choice small { display:block; color:#bbb; margin-top:3px; }
+    .payment-summary { border-top:1px solid #542027; border-bottom:1px solid #542027; padding:14px 0; margin:16px 0; display:flex; justify-content:space-between; gap:12px; }
+    .payment-note { color:#bbb; font-size:12px; line-height:1.5; }
+    body.payment-open { overflow:hidden; }
 
   </style>
 </head>
 
 <body>
 
-<header>
+<header class="site-header">
   <div class="logo">LANE <span>VIDEO AI</span></div>
-  <nav>
-    <a href="#categories">Categories</a>
-    <a href="#studio">AI Video</a>
-    <a href="#imageStudio">AI Images</a>
-    <a href="#musicGenerator">AI Music</a>
-    <a href="#pricing">Plans & Credits</a>
-    <a href="#myfiles">My Files</a>
-    <details class="notification-menu">
-      <summary aria-label="Notifications">🔔 NOTIFICATIONS</summary>
-      <div class="notification-dropdown">
-        <strong>Notifications</strong>
-        <p>Song upload updates will appear here.</p>
-        <p>Video processing and completed project updates will appear here.</p>
-        <p>Credit and account alerts will appear here.</p>
-        <span class="mini-note">Live notifications are visual placeholders until a notification service is connected.</span>
-      </div>
-    </details>
-    <details class="account-menu">
-      <summary>MY ACCOUNT ▾</summary>
-      <div class="account-dropdown">
-        <a href="#account">Account Overview</a>
-        <a href="#subscriptions">My Subscription</a>
-        <a href="#credits">My Credits & Limits</a>
-        <a href="#credits">Buy More Credits</a>
-        <a href="#billing">Billing & Payments</a>
-        <a href="#usage">Usage History</a>
-        <a href="#myfiles">My Files</a>
-        <a href="#account">Settings</a>
-      </div>
-    </details>
-  </nav>
+  <details class="main-menu">
+    <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
+    <nav class="main-menu-dropdown" aria-label="Main navigation">
+      <a href="#categories">Categories</a>
+      <a href="#studio">AI Video</a>
+      <a href="#imageStudio">AI Images</a>
+      <a href="#musicGenerator">AI Music</a>
+      <a href="#pricing">Plans & Credits</a>
+      <a href="#myfiles">My Files</a>
+      <details class="notification-menu">
+        <summary>🔔 NOTIFICATIONS</summary>
+        <div class="notification-dropdown">
+          <strong>Notifications</strong>
+          <p>Song upload updates will appear here.</p>
+          <p>Video processing and completed project updates will appear here.</p>
+          <p>Credit and account alerts will appear here.</p>
+          <span class="mini-note">Live notifications are visual placeholders until a notification service is connected.</span>
+        </div>
+      </details>
+      <details class="account-menu">
+        <summary>MY ACCOUNT ▾</summary>
+        <div class="account-dropdown">
+          <a href="#account">Account Overview</a>
+          <a href="#subscriptions">My Subscription</a>
+          <a href="#credits">My Credits & Limits</a>
+          <a href="#credits">Buy More Credits</a>
+          <a href="#billing">Billing & Payments</a>
+          <a href="#usage">Usage History</a>
+          <a href="#myfiles">My Files</a>
+          <a href="#account">Settings</a>
+        </div>
+      </details>
+    </nav>
+  </details>
 </header>
 
 <section class="hero">
@@ -1040,10 +1050,10 @@
   <p class="section-description">One unified credit balance for video, image and music projects. All figures below are the agreed working prices, pending provider-cost validation and payment integration.</p>
   <div class="notice">1 credit = €0.01. Credits are not deducted by these preview forms. Payment processing and live credit balances are not connected yet.</div>
   <div class="price-grid" id="subscriptions">
-    <div class="price-card"><h3>Starter</h3><div class="price">€3.99 <small>/ month</small></div><strong>399 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
-    <div class="price-card featured"><h3>Creator</h3><div class="price">€9.99 <small>/ month</small></div><strong>999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
-    <div class="price-card"><h3>Pro</h3><div class="price">€19.99 <small>/ month</small></div><strong>1,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
-    <div class="price-card"><h3>Ultimate</h3><div class="price">€39.99 <small>/ month</small></div><strong>3,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">CHOOSE PLAN</button></div>
+    <div class="price-card"><h3>Starter</h3><div class="price">€3.99 <small>/ month</small></div><strong>399 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Starter', '€3.99', '399', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
+    <div class="price-card featured"><h3>Creator</h3><div class="price">€9.99 <small>/ month</small></div><strong>999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Creator', '€9.99', '999', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
+    <div class="price-card"><h3>Pro</h3><div class="price">€19.99 <small>/ month</small></div><strong>1,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Pro', '€19.99', '1999', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
+    <div class="price-card"><h3>Ultimate</h3><div class="price">€39.99 <small>/ month</small></div><strong>3,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Ultimate', '€39.99', '3999', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
   </div>
   <div class="panel" style="margin-top:22px">
     <strong>Credit rules (planned)</strong>
@@ -1051,10 +1061,10 @@
   </div>
   <h3 id="credits" style="margin-top:32px">Buy More Credits</h3>
   <div class="price-grid">
-    <div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
-    <div class="price-card"><h3>Medium</h3><div class="price">€5</div><strong>500 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
-    <div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
-    <div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits</strong><button class="buy-credit-btn" type="button" onclick="alert('Payments will be connected later.')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Small', '€1', '100', 'CREDIT TOP-UP')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Medium</h3><div class="price">€5</div><strong>500 credits</strong><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Medium', '€5', '500', 'CREDIT TOP-UP')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits</strong><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Large', '€10', '1000', 'CREDIT TOP-UP')">BUY CREDITS</button></div>
+    <div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits</strong><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Extra Large', '€20', '2000', 'CREDIT TOP-UP')">BUY CREDITS</button></div>
   </div>
   <h3 style="margin-top:32px">Generation Tariffs</h3>
   <div class="panel">
@@ -1614,6 +1624,7 @@ These settings are a project brief and will be used when an AI generation provid
       showAuthMessage("Please enter your email and password.");
       return;
     }
+
     showAuthMessage("Creating your account...");
 
     const { data, error } = await supabaseClient.auth.signUp({
@@ -2149,6 +2160,54 @@ These settings are a project brief and will be used when an AI generation provid
   // INITIAL LOAD
 
   refreshAuthState();
+</script>
+
+
+
+<div class="payment-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle" onclick="if(event.target===this) closePaymentModal()">
+  <div class="payment-dialog">
+    <button class="payment-close" type="button" aria-label="Close payment window" onclick="closePaymentModal()">✕</button>
+    <h2 id="paymentModalTitle">Complete your purchase</h2>
+    <p class="mini-note">Choose how you would like to pay.</p>
+    <div class="payment-summary"><div><strong id="paymentProduct">Selected plan</strong><div class="payment-note" id="paymentCredits">Credits</div></div><strong id="paymentPrice">€0.00</strong></div>
+    <label class="payment-choice"><input type="radio" name="paymentMethod" value="card" checked><span><strong>Bank card</strong><small>Visa · Mastercard · other supported cards</small></span></label>
+    <label class="payment-choice"><input type="radio" name="paymentMethod" value="googlepay"><span><strong>Google Pay</strong><small>Shown at checkout when supported by your device and browser</small></span></label>
+    <label class="payment-choice"><input type="radio" name="paymentMethod" value="applepay"><span><strong>Apple Pay</strong><small>Shown at checkout when supported by your device and browser</small></span></label>
+    <button class="primary-btn" type="button" style="width:100%;margin-top:12px" onclick="continueToPayment()">CONTINUE TO SECURE PAYMENT</button>
+    <p class="payment-note">Secure checkout will be provided by Stripe after the payment account and server integration are connected. No card details are collected or stored on this page. This preview does not charge you or add credits yet.</p>
+  </div>
+</div>
+
+<script>
+  let selectedPayment = null;
+  function openPaymentModal(name, price, credits, type) {
+    selectedPayment = { name, price, credits, type };
+    document.getElementById('paymentProduct').textContent = name + ' · ' + type;
+    document.getElementById('paymentCredits').textContent = Number(credits).toLocaleString() + ' credits';
+    document.getElementById('paymentPrice').textContent = price;
+    document.getElementById('paymentModal').classList.add('open');
+    document.body.classList.add('payment-open');
+  }
+  function closePaymentModal() {
+    document.getElementById('paymentModal').classList.remove('open');
+    document.body.classList.remove('payment-open');
+  }
+  function continueToPayment() {
+    const method = document.querySelector('input[name="paymentMethod"]:checked');
+    const label = method ? ({card:'bank card (Visa/Mastercard)', googlepay:'Google Pay', applepay:'Apple Pay'}[method.value]) : 'payment method';
+    alert('You selected ' + label + ' for ' + (selectedPayment ? selectedPayment.name : 'your purchase') + '. Secure Stripe checkout is not connected yet, so no payment has been taken and no credits have been added.');
+  }
+  document.addEventListener('keydown', function(event) { if (event.key === 'Escape') closePaymentModal(); });
+</script>
+
+<script>
+  document.addEventListener('click', function (event) {
+    const link = event.target.closest('.main-menu-dropdown > a');
+    if (link) {
+      const menu = document.querySelector('.main-menu');
+      if (menu) menu.open = false;
+    }
+  });
 </script>
 
 </body>
