@@ -20,7 +20,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -303,6 +302,64 @@
     .file-actions button {
       font-size: 12px;
       padding: 9px 12px;
+    }
+
+    .files-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+
+    .file-filter {
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #ddd;
+      background: #202020;
+      font-size: 13px;
+    }
+
+    .file-filter.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    .file-counts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .file-count {
+      background: #101010;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 13px;
+    }
+
+    .file-count strong {
+      display: block;
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .file-count span {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .file-empty {
+      padding: 18px;
+      background: #101010;
+      border: 1px dashed #444;
+      border-radius: 8px;
+      color: #aaa;
+      line-height: 1.6;
+      margin: 12px 0;
     }
 
     .danger-btn {
@@ -776,12 +833,36 @@
 
   <div class="panel">
     <div style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center">
-      <h3>My Music Library</h3>
-      <button class="secondary-btn" onclick="loadMyFiles()">Refresh</button>
+      <div>
+        <h3 style="margin-bottom:5px">My Files Library</h3>
+        <p class="hint" style="margin-top:0">All your available project files in one place.</p>
+      </div>
+      <div class="file-actions">
+        <button class="secondary-btn" onclick="downloadAllFiles()">DOWNLOAD ALL</button>
+        <button class="secondary-btn" onclick="loadMyFiles()">REFRESH</button>
+      </div>
+    </div>
+
+    <div class="file-counts">
+      <div class="file-count"><strong id="countAll">0</strong><span>All Files</span></div>
+      <div class="file-count"><strong id="countVideos">0</strong><span>My Videos</span></div>
+      <div class="file-count"><strong id="countImages">0</strong><span>My Images</span></div>
+      <div class="file-count"><strong id="countAudio">0</strong><span>My Audio</span></div>
+      <div class="file-count"><strong id="countThumbnails">0</strong><span>My Thumbnails</span></div>
+      <div class="file-count"><strong id="countProjects">0</strong><span>Project Text</span></div>
+    </div>
+
+    <div class="files-toolbar" aria-label="Filter files">
+      <button class="file-filter active" data-file-filter="all" onclick="setFileFilter('all')">ALL FILES</button>
+      <button class="file-filter" data-file-filter="videos" onclick="setFileFilter('videos')">MY VIDEOS</button>
+      <button class="file-filter" data-file-filter="images" onclick="setFileFilter('images')">MY IMAGES</button>
+      <button class="file-filter" data-file-filter="audio" onclick="setFileFilter('audio')">MY AUDIO</button>
+      <button class="file-filter" data-file-filter="thumbnails" onclick="setFileFilter('thumbnails')">MY THUMBNAILS</button>
+      <button class="file-filter" data-file-filter="projects" onclick="setFileFilter('projects')">PROJECT TEXT</button>
     </div>
 
     <div id="myFilesList">
-      <p class="hint">Sign in to see your uploaded songs.</p>
+      <p class="hint">Sign in to see your files.</p>
     </div>
 
     <audio id="audioPlayer" controls class="hidden" style="width:100%;margin-top:20px"></audio>
@@ -855,6 +936,7 @@
   let currentFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
+  let currentFileFilter = "all";
 
   // TEMPORARY PROJECT FILES
   // These files stay in the browser and are not uploaded to Supabase.
@@ -1274,9 +1356,10 @@ These settings are a project brief and will be used when an AI generation provid
       signedOut.classList.remove("hidden");
 
       currentFiles = [];
+      updateFileCounts();
 
       document.getElementById("myFilesList").innerHTML =
-        '<p class="hint">Please sign in to see your uploaded songs.</p>';
+        '<p class="hint">Please sign in to see your files.</p>';
 
       refreshMusicFileOptions();
     }
@@ -1378,7 +1461,7 @@ These settings are a project brief and will be used when an AI generation provid
     }
 
     const list = document.getElementById("myFilesList");
-    list.innerHTML = '<p class="hint">Loading your music files...</p>';
+    list.innerHTML = '<p class="hint">Loading your files...</p>';
 
     const { data, error } = await supabaseClient.storage
       .from("user-songs")
@@ -1400,6 +1483,69 @@ These settings are a project brief and will be used when an AI generation provid
     currentFiles = (data || []).filter(file => file.name);
 
     refreshMusicFileOptions();
+    updateFileCounts();
+    renderMyFiles();
+  }
+
+  // UPDATE FILE COUNTS
+
+  function updateFileCounts() {
+    document.getElementById("countAll").textContent = currentFiles.length;
+    document.getElementById("countAudio").textContent = currentFiles.length;
+
+    // These categories will be populated when video and image generation
+    // and their storage features are connected.
+    document.getElementById("countVideos").textContent = "0";
+    document.getElementById("countImages").textContent = "0";
+    document.getElementById("countThumbnails").textContent = "0";
+    document.getElementById("countProjects").textContent = "0";
+  }
+
+  // FILE FILTERS
+
+  function setFileFilter(filter) {
+    currentFileFilter = filter;
+
+    document.querySelectorAll("[data-file-filter]").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.fileFilter === filter
+      );
+    });
+
+    renderMyFiles();
+  }
+
+  // DISPLAY FILES
+
+  function renderMyFiles() {
+    const list = document.getElementById("myFilesList");
+    list.innerHTML = "";
+
+    if (!currentUser) {
+      list.innerHTML = '<p class="hint">Please sign in to see your files.</p>';
+      return;
+    }
+
+    if (
+      currentFileFilter === "videos" ||
+      currentFileFilter === "images" ||
+      currentFileFilter === "thumbnails" ||
+      currentFileFilter === "projects"
+    ) {
+      const labels = {
+        videos: "My Videos",
+        images: "My Images",
+        thumbnails: "My Thumbnails",
+        projects: "Project Text"
+      };
+
+      list.innerHTML =
+        '<div class="file-empty"><strong>' + labels[currentFileFilter] +
+        '</strong><br>No files in this category yet. This category will be populated when the corresponding generation and storage feature is connected.</div>';
+
+      return;
+    }
 
     if (currentFiles.length === 0) {
       list.innerHTML =
@@ -1407,15 +1553,30 @@ These settings are a project brief and will be used when an AI generation provid
       return;
     }
 
-    list.innerHTML = "";
+    const heading = document.createElement("h4");
+    heading.textContent =
+      currentFileFilter === "audio" ? "My Audio" : "Available Files";
+
+    list.appendChild(heading);
 
     currentFiles.forEach(file => {
       const row = document.createElement("div");
       row.className = "file-row";
 
+      const details = document.createElement("div");
+      details.style.minWidth = "180px";
+
       const name = document.createElement("div");
       name.className = "file-name";
       name.textContent = file.name;
+
+      const meta = document.createElement("div");
+      meta.className = "hint";
+      meta.textContent =
+        "Audio file · " + formatFileSize(file.metadata?.size || 0);
+
+      details.appendChild(name);
+      details.appendChild(meta);
 
       const actions = document.createElement("div");
       actions.className = "file-actions";
@@ -1424,6 +1585,11 @@ These settings are a project brief and will be used when an AI generation provid
       playButton.className = "secondary-btn";
       playButton.textContent = "PLAY";
       playButton.onclick = () => playSong(file.name);
+
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "secondary-btn";
+      downloadButton.textContent = "DOWNLOAD";
+      downloadButton.onclick = () => downloadSong(file.name);
 
       const useButton = document.createElement("button");
       useButton.className = "secondary-btn";
@@ -1436,14 +1602,89 @@ These settings are a project brief and will be used when an AI generation provid
       deleteButton.onclick = () => deleteSong(file.name);
 
       actions.appendChild(playButton);
+      actions.appendChild(downloadButton);
       actions.appendChild(useButton);
       actions.appendChild(deleteButton);
 
-      row.appendChild(name);
+      row.appendChild(details);
       row.appendChild(actions);
 
       list.appendChild(row);
     });
+  }
+
+  // DOWNLOAD ONE SONG
+
+  async function getSongDownloadUrl(fileName) {
+    const filePath = currentUser.id + "/" + fileName;
+
+    const { data, error } = await supabaseClient.storage
+      .from("user-songs")
+      .createSignedUrl(filePath, 3600, { download: fileName });
+
+    if (error) {
+      throw error;
+    }
+
+    return data.signedUrl;
+  }
+
+  async function downloadSong(fileName) {
+    if (!currentUser) {
+      alert("Please sign in first.");
+      return;
+    }
+
+    try {
+      const url = await getSongDownloadUrl(fileName);
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("The file could not be downloaded.");
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = fileName;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+
+      showFileMessage("Download started: " + fileName);
+    } catch (error) {
+      showFileMessage("Download failed: " + error.message, true);
+    }
+  }
+
+  // DOWNLOAD ALL AVAILABLE FILES
+
+  async function downloadAllFiles() {
+    if (!currentUser) {
+      showFileMessage("Please sign in before downloading your files.", true);
+      return;
+    }
+
+    if (!currentFiles.length) {
+      showFileMessage("There are no uploaded files to download.", true);
+      return;
+    }
+
+    showFileMessage("Preparing downloads...");
+
+    for (const file of currentFiles) {
+      await downloadSong(file.name);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    showFileMessage(
+      "All available downloads have been started. Your browser may ask you to allow multiple downloads."
+    );
   }
 
   // UPDATE MUSIC FILE SELECT
