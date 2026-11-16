@@ -517,3 +517,474 @@
   </p>
   <a href="#studio" class="primary-btn">ENTER AI STUDIO</a>
 </section>
+<section class="section" id="categories">
+  <h2 class="section-title">Explore Video Categories</h2>
+  <p class="section-description">
+    Choose the type of video project you want to create.
+  </p>
+
+  <div class="category-grid">
+    <div class="category-card" onclick="chooseCategory('Movies & Mini-Series')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.28.21.mp4" type="video/mp4">
+      </video>
+      <h3>Movies & Mini-Series</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Drama & Romance')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.52.06.mp4" type="video/mp4">
+      </video>
+      <h3>Drama & Romance</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Comedy & Fun')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.00.02.mp4" type="video/mp4">
+      </video>
+      <h3>Comedy & Fun</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Animals & Animation')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.07.34.mp4" type="video/mp4">
+      </video>
+      <h3>Animals & Animation</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Fantasy & Sci-Fi')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.20.47.mp4" type="video/mp4">
+      </video>
+      <h3>Fantasy & Sci-Fi</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Action & Adventure')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.38.21.mp4" type="video/mp4">
+      </video>
+      <h3>Action & Adventure</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Singers & Performers')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 12.43.19.mp4" type="video/mp4">
+      </video>
+      <h3>Singers & Performers</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Music & Dance')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.09.31.mp4" type="video/mp4">
+      </video>
+      <h3>Music & Dance</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Advertising & Promos')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.17.22.mp4" type="video/mp4">
+      </video>
+      <h3>Advertising & Promos</h3>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="studio">
+  <h2 class="section-title">AI Video Studio</h2>
+  <p class="section-description">
+    Describe your idea and prepare your video project.
+  </p>
+
+  <div class="panel">
+    <div class="field">
+      <label for="category">Video Category</label>
+      <select id="category">
+        <option value="General Studio">General Studio</option>
+        <option>Movies & Mini-Series</option>
+        <option>Drama & Romance</option>
+        <option>Comedy & Fun</option>
+        <option>Animals & Animation</option>
+        <option>Fantasy & Sci-Fi</option>
+        <option>Action & Adventure</option>
+        <option>Singers & Performers</option>
+        <option>Music & Dance</option>
+        <option>Advertising & Promos</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="prompt">Describe Your Video Idea</label>
+      <textarea id="prompt" placeholder="Describe exactly what happens in your video. Include the scenes, characters, actions, camera movements, emotions and story..."></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="style">Visual Style</label>
+        <select id="style">
+          <option>Realistic / Photorealistic</option>
+          <option>Hollywood Cinematic</option>
+          <option>Animated / 3D</option>
+          <option>Anime</option>
+          <option>Dreamlike / Surreal</option>
+          <option>Documentary</option>
+          <option>Vintage Film</option>
+          <option>My Own Idea</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="duration">Video Duration</label>
+        <select id="duration">
+          <option>5 seconds</option>
+          <option>15 seconds</option>
+          <option>30 seconds</option>
+          <option>1 minute</option>
+          <option>2 minutes</option>
+          <option>5 minutes</option>
+          <option>10 minutes</option>
+          <option>Long-form project</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="extraFiles">Additional Images or Videos (Optional)</label>
+      <input
+        id="extraFiles"
+        type="file"
+        accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
+        multiple
+      >
+      <span class="hint">
+        Choose JPG, PNG, WEBP, MP4 or MOV files from your device.
+        Files are selected temporarily and are not saved in your account.
+        They will only be sent to an AI provider after integration.
+      </span>
+
+      <div id="selectedFilesList" class="project-output hidden"></div>
+
+      <button
+        type="button"
+        class="secondary-btn"
+        id="clearSelectedFiles"
+        style="margin-top:10px"
+      >
+        CLEAR ALL SELECTED FILES
+      </button>
+    </div>
+
+    <div class="cost-preview" id="videoCostPreview" aria-live="polite">
+      Estimated cost: <strong>70 credits (€0.70)</strong> · Balance after generation will be shown when credits are connected.
+    </div>
+    <button class="primary-btn" onclick="prepareVideo()">
+      PREPARE MY VIDEO PROJECT
+    </button>
+
+    <div id="generalProjectOutput" class="project-output hidden"></div>
+  </div>
+
+  <div class="panel" id="musicStudio">
+    <h2>AI Music Video Studio</h2>
+    <p class="section-description">
+      Prepare a music video concept with a singer, dancers, stage,
+      costumes, lighting and synchronized performance.
+    </p>
+
+    <div class="notice">
+      <strong>Important:</strong> These settings currently prepare your
+      project brief only. AI video generation and Lip-Sync are not yet
+      connected to a generation provider.
+    </div>
+
+    <div class="field">
+      <label for="musicType">Music Video Type</label>
+      <select id="musicType">
+        <option>Music Video</option>
+        <option>Cinematic Music Video</option>
+        <option>Music Video with Dancers</option>
+        <option>Live Stage Performance</option>
+        <option>Lyrics Video</option>
+        <option>Mini Drama / Story</option>
+        <option>Romantic Music Video</option>
+        <option>Action Music Video</option>
+        <option>Nightlife Music Video</option>
+        <option>Fantasy Music Video</option>
+        <option>Animated Music Video</option>
+        <option>My Own Idea</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="musicMode">Music Source</label>
+      <select id="musicMode">
+        <option value="upload">Use a song from My Files</option>
+        <option value="concept">Create a music video concept without selecting a song</option>
+      </select>
+    </div>
+
+    <div class="field" id="musicFileField">
+      <label for="musicFileSelect">Select Your Uploaded Song</label>
+      <select id="musicFileSelect">
+        <option value="">Sign in and upload a song in My Files first</option>
+      </select>
+      <span class="hint">
+        Upload your MP3 or WAV song in the My Files section below.
+      </span>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="musicGenre">Music Genre</label>
+        <select id="musicGenre">
+          <optgroup label="Pop & Mainstream">
+            <option>Pop</option><option>Dance Pop</option><option>Electropop</option><option>Synth Pop</option><option>K-Pop</option><option>J-Pop</option><option>Teen Pop</option><option>Indie Pop</option><option>Europop</option><option>Latin Pop</option>
+          </optgroup>
+          <optgroup label="Balkan & Folk">
+            <option>Bulgarian Pop-Folk</option><option>Traditional Bulgarian</option><option>Balkan Folk</option><option>Serbian Folk</option><option>Greek Music</option><option>Oriental</option><option>Arabesque</option><option>Turkish Pop</option><option>Romanian Manele</option>
+          </optgroup>
+          <optgroup label="Afro Music">
+            <option>Afrobeats</option><option>Afro Swing</option><option>Amapiano</option><option>Afro House</option><option>Afro Pop</option><option>Afro Fusion</option><option>Dancehall</option><option>Kuduro</option><option>Highlife</option>
+          </optgroup>
+          <optgroup label="Electronic & Club">
+            <option>Techno</option><option>Melodic Techno</option><option>House</option><option>Deep House</option><option>Tech House</option><option>Progressive House</option><option>Trance</option><option>EDM</option><option>Hardstyle</option><option>Drum & Bass</option><option>Dubstep</option><option>Psytrance</option><option>Eurodance</option>
+          </optgroup>
+          <optgroup label="Hip-Hop & Urban">
+            <option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>R&B</option><option>Contemporary R&B</option><option>Soul</option><option>Neo-Soul</option><option>Rap</option><option>Reggaeton</option><option>Latin Urban</option><option>UK Garage</option>
+          </optgroup>
+          <optgroup label="Latin Music">
+            <option>Salsa</option><option>Bachata</option><option>Merengue</option><option>Cumbia</option><option>Latin House</option><option>Latin Trap</option><option>Bossa Nova</option><option>Samba</option><option>Tango</option>
+          </optgroup>
+          <optgroup label="Country & American">
+            <option>Country</option><option>Country Pop</option><option>Americana</option><option>Bluegrass</option><option>Folk</option><option>Southern Rock</option><option>Blues</option><option>Gospel</option>
+          </optgroup>
+          <optgroup label="Rock & Metal">
+            <option>Pop Rock</option><option>Classic Rock</option><option>Alternative Rock</option><option>Indie Rock</option><option>Hard Rock</option><option>Punk Rock</option><option>Heavy Metal</option><option>Metalcore</option><option>Grunge</option>
+          </optgroup>
+          <optgroup label="Arabic & Oriental">
+            <option>Arabic Pop</option><option>Arabic Dance</option><option>Egyptian Pop</option><option>Khaliji</option><option>Dabke</option><option>Turkish Oriental</option><option>Arabian Fusion</option><option>Persian Pop</option>
+          </optgroup>
+          <optgroup label="Asian & World Music">
+            <option>Bollywood</option><option>Bhangra</option><option>Indian Classical</option><option>Punjabi Pop</option><option>Japanese Pop</option><option>Chinese Pop</option><option>Korean Pop</option><option>World Fusion</option>
+          </optgroup>
+          <optgroup label="Jazz & Classical">
+            <option>Jazz</option><option>Smooth Jazz</option><option>Swing</option><option>Blues Jazz</option><option>Classical</option><option>Orchestral</option><option>Opera</option><option>Chamber Music</option><option>Piano Solo</option>
+          </optgroup>
+          <optgroup label="Cinematic & Ambient">
+            <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
+          </optgroup>
+        </select>
+      </div>
+      <select id="performerType">
+          <option>Male Singer</option>
+          <option>Female Singer</option>
+          <option>Male and Female Duo</option>
+          <option>Music Group / Band</option>
+          <option>Multiple Singers</option>
+          <option>No Singer</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="dancers">Dancers</label>
+        <select id="dancers">
+          <option>No Dancers</option>
+          <option>One Male Dancer</option>
+          <option>One Female Dancer</option>
+          <option>Male and Female Dancers</option>
+          <option>Small Dance Group</option>
+          <option>Large Professional Dance Group</option>
+          <option>Choreographed Dance Team</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="stage">Stage / Location</label>
+        <select id="stage">
+          <option>Luxury Concert Stage</option>
+          <option>Huge Stadium Concert</option>
+          <option>Nightclub</option>
+          <option>Rooftop at Night</option>
+          <option>Luxury Mansion</option>
+          <option>Beach at Sunset</option>
+          <option>Beautiful Nature</option>
+          <option>City Streets</option>
+          <option>Hollywood Film Set</option>
+          <option>Dark Cinematic Studio</option>
+          <option>Fantasy World</option>
+          <option>My Own Location</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="wardrobe">Singer's Wardrobe / Style</label>
+        <select id="wardrobe">
+          <option>Luxury Fashion</option>
+          <option>Elegant Evening Outfit</option>
+          <option>Modern Pop Star Style</option>
+          <option>Rock Star Outfit</option>
+          <option>Hip-Hop Streetwear</option>
+          <option>Classic / Vintage</option>
+          <option>Futuristic Costume</option>
+          <option>Fantasy Costume</option>
+          <option>Casual Modern Style</option>
+          <option>My Own Design</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="lighting">Lighting / Special Effects</label>
+        <select id="lighting">
+          <option>Cinematic Concert Lighting</option>
+          <option>Laser Lights and Smoke</option>
+          <option>Neon Lights</option>
+          <option>Fire and Sparks</option>
+          <option>Soft Romantic Lighting</option>
+          <option>Golden Sunset Lighting</option>
+          <option>Futuristic Visual Effects</option>
+          <option>Fireworks and Stage Effects</option>
+          <option>Dark Dramatic Lighting</option>
+          <option>My Own Idea</option>
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-grid">
+      <div class="field"><label for="musicMood">Mood</label>
+        <select id="musicMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select>
+      </div>
+      <div class="field"><label for="musicVocalType">Vocal Type</label>
+        <select id="musicVocalType"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select>
+      </div>
+      <div class="field"><label for="musicLanguage">Language</label>
+        <select id="musicLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select>
+      </div>
+      <div class="field"><label for="musicBpm">Tempo / BPM</label>
+        <select id="musicBpm"><option>Slow</option><option selected>Medium</option><option>Fast</option><option>Very Fast</option></select>
+      </div>
+      <div class="field full"><label for="musicCustomStyle">Custom Music Style (Optional)</label>
+        <input id="musicCustomStyle" type="text" placeholder="Add a specific subgenre, reference mood or production direction">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="performerDescription">Describe the AI Singer / Performer</label>
+      <textarea id="performerDescription" placeholder="Describe the singer's appearance, age range, hairstyle, clothing, personality, facial features and stage presence..."></textarea>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="lipSync">
+      <div>
+        <label for="lipSync">
+          Synchronize the AI singer's lips with the song (Lip-Sync)
+        </label>
+        <span class="hint">
+          The singer's mouth movements, facial expressions and emotions
+          should match the vocals and music. This option will be activated
+          after AI Lip-Sync integration.
+        </span>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:18px">
+      <label for="musicPrompt">Detailed Music Video Instructions</label>
+      <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides..."></textarea>
+      <span class="hint">
+        Your detailed instructions control the story and actions.
+        The selections above are additional creative guidance.
+      </span>
+    </div>
+
+    <button class="primary-btn" onclick="prepareMusicVideo()">
+      PREPARE MY AI MUSIC VIDEO PROJECT
+    </button>
+
+    <div id="musicProjectOutput" class="project-output hidden"></div>
+  </div>
+</section>
+
+
+<section class="section" id="imageStudio">
+  <h2 class="section-title">AI Image Studio</h2>
+  <p class="section-description">Prepare image-generation projects and see the estimated credit cost before generation is connected.</p>
+  <div class="panel">
+    <div class="field"><label for="imagePrompt">Describe Your Image</label>
+      <textarea id="imagePrompt" placeholder="Describe the subject, environment, composition, lighting, camera angle, mood and details..."></textarea>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label for="imageStyle">Visual Style</label>
+        <select id="imageStyle"><option>Photorealistic</option><option>Cinematic</option><option>3D Render</option><option>Anime</option><option>Illustration</option><option>Fantasy</option><option>Product Photography</option><option>My Own Style</option></select>
+      </div>
+      <div class="field"><label for="imageQuantity">Number of Images</label>
+        <select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
+      </div>
+    </div>
+    <div class="cost-preview" id="imageCostPreview" aria-live="polite">Estimated cost: <strong>7 credits (€0.07)</strong></div>
+    <button class="primary-btn" type="button" onclick="prepareImageProject()">PREPARE IMAGE PROJECT</button>
+    <div id="imageProjectOutput" class="project-output hidden"></div>
+    <p class="mini-note">Image generation is not connected yet. This form prepares the project brief only.</p>
+  </div>
+</section>
+
+<section class="section" id="musicGenerator">
+  <h2 class="section-title">AI Music Generator</h2>
+  <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
+  <div class="panel">
+    <div class="notice"><strong>One fixed rate:</strong> 25 credits (€0.25) per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
+    <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"></div>
+    <div class="form-grid">
+      <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
+          <optgroup label="Pop & Mainstream">
+            <option>Pop</option><option>Dance Pop</option><option>Electropop</option><option>Synth Pop</option><option>K-Pop</option><option>J-Pop</option><option>Teen Pop</option><option>Indie Pop</option><option>Europop</option><option>Latin Pop</option>
+          </optgroup>
+          <optgroup label="Balkan & Folk">
+            <option>Bulgarian Pop-Folk</option><option>Traditional Bulgarian</option><option>Balkan Folk</option><option>Serbian Folk</option><option>Greek Music</option><option>Oriental</option><option>Arabesque</option><option>Turkish Pop</option><option>Romanian Manele</option>
+          </optgroup>
+          <optgroup label="Afro Music">
+            <option>Afrobeats</option><option>Afro Swing</option><option>Amapiano</option><option>Afro House</option><option>Afro Pop</option><option>Afro Fusion</option><option>Dancehall</option><option>Kuduro</option><option>Highlife</option>
+          </optgroup>
+          <optgroup label="Electronic & Club">
+            <option>Techno</option><option>Melodic Techno</option><option>House</option><option>Deep House</option><option>Tech House</option><option>Progressive House</option><option>Trance</option><option>EDM</option><option>Hardstyle</option><option>Drum & Bass</option><option>Dubstep</option><option>Psytrance</option><option>Eurodance</option>
+          </optgroup>
+          <optgroup label="Hip-Hop & Urban">
+            <option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>R&B</option><option>Contemporary R&B</option><option>Soul</option><option>Neo-Soul</option><option>Rap</option><option>Reggaeton</option><option>Latin Urban</option><option>UK Garage</option>
+          </optgroup>
+          <optgroup label="Latin Music">
+            <option>Salsa</option><option>Bachata</option><option>Merengue</option><option>Cumbia</option><option>Latin House</option><option>Latin Trap</option><option>Bossa Nova</option><option>Samba</option><option>Tango</option>
+          </optgroup>
+          <optgroup label="Country & American">
+            <option>Country</option><option>Country Pop</option><option>Americana</option><option>Bluegrass</option><option>Folk</option><option>Southern Rock</option><option>Blues</option><option>Gospel</option>
+          </optgroup>
+          <optgroup label="Rock & Metal">
+            <option>Pop Rock</option><option>Classic Rock</option><option>Alternative Rock</option><option>Indie Rock</option><option>Hard Rock</option><option>Punk Rock</option><option>Heavy Metal</option><option>Metalcore</option><option>Grunge</option>
+          </optgroup>
+          <optgroup label="Arabic & Oriental">
+            <option>Arabic Pop</option><option>Arabic Dance</option><option>Egyptian Pop</option><option>Khaliji</option><option>Dabke</option><option>Turkish Oriental</option><option>Arabian Fusion</option><option>Persian Pop</option>
+          </optgroup>
+          <optgroup label="Asian & World Music">
+            <option>Bollywood</option><option>Bhangra</option><option>Indian Classical</option><option>Punjabi Pop</option><option>Japanese Pop</option><option>Chinese Pop</option><option>Korean Pop</option><option>World Fusion</option>
+          </optgroup>
+          <optgroup label="Jazz & Classical">
+            <option>Jazz</option><option>Smooth Jazz</option><option>Swing</option><option>Blues Jazz</option><option>Classical</option><option>Orchestral</option><option>Opera</option><option>Chamber Music</option><option>Piano Solo</option>
+          </optgroup>
+          <optgroup label="Cinematic & Ambient">
+            <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
+          </optgroup></select></div>
+      <div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option>30 seconds</option><option>1 minute</option><option>2 minutes</option><option>3 minutes</option><option>4 minutes</option><option selected>5 minutes</option></select></div>
+      <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
+      <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
+      <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
+      <div class="field"><label for="songBpm">Tempo / BPM</label><select id="songBpm"><option>Slow</option><option selected>Medium</option><option>Fast</option><option>Very Fast</option></select></div>
+      <div class="field"><label for="songLyricsMode">Lyrics</label><select id="songLyricsMode"><option>AI Write Lyrics</option><option>My Own Lyrics</option><option>No Lyrics</option></select></div>
+      <div class="field"><label for="songVoiceCharacter">Voice Character</label><select id="songVoiceCharacter"><option>Gentle / Romantic</option><option>Powerful</option><option>Deep / Full</option><option>Soft / Sensual</option><option>Energetic / Dance</option><option>Raspy</option><option>Youthful</option><option>Operatic / Dramatic</option></select></div>
+      <div class="field full"><label for="songCustomStyle">Custom Style (Optional)</label><input id="songCustomStyle" placeholder="Describe a unique sound or combination of influences"></div>
+      <div class="field full"><label for="songLyrics">Your Lyrics / Song Story (Optional)</label><textarea id="songLyrics" placeholder="Enter your lyrics, theme, story or key phrases..."></textarea></div>
+      <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
+    </div>
+    <div class="cost-preview">Estimated cost: <strong>25 credits (€0.25)</strong> per song.</div>
+    <button class="primary-btn" type="button" onclick="prepareMusicProject()">PREPARE MUSIC PROJECT</button>
+    <div id="songProjectOutput" class="project-output hidden"></div>
+  </div>
+</section>
+<div class="field">
+  <label for="performerType">AI Performer</label>
