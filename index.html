@@ -37,8 +37,11 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(5,5,5,.96);
-      border-bottom: 1px solid #292929;
+      background: linear-gradient(90deg, rgba(5,5,5,.97), rgba(35,5,9,.94), rgba(5,5,5,.97));
+      border: 1px solid #9d1722;
+      border-left: 0;
+      border-right: 0;
+      box-shadow: 0 4px 24px rgba(229,9,20,.18);
       padding: 15px 5%;
       display: flex;
       align-items: center;
@@ -63,23 +66,47 @@
     }
 
     nav a {
-      color: #ddd;
+      color: #fff;
       text-decoration: none;
       font-size: 14px;
+      padding: 9px 11px;
+      border: 1px solid rgba(229,9,20,.65);
+      border-radius: 6px;
+      background: rgba(8,8,8,.88);
+      box-shadow: inset 0 0 10px rgba(229,9,20,.06);
+      transition: .2s;
     }
 
-    nav a:hover { color: var(--red-light); }
+    nav a:hover {
+      color: #fff;
+      border-color: #ff303a;
+      background: #3a0d12;
+      box-shadow: 0 0 14px rgba(229,9,20,.28);
+    }
 
     .hero {
       min-height: 440px;
       padding: 100px 20px 80px;
       text-align: center;
       background:
-        linear-gradient(180deg, rgba(0,0,0,.48), #080808),
+        linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.58) 52%, #080808 100%),
+        linear-gradient(90deg, rgba(0,0,0,.62), rgba(30,4,8,.18), rgba(0,0,0,.62)),
+        url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=2200&q=85") center 42% / cover no-repeat,
         radial-gradient(ellipse at center, #471014 0%, #160809 45%, #080808 80%);
+      border-bottom: 1px solid #8f1822;
+      box-shadow: inset 0 -35px 55px rgba(0,0,0,.48);
     }
 
     .hero h1 {
+      display: table;
+      max-width: 100%;
+      margin: 0 auto 18px;
+      padding: 13px 22px;
+      background: rgba(0,0,0,.48);
+      border: 1px solid rgba(229,9,20,.48);
+      border-radius: 10px;
+      text-shadow: 0 4px 18px #000, 0 0 24px rgba(229,9,20,.32);
+      box-shadow: 0 8px 30px rgba(0,0,0,.28);
       font-size: clamp(35px, 7vw, 72px);
       margin: 0 0 15px;
       font-weight: 900;
@@ -152,7 +179,7 @@
     .category-card {
       overflow: hidden;
       min-height: 220px;
-      border: 1px solid #333;
+      border: 1px solid #8b1c27;
       border-radius: 10px;
       background: #171717;
       transition: .25s;
@@ -180,8 +207,9 @@
     }
 
     .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: linear-gradient(145deg, #191112, #101010);
+      border: 1px solid #76202a;
+      box-shadow: 0 8px 28px rgba(0,0,0,.22);
       border-radius: 12px;
       padding: 25px;
       margin-bottom: 25px;
@@ -457,10 +485,10 @@
   
 /* LANE VIDEO AI — expanded studio and account UI */
 .account-menu { position:relative; }
-.account-menu summary { list-style:none; cursor:pointer; border:1px solid #444; border-radius:7px; padding:10px 14px; color:#fff; background:#171717; font-weight:bold; }
+.account-menu summary { list-style:none; cursor:pointer; border:1px solid #e50914; border-radius:7px; padding:10px 14px; color:#fff; background:#19090c; font-weight:bold; box-shadow:0 0 12px #e5091422; }
 .account-menu summary::-webkit-details-marker { display:none; }
 .account-menu[open] .account-dropdown { display:grid; }
-.account-dropdown { display:none; position:absolute; right:0; top:calc(100% + 9px); z-index:150; min-width:230px; padding:9px; background:#151515; border:1px solid #393939; border-radius:9px; box-shadow:0 14px 35px #000b; gap:4px; }
+.account-dropdown { display:none; position:absolute; right:0; top:calc(100% + 9px); z-index:150; min-width:230px; padding:9px; background:#12090b; border:1px solid #e50914; border-radius:9px; box-shadow:0 14px 35px #000b, 0 0 18px #e5091422; gap:4px; }
 .account-dropdown a { display:block; padding:10px 12px; color:#eee; text-decoration:none; border-radius:5px; font-size:13px; }
 .account-dropdown a:hover { background:#351014; color:#fff; }
 .price-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
@@ -530,7 +558,7 @@
 
 <section class="section" id="categories">
   <h2 class="section-title">Explore Video Categories</h2>
- <p class="section-description">
+  <p class="section-description">
     Choose the type of video project you want to create.
   </p>
 
@@ -739,7 +767,7 @@
         <option value="">Sign in and upload a song in My Files first</option>
       </select>
       <span class="hint">
-        Upload your MP3 or WAV song in the My Files section below.
+        Upload your MP3 song in the My Files section below.
       </span>
     </div>
 
@@ -1062,7 +1090,8 @@
     <button type="button" class="library-filter" data-library-filter="thumbnail" onclick="filterMyFiles('thumbnail', this)">My Thumbnails</button>
     <button type="button" class="library-filter" data-library-filter="text" onclick="filterMyFiles('text', this)">Project Text</button>
   </div>
- <div class="panel">
+
+  <div class="panel">
     <h3>Upload Your Music</h3>
     <div class="field">
       <label for="songUpload">Choose MP3 file</label>
@@ -1585,14 +1614,14 @@ These settings are a project brief and will be used when an AI generation provid
       showAuthMessage("Please enter your email and password.");
       return;
     }
-
     showAuthMessage("Creating your account...");
 
     const { data, error } = await supabaseClient.auth.signUp({
       email,
       password
     });
-  if (error) {
+
+    if (error) {
       showAuthMessage(error.message);
       return;
     }
@@ -2124,4 +2153,3 @@ These settings are a project brief and will be used when an AI generation provid
 
 </body>
 </html>
-          
