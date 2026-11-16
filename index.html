@@ -2192,15 +2192,55 @@ These settings are a project brief and will be used when an AI generation provid
     document.getElementById('paymentModal').classList.remove('open');
     document.body.classList.remove('payment-open');
   }
-  function continueToPayment() {
-    const method = document.querySelector('input[name="paymentMethod"]:checked');
-    const label = method ? ({card:'bank card (Visa/Mastercard)', googlepay:'Google Pay', applepay:'Apple Pay'}[method.value]) : 'payment method';
-    alert('You selected ' + label + ' for ' + (selectedPayment ? selectedPayment.name : 'your purchase') + '. Secure Stripe checkout is not connected yet, so no payment has been taken and no credits have been added.');
+ 
+async function continueToPayment() {
+  if (!currentUser) {
+    alert("Please sign in before making a purchase.");
+    return;
   }
-  document.addEventListener('keydown', function(event) { if (event.key === 'Escape') closePaymentModal(); });
-</script>
 
-<script>
+  if (!selectedPayment) {
+    alert("Please select a plan first.");
+    return;
+  }
+
+  const packageIds = {
+    "Starter": "starter",
+    "Creator": "creator",
+    "Pro": "pro",
+    "Ultimate": "ultimate",
+    "Small": "small",
+    "Medium": "medium",
+    "Large": "large",
+    "Extra Large": "extra_large"
+  };
+
+  const planId = packageIds[selectedPayment.name];
+
+  if (!planId) {
+    alert("Invalid package selected.");
+    return;
+  }
+
+  try {
+    const { data, error } =
+      await supabaseClient.functions.invoke(
+        "create-checkout-session",
+        { body: { planId } }
+      );
+
+    if (error) throw error;
+    if (!data || !data.url) {
+      throw new Error("Stripe checkout URL was not returned.");
+    }
+
+    window.location.href = data.url;
+
+  } catch (error) {
+    alert("Payment error: " + error.message);
+  }
+}
+
   document.addEventListener('click', function (event) {
     const link = event.target.closest('.main-menu-dropdown > a');
     if (link) {
