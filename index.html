@@ -1964,6 +1964,165 @@ These settings are a project brief and will be used when an AI generation provid
     updateLibraryCounts();
     filterMyFiles(activeLibraryFilter);
   }
+    function updateLibraryCounts() {
+    const audioCount = currentFiles.length;
+    document.getElementById("audioFileCount").textContent = audioCount;
+    document.getElementById("videoFileCount").textContent = "0";
+    document.getElementById("imageFileCount").textContent = "0";
+    document.getElementById("thumbnailFileCount").textContent = "0";
+  }
+
+  // UPDATE MUSIC FILE SELECT
+
+  function refreshMusicFileOptions() {
+    const select = document.getElementById("musicFileSelect");
+
+    select.innerHTML = "";
+
+    if (!currentUser) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Sign in to select your songs";
+      select.appendChild(option);
+      return;
+    }
+
+    if (!currentFiles.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No uploaded songs yet";
+      select.appendChild(option);
+      return;
+    }
+
+    const firstOption = document.createElement("option");
+    firstOption.value = "";
+    firstOption.textContent = "Choose a song...";
+    select.appendChild(firstOption);
+
+    currentFiles.forEach(file => {
+      const option = document.createElement("option");
+      option.value = file.name;
+      option.textContent = file.name;
+      select.appendChild(option);
+    });
+  }
+
+  // USE SONG IN STUDIO
+
+  function useSongInStudio(fileName) {
+    document.getElementById("musicMode").value = "upload";
+    document.getElementById("musicFileField").classList.remove("hidden");
+
+    document.getElementById("musicFileSelect").value = fileName;
+
+    document.getElementById("musicStudio").scrollIntoView({
+      behavior: "smooth"
+    });
+  }
+
+  // PLAY SONG
+
+  async function playSong(fileName) {
+    if (!currentUser) {
+      alert("Please sign in first.");
+      return;
+    }
+
+    const filePath = currentUser.id + "/" + fileName;
+
+    const { data, error } = await supabaseClient.storage
+      .from("user-songs")
+      .createSignedUrl(filePath, 3600);
+
+    if (error) {
+      alert("Could not play this song: " + error.message);
+      return;
+    }
+
+    const player = document.getElementById("audioPlayer");
+
+    currentAudioUrl = data.signedUrl;
+    player.src = currentAudioUrl;
+    player.classList.remove("hidden");
+
+    player.play().catch(() => {
+      alert("Press the play button in the audio player to listen.");
+    });
+  }
+
+  // STOP SONG PREVIEW
+
+  function stopSongPreview() {
+    const player = document.getElementById("audioPlayer");
+
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    player.classList.add("hidden");
+
+    currentAudioUrl = null;
+  }
+
+  // DELETE SONG
+
+  async function deleteSong(fileName) {
+    if (!currentUser || deletingFile) {
+      return;
+    }
+
+    const confirmed = confirm(
+      'Are you sure you want to permanently delete "' + fileName + '"?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    deletingFile = true;
+    showFileMessage("Deleting song...");
+
+    const filePath = currentUser.id + "/" + fileName;
+
+    const { error } = await supabaseClient.storage
+      .from("user-songs")
+      .remove([filePath]);
+
+    deletingFile = false;
+
+    if (error) {
+      showFileMessage("Could not delete file: " + error.message, true);
+      return;
+    }
+
+    if (currentAudioUrl) {
+      stopSongPreview();
+    }
+
+    showFileMessage("Song deleted successfully.");
+
+    await loadMyFiles();
+  }
+
+  // BASIC HTML ESCAPING
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, function(character) {
+      const replacements = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return replacements[character];
+    });
+  }
+
+  // INITIAL LOAD
+
+  refreshAuthState();
     </script>
 
 </body>
