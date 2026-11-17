@@ -1734,7 +1734,7 @@ These settings are a project brief and will be used when an AI generation provid
 
     currentUser = data?.user || null;
 const headerCreditBalance = document.getElementById("headerCreditBalance");
-
+const headerCreditBalanceTop = document.getElementById("headerCreditBalanceTop");
 if (currentUser) {
   const { data: wallet, error: walletError } = await supabaseClient
     .from("credit_wallets")
@@ -1752,6 +1752,9 @@ if (currentUser) {
   if (headerCreditBalance) {
     headerCreditBalance.textContent = totalCredits;
   }
+  if (headerCreditBalanceTop) {
+  headerCreditBalanceTop.textContent = totalCredits;
+}
 } else {
   if (headerCreditBalance) {
     headerCreditBalance.textContent = "0";
