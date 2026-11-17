@@ -611,6 +611,16 @@
       .live-community { order: 3; margin: 0 auto 0 0; }
     }
 
+  
+    .premium-image-plan {
+      border: 1px solid #e34a59 !important;
+      background: linear-gradient(155deg, #241014 0%, #10090b 72%) !important;
+      box-shadow: 0 0 22px rgba(229, 9, 20, .18);
+      position: relative;
+    }
+    .premium-image-plan .price { color: #ff6673; }
+    .premium-image-plan strong { display: block; margin: 12px 0; }
+
   </style>
 </head>
 
@@ -1182,7 +1192,12 @@
     <div class="price-card featured"><h3>Creator</h3><div class="price">€9.99 <small>/ month</small></div><strong>999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Creator', '€9.99', '999', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
     <div class="price-card"><h3>Pro</h3><div class="price">€19.99 <small>/ month</small></div><strong>1,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Pro', '€19.99', '1999', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
     <div class="price-card"><h3>Ultimate</h3><div class="price">€39.99 <small>/ month</small></div><strong>3,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" type="button" onclick="openPaymentModal('Ultimate', '€39.99', '3999', 'SUBSCRIPTION')">CHOOSE PLAN</button></div>
-    <div class="price-card premium-image-plan"><h3>PREMIUM PLAN</h3><div class="price">$599</div><strong>UNLIMITED AI IMAGES</strong></div>
+    <div class="price-card premium-image-plan">
+      <h3>PREMIUM PLAN</h3>
+      <div class="price">$599</div>
+      <strong>UNLIMITED AI IMAGES</strong>
+      <button class="buy-credit-btn" type="button" onclick="showPremiumImagesNotice()">COMING SOON</button>
+    </div>
   </div>
   <div class="panel" style="margin-top:22px">
     <strong>Credit rules (planned)</strong>
@@ -2403,6 +2418,10 @@ if (currentUser) {
 </div>
 
 <script>
+  function showPremiumImagesNotice() {
+    alert("The Premium Unlimited AI Images plan is being prepared. Purchasing and image generation will be enabled after the payment and image-generation services are connected.");
+  }
+
   let selectedPayment = null;
   function openPaymentModal(name, price, credits, type) {
     selectedPayment = { name, price, credits, type };
