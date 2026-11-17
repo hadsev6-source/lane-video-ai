@@ -1398,55 +1398,71 @@
 
   // GENERAL VIDEO PROJECT
 
-  function prepareVideo() {
-    const category = document.getElementById("category").value;
-    const prompt = document.getElementById("prompt").value.trim();
-    const style = document.getElementById("style").value;
-    const duration = document.getElementById("duration").value;
 
-    if (!prompt) {
-      alert("Please describe your video idea first.");
-      return;
+async function prepareVideo() {
+  const prompt = document.getElementById("prompt").value.trim();
+  const style = document.getElementById("style").value;
+  const duration = document.getElementById("duration").value;
+  const output = document.getElementById("generalProjectOutput");
+
+  if (!prompt) {
+    alert("Please describe your video idea first.");
+    return;
+  }
+
+  if (duration !== "5 seconds") {
+    alert("For the first test, please select 5 seconds.");
+    return;
+  }
+
+  if (!currentUser) {
+    alert("Please sign in first.");
+    return;
+  }
+
+  output.textContent = "Starting AI video generation...";
+  output.classList.remove("hidden");
+
+  try {
+    const { data, error } = await supabaseClient.functions.invoke(
+      "generate-video",
+      {
+        body: {
+          promptText: prompt + ". Visual style: " + style,
+          model: "gen4.5",
+          duration: 5,
+          ratio: "1280:720"
+        }
+      }
+    );
+
+    if (error) throw error;
+
+    if (!data || !data.success || !data.taskId) {
+      throw new Error(data?.error || "Video generation could not start.");
     }
 
-    const fileSummary = selectedExtraFiles.length
-      ? selectedExtraFiles.map(file =>
-          "- " + file.name + " (" + formatFileSize(file.size) + ")"
-        ).join("\n")
-      : "No reference files selected.";
+    output.textContent =
+      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
+      "Your video generation task has started!\n\n" +
+      "Model: Runway Gen-4.5\n" +
+      "Duration: 5 seconds\n" +
+      "Task ID: " + data.taskId + "\n\n" +
+      "Status: Processing. The video is not ready yet.";
 
-    const summary =
-`LANE VIDEO AI — VIDEO PROJECT
-
-Category: ${category}
-
-Visual Style: ${style}
-
-Duration: ${duration}
-
-Detailed Video Instructions:
-${prompt}
-
-Additional Reference Files:
-${fileSummary}
-
-FILE STORAGE:
-Reference files are currently selected in this browser only.
-They have not been uploaded or permanently stored.
-
-PROJECT STATUS:
-Project settings prepared successfully.
-AI video generation and reference-file processing are not connected yet.`;
-
-    const output = document.getElementById("generalProjectOutput");
-    output.textContent = summary;
-    output.classList.remove("hidden");
-
-    output.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest"
-    });
+  } catch (error) {
+    console.error("Video generation error:", error);
+    output.textContent =
+      "Video generation error:\n" +
+      (error.message || "Please try again.");
   }
+
+  output.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest"
+  });
+}
+
 
   // MUSIC VIDEO PROJECT
 
