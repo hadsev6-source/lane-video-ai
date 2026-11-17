@@ -533,6 +533,16 @@
     .premium-image-plan .price { color: #ff6673; }
     .premium-image-plan strong { display:block; margin:12px 0; }
     .premium-grid { margin: 16px 0 24px; }
+.premium-buy-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  width: min(100%, 260px); margin: 18px auto 8px; padding: 14px 22px;
+  border: 1px solid #ff4654; border-radius: 8px;
+  background: linear-gradient(90deg, #f21a2c, #b60012); color: #fff;
+  font-size: 16px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 0 18px #e5091433;
+}
+.premium-buy-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.premium-image-plan .mini-note { margin: 4px 0 0; }
     .studio-accordion { border:1px solid #8b1c27; border-radius:12px; background:#111; overflow:hidden; }
     .studio-accordion > summary { cursor:pointer; list-style:none; padding:18px 20px; font-size:18px; font-weight:700; color:#fff; }
     .studio-accordion > summary::-webkit-details-marker { display:none; }
@@ -641,10 +651,13 @@
 </div>
 <div class="generation-limits-showcase" id="generation-limits"><h3>Generation Limits</h3><div class="limit-row"><strong>AI Video</strong><span>5s  •  10s  •  15s  •  20s  •  30s</span></div><div class="limit-row"><strong>AI Images</strong><span>Create images</span></div><div class="limit-row"><strong>AI Music</strong><span>Generate music tracks</span></div></div><div class="price-grid premium-grid">
 <div class="price-card premium-image-plan">
-<h3>PREMIUM PLAN</h3><strong>UNLIMITED AI IMAGES</strong><div class="price">$599</div>
-
-
-
+<h3>PREMIUM PLAN</h3>
+<strong>UNLIMITED AI IMAGES</strong>
+<div class="price">$500</div>
+<button class="buy-credit-btn premium-buy-btn" onclick="showPremiumImagesNotice()" type="button" aria-label="Buy Premium Unlimited AI Images plan">
+  <span aria-hidden="true">🛒</span> BUY NOW
+</button>
+<p class="mini-note">Secure checkout is not connected yet.</p>
 </div>
 </div>
 <h3 id="credits" style="margin-top:32px">Buy More Credits</h3>
