@@ -89,8 +89,8 @@
     .notification-dropdown p { margin: 5px 0; font-size: 13px; color: #ccc; }
 
     .hero {
-      min-height: 440px;
-      padding: 100px 20px 80px;
+      min-height: 300px;
+      padding: 52px 20px 44px;
       text-align: center;
       background:
         linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.58) 52%, #080808 100%),
@@ -479,7 +479,7 @@
       .library-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .section { padding: 40px 5%; }
       .panel { padding: 17px; }
-      .hero { padding-top: 70px; }
+      .hero { min-height: 260px; padding-top: 42px; padding-bottom: 36px; }
     }
   
 /* LANE VIDEO AI — expanded studio and account UI */
@@ -527,6 +527,41 @@
     .payment-note { color:#bbb; font-size:12px; line-height:1.5; }
     body.payment-open { overflow:hidden; }
 
+
+    /* Compact first-screen creative studio accordions */
+    .create-tools { padding-top: 22px; padding-bottom: 24px; }
+    .tool-accordion {
+      margin: 12px 0;
+      border: 1px solid #8b1c27;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(145deg, #191112, #101010);
+      box-shadow: 0 7px 22px rgba(0,0,0,.2);
+    }
+    .tool-accordion > summary {
+      display: flex; align-items: center; gap: 12px;
+      min-height: 72px; padding: 15px 20px; cursor: pointer;
+      list-style: none; background: linear-gradient(90deg, #210d11, #151010);
+    }
+    .tool-accordion > summary::-webkit-details-marker { display: none; }
+    .tool-accordion > summary:hover, .tool-accordion[open] > summary { background: linear-gradient(90deg, #351014, #1b1012); }
+    .tool-accordion-icon { font-size: 25px; flex: 0 0 auto; }
+    .tool-accordion-title { font-size: 17px; font-weight: 800; }
+    .tool-accordion-subtitle { color: #aaa; font-size: 12px; flex: 1; }
+    .tool-accordion-chevron { color: #ff303a; font-size: 22px; font-weight: 800; }
+    .tool-accordion[open] .tool-accordion-chevron { transform: rotate(45deg); }
+    .tool-accordion > .section { padding: 22px; max-width: none; }
+    .tool-accordion > .section > .section-title { display: none; }
+    .tool-accordion > .section > .section-description { margin: 0 0 18px; }
+    .category-card { min-height: 155px; }
+    .category-card video { height: 115px; }
+    @media(max-width:650px) {
+      .tool-accordion > summary { flex-wrap: wrap; gap: 8px; padding: 14px; }
+      .tool-accordion-subtitle { flex-basis: calc(100% - 45px); margin-left: 37px; }
+      .tool-accordion > .section { padding: 14px; }
+      .category-card { min-height: 145px; }
+      .category-card video { height: 105px; }
+    }
   </style>
 </head>
 
@@ -538,9 +573,9 @@
     <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
     <nav class="main-menu-dropdown" aria-label="Main navigation">
       <a href="#categories">Categories</a>
-      <a href="#studio">AI Video</a>
-      <a href="#imageStudio">AI Images</a>
-      <a href="#musicGenerator">AI Music</a>
+      <a href="#videoAccordion">AI Video</a>
+      <a href="#imageAccordion">AI Images</a>
+      <a href="#musicAccordion">AI Music</a>
       <a href="#pricing">Plans & Credits</a>
       <a href="#myfiles">My Files</a>
       <details class="notification-menu">
@@ -577,89 +612,77 @@
   <span>🪙</span>
   <span id="headerCreditBalanceTop">0</span>
 </div>
-<section class="hero">
-  <h1>YOUR IMAGINATION. <span>YOUR MOVIE.</span></h1>
-  <h2>TURN YOUR IDEAS INTO VIDEOS</h2>
-  <p>
-    Create Amazing AI Movies, Mini-Series, Dramas, Animations,
-    Music Videos & Product Advertisements from Your Imagination.
-  </p>
-  <a href="#studio" class="primary-btn">ENTER AI STUDIO</a>
-</section>
+<section class="section create-tools" id="create-tools">
+  <h2 class="section-title">Choose Your AI Studio</h2>
+  <p class="section-description">Choose a tool below. Open only the studio you want to use.</p>
 
-<section class="section" id="categories">
-  <h2 class="section-title">Explore Video Categories</h2>
-  <p class="section-description">
-    Choose the type of video project you want to create.
-  </p>
-
-  <div class="category-grid">
-    <div class="category-card" onclick="chooseCategory('Movies & Mini-Series')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 13.28.21.mp4" type="video/mp4">
-      </video>
-      <h3>Movies & Mini-Series</h3>
+  <details class="tool-accordion" id="musicAccordion">
+    <summary><span class="tool-accordion-icon">🎵</span><span class="tool-accordion-title">AI Music Generator</span><span class="tool-accordion-subtitle">Create songs, choose genre, vocals, lyrics and mood</span><span class="tool-accordion-chevron">＋</span></summary>
+    <section class="section" id="musicGenerator">
+  <h2 class="section-title">AI Music Generator</h2>
+  <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
+  <div class="panel">
+    <div class="notice"><strong>One fixed rate:</strong> 25 credits (€0.25) per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
+    <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"></div>
+    <div class="form-grid">
+      <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
+          <optgroup label="Pop & Mainstream">
+            <option>Pop</option><option>Dance Pop</option><option>Electropop</option><option>Synth Pop</option><option>K-Pop</option><option>J-Pop</option><option>Teen Pop</option><option>Indie Pop</option><option>Europop</option><option>Latin Pop</option>
+          </optgroup>
+          <optgroup label="Balkan & Folk">
+            <option>Bulgarian Pop-Folk</option><option>Traditional Bulgarian</option><option>Balkan Folk</option><option>Serbian Folk</option><option>Greek Music</option><option>Oriental</option><option>Arabesque</option><option>Turkish Pop</option><option>Romanian Manele</option>
+          </optgroup>
+          <optgroup label="Afro Music">
+            <option>Afrobeats</option><option>Afro Swing</option><option>Amapiano</option><option>Afro House</option><option>Afro Pop</option><option>Afro Fusion</option><option>Dancehall</option><option>Kuduro</option><option>Highlife</option>
+          </optgroup>
+          <optgroup label="Electronic & Club">
+            <option>Techno</option><option>Melodic Techno</option><option>House</option><option>Deep House</option><option>Tech House</option><option>Progressive House</option><option>Trance</option><option>EDM</option><option>Hardstyle</option><option>Drum & Bass</option><option>Dubstep</option><option>Psytrance</option><option>Eurodance</option>
+          </optgroup>
+          <optgroup label="Hip-Hop & Urban">
+            <option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>R&B</option><option>Contemporary R&B</option><option>Soul</option><option>Neo-Soul</option><option>Rap</option><option>Reggaeton</option><option>Latin Urban</option><option>UK Garage</option>
+          </optgroup>
+          <optgroup label="Latin Music">
+            <option>Salsa</option><option>Bachata</option><option>Merengue</option><option>Cumbia</option><option>Latin House</option><option>Latin Trap</option><option>Bossa Nova</option><option>Samba</option><option>Tango</option>
+          </optgroup>
+          <optgroup label="Country & American">
+            <option>Country</option><option>Country Pop</option><option>Americana</option><option>Bluegrass</option><option>Folk</option><option>Southern Rock</option><option>Blues</option><option>Gospel</option>
+          </optgroup>
+          <optgroup label="Rock & Metal">
+            <option>Pop Rock</option><option>Classic Rock</option><option>Alternative Rock</option><option>Indie Rock</option><option>Hard Rock</option><option>Punk Rock</option><option>Heavy Metal</option><option>Metalcore</option><option>Grunge</option>
+          </optgroup>
+          <optgroup label="Arabic & Oriental">
+            <option>Arabic Pop</option><option>Arabic Dance</option><option>Egyptian Pop</option><option>Khaliji</option><option>Dabke</option><option>Turkish Oriental</option><option>Arabian Fusion</option><option>Persian Pop</option>
+          </optgroup>
+          <optgroup label="Asian & World Music">
+            <option>Bollywood</option><option>Bhangra</option><option>Indian Classical</option><option>Punjabi Pop</option><option>Japanese Pop</option><option>Chinese Pop</option><option>Korean Pop</option><option>World Fusion</option>
+          </optgroup>
+          <optgroup label="Jazz & Classical">
+            <option>Jazz</option><option>Smooth Jazz</option><option>Swing</option><option>Blues Jazz</option><option>Classical</option><option>Orchestral</option><option>Opera</option><option>Chamber Music</option><option>Piano Solo</option>
+          </optgroup>
+          <optgroup label="Cinematic & Ambient">
+            <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
+          </optgroup></select></div>
+      <div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option>30 seconds</option><option>1 minute</option><option>2 minutes</option><option>3 minutes</option><option>4 minutes</option><option selected>5 minutes</option></select></div>
+      <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
+      <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
+      <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
+      <div class="field"><label for="songBpm">Tempo / BPM</label><select id="songBpm"><option>Slow</option><option selected>Medium</option><option>Fast</option><option>Very Fast</option></select></div>
+      <div class="field"><label for="songLyricsMode">Lyrics</label><select id="songLyricsMode"><option>AI Write Lyrics</option><option>My Own Lyrics</option><option>No Lyrics</option></select></div>
+      <div class="field"><label for="songVoiceCharacter">Voice Character</label><select id="songVoiceCharacter"><option>Gentle / Romantic</option><option>Powerful</option><option>Deep / Full</option><option>Soft / Sensual</option><option>Energetic / Dance</option><option>Raspy</option><option>Youthful</option><option>Operatic / Dramatic</option></select></div>
+      <div class="field full"><label for="songCustomStyle">Custom Style (Optional)</label><input id="songCustomStyle" placeholder="Describe a unique sound or combination of influences"></div>
+      <div class="field full"><label for="songLyrics">Your Lyrics / Song Story (Optional)</label><textarea id="songLyrics" placeholder="Enter your lyrics, theme, story or key phrases..."></textarea></div>
+      <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
     </div>
-
-    <div class="category-card" onclick="chooseCategory('Drama & Romance')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 13.52.06.mp4" type="video/mp4">
-      </video>
-      <h3>Drama & Romance</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Comedy & Fun')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 14.00.02.mp4" type="video/mp4">
-      </video>
-      <h3>Comedy & Fun</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Animals & Animation')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 14.07.34.mp4" type="video/mp4">
-      </video>
-      <h3>Animals & Animation</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Fantasy & Sci-Fi')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 13.20.47.mp4" type="video/mp4">
-      </video>
-      <h3>Fantasy & Sci-Fi</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Action & Adventure')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 13.38.21.mp4" type="video/mp4">
-      </video>
-      <h3>Action & Adventure</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Singers & Performers')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 12.43.19.mp4" type="video/mp4">
-      </video>
-      <h3>Singers & Performers</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Music & Dance')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 13.09.31.mp4" type="video/mp4">
-      </video>
-      <h3>Music & Dance</h3>
-    </div>
-
-    <div class="category-card" onclick="chooseCategory('Advertising & Promos')">
-      <video muted autoplay loop playsinline preload="metadata">
-        <source src="WhatsApp Video 2026-11-15 at 14.17.22.mp4" type="video/mp4">
-      </video>
-      <h3>Advertising & Promos</h3>
-    </div>
+    <div class="cost-preview">Estimated cost: <strong>25 credits (€0.25)</strong> per song.</div>
+    <button class="primary-btn" type="button" onclick="prepareMusicProject()">PREPARE MUSIC PROJECT</button>
+    <div id="songProjectOutput" class="project-output hidden"></div>
   </div>
 </section>
+  </details>
 
-<section class="section" id="studio">
+  <details class="tool-accordion" id="videoAccordion">
+    <summary><span class="tool-accordion-icon">🎬</span><span class="tool-accordion-title">AI Video Generator</span><span class="tool-accordion-subtitle">Create videos, movies, mini-series and music videos</span><span class="tool-accordion-chevron">＋</span></summary>
+    <section class="section" id="studio">
   <h2 class="section-title">AI Video Studio</h2>
   <p class="section-description">
     Describe your idea and prepare your video project.
@@ -706,13 +729,10 @@
         <label for="duration">Video Duration</label>
         <select id="duration">
           <option>5 seconds</option>
+          <option>10 seconds</option>
           <option>15 seconds</option>
+          <option>20 seconds</option>
           <option>30 seconds</option>
-          <option>1 minute</option>
-          <option>2 minutes</option>
-          <option>5 minutes</option>
-          <option>10 minutes</option>
-          <option>Long-form project</option>
         </select>
       </div>
     </div>
@@ -975,9 +995,11 @@
     <div id="musicProjectOutput" class="project-output hidden"></div>
   </div>
 </section>
+  </details>
 
-
-<section class="section" id="imageStudio">
+  <details class="tool-accordion" id="imageAccordion">
+    <summary><span class="tool-accordion-icon">🖼️</span><span class="tool-accordion-title">AI Image Generator</span><span class="tool-accordion-subtitle">Prepare image projects and choose styles</span><span class="tool-accordion-chevron">＋</span></summary>
+    <section class="section" id="imageStudio">
   <h2 class="section-title">AI Image Studio</h2>
   <p class="section-description">Prepare image-generation projects and see the estimated credit cost before generation is connected.</p>
   <div class="panel">
@@ -997,74 +1019,104 @@
       <div class="field"><label for="imageQuantity">Number of Images</label>
         <select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
       </div>
-    </div>
-    <div class="cost-preview" id="imageCostPreview" aria-live="polite">Estimated cost: <strong>7 credits (€0.07)</strong></div>
+    </div>    <div class="cost-preview" id="imageCostPreview" aria-live="polite">Estimated cost: <strong>7 credits (€0.07)</strong></div>
     <button class="primary-btn" type="button" onclick="prepareImageProject()">PREPARE IMAGE PROJECT</button>
     <div id="imageProjectOutput" class="project-output hidden"></div>
     <p class="mini-note">Image generation is not connected yet. This form prepares the project brief only.</p>
   </div>
 </section>
+  </details>
+</section>
 
-<section class="section" id="musicGenerator">
-  <h2 class="section-title">AI Music Generator</h2>
-  <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
-  <div class="panel">
-    <div class="notice"><strong>One fixed rate:</strong> 25 credits (€0.25) per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
-    <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"></div>
-    <div class="form-grid">
-      <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
-          <optgroup label="Pop & Mainstream">
-            <option>Pop</option><option>Dance Pop</option><option>Electropop</option><option>Synth Pop</option><option>K-Pop</option><option>J-Pop</option><option>Teen Pop</option><option>Indie Pop</option><option>Europop</option><option>Latin Pop</option>
-          </optgroup>
-          <optgroup label="Balkan & Folk">
-            <option>Bulgarian Pop-Folk</option><option>Traditional Bulgarian</option><option>Balkan Folk</option><option>Serbian Folk</option><option>Greek Music</option><option>Oriental</option><option>Arabesque</option><option>Turkish Pop</option><option>Romanian Manele</option>
-          </optgroup>
-          <optgroup label="Afro Music">
-            <option>Afrobeats</option><option>Afro Swing</option><option>Amapiano</option><option>Afro House</option><option>Afro Pop</option><option>Afro Fusion</option><option>Dancehall</option><option>Kuduro</option><option>Highlife</option>
-          </optgroup>
-          <optgroup label="Electronic & Club">
-            <option>Techno</option><option>Melodic Techno</option><option>House</option><option>Deep House</option><option>Tech House</option><option>Progressive House</option><option>Trance</option><option>EDM</option><option>Hardstyle</option><option>Drum & Bass</option><option>Dubstep</option><option>Psytrance</option><option>Eurodance</option>
-          </optgroup>
-          <optgroup label="Hip-Hop & Urban">
-            <option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>R&B</option><option>Contemporary R&B</option><option>Soul</option><option>Neo-Soul</option><option>Rap</option><option>Reggaeton</option><option>Latin Urban</option><option>UK Garage</option>
-          </optgroup>
-          <optgroup label="Latin Music">
-            <option>Salsa</option><option>Bachata</option><option>Merengue</option><option>Cumbia</option><option>Latin House</option><option>Latin Trap</option><option>Bossa Nova</option><option>Samba</option><option>Tango</option>
-          </optgroup>
-          <optgroup label="Country & American">
-            <option>Country</option><option>Country Pop</option><option>Americana</option><option>Bluegrass</option><option>Folk</option><option>Southern Rock</option><option>Blues</option><option>Gospel</option>
-          </optgroup>
-          <optgroup label="Rock & Metal">
-            <option>Pop Rock</option><option>Classic Rock</option><option>Alternative Rock</option><option>Indie Rock</option><option>Hard Rock</option><option>Punk Rock</option><option>Heavy Metal</option><option>Metalcore</option><option>Grunge</option>
-          </optgroup>
-          <optgroup label="Arabic & Oriental">
-            <option>Arabic Pop</option><option>Arabic Dance</option><option>Egyptian Pop</option><option>Khaliji</option><option>Dabke</option><option>Turkish Oriental</option><option>Arabian Fusion</option><option>Persian Pop</option>
-          </optgroup>
-          <optgroup label="Asian & World Music">
-            <option>Bollywood</option><option>Bhangra</option><option>Indian Classical</option><option>Punjabi Pop</option><option>Japanese Pop</option><option>Chinese Pop</option><option>Korean Pop</option><option>World Fusion</option>
-          </optgroup>
-          <optgroup label="Jazz & Classical">
-            <option>Jazz</option><option>Smooth Jazz</option><option>Swing</option><option>Blues Jazz</option><option>Classical</option><option>Orchestral</option><option>Opera</option><option>Chamber Music</option><option>Piano Solo</option>
-          </optgroup>
-          <optgroup label="Cinematic & Ambient">
-            <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
-          </optgroup></select></div>
-      <div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option>30 seconds</option><option>1 minute</option><option>2 minutes</option><option>3 minutes</option><option>4 minutes</option><option selected>5 minutes</option></select></div>
-      <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
-      <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
-      <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
-      <div class="field"><label for="songBpm">Tempo / BPM</label><select id="songBpm"><option>Slow</option><option selected>Medium</option><option>Fast</option><option>Very Fast</option></select></div>
-      <div class="field"><label for="songLyricsMode">Lyrics</label><select id="songLyricsMode"><option>AI Write Lyrics</option><option>My Own Lyrics</option><option>No Lyrics</option></select></div>
-      <div class="field"><label for="songVoiceCharacter">Voice Character</label><select id="songVoiceCharacter"><option>Gentle / Romantic</option><option>Powerful</option><option>Deep / Full</option><option>Soft / Sensual</option><option>Energetic / Dance</option><option>Raspy</option><option>Youthful</option><option>Operatic / Dramatic</option></select></div>
-      <div class="field full"><label for="songCustomStyle">Custom Style (Optional)</label><input id="songCustomStyle" placeholder="Describe a unique sound or combination of influences"></div>
-      <div class="field full"><label for="songLyrics">Your Lyrics / Song Story (Optional)</label><textarea id="songLyrics" placeholder="Enter your lyrics, theme, story or key phrases..."></textarea></div>
-      <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
+
+<section class="hero">
+  <h1>YOUR IMAGINATION. <span>YOUR MOVIE.</span></h1>
+  <h2>TURN YOUR IDEAS INTO VIDEOS</h2>
+  <p>
+    Create Amazing AI Movies, Mini-Series, Dramas, Animations,
+    Music Videos & Product Advertisements from Your Imagination.
+  </p>
+  <a href="#videoAccordion" class="primary-btn">ENTER AI STUDIO</a>
+</section>
+
+<section class="section" id="categories">
+  <h2 class="section-title">Explore Video Categories</h2>
+  <p class="section-description">
+    Choose the type of video project you want to create.
+  </p>
+
+  <div class="category-grid">
+    <div class="category-card" onclick="chooseCategory('Movies & Mini-Series')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.28.21.mp4" type="video/mp4">
+      </video>
+      <h3>Movies & Mini-Series</h3>
     </div>
-    <div class="cost-preview">Estimated cost: <strong>25 credits (€0.25)</strong> per song.</div>
-    <button class="primary-btn" type="button" onclick="prepareMusicProject()">PREPARE MUSIC PROJECT</button>
-    <div id="songProjectOutput" class="project-output hidden"></div>
+
+    <div class="category-card" onclick="chooseCategory('Drama & Romance')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.52.06.mp4" type="video/mp4">
+      </video>
+      <h3>Drama & Romance</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Comedy & Fun')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.00.02.mp4" type="video/mp4">
+      </video>
+      <h3>Comedy & Fun</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Animals & Animation')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.07.34.mp4" type="video/mp4">
+      </video>
+      <h3>Animals & Animation</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Fantasy & Sci-Fi')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.20.47.mp4" type="video/mp4">
+      </video>
+      <h3>Fantasy & Sci-Fi</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Action & Adventure')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.38.21.mp4" type="video/mp4">
+      </video>
+      <h3>Action & Adventure</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Singers & Performers')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 12.43.19.mp4" type="video/mp4">
+      </video>
+      <h3>Singers & Performers</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Music & Dance')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 13.09.31.mp4" type="video/mp4">
+      </video>
+      <h3>Music & Dance</h3>
+    </div>
+
+    <div class="category-card" onclick="chooseCategory('Advertising & Promos')">
+      <video muted autoplay loop playsinline preload="metadata">
+        <source src="WhatsApp Video 2026-11-15 at 14.17.22.mp4" type="video/mp4">
+      </video>
+      <h3>Advertising & Promos</h3>
+    </div>
   </div>
 </section>
+
+
+
+
+
+
+
 
 <section class="section" id="pricing">
   <h2 class="section-title">Plans, Credits & Pricing</h2>
@@ -1390,6 +1442,8 @@
 
   function chooseCategory(category) {
     document.getElementById("category").value = category;
+    const videoAccordion = document.getElementById("videoAccordion");
+    if (videoAccordion) videoAccordion.open = true;
 
     document.getElementById("studio").scrollIntoView({
       behavior: "smooth"
@@ -1410,8 +1464,9 @@ async function prepareVideo() {
     return;
   }
 
-  if (duration !== "5 seconds") {
-    alert("For the first test, please select 5 seconds.");
+  const durationSeconds = Number.parseInt(duration, 10);
+  if (![5, 10, 15, 20, 30].includes(durationSeconds)) {
+    alert("Please choose a video duration between 5 and 30 seconds.");
     return;
   }
 
@@ -1430,7 +1485,7 @@ async function prepareVideo() {
         body: {
           promptText: prompt + ". Visual style: " + style,
           model: "gen4.5",
-          duration: 5,
+          duration: durationSeconds,
           ratio: "1280:720"
         }
       }
@@ -1446,7 +1501,7 @@ async function prepareVideo() {
       "LANE VIDEO AI — VIDEO GENERATION\n\n" +
       "Your video generation task has started!\n\n" +
       "Model: Runway Gen-4.5\n" +
-      "Duration: 5 seconds\n" +
+      "Duration: " + durationSeconds + " seconds\n" +
       "Task ID: " + data.taskId + "\n\n" +
       "Status: Processing. The video is not ready yet.";
 
@@ -1997,7 +2052,7 @@ if (currentUser) {
       });
 
     if (error) {
-      list.innerHTML =
+      list.innerHTML =      list.innerHTML =
         '<p class="hint">Could not load files: ' +
         escapeHTML(error.message) + '</p>';
       return;
@@ -2220,6 +2275,16 @@ if (currentUser) {
     });
   }
 
+  // Keep the creative studios compact: only one accordion can be open at a time.
+  document.querySelectorAll(".tool-accordion").forEach(function(accordion) {
+    accordion.addEventListener("toggle", function() {
+      if (!accordion.open) return;
+      document.querySelectorAll(".tool-accordion").forEach(function(other) {
+        if (other !== accordion) other.open = false;
+      });
+    });
+  });
+
   // INITIAL LOAD
 
   refreshAuthState();
@@ -2305,8 +2370,25 @@ async function continueToPayment() {
 }
 
   document.addEventListener('click', function (event) {
-    const link = event.target.closest('.main-menu-dropdown > a');
+    const link = event.target.closest('a[href^="#"]');
     if (link) {
+      const targetId = link.getAttribute("href").slice(1);
+      const accordionMap = {
+        musicGenerator: "musicAccordion",
+        musicAccordion: "musicAccordion",
+        studio: "videoAccordion",
+        videoAccordion: "videoAccordion",
+        imageStudio: "imageAccordion",
+        imageAccordion: "imageAccordion"
+      };
+      const accordionId = accordionMap[targetId];
+      if (accordionId) {
+        const accordion = document.getElementById(accordionId);
+        if (accordion) accordion.open = true;
+      }
+    }
+
+    if (event.target.closest('.main-menu-dropdown > a')) {
       const menu = document.querySelector('.main-menu');
       if (menu) menu.open = false;
     }
