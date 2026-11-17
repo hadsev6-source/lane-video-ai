@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -538,6 +539,11 @@
     .studio-accordion > summary:after { content:'+'; float:right; color:#e34a59; font-size:22px; }
     .studio-accordion[open] > summary:after { content:'−'; }
     .studio-accordion > .section-description, .studio-accordion > .panel { margin:0 18px 18px; }
+    .live-community { display:inline-flex; align-items:center; gap:7px; margin-left:auto; margin-right:10px; padding:6px 10px; border:1px solid rgba(46,204,113,.55); border-radius:999px; background:rgba(5,20,12,.72); color:#e8f5ec; font-size:11px; white-space:nowrap; }
+    .live-indicator { width:7px; height:7px; border-radius:50%; background:#35d879; box-shadow:0 0 0 0 rgba(53,216,121,.65); animation:livePulse 1.5s ease-out infinite; flex:0 0 7px; }
+    .live-label { color:#62e99a; border:1px solid rgba(53,216,121,.7); border-radius:4px; padding:2px 5px; font-size:9px; font-weight:800; letter-spacing:.7px; }
+    @keyframes livePulse { 0%{box-shadow:0 0 0 0 rgba(53,216,121,.65);opacity:1} 70%{box-shadow:0 0 0 6px rgba(53,216,121,0);opacity:.72} 100%{box-shadow:0 0 0 0 rgba(53,216,121,0);opacity:1} }
+    @media(max-width:650px){ .site-header{flex-wrap:wrap}.live-community{order:3;margin:0 auto 0 0} }
 
   
 .site-header{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:#050505;border:0;border-bottom:1px solid #5e1018;padding:14px 6%;box-shadow:0 5px 28px #e5091422}
@@ -562,6 +568,7 @@
 .premium-image-plan{background:linear-gradient(135deg,#26070c,#090909 55%,#35060c);border:2px solid #ff3448;box-shadow:0 0 28px #e5091444;text-align:center}
 .premium-image-plan h3{font-size:22px;color:#ff5360}
 .premium-image-plan strong{font-size:24px}
+.live-community{margin-left:auto}
 @media(max-width:900px){.visual-nav{order:3;flex-basis:100%;overflow-x:auto;justify-content:flex-start}.hero{padding:45px 7%;min-height:310px}.hero h1{font-size:32px}}
 @media(max-width:600px){.site-header{padding:12px 4%}.visual-nav{gap:16px}.visual-nav a{font-size:14px;white-space:nowrap}.hero{padding:38px 6%}.hero h1{font-size:29px}.limit-row{flex-direction:column;gap:5px}.limit-row span{text-align:left}}
 </style>
@@ -569,6 +576,12 @@
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>VIDEO AI</span></div>
+<div aria-label="Active connected sessions" class="live-community">
+<span aria-hidden="true" class="live-indicator"></span>
+<span class="live-label">LIVE</span>
+<span class="live-count" id="livePeopleCount">—</span>
+<span>people online</span>
+</div>
 <nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Plans</a><a href="#generation-limits">Limits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
@@ -628,7 +641,7 @@
 </div>
 <div class="generation-limits-showcase" id="generation-limits"><h3>Generation Limits</h3><div class="limit-row"><strong>AI Video</strong><span>5s  •  10s  •  15s  •  20s  •  30s</span></div><div class="limit-row"><strong>AI Images</strong><span>Create images</span></div><div class="limit-row"><strong>AI Music</strong><span>Generate music tracks</span></div></div><div class="price-grid premium-grid">
 <div class="price-card premium-image-plan">
-<h3>PREMIUM PLAN</h3><strong>UNLIMITED AI IMAGES</strong><div class="price">€599</div><button class="primary-btn" type="button" onclick="showPremiumImagesNotice()">BUY NOW</button>
+<h3>PREMIUM PLAN</h3><strong>UNLIMITED AI IMAGES</strong><div class="price">$599</div>
 
 
 
@@ -641,8 +654,12 @@
 <div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Large', '€10', '1000', 'CREDIT TOP-UP')" type="button">BUY CREDITS</button></div>
 <div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Extra Large', '€20', '2000', 'CREDIT TOP-UP')" type="button">BUY CREDITS</button></div>
 </div>
+<h3 style="margin-top:32px">Generation Tariffs</h3>
 <div class="panel">
 <div class="form-grid">
+<div><strong>AI Video</strong><p class="mini-note">5 sec: 28 credits (€0.28)<br/>15 sec: 70 credits (€0.70)<br/>30 sec: 140 credits (€1.40)<br/>60 sec: 280 credits (€2.80)<br/>After 15 sec: +70 credits per additional 15 sec.</p></div>
+<div><strong>AI Images</strong><p class="mini-note">7 credits (€0.07) per image. 1 / 2 / 4 / 8 images: 7 / 14 / 28 / 56 credits.</p></div>
+<div><strong>AI Music</strong><p class="mini-note">25 credits (€0.25) per complete song, for durations from 30 seconds to 5 minutes.</p></div>
 <div id="billing"><strong>Billing &amp; Payments</strong><p class="mini-note">Payment gateway not connected. Subscription purchase, upgrades, cancellation and billing history are display-only placeholders.</p></div>
 </div>
 <p class="mini-note" id="usage">Usage History will become available when authenticated credit accounting and generation records are implemented.</p>
@@ -1193,7 +1210,7 @@
     }
   );
 
-  var currentUser = null;
+  let currentUser = null;
   let currentFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
@@ -1347,12 +1364,11 @@
   // CATEGORY SELECTION
 
   function chooseCategory(category) {
-    const categorySelect = document.getElementById("category");
-    const studio = document.getElementById("studio");
-    const accordion = studio && studio.querySelector(".studio-accordion");
-    if (categorySelect) categorySelect.value = category;
-    if (accordion) accordion.open = true;
-    if (studio) studio.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("category").value = category;
+
+    document.getElementById("studio").scrollIntoView({
+      behavior: "smooth"
+    });
   }
 
   // GENERAL VIDEO PROJECT
@@ -1369,8 +1385,11 @@ async function prepareVideo() {
     return;
   }
 
-  if (duration !== "5 seconds") {
-    alert("For the first test, please select 5 seconds.");
+  const durationSeconds = Number.parseInt(duration, 10);
+  const supportedDurations = [5, 10, 15, 20, 30];
+
+  if (!supportedDurations.includes(durationSeconds)) {
+    alert("Please choose 5, 10, 15, 20 or 30 seconds.");
     return;
   }
 
@@ -1388,8 +1407,8 @@ async function prepareVideo() {
       {
         body: {
           promptText: prompt + ". Visual style: " + style,
-          model: "gen4.5",
-          duration: 5,
+          model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
+          duration: durationSeconds,
           ratio: "1280:720"
         }
       }
@@ -1404,8 +1423,8 @@ async function prepareVideo() {
     output.textContent =
       "LANE VIDEO AI — VIDEO GENERATION\n\n" +
       "Your video generation task has started!\n\n" +
-      "Model: Runway Gen-4.5\n" +
-      "Duration: 5 seconds\n" +
+      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
+      "Duration: " + data.duration + " seconds\n" +
       "Task ID: " + data.taskId + "\n\n" +
       "Status: Processing. The video is not ready yet.";
 
@@ -1555,7 +1574,7 @@ These settings are a project brief and will be used when an AI generation provid
     const credits = videoCostForDuration(duration);
     const preview = document.getElementById("videoCostPreview");
     preview.innerHTML = credits === null
-      ? 'Estimated cost: <strong>To be calculated after you define the total duration.</strong>'
+      ? 'Estimated cost: <strong>Price estimate for this duration is being confirmed. No credits are deducted.</strong>'
       : 'Estimated cost: <strong>' + credits + ' credits (€' + (credits / 100).toFixed(2) + ')</strong> · Indicative price only; no credits are deducted.';
   }
   document.getElementById("duration").addEventListener("change", updateVideoCost);
@@ -1731,8 +1750,9 @@ if (currentUser) {
   headerCreditBalanceTop.textContent = totalCredits;
 }
 } else {
-  if (headerCreditBalance) headerCreditBalance.textContent = "0";
-  if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = "0";
+  if (headerCreditBalance) {
+    headerCreditBalance.textContent = "0";
+  }
 }
     const signedIn = document.getElementById("signedIn");
     const signedOut = document.getElementById("signedOut");
@@ -1817,25 +1837,27 @@ if (currentUser) {
 
     showFileMessage("Uploading your song...");
 
-    try {
-      const { error } = await supabaseClient.storage
-        .from("user-songs")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type || "audio/mpeg"
-        });
-      if (error) throw error;
-      input.value = "";
-      showFileMessage("Your song was uploaded successfully!");
-      await loadMyFiles();
-    } catch (error) {
-      console.error("Song upload failed:", error);
-      showFileMessage("Upload failed: " + (error.message || "Unknown error"), true);
-    } finally {
-      button.disabled = false;
-      button.textContent = "UPLOAD SONG";
+    const { error } = await supabaseClient.storage
+      .from("user-songs")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || "audio/mpeg"
+      });
+
+    button.disabled = false;
+    button.textContent = "UPLOAD SONG";
+
+    if (error) {
+      showFileMessage("Upload failed: " + error.message, true);
+      return;
     }
+
+    input.value = "";
+
+    showFileMessage("Your song was uploaded successfully!");
+
+    await loadMyFiles();
   }
 
   // MY FILES LIBRARY FILTERS AND DOWNLOADS
@@ -2176,11 +2198,27 @@ if (currentUser) {
     });
   }
 
-// Explicit global exports keep inline button handlers available in all browsers.
-  Object.assign(window, {
-    chooseCategory, prepareVideo, prepareMusicVideo, prepareImageProject,
-    prepareMusicProject, signUp, signIn, googleSignIn, signOut, uploadSong
-  });
+  
+  (function startLiveVisitorCounter() {
+    const counter = document.getElementById("livePeopleCount");
+    if (!counter || typeof supabaseClient === "undefined" || !supabaseClient) return;
+    const key = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "session-" + Date.now();
+    const channel = supabaseClient.channel("lane-video-ai-live-visitors", { config: { presence: { key } } });
+    function updateCount() {
+      const state = channel.presenceState() || {};
+      counter.textContent = Object.keys(state).length.toLocaleString("en-US");
+    }
+    channel.on("presence", { event: "sync" }, updateCount)
+      .on("presence", { event: "join" }, updateCount)
+      .on("presence", { event: "leave" }, updateCount)
+      .subscribe(async status => {
+        if (status === "SUBSCRIBED") {
+          await channel.track({ connected_at: new Date().toISOString(), page: "website" });
+          updateCount();
+        }
+      });
+    window.addEventListener("pagehide", () => channel.untrack(), { once: true });
+  })();
 
 // INITIAL LOAD
 
@@ -2265,8 +2303,6 @@ async function continueToPayment() {
     alert("Payment error: " + error.message);
   }
 }
-
-  Object.assign(window, { openPaymentModal, closePaymentModal, continueToPayment, showPremiumImagesNotice });
 
   document.addEventListener('click', function (event) {
     const link = event.target.closest('.main-menu-dropdown > a');
