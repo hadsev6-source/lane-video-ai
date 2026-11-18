@@ -1018,7 +1018,7 @@
 </div>
 </details></section><section class="section" id="imageStudio">
 <details class="studio-accordion"><summary>AI Image Generator</summary>
-<p class="section-description">Prepare image-generation projects and see the estimated credit cost before generation is connected.</p>
+<p class="section-description">Generate one image at a time for 15 credits. Upload a reference image if you want to edit or guide the result.</p>
 <div class="panel">
 <div class="field"><label for="imagePrompt">Describe Your Image</label>
 <textarea id="imagePrompt" placeholder="Describe the subject, environment, composition, lighting, camera angle, mood and details..."></textarea>
@@ -1029,14 +1029,10 @@
 <span class="upload-drop-note">Choose a JPG, PNG or WEBP image from your device. This reference is selected in your browser only; it is not uploaded or saved until image-storage integration is added.</span>
 <div aria-live="polite" class="hint" id="imageReferenceName">No reference image selected.</div>
 </div>
-<div class="form-grid">
 <div class="field"><label for="imageStyle">Visual Style</label>
 <select id="imageStyle"><option>Photorealistic</option><option>Cinematic</option><option>3D Render</option><option>Anime</option><option>Illustration</option><option>Fantasy</option><option>Product Photography</option><option>My Own Style</option></select>
 </div>
-<div class="field"><label for="imageQuantity">Number of Images</label>
-<select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
-</div>
-</div> <div aria-live="polite" class="cost-preview" id="imageCostPreview">Estimated cost: <strong>7 credits</strong></div>
+<div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong></div>
 <button class="primary-btn" onclick="prepareImageProject()" type="button">PREPARE IMAGE PROJECT</button>
 <div class="project-output hidden" id="imageProjectOutput"></div>
 <p class="mini-note">Image generation is not connected yet. This form prepares the project brief only.</p>
@@ -1648,16 +1644,15 @@ These settings are a project brief and will be used when an AI generation provid
   function prepareImageProject() {
     const prompt = document.getElementById("imagePrompt").value.trim();
     if (!prompt) { alert("Please describe your image first."); return; }
-    const quantity = Number(document.getElementById("imageQuantity").value);
     const style = document.getElementById("imageStyle").value;
-    const credits = quantity * 7;
+    const credits = 15;
     const reference = document.getElementById("imageReference").files[0];
     const output = document.getElementById("imageProjectOutput");
     output.textContent = "LANE VIDEO AI — IMAGE PROJECT\n\nPrompt:\n" + prompt +
-      "\n\nVisual style: " + style + "\nQuantity: " + quantity +
+      "\n\nVisual style: " + style + "\nQuantity: 1 image" +
       "\nReference image: " + (reference ? reference.name : "None") +
-      "\nEstimated cost: " + credits + " credits" +
-      ")\n\nStatus: Project brief prepared. AI image generation is not connected.";
+      "\nCredit cost: " + credits + " credits" +
+      "\n\nStatus: Project brief prepared. AI image generation is not connected.";
     output.classList.remove("hidden");
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
