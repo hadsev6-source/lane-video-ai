@@ -547,12 +547,7 @@
     .studio-accordion > summary::-webkit-details-marker { display:none; }
     .studio-accordion > summary:after { content:'+'; float:right; color:#e34a59; font-size:22px; }
     .studio-accordion[open] > summary:after { content:'−'; }
-    .studio-accordion > .section-description, .studio-accordion > .panel { margin:0 18px 18px; }
-    .live-community { display:inline-flex; align-items:center; gap:7px; margin-left:auto; margin-right:10px; padding:6px 10px; border:1px solid rgba(46,204,113,.55); border-radius:999px; background:rgba(5,20,12,.72); color:#e8f5ec; font-size:11px; white-space:nowrap; }
-    .live-indicator { width:7px; height:7px; border-radius:50%; background:#35d879; box-shadow:0 0 0 0 rgba(53,216,121,.65); animation:livePulse 1.5s ease-out infinite; flex:0 0 7px; }
-    .live-label { color:#62e99a; border:1px solid rgba(53,216,121,.7); border-radius:4px; padding:2px 5px; font-size:9px; font-weight:800; letter-spacing:.7px; }
-    @keyframes livePulse { 0%{box-shadow:0 0 0 0 rgba(53,216,121,.65);opacity:1} 70%{box-shadow:0 0 0 6px rgba(53,216,121,0);opacity:.72} 100%{box-shadow:0 0 0 0 rgba(53,216,121,0);opacity:1} }
-    @media(max-width:650px){ .site-header{flex-wrap:wrap}.live-community{order:3;margin:0 auto 0 0} }
+    .studio-accordion > .section-description, .studio-accordion > .panel { margin:0 18px 18px; } 70%{box-shadow:0 0 0 6px rgba(53,216,121,0);opacity:.72} 100%{box-shadow:0 0 0 0 rgba(53,216,121,0);opacity:1} }
 
   
 .site-header{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:#050505;border:0;border-bottom:1px solid #5e1018;padding:14px 6%;box-shadow:0 5px 28px #e5091422}
@@ -577,28 +572,47 @@
 .premium-image-plan{background:linear-gradient(135deg,#26070c,#090909 55%,#35060c);border:2px solid #ff3448;box-shadow:0 0 28px #e5091444;text-align:center}
 .premium-image-plan h3{font-size:22px;color:#ff5360}
 .premium-image-plan strong{font-size:24px}
-.live-community{margin-left:auto}
 @media(max-width:900px){.visual-nav{order:3;flex-basis:100%;overflow-x:auto;justify-content:flex-start}.hero{padding:45px 7%;min-height:310px}.hero h1{font-size:32px}}
 @media(max-width:600px){.site-header{padding:12px 4%}.visual-nav{gap:16px}.visual-nav a{font-size:14px;white-space:nowrap}.hero{padding:38px 6%}.hero h1{font-size:29px}.limit-row{flex-direction:column;gap:5px}.limit-row span{text-align:left}}
+
+/* LANE logo showcase and compact social sharing */
+.lane-promo { padding: 34px 5% 40px; max-width: 1200px; margin: 0 auto; }
+.lane-promo-shell { display:flex; align-items:center; justify-content:center; min-height:230px; padding:28px 20px; border:1px solid #81202b; border-radius:18px; background:radial-gradient(ellipse at 50% 45%,#4a1018 0,#19090d 42%,#070707 78%); box-shadow:0 16px 45px #0008,0 0 32px #e5091422; overflow:hidden; position:relative; }
+.lane-promo-shell:before,.lane-promo-shell:after { content:""; position:absolute; width:48%; height:1px; background:linear-gradient(90deg,transparent,#ff2638,transparent); box-shadow:0 0 18px #ff2638; transform:rotate(-12deg); }
+.lane-promo-shell:before { left:-8%; top:28%; }
+.lane-promo-shell:after { right:-8%; bottom:25%; transform:rotate(12deg); }
+.lane-brand-mark { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:14px; color:#fff; font-size:clamp(30px,5vw,58px); font-weight:950; letter-spacing:1px; text-align:center; text-shadow:0 0 18px #ff2438aa; }
+.lane-brand-mark .lane-play { display:grid; place-items:center; width:clamp(48px,6vw,70px); height:clamp(48px,6vw,70px); border-radius:17px; color:#fff; background:linear-gradient(145deg,#ff3448,#a90016); box-shadow:0 0 26px #ff1c35a6; font-size:clamp(25px,3.5vw,38px); }
+.lane-brand-mark .lane-ai { color:#ff3348; }
+.lane-share { margin-top:18px; text-align:center; }
+.lane-share h3 { margin:0 0 12px; font-size:14px; font-weight:700; letter-spacing:1.5px; color:#ddd; }
+.share-buttons { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; }
+.share-btn { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; min-width:36px; padding:7px; border:1px solid #454545; border-radius:50%; background:#171717; color:#fff; cursor:pointer; transition:transform .2s,filter .2s,box-shadow .2s; }
+.share-btn svg { display:block; width:18px; height:18px; fill:currentColor; }
+.share-btn:hover { transform:translateY(-2px) scale(1.06); filter:brightness(1.2); box-shadow:0 0 13px #e5091444; }
+.share-facebook { background:#1877f2; border-color:#1877f2; }
+.share-whatsapp { background:#128c4a; border-color:#128c4a; }
+.share-tiktok { background:#111; border-color:#555; }
+.share-instagram { background:linear-gradient(120deg,#7b2ff7,#d62976,#fa7e1e); border:0; }
+.share-youtube { background:#c00; border-color:#c00; }
+.share-copy { background:#292929; }
+.share-status { min-height:16px; margin-top:8px; color:#aaa; font-size:11px; }
+@media(max-width:760px) { .lane-promo { padding:24px 4% 30px; } .lane-promo-shell { min-height:175px; padding:20px 12px; } .lane-brand-mark { gap:9px; } .share-btn { width:34px; height:34px; min-width:34px; } }
+
+
 </style>
 </head>
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>VIDEO AI</span></div>
-<div aria-label="Active connected sessions" class="live-community">
-<span aria-hidden="true" class="live-indicator"></span>
-<span class="live-label">LIVE</span>
-<span class="live-count" id="livePeopleCount">—</span>
-<span>people online</span>
-</div>
-<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Plans</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
+<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#categories">Categories</a>
 <a href="#studio">AI Video</a>
 <a href="#imageStudio">AI Images</a>
 <a href="#musicGenerator">AI Music</a>
-<a href="#pricing">Plans &amp; Credits</a>
+<a href="#pricing">Credits</a>
 <a href="#myfiles">My Files</a>
 <details class="notification-menu">
 <summary>🔔 NOTIFICATIONS</summary>
@@ -634,24 +648,45 @@
 <span>🪙</span>
 <span id="headerCreditBalanceTop">0</span>
 </div>
-<section class="hero" id="home"><h1>Your Imagination. <span>Your Movie.</span></h1><h2>Create AI movies, videos, images and music</h2><p>in minutes.</p><a class="primary-btn" href="#musicGenerator">▶  Create Now</a></section><section class="section" id="pricing">
+<section class="hero" id="home"><h1>Your Imagination. <span>Your Movie.</span></h1><h2>Create AI movies, videos, images and music</h2><p>in minutes.</p><a class="primary-btn" href="#musicGenerator">▶  Create Now</a></section>
+<section class="lane-promo" aria-label="LANE VIDEO AI brand and social sharing">
+  <div class="lane-promo-shell">
+    <div class="lane-brand-mark" aria-label="LANE VIDEO AI">
+      <span class="lane-play" aria-hidden="true">▶</span>
+      <span>LANE VIDEO <span class="lane-ai">AI</span></span>
+    </div>
+  </div>
+  <div class="lane-share">
+    <h3>SHARE WITH</h3>
+    <div class="share-buttons">
+      <button class="share-btn share-facebook" type="button" aria-label="Share on Facebook" title="Facebook" onclick="shareLane('facebook')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.2v2.2H7.7V13h2.7v8z"/></svg></button>
+      <button class="share-btn share-whatsapp" type="button" aria-label="Share on WhatsApp" title="WhatsApp" onclick="shareLane('whatsapp')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a9.8 9.8 0 0 0-8.4 14.9L2.3 22l5.2-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.8.9-.1.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.3.2-.3.7-1 .1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.8.8-1.1 1.7-1.1 2.6 0 1.5 1.1 3.1 1.3 3.3.2.2 2.1 3.3 5.2 4.5 1.9.8 2.7.8 3.6.7.6-.1 1.4-.6 1.6-1.2.2-.6.2-1.1.2-1.2s-.2-.2-.4-.3z"/></svg></button>
+      <button class="share-btn share-tiktok" type="button" aria-label="Share on TikTok" title="TikTok" onclick="shareLane('tiktok')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 7.1a6.7 6.7 0 0 1-4.1-1.4v8.1a6.1 6.1 0 1 1-5.3-6v3.2a2.9 2.9 0 1 0 2.1 2.8V2.5h3.2c.2 2 1.5 3.6 4.1 4z"/></svg></button>
+      <button class="share-btn share-instagram" type="button" aria-label="Share on Instagram" title="Instagram" onclick="shareLane('instagram')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2.2A2.8 2.8 0 0 0 4.2 7v10A2.8 2.8 0 0 0 7 19.8h10a2.8 2.8 0 0 0 2.8-2.8V7A2.8 2.8 0 0 0 17 4.2zm5 2.3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2.2a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6zm5.7-3.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z"/></svg></button>
+      <button class="share-btn share-youtube" type="button" aria-label="Share on YouTube" title="YouTube" onclick="shareLane('youtube')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 7.1a3 3 0 0 0-2.1-2.1C19 4.5 12 4.5 12 4.5s-7 0-8.9.5A3 3 0 0 0 1 7.1 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.9A3 3 0 0 0 3.1 19c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.9 31 31 0 0 0-.5-4.9zM9.7 15.5v-7l6 3.5z"/></svg></button>
+      <button class="share-btn share-copy" type="button" aria-label="Copy website link" title="Copy link" onclick="shareLane('copy')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v14h2V3h10zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9z"/></svg></button>
+    </div>
+    <div class="share-status" id="laneShareStatus" aria-live="polite"></div>
+  </div>
+</section>
+<section class="section" id="pricing">
 <h2 class="section-title">Buy Credits</h2>
 <p class="section-description">Choose a one-time credit package. No monthly subscriptions.</p>
 <div class="notice">All packages are one-time purchases. Purchased credits are added to your account after confirmed payment.</div>
 <h3 id="credits" style="margin-top:24px">One-Time Credit Packages</h3>
 <div class="price-grid">
-<div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Small', '€1', '100', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
-<div class="price-card featured"><h3>Medium</h3><div class="price">€5</div><strong>550 credits</strong><p class="mini-note">Includes 50 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Medium', '€5', '550', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,150 credits</strong><p class="mini-note">Includes 150 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Large', '€10', '1150', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,400 credits</strong><p class="mini-note">Includes 400 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Extra Large', '€20', '2400', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Premium</h3><div class="price">€50</div><strong>6,500 credits</strong><p class="mini-note">Includes 1,500 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Premium', '€50', '6500', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Ultimate</h3><div class="price">€100</div><strong>14,000 credits</strong><p class="mini-note">Includes 4,000 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Ultimate', '€100', '14000', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Small', '€1', '100', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card featured"><h3>Medium</h3><div class="price">€5</div><strong>500 credits + 50 bonus = 550 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Medium', '€5', '550', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits + 150 bonus = 1,150 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Large', '€10', '1150', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits + 400 bonus = 2,400 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Extra Large', '€20', '2400', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Premium</h3><div class="price">€50</div><strong>5,000 credits + 1,500 bonus = 6,500 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Premium', '€50', '6500', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Ultimate</h3><div class="price">€100</div><strong>10,000 credits + 4,000 bonus = 14,000 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Ultimate', '€100', '14000', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
 </div>
 </section><section class="section" id="musicGenerator">
 <details class="studio-accordion"><summary>AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
-<div class="notice"><strong>One fixed rate:</strong> 25 credits (€0.25) per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
+<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
 <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"/></div>
 <div class="form-grid">
 <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
@@ -702,7 +737,7 @@
 <div class="field full"><label for="songLyrics">Your Lyrics / Song Story (Optional)</label><textarea id="songLyrics" placeholder="Enter your lyrics, theme, story or key phrases..."></textarea></div>
 <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
 </div>
-<div class="cost-preview">Estimated cost: <strong>25 credits (€0.25)</strong> per song.</div>
+<div class="cost-preview">Estimated cost: <strong>25 credits</strong> per song.</div>
 <button class="primary-btn" onclick="prepareMusicProject()" type="button">PREPARE MUSIC PROJECT</button>
 <div class="project-output hidden" id="songProjectOutput"></div>
 </div>
@@ -770,7 +805,7 @@
       </button>
 </div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
-      Estimated cost: <strong>70 credits (€0.70)</strong> · Balance after generation will be shown when credits are connected.
+      Estimated cost: <strong>70 credits</strong> · Balance after generation will be shown when credits are connected.
     </div>
 <button class="primary-btn" onclick="prepareVideo()">
       PREPARE MY VIDEO PROJECT
@@ -1001,7 +1036,7 @@
 <div class="field"><label for="imageQuantity">Number of Images</label>
 <select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
 </div>
-</div> <div aria-live="polite" class="cost-preview" id="imageCostPreview">Estimated cost: <strong>7 credits (€0.07)</strong></div>
+</div> <div aria-live="polite" class="cost-preview" id="imageCostPreview">Estimated cost: <strong>7 credits</strong></div>
 <button class="primary-btn" onclick="prepareImageProject()" type="button">PREPARE IMAGE PROJECT</button>
 <div class="project-output hidden" id="imageProjectOutput"></div>
 <p class="mini-note">Image generation is not connected yet. This form prepares the project brief only.</p>
@@ -1170,6 +1205,53 @@
   const SUPABASE_URL = "https://lguqdvdjtkgepbhqznts.supabase.co";
   const SUPABASE_KEY = "sb_publishable_2QSiZlHF3xdTGVpiwRjvrw_h3oLC6CI";
   const SITE_URL = "https://lane-video-ai.vercel.app/";
+
+
+  // LANE social sharing: native share on supported devices, platform share links where available.
+  async function shareLane(platform) {
+    const shareUrl = SITE_URL;
+    const shareTitle = "LANE VIDEO AI";
+    const shareText = "Discover LANE VIDEO AI — create AI videos, images and music. No subscription. Buy credits only when you choose.";
+    const status = document.getElementById("laneShareStatus");
+    const setStatus = (message) => { if (status) status.textContent = message; };
+
+    if (platform === "facebook") {
+      window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl), "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (platform === "whatsapp") {
+      window.open("https://wa.me/?text=" + encodeURIComponent(shareText + " " + shareUrl), "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (platform === "copy") {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setStatus("Link copied. You can paste it into any social network.");
+      } catch (error) {
+        window.prompt("Copy the LANE VIDEO AI link:", shareUrl);
+      }
+      return;
+    }
+
+    // TikTok, Instagram and YouTube do not provide a universal website URL
+    // that can publish a link post on a visitor's behalf. Use the device share
+    // sheet when available; otherwise copy the link for pasting in the app.
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+        setStatus("Choose " + platform + " in your device's share menu.");
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setStatus("Link copied. Open " + platform + " and paste it into your post or profile.");
+    } catch (error) {
+      window.prompt("Copy the LANE VIDEO AI link and share it on " + platform + ":", shareUrl);
+    }
+  }
 
   const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
@@ -1550,7 +1632,7 @@ These settings are a project brief and will be used when an AI generation provid
     const preview = document.getElementById("videoCostPreview");
     preview.innerHTML = credits === null
       ? 'Estimated cost: <strong>Price estimate for this duration is being confirmed. No credits are deducted.</strong>'
-      : 'Generation price: <strong>' + credits.toLocaleString() + ' credits (€' + (credits / 100).toFixed(2) + ')</strong> · Server-side credit deduction still needs implementation.';
+      : 'Credit cost: <strong>' + credits.toLocaleString() + ' credits</strong> · Server-side credit deduction still needs implementation.';
   }
   document.getElementById("duration").addEventListener("change", updateVideoCost);
   updateVideoCost();
@@ -1574,7 +1656,7 @@ These settings are a project brief and will be used when an AI generation provid
     output.textContent = "LANE VIDEO AI — IMAGE PROJECT\n\nPrompt:\n" + prompt +
       "\n\nVisual style: " + style + "\nQuantity: " + quantity +
       "\nReference image: " + (reference ? reference.name : "None") +
-      "\nEstimated cost: " + credits + " credits (€" + (credits / 100).toFixed(2) +
+      "\nEstimated cost: " + credits + " credits" +
       ")\n\nStatus: Project brief prepared. AI image generation is not connected.";
     output.classList.remove("hidden");
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1598,7 +1680,7 @@ These settings are a project brief and will be used when an AI generation provid
       "\nCustom style: " + (document.getElementById("songCustomStyle").value.trim() || "Not specified") +
       "\nLyrics / story: " + (lyrics || "Not supplied") +
       "\nAdditional instructions: " + (prompt || "Not supplied") +
-      "\n\nEstimated cost: 25 credits (€0.25)" +
+      "\n\nEstimated cost: 25 credits" +
       "\n\nStatus: Project brief prepared. AI music generation is not connected.";
     output.classList.remove("hidden");
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -2120,29 +2202,6 @@ if (currentUser) {
       return replacements[character];
     });
   }
-
-  
-  (function startLiveVisitorCounter() {
-    const counter = document.getElementById("livePeopleCount");
-    if (!counter || typeof supabaseClient === "undefined" || !supabaseClient) return;
-    const key = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "session-" + Date.now();
-    const channel = supabaseClient.channel("lane-video-ai-live-visitors", { config: { presence: { key } } });
-    function updateCount() {
-      const state = channel.presenceState() || {};
-      counter.textContent = Object.keys(state).length.toLocaleString("en-US");
-    }
-    channel.on("presence", { event: "sync" }, updateCount)
-      .on("presence", { event: "join" }, updateCount)
-      .on("presence", { event: "leave" }, updateCount)
-      .subscribe(async status => {
-        if (status === "SUBSCRIBED") {
-          await channel.track({ connected_at: new Date().toISOString(), page: "website" });
-          updateCount();
-        }
-      });
-    window.addEventListener("pagehide", () => channel.untrack(), { once: true });
-  })();
-
 // INITIAL LOAD
 
   refreshAuthState();
