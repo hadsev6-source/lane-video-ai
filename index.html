@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -592,7 +591,7 @@
 <span class="live-count" id="livePeopleCount">—</span>
 <span>people online</span>
 </div>
-<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Plans</a><a href="#generation-limits">Limits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
+<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Plans</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#categories">Categories</a>
@@ -619,7 +618,7 @@
 <summary>MY ACCOUNT ▾</summary>
 <div class="account-dropdown">
 <a href="#account">Account Overview</a>
-<a href="#subscriptions">My Subscription</a>
+
 <a href="#credits">My Credits &amp; Limits</a>
 <a href="#credits">Buy More Credits</a>
 <a href="#billing">Billing &amp; Payments</a>
@@ -636,36 +635,17 @@
 <span id="headerCreditBalanceTop">0</span>
 </div>
 <section class="hero" id="home"><h1>Your Imagination. <span>Your Movie.</span></h1><h2>Create AI movies, videos, images and music</h2><p>in minutes.</p><a class="primary-btn" href="#musicGenerator">▶  Create Now</a></section><section class="section" id="pricing">
-<h2 class="section-title">Choose Your Plan</h2>
-<p class="section-description">Choose the plan that fits your creative projects.</p>
-<div class="notice">1 credit = €0.01. Credits are not deducted by these preview forms. Payment processing and live credit balances are not connected yet.</div>
-<div class="price-grid" id="subscriptions">
-<div class="price-card"><h3>Starter</h3><div class="price">€3.99 <small>/ month</small></div><strong>399 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" onclick="openPaymentModal('Starter', '€3.99', '399', 'SUBSCRIPTION')" type="button">CHOOSE PLAN</button></div>
-<div class="price-card featured"><h3>Creator</h3><div class="price">€9.99 <small>/ month</small></div><strong>999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" onclick="openPaymentModal('Creator', '€9.99', '999', 'SUBSCRIPTION')" type="button">CHOOSE PLAN</button></div>
-<div class="price-card"><h3>Pro</h3><div class="price">€19.99 <small>/ month</small></div><strong>1,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" onclick="openPaymentModal('Pro', '€19.99', '1999', 'SUBSCRIPTION')" type="button">CHOOSE PLAN</button></div>
-<div class="price-card"><h3>Ultimate</h3><div class="price">€39.99 <small>/ month</small></div><strong>3,999 credits</strong><ul><li>All creative studios</li><li>Same generation tariffs</li><li>Unified credit balance</li></ul><button class="buy-credit-btn" onclick="openPaymentModal('Ultimate', '€39.99', '3999', 'SUBSCRIPTION')" type="button">CHOOSE PLAN</button></div>
-</div>
-<div class="panel" style="margin-top:22px">
-<strong>Credit rules (planned)</strong>
-<p class="mini-note">Subscription credits accumulate while the subscription remains active and do not expire month-to-month. Purchased top-up credits do not expire. If a subscription is cancelled, unused subscription credits are lost at the end of the paid period; purchased credits remain. Access continues until the paid period ends. A pause, as discussed, would continue monthly billing and credit grants. Final proration and account rules require backend/payment implementation.</p>
-</div>
-<div class="generation-limits-showcase" id="generation-limits"><h3>Generation Limits</h3><div class="limit-row"><strong>AI Video</strong><span>5s  •  10s  •  15s  •  20s  •  30s</span></div><div class="limit-row"><strong>AI Images</strong><span>Create images</span></div><div class="limit-row"><strong>AI Music</strong><span>Generate music tracks</span></div></div><div class="price-grid premium-grid">
-<div class="price-card premium-image-plan">
-<h3>PREMIUM PLAN</h3>
-<strong>UNLIMITED AI IMAGES</strong>
-<div class="price">$500</div>
-<button class="buy-credit-btn premium-buy-btn" onclick="showPremiumImagesNotice()" type="button" aria-label="Buy Premium Unlimited AI Images plan">
-  <span aria-hidden="true">🛒</span> BUY NOW
-</button>
-<p class="mini-note">Secure checkout is not connected yet.</p>
-</div>
-</div>
-<h3 id="credits" style="margin-top:32px">Buy More Credits</h3>
+<h2 class="section-title">Buy Credits</h2>
+<p class="section-description">Choose a one-time credit package. No monthly subscriptions.</p>
+<div class="notice">All packages are one-time purchases. Purchased credits are added to your account after confirmed payment.</div>
+<h3 id="credits" style="margin-top:24px">One-Time Credit Packages</h3>
 <div class="price-grid">
-<div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Small', '€1', '100', 'CREDIT TOP-UP')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Medium</h3><div class="price">€5</div><strong>500 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Medium', '€5', '500', 'CREDIT TOP-UP')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,000 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Large', '€10', '1000', 'CREDIT TOP-UP')" type="button">BUY CREDITS</button></div>
-<div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,000 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Extra Large', '€20', '2000', 'CREDIT TOP-UP')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Small</h3><div class="price">€1</div><strong>100 credits</strong><button class="buy-credit-btn" onclick="openPaymentModal('Small', '€1', '100', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card featured"><h3>Medium</h3><div class="price">€5</div><strong>550 credits</strong><p class="mini-note">Includes 50 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Medium', '€5', '550', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Large</h3><div class="price">€10</div><strong>1,150 credits</strong><p class="mini-note">Includes 150 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Large', '€10', '1150', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Extra Large</h3><div class="price">€20</div><strong>2,400 credits</strong><p class="mini-note">Includes 400 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Extra Large', '€20', '2400', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Premium</h3><div class="price">€50</div><strong>6,500 credits</strong><p class="mini-note">Includes 1,500 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Premium', '€50', '6500', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
+<div class="price-card"><h3>Ultimate</h3><div class="price">€100</div><strong>14,000 credits</strong><p class="mini-note">Includes 4,000 bonus credits</p><button class="buy-credit-btn" onclick="openPaymentModal('Ultimate', '€100', '14000', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
 </div>
 </section><section class="section" id="musicGenerator">
 <details class="studio-accordion"><summary>AI Music Generator</summary>
@@ -1164,18 +1144,9 @@
 <div class="panel">
 <div id="signedOut">
 <h3>Sign In or Create an Account</h3>
-<div class="field">
-<label for="email">Email Address</label>
-<input id="email" placeholder="Your email address" type="email"/>
-</div>
-<div class="field">
-<label for="password">Password</label>
-<input id="password" placeholder="Your password" type="password"/>
-</div>
+<p class="mini-note">Use your Google account to sign in or create your LANE VIDEO AI account.</p>
 <div class="account-buttons">
-<button class="primary-btn" onclick="signUp()">CREATE ACCOUNT</button>
-<button class="secondary-btn" onclick="signIn()">SIGN IN</button>
-<button class="secondary-btn" onclick="googleSignIn()">CONTINUE WITH GOOGLE</button>
+<button class="primary-btn" onclick="googleSignIn()" type="button">CONTINUE WITH GOOGLE</button>
 </div>
 <div class="hint" id="authMessage" style="margin-top:15px"></div>
 </div>
@@ -1561,15 +1532,16 @@ These settings are a project brief and will be used when an AI generation provid
   });
 
 
-  // CREDIT ESTIMATES — display only until wallet and payment backend are connected.
+  // Video prices in credits, matching the agreed customer tariff.
   function videoCostForDuration(label) {
-    if (label === "5 seconds") return 28;
-    if (label === "15 seconds") return 70;
-    if (label === "30 seconds") return 140;
-    if (label === "1 minute") return 280;
-    const match = label.match(/^(\d+)\s+minutes?$/);
-    if (match) return Math.round((Number(match[1]) * 60 / 15) * 70);
-    return null; // Long-form projects require a final duration before pricing.
+    const prices = {
+      "5 seconds": 100,
+      "10 seconds": 195,
+      "15 seconds": 599,
+      "20 seconds": 799,
+      "30 seconds": 1199
+    };
+    return Object.prototype.hasOwnProperty.call(prices, label) ? prices[label] : null;
   }
 
   function updateVideoCost() {
@@ -1578,7 +1550,7 @@ These settings are a project brief and will be used when an AI generation provid
     const preview = document.getElementById("videoCostPreview");
     preview.innerHTML = credits === null
       ? 'Estimated cost: <strong>Price estimate for this duration is being confirmed. No credits are deducted.</strong>'
-      : 'Estimated cost: <strong>' + credits + ' credits (€' + (credits / 100).toFixed(2) + ')</strong> · Indicative price only; no credits are deducted.';
+      : 'Generation price: <strong>' + credits.toLocaleString() + ' credits (€' + (credits / 100).toFixed(2) + ')</strong> · Server-side credit deduction still needs implementation.';
   }
   document.getElementById("duration").addEventListener("change", updateVideoCost);
   updateVideoCost();
@@ -1634,59 +1606,7 @@ These settings are a project brief and will be used when an AI generation provid
 
   // AUTHENTICATION
 
-  async function signUp() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-      showAuthMessage("Please enter your email and password.");
-      return;
-    }
-
-    showAuthMessage("Creating your account...");
-
-    const { data, error } = await supabaseClient.auth.signUp({
-      email,
-      password
-    });
-
-    if (error) {
-      showAuthMessage(error.message);
-      return;
-    }
-
-    if (data.session) {
-      showAuthMessage("Account created successfully!");
-      await refreshAuthState();
-    } else {
-      showAuthMessage("Account created. Please check your email if confirmation is required.");
-    }
-  }
-
-  async function signIn() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-      showAuthMessage("Please enter your email and password.");
-      return;
-    }
-
-    showAuthMessage("Signing in...");
-
-    const { error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      showAuthMessage(error.message);
-      return;
-    }
-
-    showAuthMessage("Signed in successfully!");
-    await refreshAuthState();
-  }
+  // Google-only sign-in is used by the account interface.
 
   async function googleSignIn() {
     showAuthMessage("Connecting to Google...");
@@ -2237,13 +2157,10 @@ if (currentUser) {
 <label class="payment-choice"><input name="paymentMethod" type="radio" value="googlepay"/><span><strong>Google Pay</strong><small>Shown at checkout when supported by your device and browser</small></span></label>
 <label class="payment-choice"><input name="paymentMethod" type="radio" value="applepay"/><span><strong>Apple Pay</strong><small>Shown at checkout when supported by your device and browser</small></span></label>
 <button class="primary-btn" onclick="continueToPayment()" style="width:100%;margin-top:12px" type="button">CONTINUE TO SECURE PAYMENT</button>
-<p class="payment-note">Secure checkout will be provided by Stripe after the payment account and server integration are connected. No card details are collected or stored on this page. This preview does not charge you or add credits yet.</p>
+<p class="payment-note">You will complete this one-time purchase securely on Stripe. No card details are collected or stored on this page. Credits are added only after Stripe confirms payment.</p>
 </div>
 </div>
 <script>
-  function showPremiumImagesNotice() {
-    alert("The Premium Unlimited AI Images plan is being prepared. Secure checkout and AI image generation will be enabled after the required services are connected.");
-  }
 
   let selectedPayment = null;
   function openPaymentModal(name, price, credits, type) {
@@ -2271,14 +2188,12 @@ async function continueToPayment() {
   }
 
   const packageIds = {
-    "Starter": "starter",
-    "Creator": "creator",
-    "Pro": "pro",
-    "Ultimate": "ultimate",
     "Small": "small",
     "Medium": "medium",
     "Large": "large",
-    "Extra Large": "extra_large"
+    "Extra Large": "extra_large",
+    "Premium": "premium",
+    "Ultimate": "ultimate"
   };
 
   const planId = packageIds[selectedPayment.name];
