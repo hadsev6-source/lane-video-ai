@@ -600,6 +600,12 @@
 @media(max-width:760px) { .lane-promo { padding:24px 4% 30px; } .lane-promo-shell { min-height:175px; padding:20px 12px; } .lane-brand-mark { gap:9px; } .share-btn { width:34px; height:34px; min-width:34px; } }
 
 
+
+    .generated-image-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:16px; }
+    .generated-image-card { background:#111; border:1px solid #393939; border-radius:10px; padding:9px; min-width:0; }
+    .generated-image-card img { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:7px; }
+    .generated-image-card a { display:inline-block; margin:10px 2px 2px; color:#ff4a54; font-weight:800; font-size:12px; text-decoration:none; }
+    #generateImageButton:disabled { opacity:.65; cursor:wait; }
 </style>
 </head>
 <body>
@@ -1018,7 +1024,7 @@
 </div>
 </details></section><section class="section" id="imageStudio">
 <details class="studio-accordion"><summary>AI Image Generator</summary>
-<p class="section-description">Generate one image at a time for 15 credits. Upload a reference image if you want to edit or guide the result.</p>
+<p class="section-description">Create realistic images or transform a reference photo with a text instruction. 15 credits per image.</p>
 <div class="panel">
 <div class="field"><label for="imagePrompt">Describe Your Image</label>
 <textarea id="imagePrompt" placeholder="Describe the subject, environment, composition, lighting, camera angle, mood and details..."></textarea>
@@ -1026,16 +1032,20 @@
 <div class="field">
 <label for="imageReference">Upload Reference Image (Optional)</label>
 <input accept="image/jpeg,image/png,image/webp" id="imageReference" type="file"/>
-<span class="upload-drop-note">Choose a JPG, PNG or WEBP image from your device. This reference is selected in your browser only; it is not uploaded or saved until image-storage integration is added.</span>
+<span class="upload-drop-note">Upload a JPG, PNG or WEBP photo to use as a visual reference or for image editing. Maximum 10 MB.</span>
 <div aria-live="polite" class="hint" id="imageReferenceName">No reference image selected.</div>
 </div>
+<div class="form-grid">
 <div class="field"><label for="imageStyle">Visual Style</label>
 <select id="imageStyle"><option>Photorealistic</option><option>Cinematic</option><option>3D Render</option><option>Anime</option><option>Illustration</option><option>Fantasy</option><option>Product Photography</option><option>My Own Style</option></select>
 </div>
-<div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong></div>
-<button class="primary-btn" onclick="prepareImageProject()" type="button">PREPARE IMAGE PROJECT</button>
-<div class="project-output hidden" id="imageProjectOutput"></div>
-<p class="mini-note">Image generation is not connected yet. This form prepares the project brief only.</p>
+<div class="field"><label for="imageQuantity">Number of Images</label>
+<select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
+</div>
+</div> <div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong></div>
+<button class="primary-btn" id="generateImageButton" onclick="generateImages()" type="button">GENERATE IMAGE</button>
+<div class="project-output hidden" id="imageProjectOutput" aria-live="polite"></div>
+<div id="generatedImageGallery" class="generated-image-gallery" aria-live="polite"></div>
 </div>
 </details></section><section class="section" id="categories">
 <h2 class="section-title">Explore Video Categories</h2>
@@ -1641,20 +1651,71 @@ These settings are a project brief and will be used when an AI generation provid
     });
   }
 
-  function prepareImageProject() {
+  function updateImageCost() {
+    const quantity = Number(document.getElementById("imageQuantity").value || 1);
+    document.getElementById("imageCostPreview").innerHTML =
+      'Credit cost: <strong>' + (quantity * 15) + ' credits</strong> (' + quantity + ' × 15)';
+  }
+  document.getElementById("imageQuantity").addEventListener("change", updateImageCost);
+  updateImageCost();
+
+  async function generateImages() {
     const prompt = document.getElementById("imagePrompt").value.trim();
-    if (!prompt) { alert("Please describe your image first."); return; }
+    const quantity = Number(document.getElementById("imageQuantity").value || 1);
     const style = document.getElementById("imageStyle").value;
-    const credits = 15;
     const reference = document.getElementById("imageReference").files[0];
+    const button = document.getElementById("generateImageButton");
     const output = document.getElementById("imageProjectOutput");
-    output.textContent = "LANE VIDEO AI — IMAGE PROJECT\n\nPrompt:\n" + prompt +
-      "\n\nVisual style: " + style + "\nQuantity: 1 image" +
-      "\nReference image: " + (reference ? reference.name : "None") +
-      "\nCredit cost: " + credits + " credits" +
-      "\n\nStatus: Project brief prepared. AI image generation is not connected.";
+    const gallery = document.getElementById("generatedImageGallery");
+    if (!prompt) { alert("Please describe your image first."); return; }
+    if (!currentUser) { alert("Please sign in before generating images."); return; }
+    if (reference && reference.size > 10 * 1024 * 1024) { alert("Please choose an image smaller than 10 MB."); return; }
+
+    const form = new FormData();
+    form.append("prompt", prompt);
+    form.append("style", style);
+    form.append("quantity", String(quantity));
+    if (reference) form.append("reference", reference, reference.name);
+
+    button.disabled = true;
+    button.textContent = "GENERATING...";
+    output.textContent = "Generating your image. Please keep this page open...";
     output.classList.remove("hidden");
-    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    gallery.innerHTML = "";
+    try {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Your session has expired. Please sign in again.");
+      const response = await fetch(SUPABASE_URL + "/functions/v1/generate-image", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, apikey: SUPABASE_KEY },
+        body: form
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success) throw new Error(result.error || "Image generation failed.");
+      output.textContent = "Success! " + result.images.length + " image(s) generated. " + result.creditsUsed + " credits used.";
+      result.images.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "generated-image-card";
+        const img = document.createElement("img");
+        img.src = item.url;
+        img.alt = "LANE generated image " + (index + 1);
+        img.loading = "lazy";
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "OPEN IMAGE";
+        card.append(img, link);
+        gallery.appendChild(card);
+      });
+      await refreshAuthState();
+    } catch (error) {
+      output.textContent = "Generation failed: " + (error.message || "Please try again.");
+    } finally {
+      button.disabled = false;
+      button.textContent = "GENERATE IMAGE";
+    }
   }
 
   function prepareMusicProject() {
