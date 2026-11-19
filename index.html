@@ -606,6 +606,33 @@
     .generated-image-card img { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:7px; }
     .generated-image-card a { display:inline-block; margin:10px 2px 2px; color:#ff4a54; font-weight:800; font-size:12px; text-decoration:none; }
     #generateImageButton:disabled { opacity:.65; cursor:wait; }
+
+/* LANE branded custom music player */
+.lane-audio-player{display:grid;grid-template-columns:92px minmax(0,1fr);gap:16px;align-items:center;margin-top:18px;padding:16px;border:1px solid #76212c;border-radius:18px;background:radial-gradient(ellipse at 12% 0%,#401018 0%,#16090c 42%,#080808 100%);box-shadow:0 12px 35px #0009,0 0 24px #ed10251c;}
+.lane-audio-art{position:relative;width:92px;height:92px;border-radius:15px;overflow:hidden;box-shadow:0 0 22px #f20d303b;}
+.lane-audio-art img{display:block;width:100%;height:100%;object-fit:cover;}
+.lane-audio-main{min-width:0;}
+.lane-audio-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;}
+.lane-audio-brand{font-size:11px;font-weight:900;letter-spacing:1.8px;color:#ff5968;}
+.lane-audio-state{font-size:10px;letter-spacing:1px;color:#aaa;text-transform:uppercase;}
+.lane-audio-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:800;color:#fff;margin-bottom:9px;}
+.lane-audio-controls{display:flex;align-items:center;gap:11px;}
+.lane-audio-play{width:42px;height:42px;flex:0 0 42px;border:0;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#ff354b,#a90017);color:#fff;box-shadow:0 0 20px #ff183b55;cursor:pointer;transition:transform .18s,filter .18s;}
+.lane-audio-play:hover{transform:scale(1.06);filter:brightness(1.12);}
+.lane-audio-play svg{width:17px;height:17px;fill:currentColor;}
+.lane-audio-timeline{flex:1;min-width:0;}
+.lane-audio-seek{width:100%;height:5px;display:block;accent-color:#ff3348;cursor:pointer;}
+.lane-audio-times{display:flex;justify-content:space-between;color:#aaa;font-size:10px;font-variant-numeric:tabular-nums;margin-top:5px;}
+.lane-equalizer{height:24px;display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-left:4px;}
+.lane-equalizer i{display:block;width:3px;height:5px;border-radius:5px;background:linear-gradient(to top,#a90018,#ff5364);opacity:.8;}
+.lane-audio-player.is-playing .lane-equalizer i{animation:lane-eq .72s ease-in-out infinite alternate;}
+.lane-audio-player.is-playing .lane-equalizer i:nth-child(2n){animation-delay:-.35s;animation-duration:.55s;}
+.lane-audio-player.is-playing .lane-equalizer i:nth-child(3n){animation-delay:-.2s;animation-duration:.9s;}
+.lane-audio-player.is-playing .lane-audio-art{animation:lane-art-glow 1.8s ease-in-out infinite alternate;}
+@keyframes lane-eq{0%{height:4px}35%{height:12px}70%{height:21px}100%{height:8px}}
+@keyframes lane-art-glow{from{box-shadow:0 0 10px #f20d3033}to{box-shadow:0 0 28px #f20d30a0}}
+@media(max-width:520px){.lane-audio-player{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:12px}.lane-audio-art{width:68px;height:68px}.lane-audio-title{font-size:13px}.lane-audio-controls{gap:8px}.lane-audio-play{width:38px;height:38px;flex-basis:38px}.lane-equalizer{display:none}}
+
 </style>
 </head>
 <body>
@@ -692,7 +719,7 @@
 <details class="studio-accordion"><summary>AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
-<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
+<div class="notice"><strong>One fixed rate:</strong> 25 credits per song, regardless of selected duration or vocal type.</div>
 <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"/></div>
 <div class="form-grid">
 <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
@@ -732,7 +759,7 @@
 <optgroup label="Cinematic &amp; Ambient">
 <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
 </optgroup></select></div>
-<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option selected="">4 minutes</option></select><span class="hint">Current music provider configuration generates 4-minute tracks.</span></div>
+<div class="field"><label for="songDuration">Song Length (1–4 minutes)</label><select id="songDuration"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180" selected>3 minutes</option><option value="240">Up to 4 minutes</option></select><span class="hint">Choose the target length for your song. Actual playback length may vary slightly.</span></div>
 <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
@@ -1754,6 +1781,7 @@ These settings are a project brief and will be used when an AI generation provid
     const language = document.getElementById("songLanguage").value;
     const bpm = document.getElementById("songBpm").value;
     const voiceCharacter = document.getElementById("songVoiceCharacter").value;
+    const durationSeconds = Number(document.getElementById("songDuration").value || 240);
 
     const lyricsModes = {
       "AI Write Lyrics": "ai_write",
@@ -1795,6 +1823,7 @@ These settings are a project brief and will be used when an AI generation provid
             language,
             bpm,
             voiceCharacter,
+            durationSeconds,
             lyricsMode,
             lyrics: lyricsMode === "no_lyrics" ? "" : lyrics,
             instructions
@@ -1853,7 +1882,7 @@ These settings are a project brief and will be used when an AI generation provid
           heading.textContent = "Your song is ready!";
           output.appendChild(heading);
           appendMusicText(output, "Title", title);
-          appendMusicText(output, "Duration", "4 minutes");
+          appendMusicText(output, "Target length", (statusData.durationSeconds || durationSeconds) / 60 + " minutes");
           appendMusicText(output, "Credits used", String(statusData.creditsUsed || 25));
 
           if (statusData.lyrics) {
@@ -1867,13 +1896,108 @@ These settings are a project brief and will be used when an AI generation provid
           }
 
           if (statusData.audioUrl) {
+            const playerCard = document.createElement("div");
+            playerCard.className = "lane-audio-player";
+            const art = document.createElement("div");
+            art.className = "lane-audio-art";
+            const cover = document.createElement("img");
+            cover.src = "assets/lane-play-logo.jpeg";
+            cover.alt = "Официално лого на LANE VIDEO AI";
+            art.appendChild(cover);
+            playerCard.appendChild(art);
+
+            const playerArea = document.createElement("div");
+            playerArea.className = "lane-audio-main";
+            const topLine = document.createElement("div");
+            topLine.className = "lane-audio-top";
+            const playerLabel = document.createElement("span");
+            playerLabel.className = "lane-audio-brand";
+            playerLabel.textContent = "LANE MUSIC PLAYER";
+            const stateLabel = document.createElement("span");
+            stateLabel.className = "lane-audio-state";
+            stateLabel.textContent = "READY TO PLAY";
+            topLine.append(playerLabel, stateLabel);
+            playerArea.appendChild(topLine);
+
+            const trackTitle = document.createElement("div");
+            trackTitle.className = "lane-audio-title";
+            trackTitle.textContent = title;
+            playerArea.appendChild(trackTitle);
+
+            const controls = document.createElement("div");
+            controls.className = "lane-audio-controls";
             const player = document.createElement("audio");
-            player.controls = true;
-            player.preload = "none";
+            player.preload = "metadata";
             player.src = statusData.audioUrl;
-            player.style.width = "100%";
-            player.style.marginTop = "12px";
-            output.appendChild(player);
+            player.setAttribute("aria-label", "Възпроизвеждане на генерираната песен");
+            const playButton = document.createElement("button");
+            playButton.type = "button";
+            playButton.className = "lane-audio-play";
+            playButton.setAttribute("aria-label", "Пусни песента");
+            const playIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l10 6.2a1 1 0 0 1 0 1.7l-10 6.2a1 1 0 0 1-1.6-.9V5.8z"/></svg>';
+            const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>';
+            playButton.innerHTML = playIcon;
+            const timeline = document.createElement("div");
+            timeline.className = "lane-audio-timeline";
+            const seek = document.createElement("input");
+            seek.type = "range";
+            seek.className = "lane-audio-seek";
+            seek.min = "0";
+            seek.max = "1000";
+            seek.value = "0";
+            seek.setAttribute("aria-label", "Позиция в песента");
+            const times = document.createElement("div");
+            times.className = "lane-audio-times";
+            const currentTime = document.createElement("span");
+            currentTime.textContent = "0:00";
+            const totalTime = document.createElement("span");
+            totalTime.textContent = "--:--";
+            times.append(currentTime, totalTime);
+            timeline.append(seek, times);
+            const equalizer = document.createElement("div");
+            equalizer.className = "lane-equalizer";
+            equalizer.setAttribute("aria-label", "Анимиран аудио еквалайзер");
+            for (let i = 0; i < 9; i++) equalizer.appendChild(document.createElement("i"));
+            controls.append(playButton, timeline, equalizer);
+            playerArea.appendChild(controls);
+            playerArea.appendChild(player);
+            playerCard.appendChild(playerArea);
+            output.appendChild(playerCard);
+
+            const formatAudioTime = (seconds) => {
+              if (!Number.isFinite(seconds)) return "--:--";
+              const mins = Math.floor(seconds / 60);
+              const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+              return mins + ":" + secs;
+            };
+            const syncPlayerState = () => {
+              const playing = !player.paused && !player.ended;
+              playerCard.classList.toggle("is-playing", playing);
+              playButton.innerHTML = playing ? pauseIcon : playIcon;
+              playButton.setAttribute("aria-label", playing ? "Пауза" : "Пусни песента");
+              stateLabel.textContent = playing ? "NOW PLAYING" : (player.ended ? "PLAYBACK COMPLETE" : "READY TO PLAY");
+            };
+            playButton.addEventListener("click", async () => {
+              if (player.paused) {
+                try { await player.play(); } catch (playError) {
+                  stateLabel.textContent = "TAP TO TRY AGAIN";
+                  console.error("Audio playback error:", playError);
+                }
+              } else player.pause();
+              syncPlayerState();
+            });
+            player.addEventListener("play", syncPlayerState);
+            player.addEventListener("pause", syncPlayerState);
+            player.addEventListener("ended", syncPlayerState);
+            player.addEventListener("loadedmetadata", () => { totalTime.textContent = formatAudioTime(player.duration); });
+            player.addEventListener("timeupdate", () => {
+              currentTime.textContent = formatAudioTime(player.currentTime);
+              totalTime.textContent = formatAudioTime(player.duration);
+              if (Number.isFinite(player.duration) && player.duration > 0) seek.value = String(Math.round(player.currentTime / player.duration * 1000));
+            });
+            seek.addEventListener("input", () => {
+              if (Number.isFinite(player.duration) && player.duration > 0) player.currentTime = Number(seek.value) / 1000 * player.duration;
+            });
 
             const download = document.createElement("a");
             download.href = statusData.audioUrl;
