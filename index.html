@@ -1161,6 +1161,17 @@
 <button class="library-filter" data-library-filter="thumbnail" onclick="filterMyFiles('thumbnail', this)" type="button">My Thumbnails</button>
 <button class="library-filter" data-library-filter="text" onclick="filterMyFiles('text', this)" type="button">Project Text</button>
 </div>
+<div class="panel" id="musicStoragePanel">
+<h3>Music Storage</h3>
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+<strong id="musicStorageLabel">Checking storage...</strong>
+<strong id="musicStoragePercent">—</strong>
+</div>
+<div style="height:10px;background:var(--border-color, #e5e7eb);border-radius:999px;overflow:hidden;margin:10px 0">
+<div id="musicStorageBar" style="height:100%;width:0;background:#16a34a;border-radius:999px;transition:width .2s"></div>
+</div>
+<p class="hint" id="musicStorageMessage" aria-live="polite">Your personal music storage usage will appear here.</p>
+</div>
 <div class="panel">
 <h3>Upload Your Music</h3>
 <div class="field">
@@ -1728,12 +1739,23 @@ These settings are a project brief and will be used when an AI generation provid
         img.src = item.url;
         img.alt = "LANE generated image " + (index + 1);
         img.loading = "lazy";
+        const actions = document.createElement("div");
+        actions.className = "file-actions";
         const link = document.createElement("a");
         link.href = item.url;
         link.target = "_blank";
         link.rel = "noopener";
         link.textContent = "OPEN IMAGE";
-        card.append(img, link);
+        link.className = "secondary-btn";
+        link.style.textDecoration = "none";
+        link.style.display = "inline-block";
+        const downloadButton = document.createElement("button");
+        downloadButton.type = "button";
+        downloadButton.className = "primary-btn";
+        downloadButton.textContent = "DOWNLOAD";
+        downloadButton.onclick = () => downloadGeneratedImage(item, downloadButton);
+        actions.append(link, downloadButton);
+        card.append(img, actions);
         gallery.appendChild(card);
       });
       await refreshAuthState();
@@ -1763,6 +1785,42 @@ These settings are a project brief and will be used when an AI generation provid
     strong.textContent = label + ": ";
     paragraph.append(strong, document.createTextNode(value || ""));
     parent.appendChild(paragraph);
+  }
+
+  async function refreshMusicStorage() {
+    const label = document.getElementById("musicStorageLabel");
+    const percentText = document.getElementById("musicStoragePercent");
+    const bar = document.getElementById("musicStorageBar");
+    const message = document.getElementById("musicStorageMessage");
+    if (!currentUser) {
+      label.textContent = "Sign in to view storage";
+      percentText.textContent = "—";
+      bar.style.width = "0%";
+      message.textContent = "The 250 MB music limit applies separately to each user.";
+      return;
+    }
+    try {
+      const { data, error } = await supabaseClient.functions.invoke("generate-music", {
+        body: { action: "storage_usage" }
+      });
+      if (error || !data || !data.success || !data.storage) throw new Error("Storage information unavailable");
+      const storage = data.storage;
+      const percent = Number(storage.percent || 0);
+      const usedMB = (Number(storage.usedBytes || 0) / 1048576).toFixed(1);
+      const limitMB = (Number(storage.limitBytes || 0) / 1048576).toFixed(0);
+      label.textContent = usedMB + " MB used of " + limitMB + " MB";
+      percentText.textContent = percent + "%";
+      bar.style.width = percent + "%";
+      bar.style.background = percent >= 90 ? "#dc2626" : percent >= 80 ? "#d97706" : "#16a34a";
+      if (percent >= 100) message.textContent = "Storage is full. Download and delete saved songs before generating another song.";
+      else if (percent >= 90) message.textContent = "Critical: please free up music storage soon. New generation requires at least 50 MB free.";
+      else if (percent >= 80) message.textContent = "Warning: music storage is at least 80%. Consider downloading and deleting songs you no longer need.";
+      else message.textContent = "Music storage is available. A new song requires up to 50 MB of free space.";
+    } catch (_) {
+      label.textContent = "Storage check unavailable";
+      percentText.textContent = "—";
+      message.textContent = "We could not read storage usage. Music generation will still be checked securely before credits are charged.";
+    }
   }
 
   async function prepareMusicProject() {
@@ -1845,6 +1903,7 @@ These settings are a project brief and will be used when an AI generation provid
       }
 
       const jobId = startData.jobId;
+      await refreshMusicStorage();
       showMusicMessage("Your song is processing. This can take a few minutes. 25 credits have been charged.");
       button.textContent = "GENERATING...";
 
@@ -2017,6 +2076,7 @@ These settings are a project brief and will be used when an AI generation provid
           output.classList.remove("hidden");
           output.scrollIntoView({ behavior: "smooth", block: "nearest" });
           await refreshAuthState();
+          await refreshMusicStorage();
           return;
         }
 
@@ -2273,6 +2333,53 @@ if (currentUser) {
     }
   }
 
+  async function downloadAndOfferCloudDelete(bucket, filePath, fileName, signedUrl, onDeleted) {
+    const link = document.createElement("a");
+    link.href = signedUrl;
+    link.download = fileName;
+    link.target = "_blank";
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // Browsers do not expose a dependable signal that a file has finished
+    // saving to the user's device. Ask the user to confirm after starting it.
+    const confirmed = window.confirm(
+      'Свалянето на „' + fileName + '“ е стартирано. Сигурни ли сте, че искате да изтриете файла от галерията на LANE? Уверете се, че файлът е запазен на устройството ви. Това действие е необратимо.'
+    );
+    if (!confirmed) return false;
+
+    const { error } = await supabaseClient.storage.from(bucket).remove([filePath]);
+    if (error) {
+      throw new Error("Файлът не беше изтрит от облака: " + error.message);
+    }
+    if (typeof onDeleted === "function") await onDeleted();
+    return true;
+  }
+
+  async function downloadGeneratedImage(item, button) {
+    if (!currentUser || !item || !item.path || !item.url) {
+      alert("Не може да се подготви свалянето. Липсва пътят до файла.");
+      return;
+    }
+    button.disabled = true;
+    try {
+      const deleted = await downloadAndOfferCloudDelete(
+        "user-generated-images", item.path, item.path.split("/").pop(), item.url,
+        async () => { button.closest(".generated-image-card")?.remove(); }
+      );
+      if (deleted) {
+        const output = document.getElementById("imageProjectOutput");
+        output.textContent = "Файлът беше изтрит от облачната галерия на LANE.";
+      }
+    } catch (error) {
+      alert(error.message || "Възникна грешка при изтриването.");
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function downloadSong(fileName) {
     if (!currentUser) {
       alert("Please sign in first.");
@@ -2289,12 +2396,19 @@ if (currentUser) {
       return;
     }
 
-    const link = document.createElement("a");
-    link.href = data.signedUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    try {
+      const deleted = await downloadAndOfferCloudDelete(
+        "user-songs", filePath, fileName, data.signedUrl,
+        async () => {
+          if (currentAudioUrl) stopSongPreview();
+          showFileMessage("Song downloaded (as confirmed) and deleted from LANE cloud storage.");
+          await loadMyFiles();
+        }
+      );
+      if (!deleted) showFileMessage("The song remains saved in LANE. Delete it later when you are ready.");
+    } catch (deleteError) {
+      showFileMessage(deleteError.message || "Could not delete the song.", true);
+    }
   }
 
   async function downloadAllAvailableFiles() {
@@ -2355,6 +2469,7 @@ if (currentUser) {
     currentFiles = (data || []).filter(file => file.name);
 
     refreshMusicFileOptions();
+    refreshMusicStorage();
 
     if (currentFiles.length === 0) {
       list.innerHTML =
