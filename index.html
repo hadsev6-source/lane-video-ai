@@ -1015,6 +1015,13 @@
         </span>
 </div>
 </div>
+<div class="field" id="musicVideoPhotoField">
+<label for="musicVideoPhoto">Upload Your Photo (Optional)</label>
+<input accept="image/jpeg,image/png,image/webp" id="musicVideoPhoto" type="file"/>
+<span class="hint">Upload your own photo if you want to appear as the main person in the music video. JPG, PNG or WEBP, maximum 10 MB.</span>
+<div class="hint" id="musicVideoPhotoName" aria-live="polite">No photo selected.</div>
+<div id="musicVideoPhotoPreview" class="project-output hidden"></div>
+</div>
 <div class="field" style="margin-top:18px">
 <label for="musicPrompt">Detailed Music Video Instructions</label>
 <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides..."></textarea>
@@ -1494,7 +1501,8 @@ async function generateVideo(options = {}) {
           promptText: prompt + ". Visual style: " + style,
           model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
           duration: durationSeconds,
-          ratio: "1280:720"
+          ratio: "1280:720",
+          ...(options.promptImage ? { promptImage: options.promptImage } : {})
         }
       }
     );
@@ -1646,6 +1654,7 @@ The task may still be processing. Please check again later.`;
 
   // AI MUSIC VIDEO GENERATION — uses the same connected video backend as the main video generator.
   async function generateMusicVideo() {
+    const musicVideoPhoto = document.getElementById("musicVideoPhoto")?.files?.[0] || null;
     const musicMode = document.getElementById("musicMode").value;
     const selectedSong = document.getElementById("musicFileSelect").value;
     const prompt = document.getElementById("musicPrompt").value.trim();
@@ -1685,11 +1694,66 @@ The task may still be processing. Please check again later.`;
       "Detailed scenes and actions: " + prompt
     ].join("\n");
 
+    let promptImage = null;
+    if (musicVideoPhoto) {
+      if (musicVideoPhoto.size > 10 * 1024 * 1024) {
+        alert("Please choose an image smaller than 10 MB.");
+        return;
+      }
+      promptImage = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read the selected photo."));
+        reader.readAsDataURL(musicVideoPhoto);
+      });
+    }
+
     await generateVideo({
       prompt: musicVideoPrompt,
       style: "Cinematic music video",
       duration,
-      output
+      output,
+      promptImage
+    });
+  }
+
+  // Optional personal photo for the dedicated music-video workflow.
+  const musicVideoPhotoInput = document.getElementById("musicVideoPhoto");
+  if (musicVideoPhotoInput) {
+    musicVideoPhotoInput.addEventListener("change", function() {
+      const file = this.files && this.files[0];
+      const name = document.getElementById("musicVideoPhotoName");
+      const preview = document.getElementById("musicVideoPhotoPreview");
+      preview.replaceChildren();
+      preview.classList.add("hidden");
+
+      if (!file) {
+        name.textContent = "No photo selected.";
+        return;
+      }
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        this.value = "";
+        name.textContent = "Unsupported file type.";
+        alert("Please choose a JPG, PNG or WEBP image.");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        this.value = "";
+        name.textContent = "Photo is larger than 10 MB.";
+        alert("Please choose an image smaller than 10 MB.");
+        return;
+      }
+
+      name.textContent = "Selected: " + file.name;
+      const image = document.createElement("img");
+      image.alt = "Your selected music video reference photo";
+      image.src = URL.createObjectURL(file);
+      image.style.width = "100%";
+      image.style.maxWidth = "240px";
+      image.style.borderRadius = "12px";
+      image.onload = () => URL.revokeObjectURL(image.src);
+      preview.appendChild(image);
+      preview.classList.remove("hidden");
     });
   }
 
