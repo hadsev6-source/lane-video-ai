@@ -732,7 +732,7 @@
 <optgroup label="Cinematic &amp; Ambient">
 <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
 </optgroup></select></div>
-<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option>30 seconds</option><option>1 minute</option><option>2 minutes</option><option>3 minutes</option><option>4 minutes</option><option selected="">5 minutes</option></select></div>
+<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option selected="">4 minutes</option></select><span class="hint">Current music provider configuration generates 4-minute tracks.</span></div>
 <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
@@ -744,8 +744,8 @@
 <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
 </div>
 <div class="cost-preview">Estimated cost: <strong>25 credits</strong> per song.</div>
-<button class="primary-btn" onclick="prepareMusicProject()" type="button">PREPARE MUSIC PROJECT</button>
-<div class="project-output hidden" id="songProjectOutput"></div>
+<button class="primary-btn" id="generateMusicButton" onclick="prepareMusicProject()" type="button">GENERATE MUSIC — 25 CREDITS</button>
+<div class="project-output hidden" id="songProjectOutput" aria-live="polite"></div>
 </div>
 </details></section><section class="section" id="studio">
 <details class="studio-accordion"><summary>AI Video Generator</summary>
@@ -1718,29 +1718,215 @@ These settings are a project brief and will be used when an AI generation provid
     }
   }
 
-  function prepareMusicProject() {
-    const prompt = document.getElementById("songPrompt").value.trim();
-    const lyrics = document.getElementById("songLyrics").value.trim();
-    const lyricsMode = document.getElementById("songLyricsMode").value;
+  let activeMusicGeneration = false;
+
+  function showMusicMessage(message) {
     const output = document.getElementById("songProjectOutput");
-    output.textContent =
-      "LANE VIDEO AI — AI MUSIC PROJECT\n\nTitle: " + (document.getElementById("songTitle").value.trim() || "Untitled") +
-      "\nGenre / Style: " + document.getElementById("songGenre").value +
-      "\nDuration: " + document.getElementById("songDuration").value +
-      "\nMood: " + document.getElementById("songMood").value +
-      "\nVocal type: " + document.getElementById("songVocal").value +
-      "\nLanguage: " + document.getElementById("songLanguage").value +
-      "\nTempo: " + document.getElementById("songBpm").value +
-      "\nLyrics mode: " + lyricsMode +
-      "\nVoice character: " + document.getElementById("songVoiceCharacter").value +
-      "\nCustom style: " + (document.getElementById("songCustomStyle").value.trim() || "Not specified") +
-      "\nLyrics / story: " + (lyrics || "Not supplied") +
-      "\nAdditional instructions: " + (prompt || "Not supplied") +
-      "\n\nEstimated cost: 25 credits" +
-      "\n\nStatus: Project brief prepared. AI music generation is not connected.";
+    output.replaceChildren();
+    const paragraph = document.createElement("p");
+    paragraph.textContent = message;
+    output.appendChild(paragraph);
     output.classList.remove("hidden");
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
+
+  function appendMusicText(parent, label, value) {
+    const paragraph = document.createElement("p");
+    const strong = document.createElement("strong");
+    strong.textContent = label + ": ";
+    paragraph.append(strong, document.createTextNode(value || ""));
+    parent.appendChild(paragraph);
+  }
+
+  async function prepareMusicProject() {
+    if (activeMusicGeneration) return;
+
+    const button = document.getElementById("generateMusicButton");
+    const output = document.getElementById("songProjectOutput");
+    const title = document.getElementById("songTitle").value.trim() || "My AI Song";
+    const genre = document.getElementById("songGenre").value.trim();
+    const lyricsModeLabel = document.getElementById("songLyricsMode").value;
+    const lyrics = document.getElementById("songLyrics").value.trim();
+    const instructions = document.getElementById("songPrompt").value.trim();
+    const customStyle = document.getElementById("songCustomStyle").value.trim();
+    const mood = document.getElementById("songMood").value;
+    const vocal = document.getElementById("songVocal").value;
+    const language = document.getElementById("songLanguage").value;
+    const bpm = document.getElementById("songBpm").value;
+    const voiceCharacter = document.getElementById("songVoiceCharacter").value;
+
+    const lyricsModes = {
+      "AI Write Lyrics": "ai_write",
+      "My Own Lyrics": "my_own",
+      "No Lyrics": "no_lyrics"
+    };
+    const lyricsMode = lyricsModes[lyricsModeLabel];
+
+    if (!currentUser) {
+      showMusicMessage("Please sign in before generating music.");
+      return;
+    }
+    if (!genre && !customStyle) {
+      showMusicMessage("Please choose a music genre or enter a custom style.");
+      return;
+    }
+    if (lyricsMode === "my_own" && !lyrics) {
+      showMusicMessage("Please enter your own lyrics for My Own Lyrics mode.");
+      document.getElementById("songLyrics").focus();
+      return;
+    }
+
+    activeMusicGeneration = true;
+    button.disabled = true;
+    button.textContent = "STARTING MUSIC GENERATION...";
+    output.replaceChildren();
+    output.classList.remove("hidden");
+    showMusicMessage("Submitting your song request. Please wait...");
+
+    try {
+      const { data: startData, error: startError } =
+        await supabaseClient.functions.invoke("generate-music", {
+          body: {
+            action: "start",
+            title,
+            genre,
+            customStyle,
+            mood,
+            language,
+            bpm,
+            voiceCharacter,
+            lyricsMode,
+            lyrics: lyricsMode === "no_lyrics" ? "" : lyrics,
+            instructions
+          }
+        });
+
+      if (startError) {
+        let message = startError.message || "Could not start music generation.";
+        if (startError.context && typeof startError.context.json === "function") {
+          try {
+            const details = await startError.context.json();
+            if (details && details.error) message = details.error;
+          } catch (_) {}
+        }
+        throw new Error(message);
+      }
+      if (!startData || !startData.success || !startData.jobId) {
+        throw new Error((startData && startData.error) || "The music service did not return a job ID.");
+      }
+
+      const jobId = startData.jobId;
+      showMusicMessage("Your song is processing. This can take a few minutes. 25 credits have been charged.");
+      button.textContent = "GENERATING...";
+
+      const maxAttempts = 120;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        const { data: statusData, error: statusError } =
+          await supabaseClient.functions.invoke("generate-music", {
+            body: { action: "status", jobId }
+          });
+
+        if (statusError) {
+          let message = statusError.message || "Could not check generation status.";
+          if (statusError.context && typeof statusError.context.json === "function") {
+            try {
+              const details = await statusError.context.json();
+              if (details && details.error) message = details.error;
+            } catch (_) {}
+          }
+          throw new Error(message);
+        }
+        if (!statusData) throw new Error("The music service returned an empty status response.");
+
+        if (statusData.status === "failed" || statusData.success === false) {
+          throw new Error(
+            (statusData.error || "Music generation failed.") +
+            (statusData.refunded ? " Your 25 credits have been refunded." : "")
+          );
+        }
+
+        if (statusData.status === "completed") {
+          output.replaceChildren();
+          const heading = document.createElement("h3");
+          heading.textContent = "Your song is ready!";
+          output.appendChild(heading);
+          appendMusicText(output, "Title", title);
+          appendMusicText(output, "Duration", "4 minutes");
+          appendMusicText(output, "Credits used", String(statusData.creditsUsed || 25));
+
+          if (statusData.lyrics) {
+            const lyricsHeading = document.createElement("h4");
+            lyricsHeading.textContent = "Generated / saved lyrics";
+            output.appendChild(lyricsHeading);
+            const lyricsBlock = document.createElement("pre");
+            lyricsBlock.textContent = statusData.lyrics;
+            lyricsBlock.style.whiteSpace = "pre-wrap";
+            output.appendChild(lyricsBlock);
+          }
+
+          if (statusData.audioUrl) {
+            const player = document.createElement("audio");
+            player.controls = true;
+            player.preload = "none";
+            player.src = statusData.audioUrl;
+            player.style.width = "100%";
+            player.style.marginTop = "12px";
+            output.appendChild(player);
+
+            const download = document.createElement("a");
+            download.href = statusData.audioUrl;
+            download.target = "_blank";
+            download.rel = "noopener";
+            download.textContent = "OPEN / DOWNLOAD SONG";
+            download.className = "secondary-btn";
+            download.style.display = "inline-block";
+            download.style.marginTop = "12px";
+            output.appendChild(download);
+          } else {
+            appendMusicText(output, "Saved file", statusData.fileName || "Available in My Files");
+            appendMusicText(output, "Playback", "The audio is saved, but a temporary playback link could not be created. Refresh My Files to access it.");
+          }
+
+          if (statusData.warning) appendMusicText(output, "Note", statusData.warning);
+          output.classList.remove("hidden");
+          output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          await refreshAuthState();
+          return;
+        }
+
+        const state = String(statusData.status || "processing").toUpperCase();
+        showMusicMessage("Your song is being generated (" + state + "). Please keep this page open...");
+      }
+
+      throw new Error("Music generation is taking longer than expected. Your job may still be processing. Please try again later; do not submit another request yet.");
+    } catch (error) {
+      showMusicMessage("Music generation error: " + (error.message || "Please try again."));
+      try { await refreshAuthState(); } catch (_) {}
+    } finally {
+      activeMusicGeneration = false;
+      button.disabled = false;
+      button.textContent = "GENERATE MUSIC — 25 CREDITS";
+    }
+  }
+
+  document.getElementById("songLyricsMode").addEventListener("change", function () {
+    const lyricsField = document.getElementById("songLyrics");
+    const label = lyricsField.closest(".field").querySelector("label");
+    const mode = this.value;
+    if (mode === "AI Write Lyrics") {
+      label.textContent = "Song Story / Theme / Key Phrases";
+      lyricsField.placeholder = "Describe the story, theme or key phrases you want the AI to turn into lyrics...";
+    } else if (mode === "My Own Lyrics") {
+      label.textContent = "Your Own Lyrics (Required)";
+      lyricsField.placeholder = "Paste the complete lyrics for your song...";
+    } else {
+      label.textContent = "Lyrics / Song Story (Not Used in This Mode)";
+      lyricsField.placeholder = "Lyrics are not used in No Lyrics mode.";
+    }
+  });
+  document.getElementById("songLyricsMode").dispatchEvent(new Event("change"));
 
   // AUTHENTICATION
 
