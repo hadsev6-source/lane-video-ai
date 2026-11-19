@@ -616,6 +616,7 @@
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#categories">Categories</a>
 <a href="#studio">AI Video</a>
+<a href="#musicVideoStudio">Music Video with Your Song</a>
 <a href="#imageStudio">AI Images</a>
 <a href="#musicGenerator">AI Music</a>
 <a href="#pricing">Credits</a>
@@ -818,6 +819,10 @@
     </button>
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
+
+</details></section><section class="section" id="musicVideoStudio">
+<details class="studio-accordion">
+<summary>CREATE A MUSIC VIDEO WITH YOUR SONG</summary>
 <div class="panel" id="musicStudio">
 <h2>CREATE A MUSIC VIDEO WITH YOUR SONG</h2>
 <p class="section-description">
@@ -1038,7 +1043,9 @@
 <div class="project-output hidden" id="musicProjectOutput"></div>
 <p class="hint">The Generate Video button uses the connected video-generation function. The selected song is included as project context, but direct audio-driven Lip-Sync is not part of this video request yet.</p>
 </div>
-</details></section><section class="section" id="imageStudio">
+</details>
+</section>
+<section class="section" id="imageStudio">
 <details class="studio-accordion"><summary>AI Image Generator</summary>
 <p class="section-description">Create realistic images or transform a reference photo with a text instruction. 15 credits per image.</p>
 <div class="panel">
@@ -2620,7 +2627,7 @@ if (currentUser) {
 
     document.getElementById("musicFileSelect").value = fileName;
 
-    document.getElementById("musicStudio").scrollIntoView({
+    document.getElementById("musicVideoStudio").scrollIntoView({
       behavior: "smooth"
     });
   }
