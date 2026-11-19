@@ -172,8 +172,8 @@
 
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
     }
 
     .category-card {
@@ -194,16 +194,17 @@
 
     .category-card video {
       width: 100%;
-      height: 118px;
+      height: 96px;
       object-fit: cover;
       display: block;
       background: #222;
     }
 
     .category-card h3 {
-      padding: 15px;
+      padding: 10px 11px;
       margin: 0;
-      font-size: 17px;
+      font-size: 14px;
+      line-height: 1.25;
     }
 
     .panel {
@@ -471,7 +472,11 @@
     }
 
     @media (max-width: 550px) {
-      .category-grid, .form-grid { grid-template-columns: 1fr; }
+      .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .category-card { min-height: 0; }
+      .category-card video { height: 78px; }
+      .category-card h3 { padding: 8px; font-size: 12px; }
+      .form-grid { grid-template-columns: 1fr; }
       .library-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .section { padding: 40px 5%; }
       .panel { padding: 17px; }
@@ -633,12 +638,97 @@
 @keyframes lane-art-glow{from{box-shadow:0 0 10px #f20d3033}to{box-shadow:0 0 28px #f20d30a0}}
 @media(max-width:520px){.lane-audio-player{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:12px}.lane-audio-art{width:68px;height:68px}.lane-audio-title{font-size:13px}.lane-audio-controls{gap:8px}.lane-audio-play{width:38px;height:38px;flex-basis:38px}.lane-equalizer{display:none}}
 
+
+.my-files-menu{position:relative;}
+.my-files-menu>summary{cursor:pointer;list-style:none;padding:12px 14px;color:inherit;font-weight:700;}
+.my-files-menu>summary::-webkit-details-marker{display:none;}
+.my-files-dropdown{display:grid;gap:4px;min-width:180px;}
+.my-files-dropdown button{width:100%;text-align:left;background:transparent;border:0;color:inherit;padding:10px 12px;border-radius:8px;cursor:pointer;font:inherit;}
+.my-files-dropdown button:hover{background:rgba(255,255,255,.1);}
+.my-files-dialog{width:min(900px,calc(100% - 28px));max-height:85vh;overflow:auto;border:1px solid var(--border-color,#444);border-radius:18px;padding:22px;background:var(--panel-bg,#111827);color:inherit;}
+.my-files-dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px);}
+.my-files-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;}
+.my-files-dialog-head h2{margin:0 0 6px;}
+.my-files-dialog .library-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.library-menu-hint{margin-top:18px;}
+@media(max-width:650px){.my-files-dialog{padding:15px}.my-files-dialog-head{align-items:center}.my-files-dialog-head h2{font-size:21px}}
+
+
+/* One shared My Files menu for desktop and mobile */
+.header-my-files{position:relative;flex:0 0 auto;z-index:220;}
+.header-my-files>summary{display:flex;align-items:center;gap:6px;list-style:none;cursor:pointer;white-space:nowrap;padding:10px 14px;border:1px solid #e50914;border-radius:8px;background:#19090c;color:#fff;font-size:14px;font-weight:800;}
+.header-my-files>summary::-webkit-details-marker{display:none;}
+.header-my-files[open]>summary,.header-my-files>summary:hover{background:#351014;}
+.header-my-files .my-files-dropdown{position:absolute;top:calc(100% + 8px);right:0;z-index:300;min-width:190px;padding:8px;background:#10090a;border:1px solid #e50914;border-radius:10px;box-shadow:0 16px 40px #000d;}
+.header-my-files[open] .my-files-dropdown{display:grid;}
+.header-my-files .my-files-dropdown button{color:#fff;text-align:left;padding:11px 12px;}
+@media(max-width:900px){.header-my-files{order:2;margin-left:auto}.main-menu{order:4}.visual-nav{order:3;flex-basis:100%;}}
+@media(max-width:600px){.header-my-files>summary{padding:9px 11px;font-size:13px}.header-my-files .my-files-dropdown{right:0;left:auto;}}
+
+
+/* Unified responsive interface: same navigation and controls on desktop, tablet and phone. */
+.site-header {
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px;
+  width:100%; min-width:0;
+}
+.site-header > .logo { flex:0 0 auto; }
+.site-header > .visual-nav {
+  display:flex; flex:1 1 420px; min-width:0; flex-wrap:wrap;
+  align-items:center; justify-content:center; gap:8px clamp(12px,1.7vw,24px);
+}
+.site-header > .visual-nav a { white-space:nowrap; }
+.site-header > .header-my-files,
+.site-header > .main-menu,
+.site-header > .header-credit-counter { flex:0 0 auto; }
+.site-header > .header-credit-counter { margin:0; }
+.site-header .main-menu-dropdown { max-width:calc(100vw - 24px); }
+
+/* Keep the same menu items and actions; only wrap them when space is limited. */
+@media (max-width: 1100px) {
+  .site-header { gap:10px 12px; }
+  .site-header > .visual-nav { order:5; flex:1 1 100%; justify-content:flex-start; overflow-x:auto; flex-wrap:nowrap; padding:2px 0 5px; scrollbar-width:thin; }
+  .site-header > .logo { order:1; }
+  .site-header > .header-my-files { order:2; margin-left:auto; }
+  .site-header > .main-menu { order:3; }
+  .site-header > .header-credit-counter { order:4; }
+}
+@media (max-width: 600px) {
+  .site-header { padding:12px 4%; gap:9px; }
+  .site-header > .logo { font-size:20px; }
+  .site-header > .visual-nav { gap:16px; }
+  .site-header > .visual-nav a { font-size:14px; padding:8px 0; }
+  .site-header > .header-my-files > summary { padding:9px 10px; font-size:13px; }
+  .site-header > .header-credit-counter { padding:7px 9px; font-size:13px; }
+  .site-header > .main-menu > summary { padding:9px 10px; font-size:13px; }
+  .site-header .main-menu-dropdown { right:0; left:auto; }
+}
+
+/* Prevent horizontal overflow while preserving every section and control. */
+img, video, iframe, canvas, svg { max-width:100%; }
+.panel, .price-card, .category-card, .generation-limits-showcase { min-width:0; }
+input, select, textarea { max-width:100%; }
+@media (max-width: 600px) {
+  .section { width:100%; }
+  .form-grid, .category-grid, .price-grid { min-width:0; }
+  .my-files-dialog { width:calc(100% - 16px); max-width:900px; }
+}
+
 </style>
 </head>
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>VIDEO AI</span></div>
-<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
+<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav>
+<details class="my-files-menu header-my-files">
+<summary>My Files ▾</summary>
+<div class="account-dropdown my-files-dropdown">
+<button type="button" onclick="openMyFilesCategory('image')">My Photo</button>
+<button type="button" onclick="openMyFilesCategory('audio')">My Music</button>
+<button type="button" onclick="openMyFilesCategory('video')">My Video</button>
+<button type="button" onclick="openMyFilesCategory('all')">All Files</button>
+</div>
+</details>
+<details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#categories">Categories</a>
@@ -646,7 +736,6 @@
 <a href="#imageStudio">AI Images</a>
 <a href="#musicGenerator">AI Music</a>
 <a href="#pricing">Credits</a>
-<a href="#myfiles">My Files</a>
 <details class="notification-menu">
 <summary>🔔 NOTIFICATIONS</summary>
 <div class="notification-dropdown">
@@ -676,11 +765,11 @@
 </details>
 </nav>
 </details>
-</header>
-<div class="credit-counter" title="Your credit balance">
+<div class="credit-counter header-credit-counter" title="Your credit balance">
 <span>🪙</span>
 <span id="headerCreditBalanceTop">0</span>
 </div>
+</header>
 <section class="hero" id="home"><h1>Your Imagination. <span>Your Movie.</span></h1><h2>Create AI movies, videos, images and music</h2><p>in minutes.</p><a class="primary-btn" href="#musicGenerator">▶  Create Now</a></section>
 <section class="lane-promo" aria-label="LANE VIDEO AI brand and social sharing">
   <div class="lane-promo-shell">
@@ -1183,41 +1272,26 @@
 <button class="secondary-btn" onclick="loadMyFiles()" style="margin-left:8px">REFRESH MY FILES</button>
 <div class="hint" id="fileMessage" style="margin-top:15px"></div>
 </div>
-<div class="panel">
-<div class="library-section-heading">
-<div>
-<h3 style="margin-bottom:5px">My Library</h3>
-<span class="hint" id="libraryFilterDescription">Showing all available files.</span>
-</div>
-<div class="file-actions">
-<button class="secondary-btn" onclick="loadMyFiles()">REFRESH</button>
-<button class="primary-btn" id="downloadAllButton" onclick="downloadAllAvailableFiles()">DOWNLOAD ALL</button>
-</div>
-</div>
-<div id="myFilesList">
-<p class="hint">Sign in to see your personal files.</p>
-</div>
-<div id="libraryEmptyStates">
-<div class="library-empty" data-empty-kind="video">
-<strong>🎬 No generated videos yet</strong>
-        Your completed AI videos will appear here when video generation is connected.
-      </div>
-<div class="library-empty" data-empty-kind="image">
-<strong>🖼️ No generated images yet</strong>
-        Your generated images will appear here when image generation is connected.
-      </div>
-<div class="library-empty" data-empty-kind="thumbnail">
-<strong>🎞️ No thumbnails yet</strong>
-        Covers and previews created for your projects will appear here.
-      </div>
-<div class="library-empty" data-empty-kind="text">
-<strong>📝 No saved project text yet</strong>
-        Project prompts, captions and generated text will be stored here in a future update.
-      </div>
-</div>
-<audio class="hidden" controls="" id="audioPlayer" style="width:100%;margin-top:20px"></audio>
+<div class="panel library-menu-hint">
+<strong>Your files are organized in the My Files menu.</strong>
+<p class="hint">Choose My Photo, My Music or My Video from the top menu to open your personal library.</p>
+<div id="myFilesHomePlaceholder"></div>
 </div>
 </section>
+<dialog id="myFilesDialog" class="my-files-dialog">
+<div class="my-files-dialog-head">
+<div><h2 id="myFilesDialogTitle">My Files</h2><p id="myFilesDialogDescription" class="hint">Your personal files</p></div>
+<button type="button" class="secondary-btn" onclick="closeMyFilesDialog()">CLOSE ✕</button>
+</div>
+<div class="library-toolbar" role="group" aria-label="My Files categories">
+<button class="library-filter" data-library-filter="image" onclick="filterMyFiles('image', this)" type="button">My Photo</button>
+<button class="library-filter" data-library-filter="audio" onclick="filterMyFiles('audio', this)" type="button">My Music</button>
+<button class="library-filter" data-library-filter="video" onclick="filterMyFiles('video', this)" type="button">My Video</button>
+<button class="library-filter" data-library-filter="all" onclick="filterMyFiles('all', this)" type="button">All Files</button>
+<button class="secondary-btn" type="button" onclick="loadMyFiles()">REFRESH</button>
+</div>
+<div id="myFilesDialogMount"></div>
+</dialog>
 <section class="section" id="support">
 <h2 class="section-title">Your Account</h2>
 <div class="panel">
@@ -2300,6 +2374,40 @@ if (currentUser) {
   // MY FILES LIBRARY FILTERS AND DOWNLOADS
 
   let activeLibraryFilter = "all";
+
+  const myFilesDialogHome = document.getElementById("myFilesHomePlaceholder");
+  const myFilesDialogMount = document.getElementById("myFilesDialogMount");
+  const myFilesDialog = document.getElementById("myFilesDialog");
+  const myFilesListElement = document.getElementById("myFilesList");
+
+  function openMyFilesCategory(kind) {
+    const titles = { image: "My Photo", audio: "My Music", video: "My Video", all: "My Files" };
+    const descriptions = {
+      image: "Your generated photos and images.",
+      audio: "Your uploaded and generated music.",
+      video: "Your generated and saved videos.",
+      all: "All your saved files in one place."
+    };
+    document.getElementById("myFilesDialogTitle").textContent = titles[kind] || titles.all;
+    document.getElementById("myFilesDialogDescription").textContent = descriptions[kind] || descriptions.all;
+    if (myFilesListElement && myFilesDialogMount && myFilesListElement.parentElement !== myFilesDialogMount) {
+      myFilesDialogMount.appendChild(myFilesListElement);
+    }
+    if (myFilesDialog && !myFilesDialog.open) myFilesDialog.showModal();
+    filterMyFiles(kind);
+    if (currentUser) loadMyFiles();
+  }
+
+  function closeMyFilesDialog() {
+    if (myFilesListElement && myFilesDialogHome && myFilesListElement.parentElement !== myFilesDialogHome) {
+      myFilesDialogHome.appendChild(myFilesListElement);
+    }
+    if (myFilesDialog?.open) myFilesDialog.close();
+  }
+
+  myFilesDialog?.addEventListener("click", event => {
+    if (event.target === myFilesDialog) closeMyFilesDialog();
+  });
 
   function filterMyFiles(kind, button) {
     activeLibraryFilter = kind;
