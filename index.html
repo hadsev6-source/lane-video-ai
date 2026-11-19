@@ -1312,6 +1312,8 @@
 
   let currentUser = null;
   let currentFiles = [];
+  let currentVideoFiles = [];
+  let currentImageFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
 
@@ -2141,6 +2143,8 @@ These settings are a project brief and will be used when an AI generation provid
 
     currentUser = null;
     currentFiles = [];
+    currentVideoFiles = [];
+    currentImageFiles = [];
     stopSongPreview();
 
     await refreshAuthState();
@@ -2201,6 +2205,8 @@ if (currentUser) {
       signedOut.classList.remove("hidden");
 
       currentFiles = [];
+      currentVideoFiles = [];
+      currentImageFiles = [];
       updateLibraryCounts();
 
       document.getElementById("myFilesList").innerHTML =
@@ -2304,8 +2310,8 @@ if (currentUser) {
 
     const descriptions = {
       all: "Showing all available files.",
-      video: "Showing generated videos. Video generation is not connected yet.",
-      image: "Showing generated images. Image generation is not connected yet.",
+      video: "Showing your saved videos.",
+      image: "Showing your generated images.",
       audio: "Showing your uploaded music and audio files.",
       thumbnail: "Showing project covers and thumbnails.",
       text: "Showing saved prompts, captions and project text."
@@ -2439,100 +2445,150 @@ if (currentUser) {
     }
   }
 
-  // LOAD MY FILES
+  // LOAD MY FILES: audio, generated images and saved videos
 
-  async function loadMyFiles() {
-    if (!currentUser) {
-      return;
-    }
-
-    const list = document.getElementById("myFilesList");
-    list.innerHTML = '<p class="hint">Loading your music files...</p>';
-
+  async function listUserBucket(bucket) {
     const { data, error } = await supabaseClient.storage
-      .from("user-songs")
+      .from(bucket)
       .list(currentUser.id, {
         limit: 100,
-        sortBy: {
-          column: "created_at",
-          order: "desc"
-        }
+        sortBy: { column: "created_at", order: "desc" }
+      });
+    if (error) throw new Error(bucket + ": " + error.message);
+    return (data || []).filter(file => file.name && file.name !== ".emptyFolderPlaceholder");
+  }
+
+  async function addCloudFileRow(list, bucket, file, kind) {
+    const filePath = currentUser.id + "/" + file.name;
+    const row = document.createElement("div");
+    row.className = "file-row";
+    row.dataset.fileKind = kind;
+
+    const name = document.createElement("div");
+    name.className = "file-name";
+    name.textContent = file.name;
+
+    const actions = document.createElement("div");
+    actions.className = "file-actions";
+
+    const downloadButton = document.createElement("button");
+    downloadButton.className = "secondary-btn";
+    downloadButton.textContent = "DOWNLOAD";
+    downloadButton.onclick = async () => {
+      downloadButton.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.storage
+          .from(bucket).createSignedUrl(filePath, 3600);
+        if (error || !data?.signedUrl) throw new Error(error?.message || "Could not create download link.");
+        await downloadAndOfferCloudDelete(bucket, filePath, file.name, data.signedUrl, async () => {
+          showFileMessage("File deleted from cloud storage.");
+          await loadMyFiles();
+        });
+      } catch (error) {
+        showFileMessage(error.message || "Download failed.", true);
+      } finally {
+        downloadButton.disabled = false;
+      }
+    };
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "danger-btn";
+    deleteButton.textContent = "DELETE";
+    deleteButton.onclick = async () => {
+      if (!confirm('Permanently delete "' + file.name + '" from LANE cloud storage?')) return;
+      deleteButton.disabled = true;
+      const { error } = await supabaseClient.storage.from(bucket).remove([filePath]);
+      deleteButton.disabled = false;
+      if (error) {
+        showFileMessage("Could not delete file: " + error.message, true);
+        return;
+      }
+      showFileMessage("File deleted successfully.");
+      await loadMyFiles();
+    };
+
+    actions.appendChild(downloadButton);
+    actions.appendChild(deleteButton);
+    row.appendChild(name);
+    row.appendChild(actions);
+    list.appendChild(row);
+  }
+
+  async function loadMyFiles() {
+    if (!currentUser) return;
+
+    const list = document.getElementById("myFilesList");
+    list.innerHTML = '<p class="hint">Loading your files...</p>';
+
+    try {
+      const [audio, images, videos] = await Promise.all([
+        listUserBucket("user-songs"),
+        listUserBucket("user-generated-images"),
+        listUserBucket("user-videos")
+      ]);
+
+      currentFiles = audio;
+      currentImageFiles = images;
+      currentVideoFiles = videos;
+
+      refreshMusicFileOptions();
+      refreshMusicStorage();
+      list.innerHTML = "";
+
+      for (const file of videos) await addCloudFileRow(list, "user-videos", file, "video");
+      for (const file of images) await addCloudFileRow(list, "user-generated-images", file, "image");
+
+      audio.forEach(file => {
+        const row = document.createElement("div");
+        row.className = "file-row";
+        row.dataset.fileKind = "audio";
+        const name = document.createElement("div");
+        name.className = "file-name";
+        name.textContent = file.name;
+        const actions = document.createElement("div");
+        actions.className = "file-actions";
+
+        const playButton = document.createElement("button");
+        playButton.className = "secondary-btn";
+        playButton.textContent = "PLAY";
+        playButton.onclick = () => playSong(file.name);
+
+        const useButton = document.createElement("button");
+        useButton.className = "secondary-btn";
+        useButton.textContent = "USE IN STUDIO";
+        useButton.onclick = () => useSongInStudio(file.name);
+
+        const downloadButton = document.createElement("button");
+        downloadButton.className = "secondary-btn";
+        downloadButton.textContent = "DOWNLOAD";
+        downloadButton.onclick = () => downloadSong(file.name);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "danger-btn";
+        deleteButton.textContent = "DELETE";
+        deleteButton.onclick = () => deleteSong(file.name);
+
+        actions.append(playButton, useButton, downloadButton, deleteButton);
+        row.append(name, actions);
+        list.appendChild(row);
       });
 
-    if (error) {
-      list.innerHTML =
-        '<p class="hint">Could not load files: ' +
-        escapeHTML(error.message) + '</p>';
-      return;
-    }
+      if (!audio.length && !images.length && !videos.length) {
+        list.innerHTML = '<div class="library-empty"><strong>No files yet</strong>Your uploaded music and generated images or videos will appear here.</div>';
+      }
 
-    currentFiles = (data || []).filter(file => file.name);
-
-    refreshMusicFileOptions();
-    refreshMusicStorage();
-
-    if (currentFiles.length === 0) {
-      list.innerHTML =
-        '<div class="library-empty"><strong>No audio files yet</strong>Upload an MP3 song above to add it to My Files.</div>';
       updateLibraryCounts();
       filterMyFiles(activeLibraryFilter);
-      return;
+    } catch (error) {
+      console.error("My Files loading error:", error);
+      list.innerHTML = '<p class="hint">Could not load all files: ' + escapeHTML(error.message || "Storage error") + '</p>';
     }
-
-    list.innerHTML = "";
-
-    currentFiles.forEach(file => {
-      const row = document.createElement("div");
-      row.className = "file-row";
-      row.dataset.fileKind = "audio";
-
-      const name = document.createElement("div");
-      name.className = "file-name";
-      name.textContent = file.name;
-
-      const actions = document.createElement("div");
-      actions.className = "file-actions";
-
-      const playButton = document.createElement("button");
-      playButton.className = "secondary-btn";
-      playButton.textContent = "PLAY";
-      playButton.onclick = () => playSong(file.name);
-
-      const useButton = document.createElement("button");
-      useButton.className = "secondary-btn";
-      useButton.textContent = "USE IN STUDIO";
-      useButton.onclick = () => useSongInStudio(file.name);
-
-      const downloadButton = document.createElement("button");
-      downloadButton.className = "secondary-btn";
-      downloadButton.textContent = "DOWNLOAD";
-      downloadButton.onclick = () => downloadSong(file.name);
-
-      const deleteButton = document.createElement("button");
-      deleteButton.className = "danger-btn";
-      deleteButton.textContent = "DELETE";
-      deleteButton.onclick = () => deleteSong(file.name);
-
-      actions.appendChild(playButton);
-      actions.appendChild(useButton);
-      actions.appendChild(downloadButton);
-      actions.appendChild(deleteButton);
-
-      row.appendChild(name);
-      row.appendChild(actions);
-
-      list.appendChild(row);
-    });
-
-    updateLibraryCounts();
-    filterMyFiles(activeLibraryFilter);
   }
 
   function updateLibraryCounts() {
-    const audioCount = currentFiles.length;
-    document.getElementById("audioFileCount").textContent = audioCount;
-    document.getElementById("videoFileCount").textContent = "0";
-    document.getElementById("imageFileCount").textContent = "0";
+    document.getElementById("audioFileCount").textContent = currentFiles.length;
+    document.getElementById("videoFileCount").textContent = currentVideoFiles.length;
+    document.getElementById("imageFileCount").textContent = currentImageFiles.length;
     document.getElementById("thumbnailFileCount").textContent = "0";
   }
 
