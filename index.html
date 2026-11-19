@@ -750,7 +750,7 @@
 </details></section><section class="section" id="studio">
 <details class="studio-accordion"><summary>AI Video Generator</summary>
 <p class="section-description">
-    Describe your idea and prepare your video project.
+    Describe your idea, choose the video settings and generate your video.
   </p>
 <div class="panel">
 <div class="field">
@@ -813,8 +813,8 @@
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
       Estimated cost: <strong>70 credits</strong> · Balance after generation will be shown when credits are connected.
     </div>
-<button class="primary-btn" onclick="prepareVideo()">
-      PREPARE MY VIDEO PROJECT
+<button class="primary-btn" id="generateVideoButton" type="button" onclick="generateVideo()">
+      GENERATE VIDEO
     </button>
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
@@ -1017,10 +1017,25 @@
         The selections above are additional creative guidance.
       </span>
 </div>
-<button class="primary-btn" onclick="prepareMusicVideo()">
+<div class="field">
+<label for="musicVideoDuration">Video Duration</label>
+<select id="musicVideoDuration">
+<option value="5">5 seconds</option>
+<option value="10">10 seconds</option>
+<option value="15">15 seconds</option>
+<option value="20">20 seconds</option>
+<option value="30">30 seconds</option>
+</select>
+</div>
+<button class="primary-btn" type="button" onclick="generateMusicVideo()">
+      GENERATE VIDEO
+    </button>
+<div class="project-output hidden" id="musicVideoGenerationOutput" aria-live="polite"></div>
+<button class="secondary-btn" type="button" onclick="prepareMusicVideo()" style="margin-top:10px">
       PREPARE MY AI MUSIC VIDEO PROJECT
     </button>
 <div class="project-output hidden" id="musicProjectOutput"></div>
+<p class="hint">The Generate Video button uses the connected video-generation function. The selected song is included as project context, but direct audio-driven Lip-Sync is not part of this video request yet.</p>
 </div>
 </details></section><section class="section" id="imageStudio">
 <details class="studio-accordion"><summary>AI Image Generator</summary>
@@ -1436,11 +1451,11 @@
   // GENERAL VIDEO PROJECT
 
 
-async function prepareVideo() {
-  const prompt = document.getElementById("prompt").value.trim();
-  const style = document.getElementById("style").value;
-  const duration = document.getElementById("duration").value;
-  const output = document.getElementById("generalProjectOutput");
+async function generateVideo(options = {}) {
+  const prompt = (options.prompt ?? document.getElementById("prompt").value).trim();
+  const style = options.style ?? document.getElementById("style").value;
+  const duration = String(options.duration ?? document.getElementById("duration").value);
+  const output = options.output ?? document.getElementById("generalProjectOutput");
 
   if (!prompt) {
     alert("Please describe your video idea first.");
@@ -1620,6 +1635,55 @@ The task may still be processing. Please check again later.`;
 }
 
 
+
+  // AI MUSIC VIDEO GENERATION — uses the same connected video backend as the main video generator.
+  async function generateMusicVideo() {
+    const musicMode = document.getElementById("musicMode").value;
+    const selectedSong = document.getElementById("musicFileSelect").value;
+    const prompt = document.getElementById("musicPrompt").value.trim();
+    const output = document.getElementById("musicVideoGenerationOutput");
+
+    if (musicMode === "upload" && !selectedSong) {
+      alert("Please select a song from My Files, or choose the concept-only option.");
+      return;
+    }
+    if (!prompt) {
+      alert("Please describe your music video scenes and actions first.");
+      return;
+    }
+    if (!currentUser) {
+      alert("Please sign in first.");
+      return;
+    }
+
+    const duration = document.getElementById("musicVideoDuration").value;
+    const musicVideoPrompt = [
+      "Create an AI music video.",
+      "Music video type: " + document.getElementById("musicType").value,
+      "Music source: " + (musicMode === "upload" ? selectedSong : "Concept only; no song selected"),
+      "Music genre: " + document.getElementById("musicGenre").value,
+      "Mood: " + document.getElementById("musicMood").value,
+      "Vocal type: " + document.getElementById("musicVocalType").value,
+      "Language: " + document.getElementById("musicLanguage").value,
+      "Tempo: " + document.getElementById("musicBpm").value,
+      "Performer: " + document.getElementById("performerType").value,
+      "Performer appearance: " + document.getElementById("performerDescription").value.trim(),
+      "Dancers: " + document.getElementById("dancers").value,
+      "Stage/location: " + document.getElementById("stage").value,
+      "Wardrobe: " + document.getElementById("wardrobe").value,
+      "Lighting/effects: " + document.getElementById("lighting").value,
+      "Lip-Sync requested: " + (document.getElementById("lipSync").checked ? "Yes" : "No"),
+      "Custom style: " + document.getElementById("musicCustomStyle").value.trim(),
+      "Detailed scenes and actions: " + prompt
+    ].join("\n");
+
+    await generateVideo({
+      prompt: musicVideoPrompt,
+      style: "Cinematic music video",
+      duration,
+      output
+    });
+  }
 
   // MUSIC VIDEO PROJECT
 
