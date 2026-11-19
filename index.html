@@ -172,8 +172,8 @@
 
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
     }
 
     .category-card {
@@ -194,17 +194,16 @@
 
     .category-card video {
       width: 100%;
-      height: 96px;
+      height: 118px;
       object-fit: cover;
       display: block;
       background: #222;
     }
 
     .category-card h3 {
-      padding: 10px 11px;
+      padding: 15px;
       margin: 0;
-      font-size: 14px;
-      line-height: 1.25;
+      font-size: 17px;
     }
 
     .panel {
@@ -472,11 +471,7 @@
     }
 
     @media (max-width: 550px) {
-      .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-      .category-card { min-height: 0; }
-      .category-card video { height: 78px; }
-      .category-card h3 { padding: 8px; font-size: 12px; }
-      .form-grid { grid-template-columns: 1fr; }
+      .category-grid, .form-grid { grid-template-columns: 1fr; }
       .library-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .section { padding: 40px 5%; }
       .panel { padding: 17px; }
@@ -638,97 +633,12 @@
 @keyframes lane-art-glow{from{box-shadow:0 0 10px #f20d3033}to{box-shadow:0 0 28px #f20d30a0}}
 @media(max-width:520px){.lane-audio-player{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:12px}.lane-audio-art{width:68px;height:68px}.lane-audio-title{font-size:13px}.lane-audio-controls{gap:8px}.lane-audio-play{width:38px;height:38px;flex-basis:38px}.lane-equalizer{display:none}}
 
-
-.my-files-menu{position:relative;}
-.my-files-menu>summary{cursor:pointer;list-style:none;padding:12px 14px;color:inherit;font-weight:700;}
-.my-files-menu>summary::-webkit-details-marker{display:none;}
-.my-files-dropdown{display:grid;gap:4px;min-width:180px;}
-.my-files-dropdown button{width:100%;text-align:left;background:transparent;border:0;color:inherit;padding:10px 12px;border-radius:8px;cursor:pointer;font:inherit;}
-.my-files-dropdown button:hover{background:rgba(255,255,255,.1);}
-.my-files-dialog{width:min(900px,calc(100% - 28px));max-height:85vh;overflow:auto;border:1px solid var(--border-color,#444);border-radius:18px;padding:22px;background:var(--panel-bg,#111827);color:inherit;}
-.my-files-dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px);}
-.my-files-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;}
-.my-files-dialog-head h2{margin:0 0 6px;}
-.my-files-dialog .library-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-.library-menu-hint{margin-top:18px;}
-@media(max-width:650px){.my-files-dialog{padding:15px}.my-files-dialog-head{align-items:center}.my-files-dialog-head h2{font-size:21px}}
-
-
-/* One shared My Files menu for desktop and mobile */
-.header-my-files{position:relative;flex:0 0 auto;z-index:220;}
-.header-my-files>summary{display:flex;align-items:center;gap:6px;list-style:none;cursor:pointer;white-space:nowrap;padding:10px 14px;border:1px solid #e50914;border-radius:8px;background:#19090c;color:#fff;font-size:14px;font-weight:800;}
-.header-my-files>summary::-webkit-details-marker{display:none;}
-.header-my-files[open]>summary,.header-my-files>summary:hover{background:#351014;}
-.header-my-files .my-files-dropdown{position:absolute;top:calc(100% + 8px);right:0;z-index:300;min-width:190px;padding:8px;background:#10090a;border:1px solid #e50914;border-radius:10px;box-shadow:0 16px 40px #000d;}
-.header-my-files[open] .my-files-dropdown{display:grid;}
-.header-my-files .my-files-dropdown button{color:#fff;text-align:left;padding:11px 12px;}
-@media(max-width:900px){.header-my-files{order:2;margin-left:auto}.main-menu{order:4}.visual-nav{order:3;flex-basis:100%;}}
-@media(max-width:600px){.header-my-files>summary{padding:9px 11px;font-size:13px}.header-my-files .my-files-dropdown{right:0;left:auto;}}
-
-
-/* Unified responsive interface: same navigation and controls on desktop, tablet and phone. */
-.site-header {
-  display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px;
-  width:100%; min-width:0;
-}
-.site-header > .logo { flex:0 0 auto; }
-.site-header > .visual-nav {
-  display:flex; flex:1 1 420px; min-width:0; flex-wrap:wrap;
-  align-items:center; justify-content:center; gap:8px clamp(12px,1.7vw,24px);
-}
-.site-header > .visual-nav a { white-space:nowrap; }
-.site-header > .header-my-files,
-.site-header > .main-menu,
-.site-header > .header-credit-counter { flex:0 0 auto; }
-.site-header > .header-credit-counter { margin:0; }
-.site-header .main-menu-dropdown { max-width:calc(100vw - 24px); }
-
-/* Keep the same menu items and actions; only wrap them when space is limited. */
-@media (max-width: 1100px) {
-  .site-header { gap:10px 12px; }
-  .site-header > .visual-nav { order:5; flex:1 1 100%; justify-content:flex-start; overflow-x:auto; flex-wrap:nowrap; padding:2px 0 5px; scrollbar-width:thin; }
-  .site-header > .logo { order:1; }
-  .site-header > .header-my-files { order:2; margin-left:auto; }
-  .site-header > .main-menu { order:3; }
-  .site-header > .header-credit-counter { order:4; }
-}
-@media (max-width: 600px) {
-  .site-header { padding:12px 4%; gap:9px; }
-  .site-header > .logo { font-size:20px; }
-  .site-header > .visual-nav { gap:16px; }
-  .site-header > .visual-nav a { font-size:14px; padding:8px 0; }
-  .site-header > .header-my-files > summary { padding:9px 10px; font-size:13px; }
-  .site-header > .header-credit-counter { padding:7px 9px; font-size:13px; }
-  .site-header > .main-menu > summary { padding:9px 10px; font-size:13px; }
-  .site-header .main-menu-dropdown { right:0; left:auto; }
-}
-
-/* Prevent horizontal overflow while preserving every section and control. */
-img, video, iframe, canvas, svg { max-width:100%; }
-.panel, .price-card, .category-card, .generation-limits-showcase { min-width:0; }
-input, select, textarea { max-width:100%; }
-@media (max-width: 600px) {
-  .section { width:100%; }
-  .form-grid, .category-grid, .price-grid { min-width:0; }
-  .my-files-dialog { width:calc(100% - 16px); max-width:900px; }
-}
-
 </style>
 </head>
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>VIDEO AI</span></div>
-<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav>
-<details class="my-files-menu header-my-files">
-<summary>My Files ▾</summary>
-<div class="account-dropdown my-files-dropdown">
-<button type="button" onclick="openMyFilesCategory('image')">My Photo</button>
-<button type="button" onclick="openMyFilesCategory('audio')">My Music</button>
-<button type="button" onclick="openMyFilesCategory('video')">My Video</button>
-<button type="button" onclick="openMyFilesCategory('all')">All Files</button>
-</div>
-</details>
-<details class="main-menu">
+<nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#categories">Categories</a>
@@ -736,6 +646,7 @@ input, select, textarea { max-width:100%; }
 <a href="#imageStudio">AI Images</a>
 <a href="#musicGenerator">AI Music</a>
 <a href="#pricing">Credits</a>
+<a href="#myfiles">My Files</a>
 <details class="notification-menu">
 <summary>🔔 NOTIFICATIONS</summary>
 <div class="notification-dropdown">
@@ -765,11 +676,11 @@ input, select, textarea { max-width:100%; }
 </details>
 </nav>
 </details>
-<div class="credit-counter header-credit-counter" title="Your credit balance">
+</header>
+<div class="credit-counter" title="Your credit balance">
 <span>🪙</span>
 <span id="headerCreditBalanceTop">0</span>
 </div>
-</header>
 <section class="hero" id="home"><h1>Your Imagination. <span>Your Movie.</span></h1><h2>Create AI movies, videos, images and music</h2><p>in minutes.</p><a class="primary-btn" href="#musicGenerator">▶  Create Now</a></section>
 <section class="lane-promo" aria-label="LANE VIDEO AI brand and social sharing">
   <div class="lane-promo-shell">
@@ -1250,17 +1161,6 @@ input, select, textarea { max-width:100%; }
 <button class="library-filter" data-library-filter="thumbnail" onclick="filterMyFiles('thumbnail', this)" type="button">My Thumbnails</button>
 <button class="library-filter" data-library-filter="text" onclick="filterMyFiles('text', this)" type="button">Project Text</button>
 </div>
-<div class="panel" id="musicStoragePanel">
-<h3>Music Storage</h3>
-<div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-<strong id="musicStorageLabel">Checking storage...</strong>
-<strong id="musicStoragePercent">—</strong>
-</div>
-<div style="height:10px;background:var(--border-color, #e5e7eb);border-radius:999px;overflow:hidden;margin:10px 0">
-<div id="musicStorageBar" style="height:100%;width:0;background:#16a34a;border-radius:999px;transition:width .2s"></div>
-</div>
-<p class="hint" id="musicStorageMessage" aria-live="polite">Your personal music storage usage will appear here.</p>
-</div>
 <div class="panel">
 <h3>Upload Your Music</h3>
 <div class="field">
@@ -1272,26 +1172,41 @@ input, select, textarea { max-width:100%; }
 <button class="secondary-btn" onclick="loadMyFiles()" style="margin-left:8px">REFRESH MY FILES</button>
 <div class="hint" id="fileMessage" style="margin-top:15px"></div>
 </div>
-<div class="panel library-menu-hint">
-<strong>Your files are organized in the My Files menu.</strong>
-<p class="hint">Choose My Photo, My Music or My Video from the top menu to open your personal library.</p>
-<div id="myFilesHomePlaceholder"></div>
+<div class="panel">
+<div class="library-section-heading">
+<div>
+<h3 style="margin-bottom:5px">My Library</h3>
+<span class="hint" id="libraryFilterDescription">Showing all available files.</span>
+</div>
+<div class="file-actions">
+<button class="secondary-btn" onclick="loadMyFiles()">REFRESH</button>
+<button class="primary-btn" id="downloadAllButton" onclick="downloadAllAvailableFiles()">DOWNLOAD ALL</button>
+</div>
+</div>
+<div id="myFilesList">
+<p class="hint">Sign in to see your personal files.</p>
+</div>
+<div id="libraryEmptyStates">
+<div class="library-empty" data-empty-kind="video">
+<strong>🎬 No generated videos yet</strong>
+        Your completed AI videos will appear here when video generation is connected.
+      </div>
+<div class="library-empty" data-empty-kind="image">
+<strong>🖼️ No generated images yet</strong>
+        Your generated images will appear here when image generation is connected.
+      </div>
+<div class="library-empty" data-empty-kind="thumbnail">
+<strong>🎞️ No thumbnails yet</strong>
+        Covers and previews created for your projects will appear here.
+      </div>
+<div class="library-empty" data-empty-kind="text">
+<strong>📝 No saved project text yet</strong>
+        Project prompts, captions and generated text will be stored here in a future update.
+      </div>
+</div>
+<audio class="hidden" controls="" id="audioPlayer" style="width:100%;margin-top:20px"></audio>
 </div>
 </section>
-<dialog id="myFilesDialog" class="my-files-dialog">
-<div class="my-files-dialog-head">
-<div><h2 id="myFilesDialogTitle">My Files</h2><p id="myFilesDialogDescription" class="hint">Your personal files</p></div>
-<button type="button" class="secondary-btn" onclick="closeMyFilesDialog()">CLOSE ✕</button>
-</div>
-<div class="library-toolbar" role="group" aria-label="My Files categories">
-<button class="library-filter" data-library-filter="image" onclick="filterMyFiles('image', this)" type="button">My Photo</button>
-<button class="library-filter" data-library-filter="audio" onclick="filterMyFiles('audio', this)" type="button">My Music</button>
-<button class="library-filter" data-library-filter="video" onclick="filterMyFiles('video', this)" type="button">My Video</button>
-<button class="library-filter" data-library-filter="all" onclick="filterMyFiles('all', this)" type="button">All Files</button>
-<button class="secondary-btn" type="button" onclick="loadMyFiles()">REFRESH</button>
-</div>
-<div id="myFilesDialogMount"></div>
-</dialog>
 <section class="section" id="support">
 <h2 class="section-title">Your Account</h2>
 <div class="panel">
@@ -1386,8 +1301,6 @@ input, select, textarea { max-width:100%; }
 
   let currentUser = null;
   let currentFiles = [];
-  let currentVideoFiles = [];
-  let currentImageFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
 
@@ -1562,9 +1475,8 @@ async function prepareVideo() {
   }
 
   const durationSeconds = Number.parseInt(duration, 10);
-  const supportedDurations = [5, 10, 15, 20, 30];
 
-  if (!supportedDurations.includes(durationSeconds)) {
+  if (![5, 10, 15, 20, 30].includes(durationSeconds)) {
     alert("Please choose 5, 10, 15, 20 or 30 seconds.");
     return;
   }
@@ -1576,6 +1488,7 @@ async function prepareVideo() {
 
   output.textContent = "Starting AI video generation...";
   output.classList.remove("hidden");
+  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
   try {
     const { data, error } = await supabaseClient.functions.invoke(
@@ -1596,26 +1509,143 @@ async function prepareVideo() {
       throw new Error(data?.error || "Video generation could not start.");
     }
 
-    output.textContent =
-      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started!\n\n" +
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
-      "Duration: " + data.duration + " seconds\n" +
-      "Task ID: " + data.taskId + "\n\n" +
-      "Status: Processing. The video is not ready yet.";
+    const taskId = data.taskId;
+    const modelName = data.model === "seedance2_5"
+      ? "Seedance 2.5"
+      : "Runway Gen-4.5";
+
+    output.textContent = `LANE VIDEO AI — VIDEO GENERATION
+
+Your video generation task has started!
+
+Model: ${modelName}
+Duration: ${durationSeconds} seconds
+Credits used: ${data.creditsUsed}
+Task ID: ${taskId}
+
+Status: Processing...
+Checking automatically every 8 seconds. Please keep this page open.`;
+
+    let consecutiveErrors = 0;
+    const maxChecks = 90;
+
+    for (let attempt = 1; attempt <= maxChecks; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 8000));
+
+      const { data: statusData, error: statusError } =
+        await supabaseClient.functions.invoke(
+          "check-video-status",
+          { body: { taskId: taskId } }
+        );
+
+      if (statusError || !statusData) {
+        consecutiveErrors++;
+
+        output.textContent = `LANE VIDEO AI — VIDEO GENERATION
+
+Temporary connection problem.
+Retrying status check: ${consecutiveErrors}/5
+
+Task ID: ${taskId}`;
+
+        if (consecutiveErrors >= 5) {
+          throw new Error(
+            "Could not check the video status. Your task ID is: " +
+            taskId +
+            ". Please check again later."
+          );
+        }
+        continue;
+      }
+
+      consecutiveErrors = 0;
+
+      if (
+        statusData.status === "FAILED" ||
+        statusData.status === "CANCELLED"
+      ) {
+        output.textContent = `LANE VIDEO AI — VIDEO GENERATION FAILED
+
+${statusData.failure || statusData.error || "Video generation failed."}
+
+Credits refunded: ${
+          statusData.refunded
+            ? "Yes"
+            : "Not confirmed. Please contact support."
+        }`;
+        return;
+      }
+
+      if (statusData.status === "SUCCEEDED") {
+        if (!statusData.output) {
+          output.textContent = `Your video has been generated and saved.
+
+The secure playback link is being refreshed. Checking again...`;
+          continue;
+        }
+
+        output.replaceChildren();
+
+        const heading = document.createElement("h3");
+        heading.textContent = "Your video is ready!";
+
+        const details = document.createElement("p");
+        details.textContent =
+          "Model: " + modelName +
+          " | Duration: " + durationSeconds + " seconds" +
+          " | Credits used: " + data.creditsUsed;
+
+        const video = document.createElement("video");
+        video.src = statusData.output;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = "metadata";
+        video.style.width = "100%";
+        video.style.maxWidth = "720px";
+        video.style.borderRadius = "12px";
+
+        const download = document.createElement("a");
+        download.href = statusData.output;
+        download.target = "_blank";
+        download.rel = "noopener";
+        download.textContent = "OPEN / DOWNLOAD VIDEO";
+        download.style.display = "inline-block";
+        download.style.marginTop = "15px";
+
+        output.appendChild(heading);
+        output.appendChild(details);
+        output.appendChild(video);
+        output.appendChild(download);
+        output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return;
+      }
+
+      output.textContent = `LANE VIDEO AI — VIDEO GENERATION
+
+Model: ${modelName}
+Duration: ${durationSeconds} seconds
+Task ID: ${taskId}
+
+Status: ${statusData.status || "PROCESSING"}
+Check ${attempt} of ${maxChecks}. Next check in 8 seconds...`;
+    }
+
+    output.textContent = `Video generation is taking longer than expected.
+
+Task ID: ${taskId}
+
+The task may still be processing. Please check again later.`;
 
   } catch (error) {
     console.error("Video generation error:", error);
     output.textContent =
-      "Video generation error:\n" +
-      (error.message || "Please try again.");
+      "LANE VIDEO AI — VIDEO GENERATION ERROR\n\n" +
+      (error.message || "Please try again later.");
   }
 
-  output.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest"
-  });
+  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
+
 
 
   // MUSIC VIDEO PROJECT
@@ -1752,7 +1782,7 @@ These settings are a project brief and will be used when an AI generation provid
     const preview = document.getElementById("videoCostPreview");
     preview.innerHTML = credits === null
       ? 'Estimated cost: <strong>Price estimate for this duration is being confirmed. No credits are deducted.</strong>'
-      : 'Credit cost: <strong>' + credits.toLocaleString() + ' credits</strong> · Server-side credit deduction still needs implementation.';
+      : 'Credit cost: <strong>' + credits.toLocaleString() + ' credits</strong> · Credits are deducted securely when video generation starts.';
   }
   document.getElementById("duration").addEventListener("change", updateVideoCost);
   updateVideoCost();
@@ -1815,23 +1845,12 @@ These settings are a project brief and will be used when an AI generation provid
         img.src = item.url;
         img.alt = "LANE generated image " + (index + 1);
         img.loading = "lazy";
-        const actions = document.createElement("div");
-        actions.className = "file-actions";
         const link = document.createElement("a");
         link.href = item.url;
         link.target = "_blank";
         link.rel = "noopener";
         link.textContent = "OPEN IMAGE";
-        link.className = "secondary-btn";
-        link.style.textDecoration = "none";
-        link.style.display = "inline-block";
-        const downloadButton = document.createElement("button");
-        downloadButton.type = "button";
-        downloadButton.className = "primary-btn";
-        downloadButton.textContent = "DOWNLOAD";
-        downloadButton.onclick = () => downloadGeneratedImage(item, downloadButton);
-        actions.append(link, downloadButton);
-        card.append(img, actions);
+        card.append(img, link);
         gallery.appendChild(card);
       });
       await refreshAuthState();
@@ -1861,42 +1880,6 @@ These settings are a project brief and will be used when an AI generation provid
     strong.textContent = label + ": ";
     paragraph.append(strong, document.createTextNode(value || ""));
     parent.appendChild(paragraph);
-  }
-
-  async function refreshMusicStorage() {
-    const label = document.getElementById("musicStorageLabel");
-    const percentText = document.getElementById("musicStoragePercent");
-    const bar = document.getElementById("musicStorageBar");
-    const message = document.getElementById("musicStorageMessage");
-    if (!currentUser) {
-      label.textContent = "Sign in to view storage";
-      percentText.textContent = "—";
-      bar.style.width = "0%";
-      message.textContent = "The 250 MB music limit applies separately to each user.";
-      return;
-    }
-    try {
-      const { data, error } = await supabaseClient.functions.invoke("generate-music", {
-        body: { action: "storage_usage" }
-      });
-      if (error || !data || !data.success || !data.storage) throw new Error("Storage information unavailable");
-      const storage = data.storage;
-      const percent = Number(storage.percent || 0);
-      const usedMB = (Number(storage.usedBytes || 0) / 1048576).toFixed(1);
-      const limitMB = (Number(storage.limitBytes || 0) / 1048576).toFixed(0);
-      label.textContent = usedMB + " MB used of " + limitMB + " MB";
-      percentText.textContent = percent + "%";
-      bar.style.width = percent + "%";
-      bar.style.background = percent >= 90 ? "#dc2626" : percent >= 80 ? "#d97706" : "#16a34a";
-      if (percent >= 100) message.textContent = "Storage is full. Download and delete saved songs before generating another song.";
-      else if (percent >= 90) message.textContent = "Critical: please free up music storage soon. New generation requires at least 50 MB free.";
-      else if (percent >= 80) message.textContent = "Warning: music storage is at least 80%. Consider downloading and deleting songs you no longer need.";
-      else message.textContent = "Music storage is available. A new song requires up to 50 MB of free space.";
-    } catch (_) {
-      label.textContent = "Storage check unavailable";
-      percentText.textContent = "—";
-      message.textContent = "We could not read storage usage. Music generation will still be checked securely before credits are charged.";
-    }
   }
 
   async function prepareMusicProject() {
@@ -1979,7 +1962,6 @@ These settings are a project brief and will be used when an AI generation provid
       }
 
       const jobId = startData.jobId;
-      await refreshMusicStorage();
       showMusicMessage("Your song is processing. This can take a few minutes. 25 credits have been charged.");
       button.textContent = "GENERATING...";
 
@@ -2152,7 +2134,6 @@ These settings are a project brief and will be used when an AI generation provid
           output.classList.remove("hidden");
           output.scrollIntoView({ behavior: "smooth", block: "nearest" });
           await refreshAuthState();
-          await refreshMusicStorage();
           return;
         }
 
@@ -2217,8 +2198,6 @@ These settings are a project brief and will be used when an AI generation provid
 
     currentUser = null;
     currentFiles = [];
-    currentVideoFiles = [];
-    currentImageFiles = [];
     stopSongPreview();
 
     await refreshAuthState();
@@ -2279,8 +2258,6 @@ if (currentUser) {
       signedOut.classList.remove("hidden");
 
       currentFiles = [];
-      currentVideoFiles = [];
-      currentImageFiles = [];
       updateLibraryCounts();
 
       document.getElementById("myFilesList").innerHTML =
@@ -2375,40 +2352,6 @@ if (currentUser) {
 
   let activeLibraryFilter = "all";
 
-  const myFilesDialogHome = document.getElementById("myFilesHomePlaceholder");
-  const myFilesDialogMount = document.getElementById("myFilesDialogMount");
-  const myFilesDialog = document.getElementById("myFilesDialog");
-  const myFilesListElement = document.getElementById("myFilesList");
-
-  function openMyFilesCategory(kind) {
-    const titles = { image: "My Photo", audio: "My Music", video: "My Video", all: "My Files" };
-    const descriptions = {
-      image: "Your generated photos and images.",
-      audio: "Your uploaded and generated music.",
-      video: "Your generated and saved videos.",
-      all: "All your saved files in one place."
-    };
-    document.getElementById("myFilesDialogTitle").textContent = titles[kind] || titles.all;
-    document.getElementById("myFilesDialogDescription").textContent = descriptions[kind] || descriptions.all;
-    if (myFilesListElement && myFilesDialogMount && myFilesListElement.parentElement !== myFilesDialogMount) {
-      myFilesDialogMount.appendChild(myFilesListElement);
-    }
-    if (myFilesDialog && !myFilesDialog.open) myFilesDialog.showModal();
-    filterMyFiles(kind);
-    if (currentUser) loadMyFiles();
-  }
-
-  function closeMyFilesDialog() {
-    if (myFilesListElement && myFilesDialogHome && myFilesListElement.parentElement !== myFilesDialogHome) {
-      myFilesDialogHome.appendChild(myFilesListElement);
-    }
-    if (myFilesDialog?.open) myFilesDialog.close();
-  }
-
-  myFilesDialog?.addEventListener("click", event => {
-    if (event.target === myFilesDialog) closeMyFilesDialog();
-  });
-
   function filterMyFiles(kind, button) {
     activeLibraryFilter = kind;
 
@@ -2418,8 +2361,8 @@ if (currentUser) {
 
     const descriptions = {
       all: "Showing all available files.",
-      video: "Showing your saved videos.",
-      image: "Showing your generated images.",
+      video: "Showing generated videos. Video generation is not connected yet.",
+      image: "Showing generated images. Image generation is not connected yet.",
       audio: "Showing your uploaded music and audio files.",
       thumbnail: "Showing project covers and thumbnails.",
       text: "Showing saved prompts, captions and project text."
@@ -2447,53 +2390,6 @@ if (currentUser) {
     }
   }
 
-  async function downloadAndOfferCloudDelete(bucket, filePath, fileName, signedUrl, onDeleted) {
-    const link = document.createElement("a");
-    link.href = signedUrl;
-    link.download = fileName;
-    link.target = "_blank";
-    link.rel = "noopener";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    // Browsers do not expose a dependable signal that a file has finished
-    // saving to the user's device. Ask the user to confirm after starting it.
-    const confirmed = window.confirm(
-      'Свалянето на „' + fileName + '“ е стартирано. Сигурни ли сте, че искате да изтриете файла от галерията на LANE? Уверете се, че файлът е запазен на устройството ви. Това действие е необратимо.'
-    );
-    if (!confirmed) return false;
-
-    const { error } = await supabaseClient.storage.from(bucket).remove([filePath]);
-    if (error) {
-      throw new Error("Файлът не беше изтрит от облака: " + error.message);
-    }
-    if (typeof onDeleted === "function") await onDeleted();
-    return true;
-  }
-
-  async function downloadGeneratedImage(item, button) {
-    if (!currentUser || !item || !item.path || !item.url) {
-      alert("Не може да се подготви свалянето. Липсва пътят до файла.");
-      return;
-    }
-    button.disabled = true;
-    try {
-      const deleted = await downloadAndOfferCloudDelete(
-        "user-generated-images", item.path, item.path.split("/").pop(), item.url,
-        async () => { button.closest(".generated-image-card")?.remove(); }
-      );
-      if (deleted) {
-        const output = document.getElementById("imageProjectOutput");
-        output.textContent = "Файлът беше изтрит от облачната галерия на LANE.";
-      }
-    } catch (error) {
-      alert(error.message || "Възникна грешка при изтриването.");
-    } finally {
-      button.disabled = false;
-    }
-  }
-
   async function downloadSong(fileName) {
     if (!currentUser) {
       alert("Please sign in first.");
@@ -2510,19 +2406,12 @@ if (currentUser) {
       return;
     }
 
-    try {
-      const deleted = await downloadAndOfferCloudDelete(
-        "user-songs", filePath, fileName, data.signedUrl,
-        async () => {
-          if (currentAudioUrl) stopSongPreview();
-          showFileMessage("Song downloaded (as confirmed) and deleted from LANE cloud storage.");
-          await loadMyFiles();
-        }
-      );
-      if (!deleted) showFileMessage("The song remains saved in LANE. Delete it later when you are ready.");
-    } catch (deleteError) {
-      showFileMessage(deleteError.message || "Could not delete the song.", true);
-    }
+    const link = document.createElement("a");
+    link.href = data.signedUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 
   async function downloadAllAvailableFiles() {
@@ -2553,150 +2442,99 @@ if (currentUser) {
     }
   }
 
-  // LOAD MY FILES: audio, generated images and saved videos
-
-  async function listUserBucket(bucket) {
-    const { data, error } = await supabaseClient.storage
-      .from(bucket)
-      .list(currentUser.id, {
-        limit: 100,
-        sortBy: { column: "created_at", order: "desc" }
-      });
-    if (error) throw new Error(bucket + ": " + error.message);
-    return (data || []).filter(file => file.name && file.name !== ".emptyFolderPlaceholder");
-  }
-
-  async function addCloudFileRow(list, bucket, file, kind) {
-    const filePath = currentUser.id + "/" + file.name;
-    const row = document.createElement("div");
-    row.className = "file-row";
-    row.dataset.fileKind = kind;
-
-    const name = document.createElement("div");
-    name.className = "file-name";
-    name.textContent = file.name;
-
-    const actions = document.createElement("div");
-    actions.className = "file-actions";
-
-    const downloadButton = document.createElement("button");
-    downloadButton.className = "secondary-btn";
-    downloadButton.textContent = "DOWNLOAD";
-    downloadButton.onclick = async () => {
-      downloadButton.disabled = true;
-      try {
-        const { data, error } = await supabaseClient.storage
-          .from(bucket).createSignedUrl(filePath, 3600);
-        if (error || !data?.signedUrl) throw new Error(error?.message || "Could not create download link.");
-        await downloadAndOfferCloudDelete(bucket, filePath, file.name, data.signedUrl, async () => {
-          showFileMessage("File deleted from cloud storage.");
-          await loadMyFiles();
-        });
-      } catch (error) {
-        showFileMessage(error.message || "Download failed.", true);
-      } finally {
-        downloadButton.disabled = false;
-      }
-    };
-
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "danger-btn";
-    deleteButton.textContent = "DELETE";
-    deleteButton.onclick = async () => {
-      if (!confirm('Permanently delete "' + file.name + '" from LANE cloud storage?')) return;
-      deleteButton.disabled = true;
-      const { error } = await supabaseClient.storage.from(bucket).remove([filePath]);
-      deleteButton.disabled = false;
-      if (error) {
-        showFileMessage("Could not delete file: " + error.message, true);
-        return;
-      }
-      showFileMessage("File deleted successfully.");
-      await loadMyFiles();
-    };
-
-    actions.appendChild(downloadButton);
-    actions.appendChild(deleteButton);
-    row.appendChild(name);
-    row.appendChild(actions);
-    list.appendChild(row);
-  }
+  // LOAD MY FILES
 
   async function loadMyFiles() {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
 
     const list = document.getElementById("myFilesList");
-    list.innerHTML = '<p class="hint">Loading your files...</p>';
+    list.innerHTML = '<p class="hint">Loading your music files...</p>';
 
-    try {
-      const [audio, images, videos] = await Promise.all([
-        listUserBucket("user-songs"),
-        listUserBucket("user-generated-images"),
-        listUserBucket("user-videos")
-      ]);
-
-      currentFiles = audio;
-      currentImageFiles = images;
-      currentVideoFiles = videos;
-
-      refreshMusicFileOptions();
-      refreshMusicStorage();
-      list.innerHTML = "";
-
-      for (const file of videos) await addCloudFileRow(list, "user-videos", file, "video");
-      for (const file of images) await addCloudFileRow(list, "user-generated-images", file, "image");
-
-      audio.forEach(file => {
-        const row = document.createElement("div");
-        row.className = "file-row";
-        row.dataset.fileKind = "audio";
-        const name = document.createElement("div");
-        name.className = "file-name";
-        name.textContent = file.name;
-        const actions = document.createElement("div");
-        actions.className = "file-actions";
-
-        const playButton = document.createElement("button");
-        playButton.className = "secondary-btn";
-        playButton.textContent = "PLAY";
-        playButton.onclick = () => playSong(file.name);
-
-        const useButton = document.createElement("button");
-        useButton.className = "secondary-btn";
-        useButton.textContent = "USE IN STUDIO";
-        useButton.onclick = () => useSongInStudio(file.name);
-
-        const downloadButton = document.createElement("button");
-        downloadButton.className = "secondary-btn";
-        downloadButton.textContent = "DOWNLOAD";
-        downloadButton.onclick = () => downloadSong(file.name);
-
-        const deleteButton = document.createElement("button");
-        deleteButton.className = "danger-btn";
-        deleteButton.textContent = "DELETE";
-        deleteButton.onclick = () => deleteSong(file.name);
-
-        actions.append(playButton, useButton, downloadButton, deleteButton);
-        row.append(name, actions);
-        list.appendChild(row);
+    const { data, error } = await supabaseClient.storage
+      .from("user-songs")
+      .list(currentUser.id, {
+        limit: 100,
+        sortBy: {
+          column: "created_at",
+          order: "desc"
+        }
       });
 
-      if (!audio.length && !images.length && !videos.length) {
-        list.innerHTML = '<div class="library-empty"><strong>No files yet</strong>Your uploaded music and generated images or videos will appear here.</div>';
-      }
+    if (error) {
+      list.innerHTML =
+        '<p class="hint">Could not load files: ' +
+        escapeHTML(error.message) + '</p>';
+      return;
+    }
 
+    currentFiles = (data || []).filter(file => file.name);
+
+    refreshMusicFileOptions();
+
+    if (currentFiles.length === 0) {
+      list.innerHTML =
+        '<div class="library-empty"><strong>No audio files yet</strong>Upload an MP3 song above to add it to My Files.</div>';
       updateLibraryCounts();
       filterMyFiles(activeLibraryFilter);
-    } catch (error) {
-      console.error("My Files loading error:", error);
-      list.innerHTML = '<p class="hint">Could not load all files: ' + escapeHTML(error.message || "Storage error") + '</p>';
+      return;
     }
+
+    list.innerHTML = "";
+
+    currentFiles.forEach(file => {
+      const row = document.createElement("div");
+      row.className = "file-row";
+      row.dataset.fileKind = "audio";
+
+      const name = document.createElement("div");
+      name.className = "file-name";
+      name.textContent = file.name;
+
+      const actions = document.createElement("div");
+      actions.className = "file-actions";
+
+      const playButton = document.createElement("button");
+      playButton.className = "secondary-btn";
+      playButton.textContent = "PLAY";
+      playButton.onclick = () => playSong(file.name);
+
+      const useButton = document.createElement("button");
+      useButton.className = "secondary-btn";
+      useButton.textContent = "USE IN STUDIO";
+      useButton.onclick = () => useSongInStudio(file.name);
+
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "secondary-btn";
+      downloadButton.textContent = "DOWNLOAD";
+      downloadButton.onclick = () => downloadSong(file.name);
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "danger-btn";
+      deleteButton.textContent = "DELETE";
+      deleteButton.onclick = () => deleteSong(file.name);
+
+      actions.appendChild(playButton);
+      actions.appendChild(useButton);
+      actions.appendChild(downloadButton);
+      actions.appendChild(deleteButton);
+
+      row.appendChild(name);
+      row.appendChild(actions);
+
+      list.appendChild(row);
+    });
+
+    updateLibraryCounts();
+    filterMyFiles(activeLibraryFilter);
   }
 
   function updateLibraryCounts() {
-    document.getElementById("audioFileCount").textContent = currentFiles.length;
-    document.getElementById("videoFileCount").textContent = currentVideoFiles.length;
-    document.getElementById("imageFileCount").textContent = currentImageFiles.length;
+    const audioCount = currentFiles.length;
+    document.getElementById("audioFileCount").textContent = audioCount;
+    document.getElementById("videoFileCount").textContent = "0";
+    document.getElementById("imageFileCount").textContent = "0";
     document.getElementById("thumbnailFileCount").textContent = "0";
   }
 
