@@ -825,9 +825,7 @@
       costumes, lighting and synchronized performance.
     </p>
 <div class="notice">
-<strong>Important:</strong> These settings currently prepare your
-      project brief only. AI video generation and Lip-Sync are not yet
-      connected to a generation provider.
+<strong>Video generation:</strong> This studio sends your selected song and creative settings to the existing AI music-video generation service. A song from My Files is required. Lip-Sync is requested when selected, but exact synchronization depends on the generation model.
     </div>
 <div class="field">
 <label for="musicType">Music Video Type</label>
@@ -1009,6 +1007,23 @@
         </span>
 </div>
 </div>
+<div class="form-grid">
+<div class="field">
+<label for="musicVideoDuration">Video Duration</label>
+<select id="musicVideoDuration">
+<option value="15">15 seconds</option>
+<option value="20">20 seconds</option>
+<option value="30">30 seconds</option>
+</select>
+</div>
+<div class="field">
+<label for="musicVideoRatio">Video Format</label>
+<select id="musicVideoRatio">
+<option value="landscape">Landscape (16:9)</option>
+<option value="portrait">Portrait (9:16)</option>
+</select>
+</div>
+</div>
 <div class="field" style="margin-top:18px">
 <label for="musicPrompt">Detailed Music Video Instructions</label>
 <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides..."></textarea>
@@ -1017,10 +1032,10 @@
         The selections above are additional creative guidance.
       </span>
 </div>
-<button class="primary-btn" onclick="prepareMusicVideo()">
+<button class="primary-btn" id="generateStudioMusicVideoButton" type="button" onclick="generateStudioMusicVideo()">
       GENERATE AI MUSIC VIDEO
     </button>
-<div class="project-output hidden" id="musicProjectOutput"></div>
+<div class="project-output hidden" id="musicProjectOutput" aria-live="polite"></div>
 </div>
 </details></section>
 <section class="section" id="musicVideoGenerator">
@@ -1728,6 +1743,92 @@ async function prepareVideo() {
         "Status: Processing. Check the task with the existing video status checker when it is ready.";
     } catch (error) {
       console.error("Music video generation error:", error);
+      output.textContent = "Music video generation error:\n" + (error?.message || "Please try again.");
+    } finally {
+      button.disabled = false;
+    }
+    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // AI MUSIC VIDEO STUDIO — GENERATE VIDEO
+
+  async function generateStudioMusicVideo() {
+    const button = document.getElementById("generateStudioMusicVideoButton");
+    const output = document.getElementById("musicProjectOutput");
+    const musicMode = document.getElementById("musicMode").value;
+    const songName = document.getElementById("musicFileSelect").value;
+    const duration = Number(document.getElementById("musicVideoDuration").value);
+    const ratioChoice = document.getElementById("musicVideoRatio").value;
+    const lipSync = document.getElementById("lipSync").checked;
+
+    if (!currentUser) return alert("Please sign in first.");
+    if (musicMode !== "upload" || !songName) {
+      return alert("Choose a song from My Files. A song is required to generate an AI music video.");
+    }
+    if (![15, 20, 30].includes(duration)) {
+      return alert("Choose a video duration of 15, 20 or 30 seconds.");
+    }
+
+    const musicType = document.getElementById("musicType").value;
+    const genre = document.getElementById("musicGenre").value;
+    const performer = document.getElementById("performerType").value;
+    const dancers = document.getElementById("dancers").value;
+    const stage = document.getElementById("stage").value;
+    const wardrobe = document.getElementById("wardrobe").value;
+    const lighting = document.getElementById("lighting").value;
+    const mood = document.getElementById("musicMood").value;
+    const vocalType = document.getElementById("musicVocalType").value;
+    const language = document.getElementById("musicLanguage").value;
+    const bpm = document.getElementById("musicBpm").value;
+    const customStyle = document.getElementById("musicCustomStyle").value.trim();
+    const performerDescription = document.getElementById("performerDescription").value.trim();
+    const sceneInstructions = document.getElementById("musicPrompt").value.trim();
+
+    if (!sceneInstructions) return alert("Describe the scenes and actions for your music video first.");
+
+    const promptText = [
+      "Create a " + musicType + " music video.",
+      "Music genre: " + genre + ".",
+      "Mood: " + mood + ".",
+      "Vocal type: " + vocalType + ". Language: " + language + ". Tempo: " + bpm + ".",
+      customStyle ? "Additional music style: " + customStyle + "." : "",
+      "AI performer: " + performer + ".",
+      "Dancers: " + dancers + ".",
+      "Stage or location: " + stage + ".",
+      "Wardrobe: " + wardrobe + ".",
+      "Lighting and effects: " + lighting + ".",
+      performerDescription ? "Performer appearance and presence: " + performerDescription + "." : "",
+      "Detailed scene direction: " + sceneInstructions,
+      lipSync
+        ? "Show the selected AI singer visibly performing. Attempt to synchronize mouth movements and facial expressions to the provided reference song."
+        : "Create visuals that follow the mood and rhythm of the provided reference song.",
+      "Do not display subtitles, lyrics, captions, karaoke words, titles, logos, or readable text."
+    ].filter(Boolean).join(" ");
+
+    button.disabled = true;
+    output.classList.remove("hidden");
+    output.textContent = "Preparing the selected song and starting AI music video generation…";
+
+    try {
+      const clipPath = await makeMusicVideoClip(songName, 0, duration);
+      const { data, error } = await supabaseClient.functions.invoke("generate-music-video", {
+        body: { promptText, duration, ratio: ratioChoice === "portrait" ? "portrait" : "landscape", songPath: clipPath, lipSync }
+      });
+      if (error) throw error;
+      if (!data?.success || !data?.taskId) throw new Error(data?.error || "Music video generation could not start.");
+
+      output.textContent =
+        "LANE VIDEO AI — AI MUSIC VIDEO\n\n" +
+        "Your music video generation task has started.\n" +
+        "Model: Seedance 2.5 (480p)\n" +
+        "Song: " + songName + "\n" +
+        "Duration: " + duration + " seconds\n" +
+        "Format: " + (ratioChoice === "portrait" ? "Portrait (9:16)" : "Landscape (16:9)") + "\n" +
+        "Lip-Sync requested: " + (lipSync ? "Yes" : "No") + "\n" +
+        "Task ID: " + data.taskId + "\n\n" +
+        "Status: Processing. The finished video will be available when the generation task completes.";
+    } catch (error) {
+      console.error("AI Music Video Studio generation error:", error);
       output.textContent = "Music video generation error:\n" + (error?.message || "Please try again.");
     } finally {
       button.disabled = false;
