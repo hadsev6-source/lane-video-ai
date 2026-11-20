@@ -1130,8 +1130,8 @@
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        // OAuth callback is exchanged explicitly below so failures are visible.
-        detectSessionInUrl: false,
+        // Supabase JS automatically handles the OAuth callback and PKCE exchange.
+        detectSessionInUrl: true,
         flowType: "pkce"
       }
     }
@@ -1762,32 +1762,18 @@ These settings are a project brief and will be used when an AI generation provid
 
   async function googleSignIn() {
     const button = document.querySelector('#signedOut button[onclick="googleSignIn()"]');
-    if (button) {
-      button.disabled = true;
-      button.textContent = "CONNECTING TO GOOGLE...";
-    }
+    if (button) { button.disabled = true; button.textContent = "CONNECTING TO GOOGLE..."; }
     showAuthMessage("Connecting securely to Google...");
-
     try {
-      const { data, error } = await supabaseClient.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          // Supabase must allow this exact URL in Authentication > URL Configuration.
-          redirectTo: SITE_URL
-        }
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google", options: { redirectTo: SITE_URL }
       });
-
       if (error) throw error;
-      if (!data?.url) throw new Error("Google sign-in did not return an authorization URL. Please try again.");
-      // Navigate explicitly to the provider URL returned by Supabase.
-      window.location.assign(data.url);
+      // The Supabase SDK handles navigation to Google.
     } catch (error) {
       console.error("Google sign-in error:", error);
       showAuthMessage("Google sign-in error: " + (error?.message || "Please try again."));
-      if (button) {
-        button.disabled = false;
-        button.textContent = "CONTINUE WITH GOOGLE";
-      }
+      if (button) { button.disabled = false; button.textContent = "CONTINUE WITH GOOGLE"; }
     }
   }
 
@@ -2307,37 +2293,14 @@ if (currentUser) {
 // INITIAL LOAD AND EXPLICIT GOOGLE OAUTH CALLBACK HANDLING
   async function initializeAuth() {
     try {
-      const callbackUrl = new URL(window.location.href);
-      const oauthError = callbackUrl.searchParams.get("error_description") || callbackUrl.searchParams.get("error");
-      const authCode = callbackUrl.searchParams.get("code");
-
-      if (oauthError) {
-        showAuthMessage("Google sign-in failed: " + oauthError.replace(/\+/g, " "));
-        window.history.replaceState({}, document.title, callbackUrl.pathname + callbackUrl.hash);
-      } else if (authCode) {
-        showAuthMessage("Finishing Google sign-in...");
-        const { error: exchangeError } = await supabaseClient.auth.exchangeCodeForSession(authCode);
-        // Remove the one-time code from the address bar whether exchange succeeded or failed.
-        callbackUrl.searchParams.delete("code");
-        callbackUrl.searchParams.delete("state");
-        window.history.replaceState({}, document.title, callbackUrl.pathname + (callbackUrl.search ? callbackUrl.search : "") + callbackUrl.hash);
-        if (exchangeError) {
-          console.error("OAuth code exchange failed:", exchangeError);
-          showAuthMessage("Could not complete Google sign-in: " + (exchangeError.message || "Please try again."));
-        }
-      }
-
-      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-      if (sessionError) {
-        console.error("Could not restore Supabase session:", sessionError);
-        showAuthMessage("Could not restore your sign-in session: " + sessionError.message);
-      } else if (sessionData?.session) {
-        showAuthMessage("Signed in successfully. Loading your account...");
-      }
+      // getSession waits for the Supabase client to finish automatic URL/PKCE handling.
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) throw error;
+      if (data?.session) showAuthMessage("Signed in successfully. Loading your account...");
       await refreshAuthState();
     } catch (error) {
       console.error("Authentication initialization failed:", error);
-      showAuthMessage("Sign-in could not be completed: " + (error?.message || "Please try again."));
+      showAuthMessage("Could not restore your sign-in session: " + (error?.message || "Please try again."));
       await refreshAuthState();
     }
   }
