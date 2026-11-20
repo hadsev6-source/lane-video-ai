@@ -1512,15 +1512,21 @@ These settings are a project brief and will be used when an AI generation provid
 
   // MUSIC MODE
 
-  document.getElementById("musicMode").addEventListener("change", function() {
-    const field = document.getElementById("musicFileField");
-
-    if (this.value === "concept") {
-      field.classList.add("hidden");
-    } else {
-      field.classList.remove("hidden");
-    }
-  });
+  // The legacy music-video source selector is not present on this page.
+  // Bind its optional handler only when that section exists, so a missing
+  // legacy element cannot stop the rest of the script (including auth).
+  const musicModeSelect = document.getElementById("musicMode");
+  if (musicModeSelect) {
+    musicModeSelect.addEventListener("change", function() {
+      const field = document.getElementById("musicFileField");
+      if (!field) return;
+      if (this.value === "concept") {
+        field.classList.add("hidden");
+      } else {
+        field.classList.remove("hidden");
+      }
+    });
+  }
 
 
   // Video prices in credits, matched to the selected duration.
@@ -2178,14 +2184,16 @@ if (currentUser) {
   // USE SONG IN STUDIO
 
   function useSongInStudio(fileName) {
-    document.getElementById("musicMode").value = "upload";
-    document.getElementById("musicFileField").classList.remove("hidden");
-
-    document.getElementById("musicFileSelect").value = fileName;
-
-    document.getElementById("musicStudio").scrollIntoView({
-      behavior: "smooth"
-    });
+    const mode = document.getElementById("musicMode");
+    const field = document.getElementById("musicFileField");
+    const select = document.getElementById("musicFileSelect");
+    const studio = document.getElementById("musicStudio");
+    // This older music-video panel may not be included in the current page.
+    if (!mode || !field || !select || !studio) return;
+    mode.value = "upload";
+    field.classList.remove("hidden");
+    select.value = fileName;
+    studio.scrollIntoView({ behavior: "smooth" });
   }
 
   // PLAY SONG
