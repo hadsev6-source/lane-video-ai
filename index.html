@@ -1132,7 +1132,7 @@
         autoRefreshToken: true,
         // Supabase JS automatically handles the OAuth callback and PKCE exchange.
         detectSessionInUrl: true,
-        flowType: "pkce"
+        flowType: "implicit"
       }
     }
   );
@@ -2293,7 +2293,7 @@ if (currentUser) {
 // INITIAL LOAD AND EXPLICIT GOOGLE OAUTH CALLBACK HANDLING
   async function initializeAuth() {
     try {
-      // getSession waits for the Supabase client to finish automatic URL/PKCE handling.
+      // Supabase JS handles the OAuth URL and restores the implicit-flow session automatically.
       const { data, error } = await supabaseClient.auth.getSession();
       if (error) throw error;
       if (data?.session) showAuthMessage("Signed in successfully. Loading your account...");
