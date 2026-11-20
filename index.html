@@ -692,7 +692,7 @@
 <details class="studio-accordion"><summary>AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
-<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
+<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Your song is generated with AI and saved to My Files.</div>
 <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"/></div>
 <div class="form-grid">
 <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
@@ -732,7 +732,7 @@
 <optgroup label="Cinematic &amp; Ambient">
 <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
 </optgroup></select></div>
-<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option>30 seconds</option><option>1 minute</option><option>2 minutes</option><option>3 minutes</option><option>4 minutes</option><option selected="">5 minutes</option></select></div>
+<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240" selected="">4 minutes</option></select></div>
 <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
@@ -744,8 +744,9 @@
 <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
 </div>
 <div class="cost-preview">Estimated cost: <strong>25 credits</strong> per song.</div>
-<button class="primary-btn" onclick="prepareMusicProject()" type="button">GENERATE MUSIC</button>
-<div class="project-output hidden" id="songProjectOutput"></div>
+<button class="primary-btn" id="generateMusicButton" onclick="generateMusic()" type="button">GENERATE MUSIC</button>
+<div class="project-output hidden" id="songProjectOutput" aria-live="polite"></div>
+<audio id="generatedSongPlayer" class="hidden" controls preload="none" style="width:100%;margin-top:16px"></audio>
 </div>
 </details></section><section class="section" id="studio">
 <details class="studio-accordion"><summary>AI Video Generator</summary>
@@ -797,16 +798,16 @@
 </select>
 </div>
 </div>
+<div class="field">
+<label for="videoRatio">Video Format</label>
+<select id="videoRatio"><option value="1280:720">Landscape (16:9)</option><option value="720:1280">Portrait (9:16)</option></select>
+</div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
       Credit cost: <strong>102 credits</strong> · Selected duration: 5 seconds.
     </div>
-<button class="secondary-btn" onclick="checkRunwayConnection()" type="button">
-      CHECK RUNWAY API (NO VIDEO)
-    </button>
 <button class="primary-btn" onclick="prepareVideo()" type="button">
       GENERATE VIDEO
     </button>
-<div class="project-output hidden" id="runwayCheckOutput" aria-live="polite"></div>
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
 </details></section>
@@ -1157,113 +1158,68 @@
   // GENERAL VIDEO PROJECT
 
 
-async function checkRunwayConnection() {
-  const output = document.getElementById("runwayCheckOutput");
-  const button = document.querySelector('button[onclick="checkRunwayConnection()"]');
-
-  if (!currentUser) {
-    output.textContent = "Please sign in first, then run this check again.";
-    output.classList.remove("hidden");
-    return;
-  }
-
-  if (button) button.disabled = true;
-  output.textContent = "Checking Runway API key… No video will be generated.";
-  output.classList.remove("hidden");
-
-  try {
-    const { data, error } = await supabaseClient.functions.invoke(
-      "generate-video",
-      { body: { action: "check-key" } }
-    );
-
-    if (error) throw error;
-
-    if (data && data.success && data.keyAccepted) {
-      output.textContent = "SUCCESS: Runway accepted the API key. No video was generated and no credits were charged.";
-    } else {
-      output.textContent = "Runway API check did not pass: " +
-        ((data && data.message) || "Unknown response") +
-        ". No video was generated and no credits were charged.";
-    }
-  } catch (error) {
-    console.error("Runway API check error:", error);
-    output.textContent = "Could not complete the Runway check: " +
-      (error && error.message ? error.message : "Unknown error") +
-      ". No video was generated.";
-  } finally {
-    if (button) button.disabled = false;
-  }
-}
-
-
 async function prepareVideo() {
   const prompt = document.getElementById("prompt").value.trim();
+  const category = document.getElementById("category").value;
   const style = document.getElementById("style").value;
-  const duration = document.getElementById("duration").value;
+  const durationSeconds = Number.parseInt(document.getElementById("duration").value, 10);
+  const ratio = document.getElementById("videoRatio").value;
   const output = document.getElementById("generalProjectOutput");
+  const button = document.getElementById("generateVideoButton");
 
-  if (!prompt) {
-    alert("Please describe your video idea first.");
-    return;
-  }
+  if (!prompt) return alert("Please describe your video idea first.");
+  if (![5, 10, 15, 20, 30].includes(durationSeconds)) return alert("Please choose 5, 10, 15, 20 or 30 seconds.");
+  if (!currentUser) return alert("Please sign in first.");
 
-  const durationSeconds = Number.parseInt(duration, 10);
-  const supportedDurations = [5, 10, 15, 20, 30];
-
-  if (!supportedDurations.includes(durationSeconds)) {
-    alert("Please choose 5, 10, 15, 20 or 30 seconds.");
-    return;
-  }
-
-  if (!currentUser) {
-    alert("Please sign in first.");
-    return;
-  }
-
-  output.textContent = "Starting AI video generation...";
+  button.disabled = true;
+  output.textContent = "Starting AI video generation…";
   output.classList.remove("hidden");
 
   try {
-    const { data, error } = await supabaseClient.functions.invoke(
-      "generate-video",
-      {
-        body: {
-          promptText: prompt + ". Visual style: " + style,
-          model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
-          duration: durationSeconds,
-          ratio: "854:480"
-        }
-      }
-    );
-
+    const promptText = "Category: " + category + ". " + prompt + ". Visual style: " + style;
+    const { data, error } = await supabaseClient.functions.invoke("generate-video", {
+      body: { action: "start", promptText, category, model: durationSeconds > 10 ? "seedance2.5" : "gen4.5", duration: durationSeconds, ratio }
+    });
     if (error) throw error;
+    if (!data?.success || !data?.taskId || !data?.jobId) throw new Error(data?.error || "Video generation could not start.");
 
-    if (!data || !data.success || !data.taskId) {
-      throw new Error(data?.error || "Video generation could not start.");
+    output.textContent = "LANE VIDEO AI — VIDEO GENERATION\n\nYour video task has started.\nCategory: " + category +
+      "\nModel: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") +
+      "\nDuration: " + data.duration + " seconds\nFormat: " + (ratio === "720:1280" ? "Portrait (9:16)" : "Landscape (16:9)") +
+      "\nTask ID: " + data.taskId + "\n\nStatus: Processing… This page will check for the finished video automatically.";
+
+    // Runway recommends checking task status no more often than every five seconds.
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    let finished = false;
+    for (let attempt = 0; attempt < 120; attempt++) {
+      await wait(5000);
+      const { data: statusData, error: statusError } = await supabaseClient.functions.invoke("generate-video", {
+        body: { action: "status", jobId: data.jobId }
+      });
+      if (statusError) {
+        output.textContent = "Video generation is still running. Status check failed temporarily; retrying…\nTask ID: " + data.taskId;
+        continue;
+      }
+      if (statusData?.status === "SUCCEEDED" && statusData.videoUrl) {
+        output.textContent = "LANE VIDEO AI — VIDEO READY\n\nYour video has been generated and saved.\nTask ID: " + data.taskId;
+        const player = document.createElement("video");
+        player.controls = true; player.playsInline = true; player.preload = "metadata";
+        player.style.width = "100%"; player.style.maxWidth = "900px"; player.style.display = "block"; player.style.marginTop = "14px";
+        player.src = statusData.videoUrl;
+        output.appendChild(player);
+        finished = true; break;
+      }
+      if (statusData?.status === "FAILED" || statusData?.status === "CANCELED") throw new Error(statusData.error || "Runway could not complete the video.");
+      output.textContent = "LANE VIDEO AI — VIDEO GENERATION\n\nStatus: " + (statusData?.status || "Processing") +
+        "\nThe video is still being generated.\nTask ID: " + data.taskId + "\n\nThis page will keep checking automatically.";
     }
-
-    output.textContent =
-      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started!\n\n" +
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
-      "Duration: " + data.duration + " seconds\n" +
-      "Task ID: " + data.taskId + "\n\n" +
-      "Status: Processing. The video is not ready yet.";
-
+    if (!finished) output.textContent += "\n\nGeneration is taking longer than expected. Your task is saved; you can check it again later.";
   } catch (error) {
     console.error("Video generation error:", error);
-    output.textContent =
-      "Video generation error:\n" +
-      (error.message || "Please try again.");
-  }
-
-  output.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest"
-  });
+    output.textContent = "Video generation error:\n" + (error?.message || "Please try again.");
+  } finally { button.disabled = false; }
+  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
-
 
 
   // SEPARATE MUSIC VIDEO GENERATOR — uses its own Edge Function.
@@ -1555,15 +1511,21 @@ These settings are a project brief and will be used when an AI generation provid
 
   // MUSIC MODE
 
-  document.getElementById("musicMode").addEventListener("change", function() {
-    const field = document.getElementById("musicFileField");
-
-    if (this.value === "concept") {
-      field.classList.add("hidden");
-    } else {
-      field.classList.remove("hidden");
-    }
-  });
+  // The legacy music-video source selector is not present on this page.
+  // Bind its optional handler only when that section exists, so a missing
+  // legacy element cannot stop the rest of the script (including auth).
+  const musicModeSelect = document.getElementById("musicMode");
+  if (musicModeSelect) {
+    musicModeSelect.addEventListener("change", function() {
+      const field = document.getElementById("musicFileField");
+      if (!field) return;
+      if (this.value === "concept") {
+        field.classList.add("hidden");
+      } else {
+        field.classList.remove("hidden");
+      }
+    });
+  }
 
 
   // Video prices in credits, matched to the selected duration.
@@ -1665,27 +1627,136 @@ These settings are a project brief and will be used when an AI generation provid
     }
   }
 
-  function prepareMusicProject() {
-    const prompt = document.getElementById("songPrompt").value.trim();
-    const lyrics = document.getElementById("songLyrics").value.trim();
-    const lyricsMode = document.getElementById("songLyricsMode").value;
+  async function generateMusic() {
     const output = document.getElementById("songProjectOutput");
-    output.textContent =
-      "LANE VIDEO AI — AI MUSIC PROJECT\n\nTitle: " + (document.getElementById("songTitle").value.trim() || "Untitled") +
-      "\nGenre / Style: " + document.getElementById("songGenre").value +
-      "\nDuration: " + document.getElementById("songDuration").value +
-      "\nMood: " + document.getElementById("songMood").value +
-      "\nVocal type: " + document.getElementById("songVocal").value +
-      "\nLanguage: " + document.getElementById("songLanguage").value +
-      "\nTempo: " + document.getElementById("songBpm").value +
-      "\nLyrics mode: " + lyricsMode +
-      "\nVoice character: " + document.getElementById("songVoiceCharacter").value +
-      "\nCustom style: " + (document.getElementById("songCustomStyle").value.trim() || "Not specified") +
-      "\nLyrics / story: " + (lyrics || "Not supplied") +
-      "\nAdditional instructions: " + (prompt || "Not supplied") +
-      "\n\nEstimated cost: 25 credits" +
-      "\n\nStatus: Project brief prepared. AI music generation is not connected.";
+    const player = document.getElementById("generatedSongPlayer");
+    const button = document.getElementById("generateMusicButton");
+
+    if (!currentUser) {
+      alert("Please sign in before generating music.");
+      return;
+    }
+
+    const title = document.getElementById("songTitle").value.trim();
+    const style = document.getElementById("songGenre").value;
+    const durationSeconds = Number(document.getElementById("songDuration").value);
+    const mood = document.getElementById("songMood").value;
+    const vocalType = document.getElementById("songVocal").value;
+    const language = document.getElementById("songLanguage").value;
+    const bpm = document.getElementById("songBpm").value;
+    let lyricsMode = document.getElementById("songLyricsMode").value;
+    const voiceCharacter = document.getElementById("songVoiceCharacter").value;
+    const customStyle = document.getElementById("songCustomStyle").value.trim();
+    const lyrics = document.getElementById("songLyrics").value.trim();
+    const instructions = document.getElementById("songPrompt").value.trim();
+
+    if (![60, 120, 180, 240].includes(durationSeconds)) {
+      alert("Please choose a song length from 1 to 4 minutes.");
+      return;
+    }
+    if (lyricsMode === "My Own Lyrics" && !lyrics && vocalType !== "Instrumental") {
+      alert("Please enter your lyrics, or choose AI Write Lyrics / No Lyrics.");
+      return;
+    }
+    // Instrumental requests must use the provider's no-lyrics mode.
+    if (vocalType === "Instrumental") lyricsMode = "No Lyrics";
+
+    const providerInstructions = [
+      "Vocal type: " + vocalType,
+      vocalType !== "Instrumental" ? "Voice character: " + voiceCharacter : "",
+      instructions
+    ].filter(Boolean).join(". ");
+
+    button.disabled = true;
+    button.textContent = "STARTING...";
     output.classList.remove("hidden");
+    player.pause();
+    player.removeAttribute("src");
+    player.classList.add("hidden");
+    output.textContent = "Submitting your music request... 25 credits will be charged if the request is accepted.";
+
+    try {
+      const { data: startData, error: startError } = await supabaseClient.functions.invoke("generate-music", {
+        body: {
+          action: "start",
+          title,
+          tags: style,
+          customStyle,
+          mood,
+          language,
+          bpm,
+          voiceCharacter: vocalType === "Instrumental" ? "Instrumental" : voiceCharacter,
+          instructions: providerInstructions,
+          lyrics,
+          lyricsMode,
+          durationSeconds
+        }
+      });
+
+      if (startError) throw startError;
+      if (!startData?.success || !startData?.jobId) {
+        throw new Error(startData?.error || "The music generation request could not start.");
+      }
+
+      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: 25\nStatus: Processing...";
+      button.textContent = "GENERATING...";
+
+      const maxAttempts = 120; // Up to 10 minutes at 5-second intervals.
+      let completed = false;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        const { data: statusData, error: statusError } = await supabaseClient.functions.invoke("generate-music", {
+          body: { action: "status", jobId: startData.jobId }
+        });
+
+        if (statusError) {
+          console.warn("Music status check failed; retrying:", statusError);
+          output.textContent = "Your song is still processing. Checking the provider again...\n\nTask: " + startData.jobId;
+          continue;
+        }
+
+        if (statusData?.status === "failed" || statusData?.success === false) {
+          throw new Error((statusData?.error || "Music generation failed.") + (statusData?.refunded ? " Your 25 credits have been refunded." : ""));
+        }
+
+        if (statusData?.status === "completed") {
+          if (!statusData.audioUrl) {
+            output.textContent = "Your song has been saved. Preparing the playback link...";
+            continue;
+          }
+          player.src = statusData.audioUrl;
+          player.classList.remove("hidden");
+          output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed || 25) + "\n\nUse the player below to listen. The song is also saved in My Files.";
+          const downloadLink = document.createElement("a");
+          downloadLink.href = statusData.audioUrl;
+          downloadLink.target = "_blank";
+          downloadLink.rel = "noopener";
+          downloadLink.textContent = "OPEN / DOWNLOAD SONG";
+          downloadLink.style.display = "inline-block";
+          downloadLink.style.marginTop = "12px";
+          downloadLink.style.color = "#ff6673";
+          output.appendChild(document.createElement("br"));
+          output.appendChild(downloadLink);
+          await refreshAuthState();
+          completed = true;
+          break;
+        }
+
+        output.textContent = "Your song is still processing...\n\nTask: " + startData.jobId + "\nStatus: " + (statusData?.status || "processing") + "\nPlease wait; this page will check automatically.";
+      }
+
+      if (!completed) {
+        output.textContent = "Your song is taking longer than expected. The generation request is still recorded. Please try again later; do not submit another request for the same song.";
+      }
+    } catch (error) {
+      console.error("Music generation error:", error);
+      output.textContent = "Music generation error:\n" + (error?.message || "Please try again.");
+      await refreshAuthState();
+    } finally {
+      button.disabled = false;
+      button.textContent = "GENERATE MUSIC";
+    }
+
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
@@ -2112,14 +2183,16 @@ if (currentUser) {
   // USE SONG IN STUDIO
 
   function useSongInStudio(fileName) {
-    document.getElementById("musicMode").value = "upload";
-    document.getElementById("musicFileField").classList.remove("hidden");
-
-    document.getElementById("musicFileSelect").value = fileName;
-
-    document.getElementById("musicStudio").scrollIntoView({
-      behavior: "smooth"
-    });
+    const mode = document.getElementById("musicMode");
+    const field = document.getElementById("musicFileField");
+    const select = document.getElementById("musicFileSelect");
+    const studio = document.getElementById("musicStudio");
+    // This older music-video panel may not be included in the current page.
+    if (!mode || !field || !select || !studio) return;
+    mode.value = "upload";
+    field.classList.remove("hidden");
+    select.value = fileName;
+    studio.scrollIntoView({ behavior: "smooth" });
   }
 
   // PLAY SONG
