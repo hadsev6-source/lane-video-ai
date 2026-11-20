@@ -1796,76 +1796,86 @@ These settings are a project brief and will be used when an AI generation provid
     document.getElementById("authMessage").textContent = message;
   }
 
-  async function refreshAuthState() {
-    const { data, error } = await supabaseClient.auth.getUser();
+  let authUiRefreshId = 0;
 
-    if (error) {
-      console.error(error);
+  async function refreshAuthState(sessionFromEvent = null) {
+    const refreshId = ++authUiRefreshId;
+    let session = sessionFromEvent;
+
+    // Use the locally persisted Supabase session first. getUser() performs an
+    // additional network validation and can return null during a transient
+    // request failure even when the browser already has a valid session.
+    if (!session) {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) console.warn("Could not read the local auth session:", error);
+      session = data?.session || null;
     }
 
-    currentUser = data?.user || null;
-const headerCreditBalance = document.getElementById("headerCreditBalance");
-const headerCreditBalanceTop = document.getElementById("headerCreditBalanceTop");
-if (currentUser) {
-  const { data: wallet, error: walletError } = await supabaseClient
-    .from("credit_wallets")
-    .select("subscription_credits, purchased_credits")
-    .eq("user_id", currentUser.id)
-    .maybeSingle();
+    // Ignore an older asynchronous refresh if a newer auth event arrived.
+    if (refreshId !== authUiRefreshId) return;
+    currentUser = session?.user || null;
 
-  if (walletError) console.error(walletError);
-
-  const totalCredits = wallet
-    ? Number(wallet.subscription_credits || 0) +
-      Number(wallet.purchased_credits || 0)
-    : 0;
-
-  if (headerCreditBalance) {
-    headerCreditBalance.textContent = totalCredits;
-  }
-  if (headerCreditBalanceTop) {
-  headerCreditBalanceTop.textContent = totalCredits;
-}
-} else {
-  if (headerCreditBalance) {
-    headerCreditBalance.textContent = "0";
-  }
-}
-    const signedIn = document.getElementById("signedIn");
-    const signedOut = document.getElementById("signedOut");
+    const headerCreditBalance = document.getElementById("headerCreditBalance");
+    const headerCreditBalanceTop = document.getElementById("headerCreditBalanceTop");
 
     if (currentUser) {
-      signedIn.classList.remove("hidden");
-      signedOut.classList.add("hidden");
+      // Show the signed-in state immediately; wallet and file loading must not
+      // decide whether authentication succeeded.
+      document.getElementById("signedIn").classList.remove("hidden");
+      document.getElementById("signedOut").classList.add("hidden");
+      document.getElementById("userEmail").textContent = currentUser.email || "";
+      showAuthMessage("");
 
-      document.getElementById("userEmail").textContent =
-        currentUser.email || "";
+      if (headerCreditBalance) headerCreditBalance.textContent = "…";
+      if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = "…";
 
-      await loadMyFiles();
+      try {
+        const { data: wallet, error: walletError } = await supabaseClient
+          .from("credit_wallets")
+          .select("subscription_credits, purchased_credits")
+          .eq("user_id", currentUser.id)
+          .maybeSingle();
+        if (walletError) console.warn("Credit balance could not be loaded:", walletError);
+        if (refreshId !== authUiRefreshId) return;
+        const totalCredits = wallet
+          ? Number(wallet.subscription_credits || 0) + Number(wallet.purchased_credits || 0)
+          : 0;
+        if (headerCreditBalance) headerCreditBalance.textContent = totalCredits;
+        if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = totalCredits;
+      } catch (walletError) {
+        console.warn("Credit balance loading failed:", walletError);
+        if (headerCreditBalance) headerCreditBalance.textContent = "0";
+        if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = "0";
+      }
+
+      try {
+        await loadMyFiles();
+      } catch (filesError) {
+        console.warn("User is signed in, but files could not be loaded:", filesError);
+      }
     } else {
-      signedIn.classList.add("hidden");
-      signedOut.classList.remove("hidden");
+      if (headerCreditBalance) headerCreditBalance.textContent = "0";
+      if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = "0";
+      document.getElementById("signedIn").classList.add("hidden");
+      document.getElementById("signedOut").classList.remove("hidden");
       const googleButton = document.querySelector('#signedOut button[onclick="googleSignIn()"]');
       if (googleButton) {
         googleButton.disabled = false;
         googleButton.textContent = "CONTINUE WITH GOOGLE";
       }
-
       currentFiles = [];
       updateLibraryCounts();
-
       document.getElementById("myFilesList").innerHTML =
         '<p class="hint">Please sign in to see your uploaded songs.</p>';
-
       refreshMusicFileOptions();
     }
   }
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    // INITIAL_SESSION is important after the OAuth callback or a page reload.
     if (["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) {
-      // Defer Supabase calls until after the auth callback has completed.
-      setTimeout(() => { refreshAuthState(); }, 0);
+      // Pass the actual session supplied by Supabase into the UI refresh.
+      // Deferring avoids running other Supabase calls inside the auth callback.
+      setTimeout(() => { refreshAuthState(session); }, 0);
     }
   });
 
@@ -2293,15 +2303,14 @@ if (currentUser) {
 // INITIAL LOAD AND EXPLICIT GOOGLE OAUTH CALLBACK HANDLING
   async function initializeAuth() {
     try {
-      // Supabase JS handles the OAuth URL and restores the implicit-flow session automatically.
+      // Supabase JS parses the OAuth callback and persists the session.
       const { data, error } = await supabaseClient.auth.getSession();
       if (error) throw error;
-      if (data?.session) showAuthMessage("Signed in successfully. Loading your account...");
-      await refreshAuthState();
+      await refreshAuthState(data?.session || null);
     } catch (error) {
       console.error("Authentication initialization failed:", error);
       showAuthMessage("Could not restore your sign-in session: " + (error?.message || "Please try again."));
-      await refreshAuthState();
+      await refreshAuthState(null);
     }
   }
 
