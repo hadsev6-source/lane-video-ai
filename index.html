@@ -903,10 +903,9 @@
 <div class="field"><label for="imageStyle">Visual Style</label>
 <select id="imageStyle"><option>Photorealistic</option><option>Cinematic</option><option>3D Render</option><option>Anime</option><option>Illustration</option><option>Fantasy</option><option>Product Photography</option><option>My Own Style</option></select>
 </div>
-<div class="field"><label for="imageQuantity">Number of Images</label>
-<select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
+
 </div>
-</div> <div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong></div>
+<div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong> · 1 image</div>
 <button class="primary-btn" id="generateImageButton" onclick="generateImages()" type="button">GENERATE IMAGE</button>
 <div class="project-output hidden" id="imageProjectOutput" aria-live="polite"></div>
 <div id="generatedImageGallery" class="generated-image-gallery" aria-live="polite"></div>
@@ -1189,7 +1188,7 @@ async function prepareVideo() {
           promptText: prompt + ". Visual style: " + style,
           model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
           duration: durationSeconds,
-          ratio: "1280:720"
+          ratio: "854:480"
         }
       }
     );
@@ -1563,17 +1562,9 @@ These settings are a project brief and will be used when an AI generation provid
     });
   }
 
-  function updateImageCost() {
-    const quantity = Number(document.getElementById("imageQuantity").value || 1);
-    document.getElementById("imageCostPreview").innerHTML =
-      'Credit cost: <strong>' + (quantity * 15) + ' credits</strong> (' + quantity + ' × 15)';
-  }
-  document.getElementById("imageQuantity").addEventListener("change", updateImageCost);
-  updateImageCost();
-
   async function generateImages() {
     const prompt = document.getElementById("imagePrompt").value.trim();
-    const quantity = Number(document.getElementById("imageQuantity").value || 1);
+    const quantity = 1; // Fixed: generate one image for 15 credits.
     const style = document.getElementById("imageStyle").value;
     const reference = document.getElementById("imageReference").files[0];
     const button = document.getElementById("generateImageButton");
