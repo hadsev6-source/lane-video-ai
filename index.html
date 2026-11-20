@@ -1134,7 +1134,7 @@
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        flowType: "implicit"
+        flowType: "pkce"
       }
     }
   );
@@ -1161,11 +1161,36 @@ async function checkRunwayConnection() {
   const output = document.getElementById("runwayCheckOutput");
   const button = document.querySelector('button[onclick="checkRunwayConnection()"]');
 
-  if (!currentUser) {
-    output.textContent = "Please sign in first, then run this check again.";
+  // Re-read the persisted Supabase session before checking. This avoids
+  // relying on a possibly stale currentUser value after the Google redirect.
+  const { data: sessionData, error: sessionError } =
+    await supabaseClient.auth.getSession();
+
+  if (sessionError) {
+    output.textContent = "Could not read your sign-in session: " + sessionError.message;
     output.classList.remove("hidden");
     return;
   }
+
+  const session = sessionData?.session;
+  if (!session?.access_token) {
+    currentUser = null;
+    output.textContent = "You are not signed in yet. Please use Continue with Google, wait until you return to the site, then try this check again.";
+    output.classList.remove("hidden");
+    return;
+  }
+
+  const { data: userData, error: userError } =
+    await supabaseClient.auth.getUser(session.access_token);
+
+  if (userError || !userData?.user) {
+    currentUser = null;
+    output.textContent = "Your sign-in session could not be verified. Please sign out and sign in with Google again.";
+    output.classList.remove("hidden");
+    return;
+  }
+
+  currentUser = userData.user;
 
   if (button) button.disabled = true;
   output.textContent = "Checking Runway API key… No video will be generated.";
@@ -1788,10 +1813,14 @@ if (currentUser) {
   }
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
+    // Keep the visible app state in sync with the session Supabase has stored.
+    currentUser = session?.user || null;
     if (
+      event === "INITIAL_SESSION" ||
       event === "SIGNED_IN" ||
       event === "SIGNED_OUT" ||
-      event === "TOKEN_REFRESHED"
+      event === "TOKEN_REFRESHED" ||
+      event === "USER_UPDATED"
     ) {
       setTimeout(() => {
         refreshAuthState();
