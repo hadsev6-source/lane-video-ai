@@ -788,7 +788,7 @@
 </div>
 <div class="field">
 <label for="duration">Video Duration</label>
-<select id="duration">
+<select id="duration" onchange="updateVideoCost()" oninput="updateVideoCost()">
 <option>5 seconds</option>
 <option>10 seconds</option>
 <option>15 seconds</option>
@@ -797,33 +797,13 @@
 </select>
 </div>
 </div>
-<div class="field">
-<label for="extraFiles">Additional Images or Videos (Optional)</label>
-<input accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" id="extraFiles" multiple="" type="file"/>
-<span class="hint">
-        Choose JPG, PNG, WEBP, MP4 or MOV files from your device.
-        Files are selected temporarily and are not saved in your account.
-        They will only be sent to an AI provider after integration.
-      </span>
-<div class="project-output hidden" id="selectedFilesList"></div>
-<button class="secondary-btn" id="clearSelectedFiles" style="margin-top:10px" type="button">
-        CLEAR ALL SELECTED FILES
-      </button>
-</div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
-      Estimated cost: <strong>70 credits</strong> · Balance after generation will be shown when credits are connected.
+      Credit cost: <strong>100 credits</strong> · Selected duration: 5 seconds.
     </div>
 <button class="primary-btn" onclick="prepareVideo()" type="button">
       GENERATE VIDEO
     </button>
 <div class="project-output hidden" id="generalProjectOutput"></div>
-</div>
-<div class="panel" id="musicStudio">
-  <h2>AI Music Video Studio</h2>
-  <p class="section-description">Create a music video with your own song in the dedicated generator.</p>
-  <button class="primary-btn" type="button" onclick="document.getElementById('musicVideoGenerator').scrollIntoView({behavior:'smooth', block:'start'});">
-    GENERATE MUSIC VIDEO
-  </button>
 </div>
 </details></section>
 <section class="section" id="musicVideoGenerator">
@@ -1160,152 +1140,6 @@
   let currentFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
-
-  // TEMPORARY PROJECT FILES
-  // These files stay in the browser and are not uploaded to Supabase.
-
-  let selectedExtraFiles = [];
-
-  const extraFilesInput = document.getElementById("extraFiles");
-  const selectedFilesList = document.getElementById("selectedFilesList");
-  const clearSelectedFilesButton = document.getElementById("clearSelectedFiles");
-
-  const MAX_EXTRA_FILE_SIZE = 100 * 1024 * 1024;
-  const MAX_EXTRA_TOTAL_SIZE = 300 * 1024 * 1024;
-
-  const ALLOWED_EXTRA_TYPES = [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "video/mp4",
-    "video/quicktime"
-  ];
-
-  function formatFileSize(bytes) {
-    if (bytes < 1024 * 1024) {
-      return Math.round(bytes / 1024) + " KB";
-    }
-
-    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-  }
-
-  function showSelectedExtraFiles() {
-    selectedFilesList.innerHTML = "";
-
-    if (selectedExtraFiles.length === 0) {
-      selectedFilesList.classList.add("hidden");
-      return;
-    }
-
-    selectedFilesList.classList.remove("hidden");
-
-    const heading = document.createElement("strong");
-    heading.textContent = "Selected reference files:";
-    selectedFilesList.appendChild(heading);
-
-    selectedExtraFiles.forEach((file, index) => {
-      const row = document.createElement("div");
-      row.className = "selected-file";
-
-      const details = document.createElement("span");
-      details.textContent = file.name + " — " + formatFileSize(file.size);
-
-      const removeButton = document.createElement("button");
-      removeButton.type = "button";
-      removeButton.className = "danger-btn";
-      removeButton.textContent = "REMOVE";
-
-      removeButton.addEventListener("click", function() {
-        selectedExtraFiles.splice(index, 1);
-        updateExtraFileInput();
-        showSelectedExtraFiles();
-      });
-
-      row.appendChild(details);
-      row.appendChild(removeButton);
-      selectedFilesList.appendChild(row);
-    });
-
-    const totalSize = selectedExtraFiles.reduce(
-      (total, file) => total + file.size,
-      0
-    );
-
-    const total = document.createElement("p");
-    total.className = "hint";
-    total.textContent =
-      selectedExtraFiles.length + " file(s) selected — " +
-      formatFileSize(totalSize) + " total";
-
-    selectedFilesList.appendChild(total);
-  }
-
-  function updateExtraFileInput() {
-    const transfer = new DataTransfer();
-
-    selectedExtraFiles.forEach(file => {
-      transfer.items.add(file);
-    });
-
-    extraFilesInput.files = transfer.files;
-  }
-
-  extraFilesInput.addEventListener("change", function() {
-    const incomingFiles = Array.from(this.files);
-
-    for (const file of incomingFiles) {
-      if (!ALLOWED_EXTRA_TYPES.includes(file.type)) {
-        alert("Only JPG, PNG, WEBP, MP4 and MOV files are allowed.");
-        updateExtraFileInput();
-        return;
-      }
-
-      if (file.size > MAX_EXTRA_FILE_SIZE) {
-        alert("Each reference file must be no larger than 100 MB.");
-        updateExtraFileInput();
-        return;
-      }
-    }
-
-    const existingNames = new Set(
-      selectedExtraFiles.map(file => file.name + "|" + file.size + "|" + file.lastModified)
-    );
-
-    for (const file of incomingFiles) {
-      const key = file.name + "|" + file.size + "|" + file.lastModified;
-
-      if (!existingNames.has(key)) {
-        selectedExtraFiles.push(file);
-        existingNames.add(key);
-      }
-    }
-
-    const totalSize = selectedExtraFiles.reduce(
-      (total, file) => total + file.size,
-      0
-    );
-
-    if (totalSize > MAX_EXTRA_TOTAL_SIZE) {
-      selectedExtraFiles = selectedExtraFiles.filter(file => {
-        return incomingFiles.indexOf(file) === -1;
-      });
-
-      updateExtraFileInput();
-      showSelectedExtraFiles();
-
-      alert("The combined size of selected files cannot exceed 300 MB.");
-      return;
-    }
-
-    updateExtraFileInput();
-    showSelectedExtraFiles();
-  });
-
-  clearSelectedFilesButton.addEventListener("click", function() {
-    selectedExtraFiles = [];
-    extraFilesInput.value = "";
-    showSelectedExtraFiles();
-  });
 
   // CATEGORY SELECTION
 
@@ -1689,7 +1523,7 @@ These settings are a project brief and will be used when an AI generation provid
   });
 
 
-  // Video prices in credits, matching the agreed customer tariff.
+  // Video prices in credits, matched to the selected duration.
   function videoCostForDuration(label) {
     const prices = {
       "5 seconds": 100,
@@ -1702,15 +1536,24 @@ These settings are a project brief and will be used when an AI generation provid
   }
 
   function updateVideoCost() {
-    const duration = document.getElementById("duration").value;
-    const credits = videoCostForDuration(duration);
+    const durationSelect = document.getElementById("duration");
     const preview = document.getElementById("videoCostPreview");
+    if (!durationSelect || !preview) return;
+
+    const duration = durationSelect.value;
+    const credits = videoCostForDuration(duration);
     preview.innerHTML = credits === null
-      ? 'Estimated cost: <strong>Price estimate for this duration is being confirmed. No credits are deducted.</strong>'
-      : 'Credit cost: <strong>' + credits.toLocaleString() + ' credits</strong> · Server-side credit deduction still needs implementation.';
+      ? 'Credit cost: <strong>Price not available for this duration.</strong>'
+      : 'Credit cost for ' + duration + ': <strong>' + credits.toLocaleString() + ' credits</strong>.';
   }
-  document.getElementById("duration").addEventListener("change", updateVideoCost);
-  updateVideoCost();
+
+  const videoDurationSelect = document.getElementById("duration");
+  if (videoDurationSelect) {
+    videoDurationSelect.addEventListener("change", updateVideoCost);
+    videoDurationSelect.addEventListener("input", updateVideoCost);
+    // Render the correct price on initial load and whenever the duration changes.
+    updateVideoCost();
+  }
 
   const imageReferenceInput = document.getElementById("imageReference");
   if (imageReferenceInput) {
