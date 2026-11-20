@@ -1130,9 +1130,10 @@
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        // Supabase JS automatically handles the OAuth callback and PKCE exchange.
+        // Google OAuth uses the PKCE authorization-code flow. Supabase JS v2
+        // detects the returned ?code=... URL and exchanges it for a session.
         detectSessionInUrl: true,
-        flowType: "implicit"
+        flowType: "pkce"
       }
     }
   );
@@ -1765,11 +1766,16 @@ These settings are a project brief and will be used when an AI generation provid
     if (button) { button.disabled = true; button.textContent = "CONNECTING TO GOOGLE..."; }
     showAuthMessage("Connecting securely to Google...");
     try {
-      const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider: "google", options: { redirectTo: SITE_URL }
+      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: new URL("/", SITE_URL).href,
+          queryParams: { prompt: "select_account" }
+        }
       });
       if (error) throw error;
-      // The Supabase SDK handles navigation to Google.
+      if (!data?.url) throw new Error("Google sign-in did not return an authorization URL.");
+      // Supabase JS redirects the browser to data.url automatically.
     } catch (error) {
       console.error("Google sign-in error:", error);
       showAuthMessage("Google sign-in error: " + (error?.message || "Please try again."));
@@ -2303,13 +2309,18 @@ These settings are a project brief and will be used when an AI generation provid
 // INITIAL LOAD AND EXPLICIT GOOGLE OAUTH CALLBACK HANDLING
   async function initializeAuth() {
     try {
-      // Supabase JS parses the OAuth callback and persists the session.
+      // With flowType "pkce", Supabase JS detects the returned authorization
+      // code, exchanges it for tokens, and persists the resulting session.
+      // Do not call exchangeCodeForSession a second time here.
       const { data, error } = await supabaseClient.auth.getSession();
       if (error) throw error;
+      if (!data?.session && window.location.search.includes("code=")) {
+        throw new Error("Google returned an authorization code, but Supabase did not create a session.");
+      }
       await refreshAuthState(data?.session || null);
     } catch (error) {
       console.error("Authentication initialization failed:", error);
-      showAuthMessage("Could not restore your sign-in session: " + (error?.message || "Please try again."));
+      showAuthMessage("Could not complete Google sign-in: " + (error?.message || "Please try again."));
       await refreshAuthState(null);
     }
   }
