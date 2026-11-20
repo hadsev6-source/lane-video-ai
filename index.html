@@ -744,7 +744,7 @@
 <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
 </div>
 <div class="cost-preview">Estimated cost: <strong>25 credits</strong> per song.</div>
-<button class="primary-btn" onclick="prepareMusicProject()" type="button">PREPARE MUSIC PROJECT</button>
+<button class="primary-btn" onclick="prepareMusicProject()" type="button">GENERATE MUSIC</button>
 <div class="project-output hidden" id="songProjectOutput"></div>
 </div>
 </details></section><section class="section" id="studio">
@@ -814,7 +814,7 @@
       Estimated cost: <strong>70 credits</strong> · Balance after generation will be shown when credits are connected.
     </div>
 <button class="primary-btn" onclick="prepareVideo()">
-      GENERATE VIDEO
+      PREPARE MY VIDEO PROJECT
     </button>
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
@@ -825,7 +825,9 @@
       costumes, lighting and synchronized performance.
     </p>
 <div class="notice">
-<strong>Video generation:</strong> This studio sends your selected song and creative settings to the existing AI music-video generation service. A song from My Files is required. Lip-Sync is requested when selected, but exact synchronization depends on the generation model.
+<strong>Important:</strong> These settings currently prepare your
+      project brief only. AI video generation and Lip-Sync are not yet
+      connected to a generation provider.
     </div>
 <div class="field">
 <label for="musicType">Music Video Type</label>
@@ -1007,23 +1009,6 @@
         </span>
 </div>
 </div>
-<div class="form-grid">
-<div class="field">
-<label for="musicVideoDuration">Video Duration</label>
-<select id="musicVideoDuration">
-<option value="15">15 seconds</option>
-<option value="20">20 seconds</option>
-<option value="30">30 seconds</option>
-</select>
-</div>
-<div class="field">
-<label for="musicVideoRatio">Video Format</label>
-<select id="musicVideoRatio">
-<option value="landscape">Landscape (16:9)</option>
-<option value="portrait">Portrait (9:16)</option>
-</select>
-</div>
-</div>
 <div class="field" style="margin-top:18px">
 <label for="musicPrompt">Detailed Music Video Instructions</label>
 <textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides..."></textarea>
@@ -1032,10 +1017,10 @@
         The selections above are additional creative guidance.
       </span>
 </div>
-<button class="primary-btn" id="generateStudioMusicVideoButton" type="button" onclick="generateStudioMusicVideo()">
-      GENERATE AI MUSIC VIDEO
+<button class="primary-btn" onclick="prepareMusicVideo()">
+      PREPARE MY AI MUSIC VIDEO PROJECT
     </button>
-<div class="project-output hidden" id="musicProjectOutput" aria-live="polite"></div>
+<div class="project-output hidden" id="musicProjectOutput"></div>
 </div>
 </details></section>
 <section class="section" id="musicVideoGenerator">
@@ -1064,9 +1049,9 @@
     <div class="field">
       <label for="mvDuration">Video Duration</label>
       <select id="mvDuration">
-        <option value="15">15 seconds — €6.07</option>
-        <option value="20">20 seconds — €7.76</option>
-        <option value="30">30 seconds — €11.14</option>
+        <option value="15">15 seconds — €4.00</option>
+        <option value="20">20 seconds — €5.55</option>
+        <option value="30">30 seconds — €8.10</option>
       </select>
     </div>
   </div>
@@ -1244,7 +1229,7 @@
 <div id="libraryEmptyStates">
 <div class="library-empty" data-empty-kind="video">
 <strong>🎬 No generated videos yet</strong>
-        Your completed AI videos will appear here after generation is complete.
+        Your completed AI videos will appear here when video generation is connected.
       </div>
 <div class="library-empty" data-empty-kind="image">
 <strong>🖼️ No generated images yet</strong>
@@ -1356,7 +1341,6 @@
 
   let currentUser = null;
   let currentFiles = [];
-  let currentVideoFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
 
@@ -1516,73 +1500,6 @@
     });
   }
 
-  // SHARED VIDEO STATUS / PLAYER — used by both video generation sections.
-  async function monitorVideoGeneration(generationId, output, title, details) {
-    if (!generationId) throw new Error("The server did not return a generation ID.");
-
-    output.textContent = title + "\n\nGeneration started. Waiting for the video…\n" + details;
-    const maxAttempts = 120;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      await new Promise(resolve => setTimeout(resolve, 5000));
-
-      const { data, error } = await supabaseClient.functions.invoke("generate-video", {
-        body: { action: "status", generationId }
-      });
-      if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Could not check video status.");
-
-      if (data.status === "SUCCEEDED" && data.videoUrl) {
-        output.textContent = title + "\n\nYour video is ready and saved in My Files.\n" + details;
-
-        const player = document.createElement("video");
-        player.controls = true;
-        player.preload = "metadata";
-        player.playsInline = true;
-        player.src = data.videoUrl;
-        player.style.cssText = "display:block;width:100%;max-width:760px;margin-top:14px;border-radius:12px;background:#000";
-        output.appendChild(player);
-
-        const download = document.createElement("a");
-        download.href = data.videoUrl;
-        download.target = "_blank";
-        download.rel = "noopener";
-        download.textContent = "DOWNLOAD VIDEO";
-        download.className = "secondary-btn";
-        download.style.cssText = "display:inline-block;margin-top:12px;text-decoration:none";
-        output.appendChild(download);
-
-        await loadMyFiles();
-        return data;
-      }
-
-      if (data.status === "FAILED" || data.status === "CANCELED") {
-        throw new Error(data.message || "Video generation failed. Any eligible credit refund has been processed.");
-      }
-
-      output.textContent = title + "\n\nStatus: " + (data.status || "PROCESSING") +
-        "\nCheck " + attempt + " of " + maxAttempts + "\n" + details;
-    }
-
-    output.textContent = title + "\n\nThe video is still processing. Check again to continue waiting for completion.\n" + details;
-    const retryButton = document.createElement("button");
-    retryButton.type = "button";
-    retryButton.className = "secondary-btn";
-    retryButton.textContent = "CHECK VIDEO STATUS AGAIN";
-    retryButton.style.marginTop = "12px";
-    retryButton.onclick = async () => {
-      retryButton.disabled = true;
-      retryButton.textContent = "CHECKING…";
-      try {
-        await monitorVideoGeneration(generationId, output, title, details);
-      } catch (retryError) {
-        output.textContent = title + "\n\nVideo status error: " + (retryError?.message || "Please try again.");
-      }
-    };
-    output.appendChild(retryButton);
-    return null;
-  }
-
   // GENERAL VIDEO PROJECT
 
 
@@ -1628,17 +1545,17 @@ async function prepareVideo() {
 
     if (error) throw error;
 
-    if (!data || !data.success || !data.taskId || !data.generationId) {
-      throw new Error(data?.error || "Video generation could not start or returned an incomplete job ID.");
+    if (!data || !data.success || !data.taskId) {
+      throw new Error(data?.error || "Video generation could not start.");
     }
 
-    await monitorVideoGeneration(
-      data.generationId,
-      output,
-      "LANE VIDEO AI — VIDEO GENERATION",
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") +
-        "\nDuration: " + data.duration + " seconds\nCredits used: " + data.creditsUsed
-    );
+    output.textContent =
+      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
+      "Your video generation task has started!\n\n" +
+      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
+      "Duration: " + data.duration + " seconds\n" +
+      "Task ID: " + data.taskId + "\n\n" +
+      "Status: Processing. The video is not ready yet.";
 
   } catch (error) {
     console.error("Video generation error:", error);
@@ -1657,9 +1574,9 @@ async function prepareVideo() {
 
   // SEPARATE MUSIC VIDEO GENERATOR — uses its own Edge Function.
   const mvPrices = {
-    "15": { eur: "6.07", credits: 607 },
-    "20": { eur: "7.76", credits: 776 },
-    "30": { eur: "11.14", credits: 1114 }
+    "15": { eur: "4.00", credits: 400 },
+    "20": { eur: "5.55", credits: 555 },
+    "30": { eur: "8.10", credits: 810 }
   };
 
   function updateMusicVideoPrice() {
@@ -1797,105 +1714,20 @@ async function prepareVideo() {
         }
       });
       if (error) throw error;
-      if (!data?.success || !data?.taskId || !data?.generationId) {
-        throw new Error(data?.error || "Music video generation could not start or returned an incomplete job ID.");
+      if (!data?.success || !data?.taskId) {
+        throw new Error(data?.error || "Music video generation could not start.");
       }
 
-      await monitorVideoGeneration(
-        data.generationId,
-        output,
-        "LANE VIDEO AI — MAKE VIDEO WITH YOUR SONG",
-        "Model: Seedance 2.5 (480p)\nDuration: " + duration + " seconds\nPrice: €" +
-          mvPrices[String(duration)].eur + " · " + mvPrices[String(duration)].credits + " credits"
-      );
+      output.textContent =
+        "LANE VIDEO AI — MAKE VIDEO WITH YOUR SONG\n\n" +
+        "Your music video task has started.\n" +
+        "Model: Seedance 2.5 (480p)\n" +
+        "Duration: " + duration + " seconds\n" +
+        "Price: €" + mvPrices[String(duration)].eur + " · " + mvPrices[String(duration)].credits + " credits\n" +
+        "Task ID: " + data.taskId + "\n\n" +
+        "Status: Processing. Check the task with the existing video status checker when it is ready.";
     } catch (error) {
       console.error("Music video generation error:", error);
-      output.textContent = "Music video generation error:\n" + (error?.message || "Please try again.");
-    } finally {
-      button.disabled = false;
-    }
-    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-
-  // AI MUSIC VIDEO STUDIO — GENERATE VIDEO
-
-  async function generateStudioMusicVideo() {
-    const button = document.getElementById("generateStudioMusicVideoButton");
-    const output = document.getElementById("musicProjectOutput");
-    const musicMode = document.getElementById("musicMode").value;
-    const songName = document.getElementById("musicFileSelect").value;
-    const duration = Number(document.getElementById("musicVideoDuration").value);
-    const ratioChoice = document.getElementById("musicVideoRatio").value;
-    const lipSync = document.getElementById("lipSync").checked;
-
-    if (!currentUser) return alert("Please sign in first.");
-    if (musicMode !== "upload" || !songName) {
-      return alert("Choose a song from My Files. A song is required to generate an AI music video.");
-    }
-    if (![15, 20, 30].includes(duration)) {
-      return alert("Choose a video duration of 15, 20 or 30 seconds.");
-    }
-
-    const musicType = document.getElementById("musicType").value;
-    const genre = document.getElementById("musicGenre").value;
-    const performer = document.getElementById("performerType").value;
-    const dancers = document.getElementById("dancers").value;
-    const stage = document.getElementById("stage").value;
-    const wardrobe = document.getElementById("wardrobe").value;
-    const lighting = document.getElementById("lighting").value;
-    const mood = document.getElementById("musicMood").value;
-    const vocalType = document.getElementById("musicVocalType").value;
-    const language = document.getElementById("musicLanguage").value;
-    const bpm = document.getElementById("musicBpm").value;
-    const customStyle = document.getElementById("musicCustomStyle").value.trim();
-    const performerDescription = document.getElementById("performerDescription").value.trim();
-    const sceneInstructions = document.getElementById("musicPrompt").value.trim();
-
-    if (!sceneInstructions) return alert("Describe the scenes and actions for your music video first.");
-
-    const promptText = [
-      "Create a " + musicType + " music video.",
-      "Music genre: " + genre + ".",
-      "Mood: " + mood + ".",
-      "Vocal type: " + vocalType + ". Language: " + language + ". Tempo: " + bpm + ".",
-      customStyle ? "Additional music style: " + customStyle + "." : "",
-      "AI performer: " + performer + ".",
-      "Dancers: " + dancers + ".",
-      "Stage or location: " + stage + ".",
-      "Wardrobe: " + wardrobe + ".",
-      "Lighting and effects: " + lighting + ".",
-      performerDescription ? "Performer appearance and presence: " + performerDescription + "." : "",
-      "Detailed scene direction: " + sceneInstructions,
-      lipSync
-        ? "Show the selected AI singer visibly performing. Attempt to synchronize mouth movements and facial expressions to the provided reference song."
-        : "Create visuals that follow the mood and rhythm of the provided reference song.",
-      "Do not display subtitles, lyrics, captions, karaoke words, titles, logos, or readable text."
-    ].filter(Boolean).join(" ");
-
-    button.disabled = true;
-    output.classList.remove("hidden");
-    output.textContent = "Preparing the selected song and starting AI music video generation…";
-
-    try {
-      const clipPath = await makeMusicVideoClip(songName, 0, duration);
-      const { data, error } = await supabaseClient.functions.invoke("generate-music-video", {
-        body: { promptText, duration, ratio: ratioChoice === "portrait" ? "portrait" : "landscape", songPath: clipPath, lipSync }
-      });
-      if (error) throw error;
-      if (!data?.success || !data?.taskId) throw new Error(data?.error || "Music video generation could not start.");
-
-      output.textContent =
-        "LANE VIDEO AI — AI MUSIC VIDEO\n\n" +
-        "Your music video generation task has started.\n" +
-        "Model: Seedance 2.5 (480p)\n" +
-        "Song: " + songName + "\n" +
-        "Duration: " + duration + " seconds\n" +
-        "Format: " + (ratioChoice === "portrait" ? "Portrait (9:16)" : "Landscape (16:9)") + "\n" +
-        "Lip-Sync requested: " + (lipSync ? "Yes" : "No") + "\n" +
-        "Task ID: " + data.taskId + "\n\n" +
-        "Status: Processing. The finished video will be available when the generation task completes.";
-    } catch (error) {
-      console.error("AI Music Video Studio generation error:", error);
       output.textContent = "Music video generation error:\n" + (error?.message || "Please try again.");
     } finally {
       button.disabled = false;
@@ -2333,7 +2165,7 @@ if (currentUser) {
 
     const descriptions = {
       all: "Showing all available files.",
-      video: "Showing your generated videos.",
+      video: "Showing generated videos. Video generation is not connected yet.",
       image: "Showing generated images. Image generation is not connected yet.",
       audio: "Showing your uploaded music and audio files.",
       thumbnail: "Showing project covers and thumbnails.",
@@ -2351,12 +2183,15 @@ if (currentUser) {
     });
 
     document.querySelectorAll("#libraryEmptyStates [data-empty-kind]").forEach(item => {
-      const emptyKind = item.dataset.emptyKind;
-      const hasFiles = emptyKind === "video" ? currentVideoFiles.length > 0
-        : emptyKind === "audio" ? currentFiles.length > 0 : false;
-      const shouldShow = !hasFiles && (kind === "all" || kind === emptyKind);
-      item.classList.toggle("hidden", !shouldShow);
+      item.classList.toggle("hidden", kind !== "all" && item.dataset.emptyKind !== kind);
     });
+
+    // In All Files view, show empty-state notes only for asset types that are not connected yet.
+    if (kind === "all") {
+      document.querySelectorAll("#libraryEmptyStates [data-empty-kind]").forEach(item => {
+        item.classList.remove("hidden");
+      });
+    }
   }
 
   async function downloadSong(fileName) {
@@ -2390,8 +2225,7 @@ if (currentUser) {
     }
 
     const audioFiles = currentFiles.filter(file => file.name);
-    const videoFiles = currentVideoFiles.filter(file => file.name);
-    if (!audioFiles.length && !videoFiles.length) {
+    if (!audioFiles.length) {
       showFileMessage("There are no available files to download yet.", true);
       return;
     }
@@ -2405,102 +2239,63 @@ if (currentUser) {
         await downloadSong(file.name);
         await new Promise(resolve => setTimeout(resolve, 350));
       }
-      for (const file of videoFiles) {
-        const { data, error } = await supabaseClient.storage.from("generated-videos")
-          .createSignedUrl(currentUser.id + "/" + file.name, 300);
-        if (!error && data?.signedUrl) {
-          const link = document.createElement("a");
-          link.href = data.signedUrl;
-          link.download = file.name;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          await new Promise(resolve => setTimeout(resolve, 350));
-        }
-      }
-      showFileMessage("Download requests sent for " + audioFiles.length + " audio file(s) and " + videoFiles.length + " video(s).");
+      showFileMessage("Download requests sent for " + audioFiles.length + " audio file(s).");
     } finally {
       button.disabled = false;
       button.textContent = "DOWNLOAD ALL";
     }
   }
 
-  // LOAD MY FILES — audio from user-songs and generated videos from generated-videos.
+  // LOAD MY FILES
 
   async function loadMyFiles() {
-    if (!currentUser) return;
-
-    const list = document.getElementById("myFilesList");
-    list.innerHTML = '<p class="hint">Loading your files…</p>';
-
-    const [audioResult, videoResult] = await Promise.all([
-      supabaseClient.storage.from("user-songs").list(currentUser.id, {
-        limit: 100, sortBy: { column: "created_at", order: "desc" }
-      }),
-      supabaseClient.storage.from("generated-videos").list(currentUser.id, {
-        limit: 100, sortBy: { column: "created_at", order: "desc" }
-      })
-    ]);
-
-    if (audioResult.error) {
-      list.innerHTML = '<p class="hint">Could not load audio files: ' + escapeHTML(audioResult.error.message) + '</p>';
+    if (!currentUser) {
       return;
     }
-    if (videoResult.error) {
-      console.error("Could not load generated videos:", videoResult.error);
+
+    const list = document.getElementById("myFilesList");
+    list.innerHTML = '<p class="hint">Loading your music files...</p>';
+
+    const { data, error } = await supabaseClient.storage
+      .from("user-songs")
+      .list(currentUser.id, {
+        limit: 100,
+        sortBy: {
+          column: "created_at",
+          order: "desc"
+        }
+      });
+
+    if (error) {
+      list.innerHTML =
+        '<p class="hint">Could not load files: ' +
+        escapeHTML(error.message) + '</p>';
+      return;
     }
 
-    currentFiles = (audioResult.data || []).filter(file => file.name && !file.name.startsWith(".lane_mv_clip_"));
-    currentVideoFiles = (videoResult.data || []).filter(file => file.name && file.name.endsWith(".mp4"));
+    currentFiles = (data || []).filter(file => file.name && !file.name.startsWith(".lane_mv_clip_"));
+
     refreshMusicFileOptions();
+
+    if (currentFiles.length === 0) {
+      list.innerHTML =
+        '<div class="library-empty"><strong>No audio files yet</strong>Upload an MP3 song above to add it to My Files.</div>';
+      updateLibraryCounts();
+      filterMyFiles(activeLibraryFilter);
+      return;
+    }
+
     list.innerHTML = "";
 
-    for (const file of currentVideoFiles) {
-      const row = document.createElement("div");
-      row.className = "file-row";
-      row.dataset.fileKind = "video";
-
-      const name = document.createElement("div");
-      name.className = "file-name";
-      name.textContent = file.name;
-      row.appendChild(name);
-
-      const actions = document.createElement("div");
-      actions.className = "file-actions";
-      const { data: signed, error: signedError } = await supabaseClient.storage
-        .from("generated-videos").createSignedUrl(currentUser.id + "/" + file.name, 3600);
-      if (!signedError && signed?.signedUrl) {
-        const play = document.createElement("a");
-        play.href = signed.signedUrl;
-        play.target = "_blank";
-        play.rel = "noopener";
-        play.className = "secondary-btn";
-        play.textContent = "PLAY / OPEN";
-        actions.appendChild(play);
-
-        const download = document.createElement("a");
-        download.href = signed.signedUrl;
-        download.download = file.name;
-        download.className = "secondary-btn";
-        download.textContent = "DOWNLOAD";
-        actions.appendChild(download);
-      } else {
-        const unavailable = document.createElement("span");
-        unavailable.className = "hint";
-        unavailable.textContent = "Video saved; link temporarily unavailable.";
-        actions.appendChild(unavailable);
-      }
-      row.appendChild(actions);
-      list.appendChild(row);
-    }
-
-    for (const file of currentFiles) {
+    currentFiles.forEach(file => {
       const row = document.createElement("div");
       row.className = "file-row";
       row.dataset.fileKind = "audio";
+
       const name = document.createElement("div");
       name.className = "file-name";
       name.textContent = file.name;
+
       const actions = document.createElement("div");
       actions.className = "file-actions";
 
@@ -2508,31 +2303,41 @@ if (currentUser) {
       playButton.className = "secondary-btn";
       playButton.textContent = "PLAY";
       playButton.onclick = () => playSong(file.name);
+
       const useButton = document.createElement("button");
       useButton.className = "secondary-btn";
       useButton.textContent = "USE IN STUDIO";
       useButton.onclick = () => useSongInStudio(file.name);
+
       const downloadButton = document.createElement("button");
       downloadButton.className = "secondary-btn";
       downloadButton.textContent = "DOWNLOAD";
       downloadButton.onclick = () => downloadSong(file.name);
+
       const deleteButton = document.createElement("button");
       deleteButton.className = "danger-btn";
       deleteButton.textContent = "DELETE";
       deleteButton.onclick = () => deleteSong(file.name);
 
-      actions.append(playButton, useButton, downloadButton, deleteButton);
-      row.append(name, actions);
+      actions.appendChild(playButton);
+      actions.appendChild(useButton);
+      actions.appendChild(downloadButton);
+      actions.appendChild(deleteButton);
+
+      row.appendChild(name);
+      row.appendChild(actions);
+
       list.appendChild(row);
-    }
+    });
 
     updateLibraryCounts();
     filterMyFiles(activeLibraryFilter);
   }
 
   function updateLibraryCounts() {
-    document.getElementById("audioFileCount").textContent = currentFiles.length;
-    document.getElementById("videoFileCount").textContent = currentVideoFiles.length;
+    const audioCount = currentFiles.length;
+    document.getElementById("audioFileCount").textContent = audioCount;
+    document.getElementById("videoFileCount").textContent = "0";
     document.getElementById("imageFileCount").textContent = "0";
     document.getElementById("thumbnailFileCount").textContent = "0";
   }
