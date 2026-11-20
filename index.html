@@ -807,86 +807,6 @@
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
 </details></section>
-<section class="section" id="musicVideoGenerator">
-<details class="studio-accordion">
-<summary>Make Video with Your Song</summary>
-<p class="section-description">Create a music video using a song from My Files. Choose a 15, 20 or 30-second excerpt and describe the visuals.</p>
-<div class="panel">
-  <div class="field">
-    <label for="mvPrompt">Describe Your Music Video</label>
-    <textarea id="mvPrompt" placeholder="Describe the performer, scenes, camera movement, locations, mood and actions. Do not include lyrics or on-screen text."></textarea>
-  </div>
-  <div class="form-grid">
-    <div class="field">
-      <label for="mvStyle">Visual Style</label>
-      <select id="mvStyle">
-        <option>Realistic / Photorealistic</option>
-        <option>Hollywood Cinematic</option>
-        <option>Animated / 3D</option>
-        <option>Anime</option>
-        <option>Dreamlike / Surreal</option>
-        <option>Documentary</option>
-        <option>Vintage Film</option>
-        <option>My Own Idea</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="mvDuration">Video Duration</label>
-      <select id="mvDuration">
-        <option value="15">15 seconds</option>
-        <option value="20">20 seconds</option>
-        <option value="30">30 seconds</option>
-      </select>
-    </div>
-  </div>
-  <div class="field">
-    <label for="mvRatio">Video Format</label>
-    <select id="mvRatio">
-      <option value="landscape">Landscape (16:9)</option>
-      <option value="portrait">Portrait (9:16)</option>
-    </select>
-  </div>
-  <div class="field">
-    <label for="mvSong">Choose a Song from My Files</label>
-    <select id="mvSong"><option value="">Choose a song from My Files...</option></select>
-    <span class="hint">Choose an existing song or upload a new audio file below.</span>
-  </div>
-  <div class="field">
-    <label for="mvUploadFile">Or Upload an Audio File</label>
-    <input id="mvUploadFile" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac"/>
-    <span class="hint">Audio files are processed for this video. Maximum audio excerpt: 30 seconds.</span>
-  </div>
-  <div class="field">
-    <label for="mvAudioDuration">Audio Duration</label>
-    <select id="mvAudioDuration">
-      <option value="15">15 seconds</option>
-      <option value="20">20 seconds</option>
-      <option value="30">30 seconds</option>
-    </select>
-    <span class="hint">Audio duration automatically matches the selected video duration and cannot exceed 30 seconds.</span>
-  </div>
-  <div class="field">
-    <label for="mvStart">Start the excerpt at (seconds)</label>
-    <input id="mvStart" type="number" min="0" step="1" value="0" />
-    <span class="hint">The selected song must contain enough audio for the chosen video duration.</span>
-  </div>
-  <div class="field">
-    <label style="display:flex;align-items:center;gap:10px">
-      <input id="mvLipSync" type="checkbox" style="width:auto" />
-      Request Lip-Sync / singing performance
-    </label>
-    <span class="hint">This asks the model to match the performer's mouth movements to the vocals. Exact lip synchronization is not guaranteed.</span>
-  </div>
-  <div class="field">
-    <label for="mvPromptExtra">Additional Visual Instructions (Optional)</label>
-    <textarea id="mvPromptExtra" placeholder="For example: A female singer performs on a rooftop at sunset, with close-up shots during the chorus."></textarea>
-  </div>
-  <div class="cost-preview" id="mvCostPreview">Credit cost: <strong>607 credits</strong></div>
-  <button class="primary-btn" id="mvGenerateButton" type="button" onclick="generateMusicVideo()">GENERATE</button>
-  <div class="project-output hidden" id="mvOutput" aria-live="polite"></div>
-</div>
-</details>
-</section>
 <section class="section" id="imageStudio">
 <details class="studio-accordion"><summary>AI Image Generator</summary>
 <p class="section-description">Create realistic images or transform a reference photo with a text instruction. 15 credits per image.</p>
@@ -997,17 +917,6 @@
 <button class="library-filter" data-library-filter="audio" onclick="filterMyFiles('audio', this)" type="button">My Audio</button>
 <button class="library-filter" data-library-filter="thumbnail" onclick="filterMyFiles('thumbnail', this)" type="button">My Thumbnails</button>
 <button class="library-filter" data-library-filter="text" onclick="filterMyFiles('text', this)" type="button">Project Text</button>
-</div>
-<div class="panel">
-<h3>Upload Your Music</h3>
-<div class="field">
-<label for="songUpload">Choose MP3 file</label>
-<input accept=".mp3,audio/mpeg" id="songUpload" type="file"/>
-<span class="hint">Maximum file size: 50 MB. MP3 files only.</span>
-</div>
-<button class="primary-btn" id="uploadButton" onclick="uploadSong()">UPLOAD SONG</button>
-<button class="secondary-btn" onclick="loadMyFiles()" style="margin-left:8px">REFRESH MY FILES</button>
-<div class="hint" id="fileMessage" style="margin-top:15px"></div>
 </div>
 <div class="panel">
 <div class="library-section-heading">
@@ -1221,195 +1130,8 @@ async function prepareVideo() {
   });
 }
 
-
-
-  // SEPARATE MUSIC VIDEO GENERATOR — uses its own Edge Function.
-  const mvPrices = {
-    "15": { credits: 607 },
-    "20": { credits: 776 },
-    "30": { credits: 1114 }
-  };
-
-  function updateMusicVideoPrice() {
-    const duration = document.getElementById("mvDuration").value;
-    const price = mvPrices[duration];
-    document.getElementById("mvCostPreview").innerHTML =
-      'Credit cost: <strong>' + price.credits.toLocaleString() + ' credits</strong>';
-  }
-  function syncMusicVideoDurations(changedControl) {
-    const videoDuration = document.getElementById("mvDuration");
-    const audioDuration = document.getElementById("mvAudioDuration");
-    if (changedControl === "audio") {
-      videoDuration.value = audioDuration.value;
-    } else {
-      audioDuration.value = videoDuration.value;
-    }
-    updateMusicVideoPrice();
-  }
-  document.getElementById("mvDuration").addEventListener("change", () => syncMusicVideoDurations("video"));
-  document.getElementById("mvAudioDuration").addEventListener("change", () => syncMusicVideoDurations("audio"));
-  updateMusicVideoPrice();
-  syncMusicVideoDurations("video");
-
-  function encodeWav(audioBuffer, startSeconds, durationSeconds) {
-    const sampleRate = 44100;
-    const channelCount = 2;
-    const frameCount = Math.floor(sampleRate * durationSeconds);
-    const output = new ArrayBuffer(44 + frameCount * channelCount * 2);
-    const view = new DataView(output);
-    const writeString = (offset, value) => {
-      for (let i = 0; i < value.length; i++) view.setUint8(offset + i, value.charCodeAt(i));
-    };
-    writeString(0, "RIFF");
-    view.setUint32(4, 36 + frameCount * channelCount * 2, true);
-    writeString(8, "WAVE");
-    writeString(12, "fmt ");
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, channelCount, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * channelCount * 2, true);
-    view.setUint16(32, channelCount * 2, true);
-    view.setUint16(34, 16, true);
-    writeString(36, "data");
-    view.setUint32(40, frameCount * channelCount * 2, true);
-
-    const left = audioBuffer.getChannelData(0);
-    const right = audioBuffer.numberOfChannels > 1 ? audioBuffer.getChannelData(1) : left;
-    const start = Math.floor(startSeconds * audioBuffer.sampleRate);
-    for (let i = 0; i < frameCount; i++) {
-      const sourceIndex = Math.min(
-        audioBuffer.length - 1,
-        start + Math.floor(i * audioBuffer.sampleRate / sampleRate)
-      );
-      for (let channel = 0; channel < 2; channel++) {
-        const sample = Math.max(-1, Math.min(1, channel === 0 ? left[sourceIndex] : right[sourceIndex]));
-        view.setInt16(44 + (i * 2 + channel) * 2, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
-      }
-    }
-    return new Blob([output], { type: "audio/wav" });
-  }
-
-  async function makeMusicVideoClip(songName, startSeconds, durationSeconds, uploadedFile) {
-    let arrayBuffer;
-    if (uploadedFile) {
-      arrayBuffer = await uploadedFile.arrayBuffer();
-    } else {
-      const songPath = currentUser.id + "/" + songName;
-      const { data: signed, error: signError } = await supabaseClient.storage
-        .from("user-songs")
-        .createSignedUrl(songPath, 300);
-      if (signError || !signed?.signedUrl) throw new Error("Could not open the selected song from My Files.");
-
-      const response = await fetch(signed.signedUrl);
-      if (!response.ok) throw new Error("Could not download the selected song.");
-      const originalBlob = await response.blob();
-      arrayBuffer = await originalBlob.arrayBuffer();
-    }
-
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) throw new Error("This browser does not support audio processing.");
-    const audioContext = new AudioContextClass();
-    let decoded;
-    try {
-      decoded = await audioContext.decodeAudioData(arrayBuffer.slice(0));
-    } finally {
-      await audioContext.close();
-    }
-
-    if (startSeconds < 0 || startSeconds + durationSeconds > decoded.duration) {
-      throw new Error("The selected song is too short for this excerpt. Choose an earlier start time or another song.");
-    }
-
-    // Runway requires the combined reference-audio duration to be under 30 seconds.
-    const audioExcerptDuration = durationSeconds === 30 ? 29.8 : durationSeconds;
-    const wavBlob = encodeWav(decoded, startSeconds, audioExcerptDuration);
-    const clipName = ".lane_mv_clip_" + crypto.randomUUID() + ".wav";
-    const clipPath = currentUser.id + "/" + clipName;
-    const { error: uploadError } = await supabaseClient.storage
-      .from("user-songs")
-      .upload(clipPath, wavBlob, {
-        contentType: "audio/wav",
-        upsert: false,
-        cacheControl: "3600"
-      });
-    if (uploadError) throw new Error("Could not prepare the song excerpt: " + uploadError.message);
-    return clipPath;
-  }
-
-  async function generateMusicVideo() {
-    const prompt = document.getElementById("mvPrompt").value.trim();
-    const songName = document.getElementById("mvSong").value;
-    const uploadedFile = document.getElementById("mvUploadFile").files[0];
-    const duration = Number(document.getElementById("mvDuration").value);
-    const audioDuration = Number(document.getElementById("mvAudioDuration").value);
-    const startSeconds = Number(document.getElementById("mvStart").value || 0);
-    const style = document.getElementById("mvStyle").value;
-    const ratioChoice = document.getElementById("mvRatio").value;
-    const lipSync = document.getElementById("mvLipSync").checked;
-    const extra = document.getElementById("mvPromptExtra").value.trim();
-    const output = document.getElementById("mvOutput");
-    const button = document.getElementById("mvGenerateButton");
-
-    if (!currentUser) return alert("Please sign in first.");
-    if (!songName && !uploadedFile) return alert("Choose a song from My Files or upload an audio file.");
-    if (!prompt) return alert("Please describe your music video.");
-    if (![15, 20, 30].includes(duration)) return alert("Choose 15, 20 or 30 seconds.");
-    if (audioDuration !== duration) return alert("Audio duration must match the video duration.");
-    if (uploadedFile && uploadedFile.size > 100 * 1024 * 1024) return alert("The uploaded audio file must be 100 MB or smaller.");
-    if (!Number.isFinite(startSeconds) || startSeconds < 0) return alert("Enter a valid start time.");
-
-    button.disabled = true;
-    output.classList.remove("hidden");
-    output.textContent = "Preparing your song excerpt and starting music video generation…";
-
-    try {
-      const clipPath = await makeMusicVideoClip(songName, startSeconds, audioDuration, uploadedFile);
-      const promptText = [
-        prompt,
-        "Visual style: " + style + ".",
-        extra,
-        lipSync
-          ? "Show a visible singer or character performing the song. When vocals are present, attempt to synchronize mouth movements and facial expressions with the provided reference audio."
-          : "Create a music video that visually follows the provided reference audio.",
-        "Do not show subtitles, lyrics, captions, karaoke words, titles, logos, or any readable text on screen."
-      ].filter(Boolean).join(" ");
-
-      const { data, error } = await supabaseClient.functions.invoke("generate-music-video", {
-        body: {
-          promptText,
-          duration,
-          ratio: ratioChoice === "portrait" ? "portrait" : "landscape",
-          songPath: clipPath,
-          lipSync
-        }
-      });
-      if (error) throw error;
-      if (!data?.success || !data?.taskId) {
-        throw new Error(data?.error || "Music video generation could not start.");
-      }
-
-      output.textContent =
-        "LANE VIDEO AI — MAKE VIDEO WITH YOUR SONG\n\n" +
-        "Your music video task has started.\n" +
-        "Model: Seedance 2.5 (480p)\n" +
-        "Video duration: " + duration + " seconds\n" +
-        "Audio duration: " + audioDuration + " seconds\n" +
-        "Credit cost: " + mvPrices[String(duration)].credits + " credits\n" +
-        "Task ID: " + data.taskId + "\n\n" +
-        "Status: Processing. Check the task with the existing video status checker when it is ready.";
-    } catch (error) {
-      console.error("Music video generation error:", error);
-      output.textContent = "Music video generation error:\n" + (error?.message || "Please try again.");
-    } finally {
-      button.disabled = false;
-    }
-    output.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-
   // MUSIC VIDEO PROJECT
-
-  function prepareMusicVideo() {
+function prepareMusicVideo() {
     const musicMode = document.getElementById("musicMode").value;
     const selectedSong = document.getElementById("musicFileSelect").value;
 
@@ -1853,7 +1575,7 @@ if (currentUser) {
       updateLibraryCounts();
 
       document.getElementById("myFilesList").innerHTML =
-        '<p class="hint">Please sign in to see your uploaded songs.</p>';
+        '<p class="hint">Please sign in to see your personal files.</p>';
 
       refreshMusicFileOptions();
     }
@@ -1875,71 +1597,15 @@ if (currentUser) {
 
   function showFileMessage(message, isError = false) {
     const element = document.getElementById("fileMessage");
-    element.textContent = message;
-    element.style.color = isError ? "#ff7777" : "#20c878";
+    if (element) {
+      element.textContent = message;
+      element.style.color = isError ? "#ff7777" : "#20c878";
+    } else if (isError) {
+      console.error(message);
+    }
   }
 
-  // UPLOAD SONG
-
-  async function uploadSong() {
-    if (!currentUser) {
-      showFileMessage("Please sign in before uploading a song.", true);
-      return;
-    }
-
-    const input = document.getElementById("songUpload");
-    const file = input.files[0];
-
-    if (!file) {
-      showFileMessage("Please select an MP3 file.", true);
-      return;
-    }
-
-    const lowerName = file.name.toLowerCase();
-    const validExtension = lowerName.endsWith(".mp3");
-
-    if (!validExtension || (file.type && file.type !== "audio/mpeg")) {
-      showFileMessage("Only MP3 files are allowed.", true);
-      return;
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-      showFileMessage("The maximum file size is 50 MB.", true);
-      return;
-    }
-
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const filePath = currentUser.id + "/" + Date.now() + "_" + safeName;
-
-    const button = document.getElementById("uploadButton");
-    button.disabled = true;
-    button.textContent = "UPLOADING...";
-
-    showFileMessage("Uploading your song...");
-
-    const { error } = await supabaseClient.storage
-      .from("user-songs")
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type || "audio/mpeg"
-      });
-
-    button.disabled = false;
-    button.textContent = "UPLOAD SONG";
-
-    if (error) {
-      showFileMessage("Upload failed: " + error.message, true);
-      return;
-    }
-
-    input.value = "";
-
-    showFileMessage("Your song was uploaded successfully!");
-
-    await loadMyFiles();
-  }
-
+  // MY FILES LIBRARY FILTERS AND DOWNLOADS
   // MY FILES LIBRARY FILTERS AND DOWNLOADS
 
   let activeLibraryFilter = "all";
@@ -2067,7 +1733,7 @@ if (currentUser) {
 
     if (currentFiles.length === 0) {
       list.innerHTML =
-        '<div class="library-empty"><strong>No audio files yet</strong>Upload an MP3 song above to add it to My Files.</div>';
+        '<div class="library-empty"><strong>No audio files yet</strong>Your audio files will appear here.</div>';
       updateLibraryCounts();
       filterMyFiles(activeLibraryFilter);
       return;
@@ -2164,21 +1830,6 @@ if (currentUser) {
       option.textContent = file.name;
       select.appendChild(option);
     });
-
-    const mvSelect = document.getElementById("mvSong");
-    if (mvSelect) {
-      mvSelect.innerHTML = "";
-      const mvFirst = document.createElement("option");
-      mvFirst.value = "";
-      mvFirst.textContent = currentFiles.length ? "Choose a song..." : "No uploaded songs yet";
-      mvSelect.appendChild(mvFirst);
-      currentFiles.forEach(file => {
-        const option = document.createElement("option");
-        option.value = file.name;
-        option.textContent = file.name;
-        mvSelect.appendChild(option);
-      });
-    }
   }
 
   // USE SONG IN STUDIO
