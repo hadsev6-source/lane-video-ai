@@ -692,7 +692,7 @@
 <details class="studio-accordion"><summary>AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
-<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Your song is generated with AI and saved to My Files.</div>
+<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Music generation is not connected yet.</div>
 <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"/></div>
 <div class="form-grid">
 <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
@@ -732,7 +732,7 @@
 <optgroup label="Cinematic &amp; Ambient">
 <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
 </optgroup></select></div>
-<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240" selected="">4 minutes</option></select></div>
+<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option>30 seconds</option><option>1 minute</option><option>2 minutes</option><option>3 minutes</option><option>4 minutes</option><option selected="">5 minutes</option></select></div>
 <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
@@ -744,14 +744,13 @@
 <div class="field full"><label for="songPrompt">Additional Instructions</label><textarea id="songPrompt" placeholder="Describe instruments, arrangement, intro, chorus, energy, structure and production..."></textarea></div>
 </div>
 <div class="cost-preview">Estimated cost: <strong>25 credits</strong> per song.</div>
-<button class="primary-btn" id="generateMusicButton" onclick="generateMusic()" type="button">GENERATE MUSIC</button>
-<div class="project-output hidden" id="songProjectOutput" aria-live="polite"></div>
-<audio id="generatedSongPlayer" class="hidden" controls preload="none" style="width:100%;margin-top:16px"></audio>
+<button class="primary-btn" onclick="prepareMusicProject()" type="button">PREPARE MUSIC PROJECT</button>
+<div class="project-output hidden" id="songProjectOutput"></div>
 </div>
 </details></section><section class="section" id="studio">
 <details class="studio-accordion"><summary>AI Video Generator</summary>
 <p class="section-description">
-    Describe your idea and generate your video.
+    Describe your idea and prepare your video project.
   </p>
 <div class="panel">
 <div class="field">
@@ -789,7 +788,7 @@
 </div>
 <div class="field">
 <label for="duration">Video Duration</label>
-<select id="duration" onchange="updateVideoCost()" oninput="updateVideoCost()">
+<select id="duration">
 <option>5 seconds</option>
 <option>10 seconds</option>
 <option>15 seconds</option>
@@ -798,13 +797,230 @@
 </select>
 </div>
 </div>
+<div class="field">
+<label for="extraFiles">Additional Images or Videos (Optional)</label>
+<input accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" id="extraFiles" multiple="" type="file"/>
+<span class="hint">
+        Choose JPG, PNG, WEBP, MP4 or MOV files from your device.
+        Files are selected temporarily and are not saved in your account.
+        They will only be sent to an AI provider after integration.
+      </span>
+<div class="project-output hidden" id="selectedFilesList"></div>
+<button class="secondary-btn" id="clearSelectedFiles" style="margin-top:10px" type="button">
+        CLEAR ALL SELECTED FILES
+      </button>
+</div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
-      Credit cost: <strong>102 credits</strong> · Selected duration: 5 seconds.
+      Estimated cost: <strong>70 credits</strong> · Balance after generation will be shown when credits are connected.
     </div>
-<button class="primary-btn" onclick="prepareVideo()" type="button">
-      GENERATE VIDEO
+<button class="primary-btn" onclick="prepareVideo()">
+      PREPARE MY VIDEO PROJECT
     </button>
 <div class="project-output hidden" id="generalProjectOutput"></div>
+</div>
+<div class="panel" id="musicStudio">
+<h2>AI Music Video Studio</h2>
+<p class="section-description">
+      Prepare a music video concept with a singer, dancers, stage,
+      costumes, lighting and synchronized performance.
+    </p>
+<div class="notice">
+<strong>Important:</strong> These settings currently prepare your
+      project brief only. AI video generation and Lip-Sync are not yet
+      connected to a generation provider.
+    </div>
+<div class="field">
+<label for="musicType">Music Video Type</label>
+<select id="musicType">
+<option>Music Video</option>
+<option>Cinematic Music Video</option>
+<option>Music Video with Dancers</option>
+<option>Live Stage Performance</option>
+<option>Lyrics Video</option>
+<option>Mini Drama / Story</option>
+<option>Romantic Music Video</option>
+<option>Action Music Video</option>
+<option>Nightlife Music Video</option>
+<option>Fantasy Music Video</option>
+<option>Animated Music Video</option>
+<option>My Own Idea</option>
+</select>
+</div>
+<div class="field">
+<label for="musicMode">Music Source</label>
+<select id="musicMode">
+<option value="upload">Use a song from My Files</option>
+<option value="concept">Create a music video concept without selecting a song</option>
+</select>
+</div>
+<div class="field" id="musicFileField">
+<label for="musicFileSelect">Select Your Uploaded Song</label>
+<select id="musicFileSelect">
+<option value="">Sign in and upload a song in My Files first</option>
+</select>
+<span class="hint">
+        Upload your MP3 song in the My Files section below.
+      </span>
+</div>
+<div class="form-grid">
+<div class="field">
+<label for="musicGenre">Music Genre</label>
+<select id="musicGenre">
+<optgroup label="Pop &amp; Mainstream">
+<option>Pop</option><option>Dance Pop</option><option>Electropop</option><option>Synth Pop</option><option>K-Pop</option><option>J-Pop</option><option>Teen Pop</option><option>Indie Pop</option><option>Europop</option><option>Latin Pop</option>
+</optgroup>
+<optgroup label="Balkan &amp; Folk">
+<option>Bulgarian Pop-Folk</option><option>Traditional Bulgarian</option><option>Balkan Folk</option><option>Serbian Folk</option><option>Greek Music</option><option>Oriental</option><option>Arabesque</option><option>Turkish Pop</option><option>Romanian Manele</option>
+</optgroup>
+<optgroup label="Afro Music">
+<option>Afrobeats</option><option>Afro Swing</option><option>Amapiano</option><option>Afro House</option><option>Afro Pop</option><option>Afro Fusion</option><option>Dancehall</option><option>Kuduro</option><option>Highlife</option>
+</optgroup>
+<optgroup label="Electronic &amp; Club">
+<option>Techno</option><option>Melodic Techno</option><option>House</option><option>Deep House</option><option>Tech House</option><option>Progressive House</option><option>Trance</option><option>EDM</option><option>Hardstyle</option><option>Drum &amp; Bass</option><option>Dubstep</option><option>Psytrance</option><option>Eurodance</option>
+</optgroup>
+<optgroup label="Hip-Hop &amp; Urban">
+<option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>R&amp;B</option><option>Contemporary R&amp;B</option><option>Soul</option><option>Neo-Soul</option><option>Rap</option><option>Reggaeton</option><option>Latin Urban</option><option>UK Garage</option>
+</optgroup>
+<optgroup label="Latin Music">
+<option>Salsa</option><option>Bachata</option><option>Merengue</option><option>Cumbia</option><option>Latin House</option><option>Latin Trap</option><option>Bossa Nova</option><option>Samba</option><option>Tango</option>
+</optgroup>
+<optgroup label="Country &amp; American">
+<option>Country</option><option>Country Pop</option><option>Americana</option><option>Bluegrass</option><option>Folk</option><option>Southern Rock</option><option>Blues</option><option>Gospel</option>
+</optgroup>
+<optgroup label="Rock &amp; Metal">
+<option>Pop Rock</option><option>Classic Rock</option><option>Alternative Rock</option><option>Indie Rock</option><option>Hard Rock</option><option>Punk Rock</option><option>Heavy Metal</option><option>Metalcore</option><option>Grunge</option>
+</optgroup>
+<optgroup label="Arabic &amp; Oriental">
+<option>Arabic Pop</option><option>Arabic Dance</option><option>Egyptian Pop</option><option>Khaliji</option><option>Dabke</option><option>Turkish Oriental</option><option>Arabian Fusion</option><option>Persian Pop</option>
+</optgroup>
+<optgroup label="Asian &amp; World Music">
+<option>Bollywood</option><option>Bhangra</option><option>Indian Classical</option><option>Punjabi Pop</option><option>Japanese Pop</option><option>Chinese Pop</option><option>Korean Pop</option><option>World Fusion</option>
+</optgroup>
+<optgroup label="Jazz &amp; Classical">
+<option>Jazz</option><option>Smooth Jazz</option><option>Swing</option><option>Blues Jazz</option><option>Classical</option><option>Orchestral</option><option>Opera</option><option>Chamber Music</option><option>Piano Solo</option>
+</optgroup>
+<optgroup label="Cinematic &amp; Ambient">
+<option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
+</optgroup>
+</select>
+</div>
+<div class="field">
+<label for="performerType">AI Performer</label>
+<select id="performerType">
+<option>Male Singer</option>
+<option>Female Singer</option>
+<option>Male and Female Duo</option>
+<option>Music Group / Band</option>
+<option>Multiple Singers</option>
+<option>No Singer</option>
+</select>
+</div>
+<div class="field">
+<label for="dancers">Dancers</label>
+<select id="dancers">
+<option>No Dancers</option>
+<option>One Male Dancer</option>
+<option>One Female Dancer</option>
+<option>Male and Female Dancers</option>
+<option>Small Dance Group</option>
+<option>Large Professional Dance Group</option>
+<option>Choreographed Dance Team</option>
+</select>
+</div>
+<div class="field">
+<label for="stage">Stage / Location</label>
+<select id="stage">
+<option>Luxury Concert Stage</option>
+<option>Huge Stadium Concert</option>
+<option>Nightclub</option>
+<option>Rooftop at Night</option>
+<option>Luxury Mansion</option>
+<option>Beach at Sunset</option>
+<option>Beautiful Nature</option>
+<option>City Streets</option>
+<option>Hollywood Film Set</option>
+<option>Dark Cinematic Studio</option>
+<option>Fantasy World</option>
+<option>My Own Location</option>
+</select>
+</div>
+<div class="field">
+<label for="wardrobe">Singer's Wardrobe / Style</label>
+<select id="wardrobe">
+<option>Luxury Fashion</option>
+<option>Elegant Evening Outfit</option>
+<option>Modern Pop Star Style</option>
+<option>Rock Star Outfit</option>
+<option>Hip-Hop Streetwear</option>
+<option>Classic / Vintage</option>
+<option>Futuristic Costume</option>
+<option>Fantasy Costume</option>
+<option>Casual Modern Style</option>
+<option>My Own Design</option>
+</select>
+</div>
+<div class="field">
+<label for="lighting">Lighting / Special Effects</label>
+<select id="lighting">
+<option>Cinematic Concert Lighting</option>
+<option>Laser Lights and Smoke</option>
+<option>Neon Lights</option>
+<option>Fire and Sparks</option>
+<option>Soft Romantic Lighting</option>
+<option>Golden Sunset Lighting</option>
+<option>Futuristic Visual Effects</option>
+<option>Fireworks and Stage Effects</option>
+<option>Dark Dramatic Lighting</option>
+<option>My Own Idea</option>
+</select>
+</div>
+</div>
+<div class="form-grid">
+<div class="field"><label for="musicMood">Mood</label>
+<select id="musicMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select>
+</div>
+<div class="field"><label for="musicVocalType">Vocal Type</label>
+<select id="musicVocalType"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select>
+</div>
+<div class="field"><label for="musicLanguage">Language</label>
+<select id="musicLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select>
+</div>
+<div class="field"><label for="musicBpm">Tempo / BPM</label>
+<select id="musicBpm"><option>Slow</option><option selected="">Medium</option><option>Fast</option><option>Very Fast</option></select>
+</div>
+<div class="field full"><label for="musicCustomStyle">Custom Music Style (Optional)</label>
+<input id="musicCustomStyle" placeholder="Add a specific subgenre, reference mood or production direction" type="text"/>
+</div>
+</div>
+<div class="field">
+<label for="performerDescription">Describe the AI Singer / Performer</label>
+<textarea id="performerDescription" placeholder="Describe the singer's appearance, age range, hairstyle, clothing, personality, facial features and stage presence..."></textarea>
+</div>
+<div class="checkbox-row">
+<input id="lipSync" type="checkbox"/>
+<div>
+<label for="lipSync">
+          Synchronize the AI singer's lips with the song (Lip-Sync)
+        </label>
+<span class="hint">
+          The singer's mouth movements, facial expressions and emotions
+          should match the vocals and music. This option will be activated
+          after AI Lip-Sync integration.
+        </span>
+</div>
+</div>
+<div class="field" style="margin-top:18px">
+<label for="musicPrompt">Detailed Music Video Instructions</label>
+<textarea id="musicPrompt" placeholder="Describe the exact scenes and actions. For example: The singer begins alone on a dark stage. The camera slowly approaches. During the chorus, dancers enter from both sides..."></textarea>
+<span class="hint">
+        Your detailed instructions control the story and actions.
+        The selections above are additional creative guidance.
+      </span>
+</div>
+<button class="primary-btn" onclick="prepareMusicVideo()">
+      PREPARE MY AI MUSIC VIDEO PROJECT
+    </button>
+<div class="project-output hidden" id="musicProjectOutput"></div>
 </div>
 </details></section>
 <section class="section" id="musicVideoGenerator">
@@ -833,9 +1049,9 @@
     <div class="field">
       <label for="mvDuration">Video Duration</label>
       <select id="mvDuration">
-        <option value="15">15 seconds</option>
-        <option value="20">20 seconds</option>
-        <option value="30">30 seconds</option>
+        <option value="15">15 seconds — 400 credits</option>
+        <option value="20">20 seconds — 555 credits</option>
+        <option value="30">30 seconds — 810 credits</option>
       </select>
     </div>
   </div>
@@ -848,22 +1064,8 @@
   </div>
   <div class="field">
     <label for="mvSong">Choose a Song from My Files</label>
-    <select id="mvSong"><option value="">Choose a song from My Files...</option></select>
-    <span class="hint">Choose an existing song or upload a new audio file below.</span>
-  </div>
-  <div class="field">
-    <label for="mvUploadFile">Or Upload an Audio File</label>
-    <input id="mvUploadFile" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac"/>
-    <span class="hint">Audio files are processed for this video. Maximum audio excerpt: 30 seconds.</span>
-  </div>
-  <div class="field">
-    <label for="mvAudioDuration">Audio Duration</label>
-    <select id="mvAudioDuration">
-      <option value="15">15 seconds</option>
-      <option value="20">20 seconds</option>
-      <option value="30">30 seconds</option>
-    </select>
-    <span class="hint">Audio duration automatically matches the selected video duration and cannot exceed 30 seconds.</span>
+    <select id="mvSong"><option value="">Sign in and upload a song in My Files first</option></select>
+    <span class="hint">The original song stays in My Files. A short audio excerpt is prepared automatically for this video.</span>
   </div>
   <div class="field">
     <label for="mvStart">Start the excerpt at (seconds)</label>
@@ -881,8 +1083,8 @@
     <label for="mvPromptExtra">Additional Visual Instructions (Optional)</label>
     <textarea id="mvPromptExtra" placeholder="For example: A female singer performs on a rooftop at sunset, with close-up shots during the chorus."></textarea>
   </div>
-  <div class="cost-preview" id="mvCostPreview">Credit cost: <strong>607 credits</strong></div>
-  <button class="primary-btn" id="mvGenerateButton" type="button" onclick="generateMusicVideo()">GENERATE</button>
+  <div class="cost-preview" id="mvCostPreview">Cost: <strong>400 credits</strong></div>
+  <button class="primary-btn" id="mvGenerateButton" type="button" onclick="generateMusicVideo()">GENERATE MUSIC VIDEO</button>
   <div class="project-output hidden" id="mvOutput" aria-live="polite"></div>
 </div>
 </details>
@@ -904,9 +1106,10 @@
 <div class="field"><label for="imageStyle">Visual Style</label>
 <select id="imageStyle"><option>Photorealistic</option><option>Cinematic</option><option>3D Render</option><option>Anime</option><option>Illustration</option><option>Fantasy</option><option>Product Photography</option><option>My Own Style</option></select>
 </div>
-
+<div class="field"><label for="imageQuantity">Number of Images</label>
+<select id="imageQuantity"><option value="1">1 image</option><option value="2">2 images</option><option value="4">4 images</option><option value="8">8 images</option></select>
 </div>
-<div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong> · 1 image</div>
+</div> <div aria-live="polite" class="cost-preview" id="imageCostPreview">Credit cost: <strong>15 credits</strong></div>
 <button class="primary-btn" id="generateImageButton" onclick="generateImages()" type="button">GENERATE IMAGE</button>
 <div class="project-output hidden" id="imageProjectOutput" aria-live="polite"></div>
 <div id="generatedImageGallery" class="generated-image-gallery" aria-live="polite"></div>
@@ -1026,7 +1229,7 @@
 <div id="libraryEmptyStates">
 <div class="library-empty" data-empty-kind="video">
 <strong>🎬 No generated videos yet</strong>
-        Your completed AI videos will appear here when video generation is connected.
+        Your completed AI videos will appear here after generation.
       </div>
 <div class="library-empty" data-empty-kind="image">
 <strong>🖼️ No generated images yet</strong>
@@ -1141,6 +1344,152 @@
   let currentAudioUrl = null;
   let deletingFile = false;
 
+  // TEMPORARY PROJECT FILES
+  // These files stay in the browser and are not uploaded to Supabase.
+
+  let selectedExtraFiles = [];
+
+  const extraFilesInput = document.getElementById("extraFiles");
+  const selectedFilesList = document.getElementById("selectedFilesList");
+  const clearSelectedFilesButton = document.getElementById("clearSelectedFiles");
+
+  const MAX_EXTRA_FILE_SIZE = 100 * 1024 * 1024;
+  const MAX_EXTRA_TOTAL_SIZE = 300 * 1024 * 1024;
+
+  const ALLOWED_EXTRA_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "video/mp4",
+    "video/quicktime"
+  ];
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024 * 1024) {
+      return Math.round(bytes / 1024) + " KB";
+    }
+
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  function showSelectedExtraFiles() {
+    selectedFilesList.innerHTML = "";
+
+    if (selectedExtraFiles.length === 0) {
+      selectedFilesList.classList.add("hidden");
+      return;
+    }
+
+    selectedFilesList.classList.remove("hidden");
+
+    const heading = document.createElement("strong");
+    heading.textContent = "Selected reference files:";
+    selectedFilesList.appendChild(heading);
+
+    selectedExtraFiles.forEach((file, index) => {
+      const row = document.createElement("div");
+      row.className = "selected-file";
+
+      const details = document.createElement("span");
+      details.textContent = file.name + " — " + formatFileSize(file.size);
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "danger-btn";
+      removeButton.textContent = "REMOVE";
+
+      removeButton.addEventListener("click", function() {
+        selectedExtraFiles.splice(index, 1);
+        updateExtraFileInput();
+        showSelectedExtraFiles();
+      });
+
+      row.appendChild(details);
+      row.appendChild(removeButton);
+      selectedFilesList.appendChild(row);
+    });
+
+    const totalSize = selectedExtraFiles.reduce(
+      (total, file) => total + file.size,
+      0
+    );
+
+    const total = document.createElement("p");
+    total.className = "hint";
+    total.textContent =
+      selectedExtraFiles.length + " file(s) selected — " +
+      formatFileSize(totalSize) + " total";
+
+    selectedFilesList.appendChild(total);
+  }
+
+  function updateExtraFileInput() {
+    const transfer = new DataTransfer();
+
+    selectedExtraFiles.forEach(file => {
+      transfer.items.add(file);
+    });
+
+    extraFilesInput.files = transfer.files;
+  }
+
+  extraFilesInput.addEventListener("change", function() {
+    const incomingFiles = Array.from(this.files);
+
+    for (const file of incomingFiles) {
+      if (!ALLOWED_EXTRA_TYPES.includes(file.type)) {
+        alert("Only JPG, PNG, WEBP, MP4 and MOV files are allowed.");
+        updateExtraFileInput();
+        return;
+      }
+
+      if (file.size > MAX_EXTRA_FILE_SIZE) {
+        alert("Each reference file must be no larger than 100 MB.");
+        updateExtraFileInput();
+        return;
+      }
+    }
+
+    const existingNames = new Set(
+      selectedExtraFiles.map(file => file.name + "|" + file.size + "|" + file.lastModified)
+    );
+
+    for (const file of incomingFiles) {
+      const key = file.name + "|" + file.size + "|" + file.lastModified;
+
+      if (!existingNames.has(key)) {
+        selectedExtraFiles.push(file);
+        existingNames.add(key);
+      }
+    }
+
+    const totalSize = selectedExtraFiles.reduce(
+      (total, file) => total + file.size,
+      0
+    );
+
+    if (totalSize > MAX_EXTRA_TOTAL_SIZE) {
+      selectedExtraFiles = selectedExtraFiles.filter(file => {
+        return incomingFiles.indexOf(file) === -1;
+      });
+
+      updateExtraFileInput();
+      showSelectedExtraFiles();
+
+      alert("The combined size of selected files cannot exceed 300 MB.");
+      return;
+    }
+
+    updateExtraFileInput();
+    showSelectedExtraFiles();
+  });
+
+  clearSelectedFilesButton.addEventListener("click", function() {
+    selectedExtraFiles = [];
+    extraFilesInput.value = "";
+    showSelectedExtraFiles();
+  });
+
   // CATEGORY SELECTION
 
   function chooseCategory(category) {
@@ -1149,6 +1498,111 @@
     document.getElementById("studio").scrollIntoView({
       behavior: "smooth"
     });
+  }
+
+  // Shared video status polling and playback UI for both generators.
+  // Uses the existing check-video-status Edge Function; no new backend is required.
+  function waitForVideoCheck(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function showVideoFailure(output, message, refunded) {
+    output.replaceChildren();
+    const heading = document.createElement("strong");
+    heading.textContent = "Video generation failed";
+    const detail = document.createElement("p");
+    detail.textContent = message || "The video could not be generated.";
+    const refund = document.createElement("p");
+    refund.textContent = refunded
+      ? "The generation credits have been refunded."
+      : "Please check your credit balance and generation status.";
+    output.append(heading, detail, refund);
+  }
+
+  function showCompletedVideo(output, videoUrl, taskId) {
+    output.replaceChildren();
+    const heading = document.createElement("strong");
+    heading.textContent = "Your video is ready";
+    const player = document.createElement("video");
+    player.controls = true;
+    player.playsInline = true;
+    player.preload = "metadata";
+    player.src = videoUrl;
+    player.style.display = "block";
+    player.style.width = "100%";
+    player.style.maxWidth = "900px";
+    player.style.marginTop = "12px";
+    player.style.borderRadius = "10px";
+    const download = document.createElement("a");
+    download.href = videoUrl;
+    download.download = "LANE-VIDEO-" + taskId + ".mp4";
+    download.target = "_blank";
+    download.rel = "noopener";
+    download.textContent = "DOWNLOAD VIDEO";
+    download.style.display = "inline-block";
+    download.style.marginTop = "12px";
+    download.style.fontWeight = "800";
+    download.style.color = "inherit";
+    const note = document.createElement("p");
+    note.textContent = "You can watch the video here or download it to your device.";
+    output.append(heading, player, download, note);
+    player.addEventListener("error", () => {
+      note.textContent = "The video is saved, but the preview could not be loaded. Use DOWNLOAD VIDEO to open or save it.";
+    }, { once: true });
+  }
+
+  async function monitorVideoTask(taskId, output, details = {}) {
+    output.textContent =
+      (details.heading || "LANE VIDEO AI") + "\n\n" +
+      "Your video generation has started.\n" +
+      (details.model ? "Model: " + details.model + "\n" : "") +
+      (details.duration ? "Duration: " + details.duration + " seconds\n" : "") +
+      (details.credits ? "Cost: " + details.credits + " credits\n" : "") +
+      "Task ID: " + taskId + "\n\n" +
+      "Status: Processing… We will check automatically until the video is ready.";
+
+    // Check every 8 seconds for up to 10 minutes. The user does not need to press again.
+    for (let attempt = 0; attempt < 75; attempt++) {
+      if (attempt > 0) await waitForVideoCheck(8000);
+      try {
+        const { data, error } = await supabaseClient.functions.invoke(
+          "check-video-status",
+          { body: { taskId } }
+        );
+        if (error) throw error;
+        if (!data) throw new Error("The status service returned an empty response.");
+
+        if (data.status === "SUCCEEDED" && data.output) {
+          showCompletedVideo(output, data.output, taskId);
+          return;
+        }
+        if (data.status === "FAILED" || data.status === "CANCELLED" || data.success === false) {
+          showVideoFailure(output, data.failure || data.error || "The provider could not complete the video.", data.refunded === true);
+          return;
+        }
+        if (data.status === "SUCCEEDED" && !data.output) {
+          output.textContent = "Your video was generated and saved, but Supabase did not return a playback link. Please contact support with Task ID: " + taskId;
+          return;
+        }
+        output.textContent =
+          (details.heading || "LANE VIDEO AI") + "\n\n" +
+          "Status: " + (data.status || "Processing") + "\n" +
+          "Task ID: " + taskId + "\n\n" +
+          "The video is still processing. This page will check again automatically.";
+      } catch (checkError) {
+        console.error("Video status check error:", checkError);
+        output.textContent =
+          "The video task has started, but its status could not be checked right now.\n" +
+          "Task ID: " + taskId + "\n\n" +
+          "Please keep this page open and try again shortly. Details: " +
+          (checkError?.message || "Status check failed.");
+        // A transient status-check failure must not be treated as a failed generation.
+      }
+    }
+    output.textContent =
+      "The video is taking longer than expected. It may still be processing.\n" +
+      "Task ID: " + taskId + "\n\n" +
+      "Please refresh My Files later to see whether the completed video has been saved.";
   }
 
   // GENERAL VIDEO PROJECT
@@ -1189,7 +1643,7 @@ async function prepareVideo() {
           promptText: prompt + ". Visual style: " + style,
           model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
           duration: durationSeconds,
-          ratio: "854:480"
+          ratio: "1280:720"
         }
       }
     );
@@ -1200,13 +1654,11 @@ async function prepareVideo() {
       throw new Error(data?.error || "Video generation could not start.");
     }
 
-    output.textContent =
-      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started!\n\n" +
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
-      "Duration: " + data.duration + " seconds\n" +
-      "Task ID: " + data.taskId + "\n\n" +
-      "Status: Processing. The video is not ready yet.";
+    await monitorVideoTask(data.taskId, output, {
+      heading: "LANE VIDEO AI — VIDEO GENERATION",
+      model: data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5",
+      duration: data.duration
+    });
 
   } catch (error) {
     console.error("Video generation error:", error);
@@ -1225,31 +1677,19 @@ async function prepareVideo() {
 
   // SEPARATE MUSIC VIDEO GENERATOR — uses its own Edge Function.
   const mvPrices = {
-    "15": { credits: 607 },
-    "20": { credits: 776 },
-    "30": { credits: 1114 }
+    "15": { credits: 400 },
+    "20": { credits: 555 },
+    "30": { credits: 810 }
   };
 
   function updateMusicVideoPrice() {
     const duration = document.getElementById("mvDuration").value;
     const price = mvPrices[duration];
-    document.getElementById("mvCostPreview").innerHTML =
-      'Credit cost: <strong>' + price.credits.toLocaleString() + ' credits</strong>';
+    document.getElementById("mvCostPreview").textContent =
+      "Cost: " + price.credits.toLocaleString() + " credits";
   }
-  function syncMusicVideoDurations(changedControl) {
-    const videoDuration = document.getElementById("mvDuration");
-    const audioDuration = document.getElementById("mvAudioDuration");
-    if (changedControl === "audio") {
-      videoDuration.value = audioDuration.value;
-    } else {
-      audioDuration.value = videoDuration.value;
-    }
-    updateMusicVideoPrice();
-  }
-  document.getElementById("mvDuration").addEventListener("change", () => syncMusicVideoDurations("video"));
-  document.getElementById("mvAudioDuration").addEventListener("change", () => syncMusicVideoDurations("audio"));
+  document.getElementById("mvDuration").addEventListener("change", updateMusicVideoPrice);
   updateMusicVideoPrice();
-  syncMusicVideoDurations("video");
 
   function encodeWav(audioBuffer, startSeconds, durationSeconds) {
     const sampleRate = 44100;
@@ -1290,22 +1730,17 @@ async function prepareVideo() {
     return new Blob([output], { type: "audio/wav" });
   }
 
-  async function makeMusicVideoClip(songName, startSeconds, durationSeconds, uploadedFile) {
-    let arrayBuffer;
-    if (uploadedFile) {
-      arrayBuffer = await uploadedFile.arrayBuffer();
-    } else {
-      const songPath = currentUser.id + "/" + songName;
-      const { data: signed, error: signError } = await supabaseClient.storage
-        .from("user-songs")
-        .createSignedUrl(songPath, 300);
-      if (signError || !signed?.signedUrl) throw new Error("Could not open the selected song from My Files.");
+  async function makeMusicVideoClip(songName, startSeconds, durationSeconds) {
+    const songPath = currentUser.id + "/" + songName;
+    const { data: signed, error: signError } = await supabaseClient.storage
+      .from("user-songs")
+      .createSignedUrl(songPath, 300);
+    if (signError || !signed?.signedUrl) throw new Error("Could not open the selected song from My Files.");
 
-      const response = await fetch(signed.signedUrl);
-      if (!response.ok) throw new Error("Could not download the selected song.");
-      const originalBlob = await response.blob();
-      arrayBuffer = await originalBlob.arrayBuffer();
-    }
+    const response = await fetch(signed.signedUrl);
+    if (!response.ok) throw new Error("Could not download the selected song.");
+    const originalBlob = await response.blob();
+    const arrayBuffer = await originalBlob.arrayBuffer();
 
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) throw new Error("This browser does not support audio processing.");
@@ -1340,9 +1775,7 @@ async function prepareVideo() {
   async function generateMusicVideo() {
     const prompt = document.getElementById("mvPrompt").value.trim();
     const songName = document.getElementById("mvSong").value;
-    const uploadedFile = document.getElementById("mvUploadFile").files[0];
     const duration = Number(document.getElementById("mvDuration").value);
-    const audioDuration = Number(document.getElementById("mvAudioDuration").value);
     const startSeconds = Number(document.getElementById("mvStart").value || 0);
     const style = document.getElementById("mvStyle").value;
     const ratioChoice = document.getElementById("mvRatio").value;
@@ -1352,11 +1785,9 @@ async function prepareVideo() {
     const button = document.getElementById("mvGenerateButton");
 
     if (!currentUser) return alert("Please sign in first.");
-    if (!songName && !uploadedFile) return alert("Choose a song from My Files or upload an audio file.");
+    if (!songName) return alert("Please choose a song from My Files.");
     if (!prompt) return alert("Please describe your music video.");
     if (![15, 20, 30].includes(duration)) return alert("Choose 15, 20 or 30 seconds.");
-    if (audioDuration !== duration) return alert("Audio duration must match the video duration.");
-    if (uploadedFile && uploadedFile.size > 100 * 1024 * 1024) return alert("The uploaded audio file must be 100 MB or smaller.");
     if (!Number.isFinite(startSeconds) || startSeconds < 0) return alert("Enter a valid start time.");
 
     button.disabled = true;
@@ -1364,7 +1795,7 @@ async function prepareVideo() {
     output.textContent = "Preparing your song excerpt and starting music video generation…";
 
     try {
-      const clipPath = await makeMusicVideoClip(songName, startSeconds, audioDuration, uploadedFile);
+      const clipPath = await makeMusicVideoClip(songName, startSeconds, duration);
       const promptText = [
         prompt,
         "Visual style: " + style + ".",
@@ -1389,15 +1820,18 @@ async function prepareVideo() {
         throw new Error(data?.error || "Music video generation could not start.");
       }
 
-      output.textContent =
-        "LANE VIDEO AI — MAKE VIDEO WITH YOUR SONG\n\n" +
-        "Your music video task has started.\n" +
-        "Model: Seedance 2.5 (480p)\n" +
-        "Video duration: " + duration + " seconds\n" +
-        "Audio duration: " + audioDuration + " seconds\n" +
-        "Credit cost: " + mvPrices[String(duration)].credits + " credits\n" +
-        "Task ID: " + data.taskId + "\n\n" +
-        "Status: Processing. Check the task with the existing video status checker when it is ready.";
+      await monitorVideoTask(data.taskId, output, {
+        heading: "LANE VIDEO AI — MAKE VIDEO WITH YOUR SONG",
+        model: "Seedance 2.5 (480p)",
+        duration,
+        credits: mvPrices[String(duration)].credits
+      });
+      // Remove the temporary WAV excerpt after Runway has accepted the task.
+      // Runway receives a signed URL, so it can fetch the audio independently.
+      const { error: clipCleanupError } = await supabaseClient.storage
+        .from("user-songs")
+        .remove([clipPath]);
+      if (clipCleanupError) console.warn("Temporary music-video clip cleanup failed:", clipCleanupError);
     } catch (error) {
       console.error("Music video generation error:", error);
       output.textContent = "Music video generation error:\n" + (error?.message || "Please try again.");
@@ -1512,54 +1946,39 @@ These settings are a project brief and will be used when an AI generation provid
 
   // MUSIC MODE
 
-  // The legacy music-video source selector is not present on this page.
-  // Bind its optional handler only when that section exists, so a missing
-  // legacy element cannot stop the rest of the script (including auth).
-  const musicModeSelect = document.getElementById("musicMode");
-  if (musicModeSelect) {
-    musicModeSelect.addEventListener("change", function() {
-      const field = document.getElementById("musicFileField");
-      if (!field) return;
-      if (this.value === "concept") {
-        field.classList.add("hidden");
-      } else {
-        field.classList.remove("hidden");
-      }
-    });
-  }
+  document.getElementById("musicMode").addEventListener("change", function() {
+    const field = document.getElementById("musicFileField");
+
+    if (this.value === "concept") {
+      field.classList.add("hidden");
+    } else {
+      field.classList.remove("hidden");
+    }
+  });
 
 
-  // Video prices in credits, matched to the selected duration.
+  // Video prices in credits, matching the agreed customer tariff.
   function videoCostForDuration(label) {
     const prices = {
-      "5 seconds": 102,
-      "10 seconds": 203,
-      "15 seconds": 507,
-      "20 seconds": 676,
-      "30 seconds": 1014
+      "5 seconds": 100,
+      "10 seconds": 195,
+      "15 seconds": 599,
+      "20 seconds": 799,
+      "30 seconds": 1199
     };
     return Object.prototype.hasOwnProperty.call(prices, label) ? prices[label] : null;
   }
 
   function updateVideoCost() {
-    const durationSelect = document.getElementById("duration");
-    const preview = document.getElementById("videoCostPreview");
-    if (!durationSelect || !preview) return;
-
-    const duration = durationSelect.value;
+    const duration = document.getElementById("duration").value;
     const credits = videoCostForDuration(duration);
+    const preview = document.getElementById("videoCostPreview");
     preview.innerHTML = credits === null
-      ? 'Credit cost: <strong>Price not available for this duration.</strong>'
-      : 'Credit cost for ' + duration + ': <strong>' + credits.toLocaleString() + ' credits</strong>.';
+      ? 'Estimated cost: <strong>Price estimate for this duration is being confirmed. No credits are deducted.</strong>'
+      : 'Credit cost: <strong>' + credits.toLocaleString() + ' credits</strong> · Server-side credit deduction still needs implementation.';
   }
-
-  const videoDurationSelect = document.getElementById("duration");
-  if (videoDurationSelect) {
-    videoDurationSelect.addEventListener("change", updateVideoCost);
-    videoDurationSelect.addEventListener("input", updateVideoCost);
-    // Render the correct price on initial load and whenever the duration changes.
-    updateVideoCost();
-  }
+  document.getElementById("duration").addEventListener("change", updateVideoCost);
+  updateVideoCost();
 
   const imageReferenceInput = document.getElementById("imageReference");
   if (imageReferenceInput) {
@@ -1569,9 +1988,17 @@ These settings are a project brief and will be used when an AI generation provid
     });
   }
 
+  function updateImageCost() {
+    const quantity = Number(document.getElementById("imageQuantity").value || 1);
+    document.getElementById("imageCostPreview").innerHTML =
+      'Credit cost: <strong>' + (quantity * 15) + ' credits</strong> (' + quantity + ' × 15)';
+  }
+  document.getElementById("imageQuantity").addEventListener("change", updateImageCost);
+  updateImageCost();
+
   async function generateImages() {
     const prompt = document.getElementById("imagePrompt").value.trim();
-    const quantity = 1; // Fixed: generate one image for 15 credits.
+    const quantity = Number(document.getElementById("imageQuantity").value || 1);
     const style = document.getElementById("imageStyle").value;
     const reference = document.getElementById("imageReference").files[0];
     const button = document.getElementById("generateImageButton");
@@ -1628,136 +2055,27 @@ These settings are a project brief and will be used when an AI generation provid
     }
   }
 
-  async function generateMusic() {
-    const output = document.getElementById("songProjectOutput");
-    const player = document.getElementById("generatedSongPlayer");
-    const button = document.getElementById("generateMusicButton");
-
-    if (!currentUser) {
-      alert("Please sign in before generating music.");
-      return;
-    }
-
-    const title = document.getElementById("songTitle").value.trim();
-    const style = document.getElementById("songGenre").value;
-    const durationSeconds = Number(document.getElementById("songDuration").value);
-    const mood = document.getElementById("songMood").value;
-    const vocalType = document.getElementById("songVocal").value;
-    const language = document.getElementById("songLanguage").value;
-    const bpm = document.getElementById("songBpm").value;
-    let lyricsMode = document.getElementById("songLyricsMode").value;
-    const voiceCharacter = document.getElementById("songVoiceCharacter").value;
-    const customStyle = document.getElementById("songCustomStyle").value.trim();
+  function prepareMusicProject() {
+    const prompt = document.getElementById("songPrompt").value.trim();
     const lyrics = document.getElementById("songLyrics").value.trim();
-    const instructions = document.getElementById("songPrompt").value.trim();
-
-    if (![60, 120, 180, 240].includes(durationSeconds)) {
-      alert("Please choose a song length from 1 to 4 minutes.");
-      return;
-    }
-    if (lyricsMode === "My Own Lyrics" && !lyrics && vocalType !== "Instrumental") {
-      alert("Please enter your lyrics, or choose AI Write Lyrics / No Lyrics.");
-      return;
-    }
-    // Instrumental requests must use the provider's no-lyrics mode.
-    if (vocalType === "Instrumental") lyricsMode = "No Lyrics";
-
-    const providerInstructions = [
-      "Vocal type: " + vocalType,
-      vocalType !== "Instrumental" ? "Voice character: " + voiceCharacter : "",
-      instructions
-    ].filter(Boolean).join(". ");
-
-    button.disabled = true;
-    button.textContent = "STARTING...";
+    const lyricsMode = document.getElementById("songLyricsMode").value;
+    const output = document.getElementById("songProjectOutput");
+    output.textContent =
+      "LANE VIDEO AI — AI MUSIC PROJECT\n\nTitle: " + (document.getElementById("songTitle").value.trim() || "Untitled") +
+      "\nGenre / Style: " + document.getElementById("songGenre").value +
+      "\nDuration: " + document.getElementById("songDuration").value +
+      "\nMood: " + document.getElementById("songMood").value +
+      "\nVocal type: " + document.getElementById("songVocal").value +
+      "\nLanguage: " + document.getElementById("songLanguage").value +
+      "\nTempo: " + document.getElementById("songBpm").value +
+      "\nLyrics mode: " + lyricsMode +
+      "\nVoice character: " + document.getElementById("songVoiceCharacter").value +
+      "\nCustom style: " + (document.getElementById("songCustomStyle").value.trim() || "Not specified") +
+      "\nLyrics / story: " + (lyrics || "Not supplied") +
+      "\nAdditional instructions: " + (prompt || "Not supplied") +
+      "\n\nEstimated cost: 25 credits" +
+      "\n\nStatus: Project brief prepared. AI music generation is not connected.";
     output.classList.remove("hidden");
-    player.pause();
-    player.removeAttribute("src");
-    player.classList.add("hidden");
-    output.textContent = "Submitting your music request... 25 credits will be charged if the request is accepted.";
-
-    try {
-      const { data: startData, error: startError } = await supabaseClient.functions.invoke("generate-music", {
-        body: {
-          action: "start",
-          title,
-          tags: style,
-          customStyle,
-          mood,
-          language,
-          bpm,
-          voiceCharacter: vocalType === "Instrumental" ? "Instrumental" : voiceCharacter,
-          instructions: providerInstructions,
-          lyrics,
-          lyricsMode,
-          durationSeconds
-        }
-      });
-
-      if (startError) throw startError;
-      if (!startData?.success || !startData?.jobId) {
-        throw new Error(startData?.error || "The music generation request could not start.");
-      }
-
-      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: 25\nStatus: Processing...";
-      button.textContent = "GENERATING...";
-
-      const maxAttempts = 120; // Up to 10 minutes at 5-second intervals.
-      let completed = false;
-      for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        const { data: statusData, error: statusError } = await supabaseClient.functions.invoke("generate-music", {
-          body: { action: "status", jobId: startData.jobId }
-        });
-
-        if (statusError) {
-          console.warn("Music status check failed; retrying:", statusError);
-          output.textContent = "Your song is still processing. Checking the provider again...\n\nTask: " + startData.jobId;
-          continue;
-        }
-
-        if (statusData?.status === "failed" || statusData?.success === false) {
-          throw new Error((statusData?.error || "Music generation failed.") + (statusData?.refunded ? " Your 25 credits have been refunded." : ""));
-        }
-
-        if (statusData?.status === "completed") {
-          if (!statusData.audioUrl) {
-            output.textContent = "Your song has been saved. Preparing the playback link...";
-            continue;
-          }
-          player.src = statusData.audioUrl;
-          player.classList.remove("hidden");
-          output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed || 25) + "\n\nUse the player below to listen. The song is also saved in My Files.";
-          const downloadLink = document.createElement("a");
-          downloadLink.href = statusData.audioUrl;
-          downloadLink.target = "_blank";
-          downloadLink.rel = "noopener";
-          downloadLink.textContent = "OPEN / DOWNLOAD SONG";
-          downloadLink.style.display = "inline-block";
-          downloadLink.style.marginTop = "12px";
-          downloadLink.style.color = "#ff6673";
-          output.appendChild(document.createElement("br"));
-          output.appendChild(downloadLink);
-          await refreshAuthState();
-          completed = true;
-          break;
-        }
-
-        output.textContent = "Your song is still processing...\n\nTask: " + startData.jobId + "\nStatus: " + (statusData?.status || "processing") + "\nPlease wait; this page will check automatically.";
-      }
-
-      if (!completed) {
-        output.textContent = "Your song is taking longer than expected. The generation request is still recorded. Please try again later; do not submit another request for the same song.";
-      }
-    } catch (error) {
-      console.error("Music generation error:", error);
-      output.textContent = "Music generation error:\n" + (error?.message || "Please try again.");
-      await refreshAuthState();
-    } finally {
-      button.disabled = false;
-      button.textContent = "GENERATE MUSIC";
-    }
-
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
@@ -2184,16 +2502,14 @@ if (currentUser) {
   // USE SONG IN STUDIO
 
   function useSongInStudio(fileName) {
-    const mode = document.getElementById("musicMode");
-    const field = document.getElementById("musicFileField");
-    const select = document.getElementById("musicFileSelect");
-    const studio = document.getElementById("musicStudio");
-    // This older music-video panel may not be included in the current page.
-    if (!mode || !field || !select || !studio) return;
-    mode.value = "upload";
-    field.classList.remove("hidden");
-    select.value = fileName;
-    studio.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("musicMode").value = "upload";
+    document.getElementById("musicFileField").classList.remove("hidden");
+
+    document.getElementById("musicFileSelect").value = fileName;
+
+    document.getElementById("musicStudio").scrollIntoView({
+      behavior: "smooth"
+    });
   }
 
   // PLAY SONG
