@@ -1859,11 +1859,9 @@ if (currentUser) {
   }
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (
-      event === "SIGNED_IN" ||
-      event === "SIGNED_OUT" ||
-      event === "TOKEN_REFRESHED"
-    ) {
+    // Also refresh the account UI when Supabase restores a session on page load
+    // or completes the OAuth redirect. Keep the original implicit OAuth flow.
+    if (["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) {
       setTimeout(() => {
         refreshAuthState();
       }, 0);
