@@ -798,6 +798,10 @@
 </select>
 </div>
 </div>
+<div class="field">
+<label for="videoRatio">Video Format</label>
+<select id="videoRatio"><option value="1280:720">Landscape (16:9)</option><option value="720:1280">Portrait (9:16)</option></select>
+</div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
       Credit cost: <strong>102 credits</strong> · Selected duration: 5 seconds.
     </div>
@@ -1156,71 +1160,66 @@
 
 async function prepareVideo() {
   const prompt = document.getElementById("prompt").value.trim();
+  const category = document.getElementById("category").value;
   const style = document.getElementById("style").value;
-  const duration = document.getElementById("duration").value;
+  const durationSeconds = Number.parseInt(document.getElementById("duration").value, 10);
+  const ratio = document.getElementById("videoRatio").value;
   const output = document.getElementById("generalProjectOutput");
+  const button = document.getElementById("generateVideoButton");
 
-  if (!prompt) {
-    alert("Please describe your video idea first.");
-    return;
-  }
+  if (!prompt) return alert("Please describe your video idea first.");
+  if (![5, 10, 15, 20, 30].includes(durationSeconds)) return alert("Please choose 5, 10, 15, 20 or 30 seconds.");
+  if (!currentUser) return alert("Please sign in first.");
 
-  const durationSeconds = Number.parseInt(duration, 10);
-  const supportedDurations = [5, 10, 15, 20, 30];
-
-  if (!supportedDurations.includes(durationSeconds)) {
-    alert("Please choose 5, 10, 15, 20 or 30 seconds.");
-    return;
-  }
-
-  if (!currentUser) {
-    alert("Please sign in first.");
-    return;
-  }
-
-  output.textContent = "Starting AI video generation...";
+  button.disabled = true;
+  output.textContent = "Starting AI video generation…";
   output.classList.remove("hidden");
 
   try {
-    const { data, error } = await supabaseClient.functions.invoke(
-      "generate-video",
-      {
-        body: {
-          promptText: prompt + ". Visual style: " + style,
-          model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
-          duration: durationSeconds,
-          ratio: "854:480"
-        }
-      }
-    );
-
+    const promptText = "Category: " + category + ". " + prompt + ". Visual style: " + style;
+    const { data, error } = await supabaseClient.functions.invoke("generate-video", {
+      body: { action: "start", promptText, category, model: durationSeconds > 10 ? "seedance2.5" : "gen4.5", duration: durationSeconds, ratio }
+    });
     if (error) throw error;
+    if (!data?.success || !data?.taskId || !data?.jobId) throw new Error(data?.error || "Video generation could not start.");
 
-    if (!data || !data.success || !data.taskId) {
-      throw new Error(data?.error || "Video generation could not start.");
+    output.textContent = "LANE VIDEO AI — VIDEO GENERATION\n\nYour video task has started.\nCategory: " + category +
+      "\nModel: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") +
+      "\nDuration: " + data.duration + " seconds\nFormat: " + (ratio === "720:1280" ? "Portrait (9:16)" : "Landscape (16:9)") +
+      "\nTask ID: " + data.taskId + "\n\nStatus: Processing… This page will check for the finished video automatically.";
+
+    // Runway recommends checking task status no more often than every five seconds.
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    let finished = false;
+    for (let attempt = 0; attempt < 120; attempt++) {
+      await wait(5000);
+      const { data: statusData, error: statusError } = await supabaseClient.functions.invoke("generate-video", {
+        body: { action: "status", jobId: data.jobId }
+      });
+      if (statusError) {
+        output.textContent = "Video generation is still running. Status check failed temporarily; retrying…\nTask ID: " + data.taskId;
+        continue;
+      }
+      if (statusData?.status === "SUCCEEDED" && statusData.videoUrl) {
+        output.textContent = "LANE VIDEO AI — VIDEO READY\n\nYour video has been generated and saved.\nTask ID: " + data.taskId;
+        const player = document.createElement("video");
+        player.controls = true; player.playsInline = true; player.preload = "metadata";
+        player.style.width = "100%"; player.style.maxWidth = "900px"; player.style.display = "block"; player.style.marginTop = "14px";
+        player.src = statusData.videoUrl;
+        output.appendChild(player);
+        finished = true; break;
+      }
+      if (statusData?.status === "FAILED" || statusData?.status === "CANCELED") throw new Error(statusData.error || "Runway could not complete the video.");
+      output.textContent = "LANE VIDEO AI — VIDEO GENERATION\n\nStatus: " + (statusData?.status || "Processing") +
+        "\nThe video is still being generated.\nTask ID: " + data.taskId + "\n\nThis page will keep checking automatically.";
     }
-
-    output.textContent =
-      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started!\n\n" +
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
-      "Duration: " + data.duration + " seconds\n" +
-      "Task ID: " + data.taskId + "\n\n" +
-      "Status: Processing. The video is not ready yet.";
-
+    if (!finished) output.textContent += "\n\nGeneration is taking longer than expected. Your task is saved; you can check it again later.";
   } catch (error) {
     console.error("Video generation error:", error);
-    output.textContent =
-      "Video generation error:\n" +
-      (error.message || "Please try again.");
-  }
-
-  output.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest"
-  });
+    output.textContent = "Video generation error:\n" + (error?.message || "Please try again.");
+  } finally { button.disabled = false; }
+  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
-
 
 
   // SEPARATE MUSIC VIDEO GENERATOR — uses its own Edge Function.
