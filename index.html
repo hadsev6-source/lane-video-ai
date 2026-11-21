@@ -1152,14 +1152,17 @@ let lipSyncDurationSeconds = null;
 let lipSyncPollInProgress = false;
 
 function lipSyncPriceForDuration(seconds) {
-  // Lip Sync adds a flat 100-credit surcharge to the selected standard video duration price.
-  if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 30) return null;
+  // Lip Sync adds a fixed 100-credit surcharge to the selected standard video duration.
+  // The price is available immediately when the checkbox is enabled, even before files are selected.
+  if (seconds !== undefined && seconds !== null &&
+      (!Number.isFinite(seconds) || seconds <= 0 || seconds > 30)) return null;
   const durationSelect = document.getElementById("duration");
   const selectedDuration = durationSelect ? durationSelect.value : "";
   const baseCredits = videoCostForDuration(selectedDuration);
   if (baseCredits === null) return null;
+  const selectedSeconds = parseInt(selectedDuration, 10);
   return {
-    billableSeconds: Math.ceil(seconds),
+    billableSeconds: seconds ? Math.ceil(seconds) : selectedSeconds,
     baseCredits,
     lipSyncCredits: 100,
     credits: baseCredits + 100,
@@ -1173,7 +1176,14 @@ async function updateLipSyncDuration() {
   const file = input && input.files && input.files[0];
   lipSyncDurationSeconds = null;
   if (!file) {
-    preview.textContent = "The total credit cost will appear here automatically after you choose an audio track.";
+    const price = lipSyncPriceForDuration();
+    if (!price) {
+      preview.textContent = "Select a video duration to calculate the Lip Sync price.";
+      return;
+    }
+    preview.innerHTML = "TOTAL GENERATION COST: <strong>" + price.credits.toLocaleString() +
+      " CREDITS</strong><div class=\"video-tool-note\">Standard video (" + price.selectedDuration + "): " +
+      price.baseCredits.toLocaleString() + " credits + Lip Sync: 100 credits · Choose an audio track up to 30 seconds.</div>";
     return;
   }
 
