@@ -638,6 +638,28 @@
 .video-file-picker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.video-file-name{font-size:11px;color:#e7dfe0;margin:7px 2px 10px;overflow-wrap:anywhere}.video-tool-note{font-size:10px;line-height:1.5;color:#a99b9d;margin-top:8px}.lipsync-duration-guidance{font-size:12px;line-height:1.55;color:#e5c7cb;padding:9px 11px;margin:9px 0 12px;border-left:3px solid #e50914;background:#170b0d;border-radius:4px}.lipsync-duration-guidance strong{color:#ff6974}.video-tool-action{width:100%;margin-top:14px;padding:12px;border:1px solid #a82b38;border-radius:8px;background:#321016;color:#ff8a92;font-weight:900;letter-spacing:1px;cursor:pointer}.video-tool-action::before{content:"✦";display:inline-block;margin-right:9px;font-size:16px;vertical-align:-1px}
 @media(max-width:520px){.video-tools-grid{grid-template-columns:1fr}.video-tool-card{min-height:92px}}
 
+
+/* Final mobile-only override for the actual header wordmark */
+@media screen and (max-width: 600px) {
+  header.site-header > div.logo {
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.35px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+  }
+  header.site-header > div.logo span {
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    letter-spacing: inherit !important;
+    white-space: nowrap !important;
+  }
+}
+
 </style>
 </head>
 <body>
