@@ -606,6 +606,27 @@
     .generated-image-card img { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:7px; }
     .generated-image-card a { display:inline-block; margin:10px 2px 2px; color:#ff4a54; font-weight:800; font-size:12px; text-decoration:none; }
     #generateImageButton:disabled { opacity:.65; cursor:wait; }
+
+/* LANE VIDEO AI — red/black generation status visualizer */
+.video-live-panel{margin:18px 0;padding:20px;border:1px solid #78202a;border-radius:16px;background:radial-gradient(ellipse at 50% 0%,#351016 0,#170b0e 48%,#080808 100%);box-shadow:0 12px 34px #0008,0 0 22px #e5091420;color:#fff}
+.video-live-panel[hidden]{display:none!important}.video-live-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.video-live-title{font-weight:900;letter-spacing:1.8px;color:#fff}.video-live-badge{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#ff6974;border:1px solid #a82b38;border-radius:30px;padding:6px 10px;background:#3a0d14}
+.video-live-eq{height:104px;display:flex;align-items:center;justify-content:center;gap:5px;margin:12px 0 4px;padding:8px 5px;border-radius:10px;background:linear-gradient(180deg,#090909,#1b090d);overflow:hidden}
+.video-live-eq span{display:block;width:5px;height:var(--bar,24%);min-height:7px;border-radius:5px;background:linear-gradient(180deg,#ff727b,#ed2638 60%,#850817);box-shadow:0 0 9px #ff263855;animation:laneEq 850ms ease-in-out infinite alternate;animation-delay:var(--delay,0ms)}
+@keyframes laneEq{0%{transform:scaleY(.28);opacity:.7}100%{transform:scaleY(1);opacity:1}}
+.video-live-clock{text-align:center;font-size:30px;font-weight:900;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:5px 0 0}.video-live-caption{text-align:center;color:#bdaeb0;font-size:10px;letter-spacing:1.4px;margin-top:2px}.video-live-message{text-align:center;color:#ff6570;font-size:12px;font-weight:800;letter-spacing:1px;margin-top:12px}.video-live-meta{display:flex;justify-content:space-between;gap:10px;margin-top:15px;padding-top:12px;border-top:1px solid #4a2026;font-size:12px}.video-live-meta span:first-child{color:#a99b9d}.video-live-meta strong{color:#ff6974}.video-ready-action{display:inline-flex;align-items:center;justify-content:center;margin-top:15px;padding:13px 20px;border-radius:9px;background:linear-gradient(100deg,#ff3448,#b90017);border:1px solid #ff6671;color:#fff!important;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:1px;box-shadow:0 0 18px #e5091444;cursor:pointer}.video-ready-action:hover{filter:brightness(1.12)}
+@media(prefers-reduced-motion:reduce){.video-live-eq span{animation:none}}
+
+
+.video-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.video-tool-card{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:16px;border:1px solid #63202a;border-radius:13px;background:linear-gradient(145deg,#1a0c10,#090909);color:#fff;cursor:pointer;min-height:112px}
+.video-tool-card:hover,.video-tool-card:focus-visible{border-color:#ed2638;box-shadow:0 0 16px #e5091425;outline:none}
+.video-tool-icon{font-size:24px;font-weight:900;color:#ff4655}.video-tool-name{font-size:12px;font-weight:900;letter-spacing:1px}.video-tool-description{font-size:11px;line-height:1.45;color:#bdaeb0}
+.video-tool-panel{margin:12px 0;padding:17px;border:1px solid #78202a;border-radius:13px;background:linear-gradient(145deg,#1a0c10,#090909);color:#fff}
+.video-tool-panel[hidden]{display:none!important}.video-tool-panel-title{font-size:14px;font-weight:900;letter-spacing:1.3px;color:#ff5966}.video-tool-panel p{font-size:12px;line-height:1.55;color:#c4b7b9}
+.video-file-picker{display:flex;align-items:center;justify-content:center;margin-top:12px;padding:12px;border:1px dashed #a82b38;border-radius:9px;color:#ff6974;font-size:11px;font-weight:900;letter-spacing:.8px;cursor:pointer}
+.video-file-picker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.video-file-name{font-size:11px;color:#e7dfe0;margin:7px 2px 10px;overflow-wrap:anywhere}.video-tool-note{font-size:10px;line-height:1.5;color:#a99b9d;margin-top:8px}.video-tool-action{width:100%;margin-top:14px;padding:12px;border:1px solid #a82b38;border-radius:8px;background:#321016;color:#ff8a92;font-weight:900;letter-spacing:1px;cursor:pointer}
+@media(max-width:520px){.video-tools-grid{grid-template-columns:1fr}.video-tool-card{min-height:92px}}
+
 </style>
 </head>
 <body>
@@ -804,6 +825,45 @@
 <button class="primary-btn" id="generateVideoButton" onclick="prepareVideo()" type="button">
       GENERATE VIDEO
     </button>
+
+<div class="video-tools-grid" aria-label="Additional video tools">
+  <button class="video-tool-card" id="uploadVideoToggle" type="button" onclick="toggleVideoTool('uploadVideoPanel')">
+    <span class="video-tool-icon">↑</span><span class="video-tool-name">UPLOAD VIDEO</span>
+    <span class="video-tool-description">Choose a video file to use in your project</span>
+  </button>
+  <button class="video-tool-card" id="lipSyncToggle" type="button" onclick="toggleVideoTool('lipSyncPanel')">
+    <span class="video-tool-icon">♫</span><span class="video-tool-name">LIP SYNC</span>
+    <span class="video-tool-description">Prepare a video and audio track for lip sync</span>
+  </button>
+</div>
+<div class="video-tool-panel" id="uploadVideoPanel" hidden>
+  <div class="video-tool-panel-title">UPLOAD YOUR VIDEO</div>
+  <p>Select a source video. The file selection is prepared; cloud upload and AI processing will be connected in the next integration step.</p>
+  <label class="video-file-picker">CHOOSE VIDEO FILE<input id="sourceVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('sourceVideoFile','sourceVideoFileName',100)"></label>
+  <div class="video-file-name" id="sourceVideoFileName" aria-live="polite">No video selected.</div>
+  <div class="video-tool-note">Supported formats: MP4, MOV, WEBM · Maximum 100 MB</div>
+</div>
+<div class="video-tool-panel" id="lipSyncPanel" hidden>
+  <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
+  <p>Choose the face video and the audio track that should drive the lip movements. Processing will be enabled when the Lip Sync provider is connected.</p>
+  <label class="video-file-picker">CHOOSE FACE VIDEO<input id="lipSyncVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('lipSyncVideoFile','lipSyncVideoFileName',100)"></label>
+  <div class="video-file-name" id="lipSyncVideoFileName" aria-live="polite">No face video selected.</div>
+  <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',30)"></label>
+  <div class="video-file-name" id="lipSyncAudioFileName" aria-live="polite">No audio track selected.</div>
+  <div class="video-tool-note">Video: MP4, MOV, WEBM · Audio: MP3, WAV, M4A, AAC, OGG · Max 100 MB video / 30 MB audio</div>
+  <button class="video-tool-action" type="button" onclick="showLipSyncIntegrationNotice()">PREPARE LIP SYNC</button>
+  <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Provider connection will be added before processing is enabled.</div>
+</div>
+<div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
+  <div class="video-live-top"><span class="video-live-title">LANE VIDEO AI</span><span class="video-live-badge" id="videoLiveBadge">PROCESSING</span></div>
+  <div class="video-live-eq" id="videoLiveEqualizer" aria-label="Video generation animation"></div>
+  <div class="video-live-clock" id="videoLiveClock">00:00</div>
+  <div class="video-live-caption">ELAPSED GENERATION TIME</div>
+  <div class="video-live-message" id="videoLiveMessage">AI IS CREATING YOUR VIDEO...</div>
+  <div class="video-live-meta"><span>STATUS</span><strong id="videoLiveStatus">PROCESSING</strong></div>
+  <div class="video-live-meta"><span>ESTIMATED WAIT</span><strong id="videoLiveEstimate">Not available</strong></div>
+  <div id="videoReadyAction" hidden></div>
+</div>
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
 </details></section>
@@ -1061,8 +1121,101 @@
     });
   }
 
-  // GENERAL VIDEO PROJECT
+  
+function toggleVideoTool(panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const willOpen = panel.hidden;
+  document.getElementById("uploadVideoPanel").hidden = true;
+  document.getElementById("lipSyncPanel").hidden = true;
+  panel.hidden = !willOpen;
+  if (willOpen) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
+function handleVideoToolFile(inputId, labelId, maxSizeMb) {
+  const input = document.getElementById(inputId);
+  const label = document.getElementById(labelId);
+  if (!input || !label) return;
+  const file = input.files && input.files[0];
+  if (!file) { label.textContent = "No file selected."; return; }
+  if (file.size > maxSizeMb * 1024 * 1024) {
+    input.value = "";
+    label.textContent = "File is too large. Maximum size: " + maxSizeMb + " MB.";
+    alert("Please choose a file smaller than " + maxSizeMb + " MB.");
+    return;
+  }
+  label.textContent = file.name + " · " + (file.size / (1024 * 1024)).toFixed(1) + " MB · Selected on this device";
+}
+
+function showLipSyncIntegrationNotice() {
+  const video = document.getElementById("lipSyncVideoFile").files[0];
+  const audio = document.getElementById("lipSyncAudioFile").files[0];
+  const notice = document.getElementById("lipSyncNotice");
+  if (!video || !audio) {
+    notice.textContent = "Please choose both a face video and an audio track first.";
+    return;
+  }
+  notice.textContent = "Both files are selected. Lip Sync processing will be activated after its secure storage and AI provider connection are implemented. No files have been uploaded yet.";
+}
+
+// GENERAL VIDEO PROJECT
+
+
+let videoElapsedTimer = null;
+let videoStartedAt = 0;
+
+function renderVideoEqualizer() {
+  const equalizer = document.getElementById("videoLiveEqualizer");
+  if (!equalizer || equalizer.childElementCount) return;
+  for (let i = 0; i < 42; i++) {
+    const bar = document.createElement("span");
+    const height = 18 + Math.round((Math.sin(i * 0.77) + 1) * 30);
+    bar.style.setProperty("--bar", height + "%");
+    bar.style.setProperty("--delay", (i * 37 % 700) + "ms");
+    equalizer.appendChild(bar);
+  }
+}
+
+function formatVideoElapsed(milliseconds) {
+  const total = Math.max(0, Math.floor(milliseconds / 1000));
+  const minutes = String(Math.floor(total / 60)).padStart(2, "0");
+  const seconds = String(total % 60).padStart(2, "0");
+  return minutes + ":" + seconds;
+}
+
+function showVideoLiveState(state, message) {
+  const panel = document.getElementById("videoLivePanel");
+  const badge = document.getElementById("videoLiveBadge");
+  const status = document.getElementById("videoLiveStatus");
+  const messageNode = document.getElementById("videoLiveMessage");
+  const estimate = document.getElementById("videoLiveEstimate");
+  if (!panel) return;
+  panel.hidden = false;
+  renderVideoEqualizer();
+  badge.textContent = state;
+  status.textContent = state;
+  messageNode.textContent = message;
+  estimate.textContent = state === "PROCESSING" ? "Provider timing varies" : "—";
+  if (state !== "PROCESSING") {
+    document.getElementById("videoLiveEqualizer").style.opacity = state === "VIDEO READY" ? "0.45" : "0.25";
+  } else {
+    document.getElementById("videoLiveEqualizer").style.opacity = "1";
+  }
+}
+
+function startVideoElapsedTimer() {
+  stopVideoElapsedTimer();
+  videoStartedAt = Date.now();
+  const clock = document.getElementById("videoLiveClock");
+  const tick = () => { if (clock) clock.textContent = formatVideoElapsed(Date.now() - videoStartedAt); };
+  tick();
+  videoElapsedTimer = window.setInterval(tick, 1000);
+}
+
+function stopVideoElapsedTimer() {
+  if (videoElapsedTimer) window.clearInterval(videoElapsedTimer);
+  videoElapsedTimer = null;
+}
 
 async function prepareVideo() {
   const prompt = document.getElementById("prompt").value.trim();
@@ -1095,6 +1248,9 @@ async function prepareVideo() {
   output.replaceChildren();
   output.classList.remove("hidden");
   output.textContent = "Starting AI video generation...";
+  document.getElementById("videoLivePanel").hidden = true;
+  showVideoLiveState("STARTING", "PREPARING YOUR VIDEO REQUEST...");
+  startVideoElapsedTimer();
 
   const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
@@ -1121,14 +1277,8 @@ async function prepareVideo() {
     }
 
     const modelName = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
-    output.textContent =
-      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started.\n\n" +
-      "Model: " + modelName + "\n" +
-      "Duration: " + data.duration + " seconds\n" +
-      "Status: Processing...\n\n" +
-      "Please keep this page open while your video is being prepared.";
-
+    output.textContent = "Your video is being generated. The status will update automatically.";
+    showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
     button.textContent = "GENERATING...";
     const maximumChecks = 180; // 30 minutes at 10-second intervals.
 
@@ -1181,6 +1331,18 @@ async function prepareVideo() {
         download.style.marginTop = "14px";
 
         output.append(heading, details, player, download);
+        stopVideoElapsedTimer();
+        showVideoLiveState("VIDEO READY", "YOUR VIDEO HAS BEEN CREATED SUCCESSFULLY.");
+        const readyAction = document.getElementById("videoReadyAction");
+        readyAction.hidden = false;
+        readyAction.replaceChildren();
+        const readyButton = document.createElement("a");
+        readyButton.className = "video-ready-action";
+        readyButton.href = statusData.videoUrl;
+        readyButton.target = "_blank";
+        readyButton.rel = "noopener noreferrer";
+        readyButton.textContent = "VIDEO READY · OPEN VIDEO";
+        readyAction.appendChild(readyButton);
         await loadMyFiles();
         break;
       }
@@ -1191,6 +1353,8 @@ async function prepareVideo() {
           (statusData.refunded
             ? "The video credits have been returned to your wallet."
             : "Credit refund is still being checked. Please contact support if the balance does not update.");
+        stopVideoElapsedTimer();
+        showVideoLiveState("FAILED", "VIDEO GENERATION DID NOT COMPLETE.");
         break;
       }
 
@@ -1199,25 +1363,27 @@ async function prepareVideo() {
           "Runway's response was interrupted, so the task status is uncertain.\n\n" +
           "Your generation ID is: " + data.generationId +
           "\nPlease contact support before starting the same video again.";
+        stopVideoElapsedTimer();
+        showVideoLiveState("CHECK REQUIRED", "THE PROVIDER RESPONSE NEEDS TO BE CHECKED.");
         break;
       }
 
-      output.textContent =
-        "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-        "Your video is still processing.\n" +
-        "Model: " + modelName + "\n" +
-        "Duration: " + durationSeconds + " seconds\n\n" +
-        "Checking again automatically...";
+      showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
+      output.textContent = "Your video is still processing. Checking again automatically...";
     }
 
     if (output.textContent.includes("Checking again automatically")) {
       output.textContent += "\n\nThis is taking longer than expected. You can refresh My Files later to check for the finished video.";
+      stopVideoElapsedTimer();
+      showVideoLiveState("STILL PROCESSING", "GENERATION IS TAKING LONGER THAN USUAL.");
     }
   } catch (error) {
     console.error("Video generation error:", error);
     output.textContent =
       "Video generation error:\n" +
       (error.message || "Please try again.");
+    stopVideoElapsedTimer();
+    showVideoLiveState("ERROR", "WE COULD NOT START VIDEO GENERATION.");
   } finally {
     button.disabled = false;
     button.textContent = "GENERATE VIDEO";
