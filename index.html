@@ -845,14 +845,15 @@
 </div>
 <div class="video-tool-panel" id="lipSyncPanel" hidden>
   <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
-  <p>Choose the face video and the audio track that should drive the lip movements. Processing will be enabled when the Lip Sync provider is connected.</p>
-  <label class="video-file-picker">CHOOSE FACE VIDEO<input id="lipSyncVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('lipSyncVideoFile','lipSyncVideoFileName',100)"></label>
+  <p>Choose a face video and the audio track that should drive the lip movements. The video is processed after you confirm the displayed credit cost.</p>
+  <label class="video-file-picker">CHOOSE FACE VIDEO<input id="lipSyncVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('lipSyncVideoFile','lipSyncVideoFileName',100); updateLipSyncDuration()"></label>
   <div class="video-file-name" id="lipSyncVideoFileName" aria-live="polite">No face video selected.</div>
   <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',30)"></label>
   <div class="video-file-name" id="lipSyncAudioFileName" aria-live="polite">No audio track selected.</div>
-  <div class="video-tool-note">Video: MP4, MOV, WEBM · Audio: MP3, WAV, M4A, AAC, OGG · Max 100 MB video / 30 MB audio</div>
-  <button class="video-tool-action" type="button" onclick="showLipSyncIntegrationNotice()">PREPARE LIP SYNC</button>
-  <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Provider connection will be added before processing is enabled.</div>
+  <div class="video-tool-note">Video: MP4, MOV, WEBM · Audio: MP3, WAV, M4A, AAC, OGG · Max 100 MB video / 30 MB audio · Maximum video duration: 30 seconds</div>
+  <div class="cost-preview" id="lipSyncPricePreview" aria-live="polite">Select a video to calculate the Lip Sync price.</div>
+  <button class="video-tool-action" id="startLipSyncButton" type="button" onclick="startLipSync()">START LIP SYNC</button>
+  <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Your files stay private. Credits are charged only after you confirm the price.</div>
 </div>
 <div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
   <div class="video-live-top"><span class="video-live-title">LANE VIDEO AI</span><span class="video-live-badge" id="videoLiveBadge">PROCESSING</span></div>
@@ -1147,15 +1148,186 @@ function handleVideoToolFile(inputId, labelId, maxSizeMb) {
   label.textContent = file.name + " · " + (file.size / (1024 * 1024)).toFixed(1) + " MB · Selected on this device";
 }
 
-function showLipSyncIntegrationNotice() {
+let lipSyncDurationSeconds = null;
+let lipSyncPollInProgress = false;
+
+function lipSyncPriceForDuration(seconds) {
+  if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 30) return null;
+  const billableSeconds = Math.min(30, Math.ceil(seconds / 5) * 5);
+  return { billableSeconds, credits: (billableSeconds / 5) * 50 };
+}
+
+async function updateLipSyncDuration() {
+  const input = document.getElementById("lipSyncVideoFile");
+  const preview = document.getElementById("lipSyncPricePreview");
+  const file = input && input.files && input.files[0];
+  lipSyncDurationSeconds = null;
+  if (!file) {
+    preview.textContent = "Select a video to calculate the Lip Sync price.";
+    return;
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+  const probe = document.createElement("video");
+  probe.preload = "metadata";
+  probe.muted = true;
+  probe.src = objectUrl;
+
+  try {
+    await new Promise((resolve, reject) => {
+      probe.onloadedmetadata = resolve;
+      probe.onerror = () => reject(new Error("Could not read the video duration."));
+    });
+    lipSyncDurationSeconds = probe.duration;
+    const price = lipSyncPriceForDuration(probe.duration);
+    if (!price) {
+      preview.textContent = "This service supports videos up to 30 seconds. Please choose a shorter video.";
+      return;
+    }
+    preview.innerHTML = "Video duration: <strong>" + probe.duration.toFixed(1) +
+      " sec</strong> · Billed as " + price.billableSeconds +
+      " sec · Lip Sync cost: <strong>" + price.credits + " credits</strong>.";
+  } catch (error) {
+    preview.textContent = error.message || "Could not read the video duration.";
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+    probe.removeAttribute("src");
+    probe.load();
+  }
+}
+
+async function startLipSync() {
   const video = document.getElementById("lipSyncVideoFile").files[0];
   const audio = document.getElementById("lipSyncAudioFile").files[0];
   const notice = document.getElementById("lipSyncNotice");
+  const button = document.getElementById("startLipSyncButton");
+
+  if (!currentUser) {
+    notice.textContent = "Please sign in before using Lip Sync.";
+    return;
+  }
   if (!video || !audio) {
     notice.textContent = "Please choose both a face video and an audio track first.";
     return;
   }
-  notice.textContent = "Both files are selected. Lip Sync processing will be activated after its secure storage and AI provider connection are implemented. No files have been uploaded yet.";
+  if (!lipSyncDurationSeconds) await updateLipSyncDuration();
+  const price = lipSyncPriceForDuration(lipSyncDurationSeconds);
+  if (!price) {
+    notice.textContent = "Please choose a valid video no longer than 30 seconds.";
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "Start Lip Sync for " + price.billableSeconds + " seconds?\\n\\n" +
+    "Cost: " + price.credits + " credits.\\n" +
+    "Credits are deducted when processing starts. If the provider fails, the credits are refunded."
+  );
+  if (!confirmed) return;
+
+  button.disabled = true;
+  button.textContent = "UPLOADING & STARTING...";
+  notice.textContent = "Uploading your files securely and starting Lip Sync. Please keep this page open.";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error("Your session has expired. Please sign in again.");
+
+    const form = new FormData();
+    form.append("video", video, video.name);
+    form.append("audio", audio, audio.name);
+    form.append("durationSeconds", String(lipSyncDurationSeconds));
+
+    const response = await fetch(SUPABASE_URL + "/functions/v1/generate-lipsync", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+        apikey: SUPABASE_KEY
+      },
+      body: form
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success || !result.generationId) {
+      throw new Error(result.error || "Lip Sync could not be started.");
+    }
+
+    notice.textContent = "Lip Sync is processing. " + result.creditsUsed +
+      " credits used. Your finished video will appear in My Files when complete.";
+    await pollLipSyncStatus(result.generationId, result.creditsUsed);
+  } catch (error) {
+    console.error("Lip Sync error:", error);
+    notice.textContent = "Lip Sync error: " + (error.message || "Please try again.");
+    button.disabled = false;
+    button.textContent = "START LIP SYNC";
+    await refreshAuthState();
+  }
+}
+
+async function pollLipSyncStatus(generationId, creditsUsed) {
+  if (lipSyncPollInProgress) return;
+  lipSyncPollInProgress = true;
+  const notice = document.getElementById("lipSyncNotice");
+  const button = document.getElementById("startLipSyncButton");
+  const livePanel = document.getElementById("videoLivePanel");
+  const liveMessage = document.getElementById("videoLiveMessage");
+  const liveStatus = document.getElementById("videoLiveStatus");
+  const liveBadge = document.getElementById("videoLiveBadge");
+
+  if (livePanel) livePanel.hidden = false;
+  if (liveMessage) liveMessage.textContent = "AI IS SYNCHRONIZING THE LIPS...";
+  if (liveStatus) liveStatus.textContent = "LIP SYNC PROCESSING";
+  if (liveBadge) liveBadge.textContent = "PROCESSING";
+  if (typeof renderVideoEqualizer === "function") renderVideoEqualizer();
+
+  const startedAt = Date.now();
+  try {
+    while (Date.now() - startedAt < 15 * 60 * 1000) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      const { data, error } = await supabaseClient.functions.invoke("generate-lipsync", {
+        body: { action: "status", generationId }
+      });
+      if (error) throw error;
+      if (!data || !data.success) throw new Error(data?.error || "Could not check Lip Sync status.");
+
+      if (data.status === "SUCCEEDED" && data.videoUrl) {
+        notice.textContent = "Lip Sync completed successfully. " + creditsUsed +
+          " credits used. Your video is saved in My Files.";
+        if (liveMessage) liveMessage.textContent = "YOUR LIP SYNC VIDEO IS READY";
+        if (liveStatus) liveStatus.textContent = "COMPLETED";
+        if (liveBadge) liveBadge.textContent = "READY";
+        const ready = document.getElementById("videoReadyAction");
+        if (ready) {
+          ready.hidden = false;
+          ready.innerHTML = "";
+          const link = document.createElement("a");
+          link.href = data.videoUrl;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.className = "primary-btn";
+          link.textContent = "OPEN LIP SYNC VIDEO";
+          ready.appendChild(link);
+        }
+        await loadMyFiles();
+        await refreshAuthState();
+        return;
+      }
+
+      if (data.status === "FAILED" || data.status === "CANCELED") {
+        throw new Error((data.error || "Lip Sync processing failed.") +
+          (data.refunded ? " Your credits have been refunded." : ""));
+      }
+      if (liveStatus) liveStatus.textContent = "PROCESSING";
+      notice.textContent = "Lip Sync is still processing. Please wait; do not submit another request.";
+    }
+
+    notice.textContent = "Lip Sync is taking longer than expected. Your job is still recorded. Please refresh My Files or try checking again later; do not submit the same files again.";
+  } finally {
+    lipSyncPollInProgress = false;
+    button.disabled = false;
+    button.textContent = "START LIP SYNC";
+    await refreshAuthState();
+  }
 }
 
 // GENERAL VIDEO PROJECT
