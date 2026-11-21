@@ -801,7 +801,7 @@
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
       Credit cost: <strong>102 credits</strong> · Selected duration: 5 seconds.
     </div>
-<button class="primary-btn" onclick="prepareVideo()" type="button">
+<button class="primary-btn" id="generateVideoButton" onclick="prepareVideo()" type="button">
       GENERATE VIDEO
     </button>
 <div class="project-output hidden" id="generalProjectOutput"></div>
@@ -935,7 +935,7 @@
 <div id="libraryEmptyStates">
 <div class="library-empty" data-empty-kind="video">
 <strong>🎬 No generated videos yet</strong>
-        Your completed AI videos will appear here when video generation is connected.
+        Your completed AI videos will appear here after generation.
       </div>
 <div class="library-empty" data-empty-kind="image">
 <strong>🖼️ No generated images yet</strong>
@@ -1047,6 +1047,7 @@
 
   let currentUser = null;
   let currentFiles = [];
+  let currentVideoFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
 
@@ -1066,8 +1067,10 @@
 async function prepareVideo() {
   const prompt = document.getElementById("prompt").value.trim();
   const style = document.getElementById("style").value;
+  const category = document.getElementById("category").value;
   const duration = document.getElementById("duration").value;
   const output = document.getElementById("generalProjectOutput");
+  const button = document.getElementById("generateVideoButton");
 
   if (!prompt) {
     alert("Please describe your video idea first.");
@@ -1087,47 +1090,140 @@ async function prepareVideo() {
     return;
   }
 
-  output.textContent = "Starting AI video generation...";
+  button.disabled = true;
+  button.textContent = "STARTING...";
+  output.replaceChildren();
   output.classList.remove("hidden");
+  output.textContent = "Starting AI video generation...";
+
+  const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
   try {
     const { data, error } = await supabaseClient.functions.invoke(
       "generate-video",
       {
         body: {
-          promptText: prompt + ". Visual style: " + style,
-          model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
+          promptText:
+            prompt + ". Category: " + category + ". Visual style: " + style,
           duration: durationSeconds,
           ratio: "854:480"
         }
       }
     );
 
-    if (error) throw error;
+    if (error) {
+      const message = data?.error || error.message || "Video generation could not start.";
+      throw new Error(message);
+    }
 
-    if (!data || !data.success || !data.taskId) {
+    if (!data || !data.success || !data.generationId || !data.taskId) {
       throw new Error(data?.error || "Video generation could not start.");
     }
 
+    const modelName = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
     output.textContent =
       "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started!\n\n" +
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
+      "Your video generation task has started.\n\n" +
+      "Model: " + modelName + "\n" +
       "Duration: " + data.duration + " seconds\n" +
-      "Task ID: " + data.taskId + "\n\n" +
-      "Status: Processing. The video is not ready yet.";
+      "Status: Processing...\n\n" +
+      "Please keep this page open while your video is being prepared.";
 
+    button.textContent = "GENERATING...";
+    const maximumChecks = 180; // 30 minutes at 10-second intervals.
+
+    for (let check = 0; check < maximumChecks; check++) {
+      await wait(10000);
+
+      const { data: statusData, error: statusError } = await supabaseClient.functions.invoke(
+        "generate-video",
+        { body: { action: "status", generationId: data.generationId } }
+      );
+
+      if (statusError) {
+        console.warn("Video status check failed; will retry:", statusError);
+        output.textContent =
+          "LANE VIDEO AI — VIDEO GENERATION\n\n" +
+          "Your video is still being processed. Rechecking the status...\n\n" +
+          "Please keep this page open.";
+        continue;
+      }
+
+      if (!statusData) continue;
+
+      if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
+        output.replaceChildren();
+
+        const heading = document.createElement("strong");
+        heading.textContent = "Your video is ready!";
+
+        const details = document.createElement("p");
+        details.textContent =
+          "Model: " + modelName + " · Duration: " + durationSeconds + " seconds";
+
+        const player = document.createElement("video");
+        player.controls = true;
+        player.playsInline = true;
+        player.preload = "metadata";
+        player.style.width = "100%";
+        player.style.maxHeight = "520px";
+        player.style.borderRadius = "12px";
+        player.style.marginTop = "12px";
+        player.src = statusData.videoUrl;
+
+        const download = document.createElement("a");
+        download.href = statusData.videoUrl;
+        download.target = "_blank";
+        download.rel = "noopener noreferrer";
+        download.textContent = "OPEN / DOWNLOAD VIDEO";
+        download.className = "primary-btn";
+        download.style.display = "inline-block";
+        download.style.marginTop = "14px";
+
+        output.append(heading, details, player, download);
+        await loadMyFiles();
+        break;
+      }
+
+      if (statusData.status === "FAILED" || statusData.status === "CANCELED") {
+        output.textContent =
+          "Video generation did not complete.\n\n" +
+          (statusData.refunded
+            ? "The video credits have been returned to your wallet."
+            : "Credit refund is still being checked. Please contact support if the balance does not update.");
+        break;
+      }
+
+      if (statusData.status === "SUBMISSION_UNKNOWN") {
+        output.textContent =
+          "Runway's response was interrupted, so the task status is uncertain.\n\n" +
+          "Your generation ID is: " + data.generationId +
+          "\nPlease contact support before starting the same video again.";
+        break;
+      }
+
+      output.textContent =
+        "LANE VIDEO AI — VIDEO GENERATION\n\n" +
+        "Your video is still processing.\n" +
+        "Model: " + modelName + "\n" +
+        "Duration: " + durationSeconds + " seconds\n\n" +
+        "Checking again automatically...";
+    }
+
+    if (output.textContent.includes("Checking again automatically")) {
+      output.textContent += "\n\nThis is taking longer than expected. You can refresh My Files later to check for the finished video.";
+    }
   } catch (error) {
     console.error("Video generation error:", error);
     output.textContent =
       "Video generation error:\n" +
       (error.message || "Please try again.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "GENERATE VIDEO";
   }
 
-  output.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest"
-  });
+  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
   // Video prices in credits, matched to the selected duration.
@@ -1391,6 +1487,7 @@ async function prepareVideo() {
 
     currentUser = null;
     currentFiles = [];
+    currentVideoFiles = [];
     stopSongPreview();
 
     await refreshAuthState();
@@ -1451,6 +1548,7 @@ if (currentUser) {
       signedOut.classList.remove("hidden");
 
       currentFiles = [];
+      currentVideoFiles = [];
       updateLibraryCounts();
 
       document.getElementById("myFilesList").innerHTML =
@@ -1496,7 +1594,7 @@ if (currentUser) {
 
     const descriptions = {
       all: "Showing all available files.",
-      video: "Showing generated videos. Video generation is not connected yet.",
+      video: "Showing your generated AI videos.",
       image: "Showing generated images. Image generation is not connected yet.",
       audio: "Showing your uploaded music and audio files.",
       thumbnail: "Showing project covers and thumbnails.",
@@ -1580,40 +1678,77 @@ if (currentUser) {
   // LOAD MY FILES
 
   async function loadMyFiles() {
-    if (!currentUser) {
-      return;
-    }
+    if (!currentUser) return;
 
     const list = document.getElementById("myFilesList");
-    list.innerHTML = '<p class="hint">Loading your music files...</p>';
+    list.innerHTML = '<p class="hint">Loading your files...</p>';
 
     const { data, error } = await supabaseClient.storage
       .from("user-songs")
       .list(currentUser.id, {
         limit: 100,
-        sortBy: {
-          column: "created_at",
-          order: "desc"
-        }
+        sortBy: { column: "created_at", order: "desc" }
       });
 
     if (error) {
-      list.innerHTML =
-        '<p class="hint">Could not load files: ' +
+      list.innerHTML = '<p class="hint">Could not load audio files: ' +
         escapeHTML(error.message) + '</p>';
-      return;
+      currentFiles = [];
+    } else {
+      currentFiles = (data || []).filter(file =>
+        file.name && !file.name.startsWith(".lane_mv_clip_")
+      );
     }
 
-    currentFiles = (data || []).filter(file => file.name && !file.name.startsWith(".lane_mv_clip_"));
-    if (currentFiles.length === 0) {
-      list.innerHTML =
-        '<div class="library-empty"><strong>No audio files yet</strong>Your audio files will appear here.</div>';
-      updateLibraryCounts();
-      filterMyFiles(activeLibraryFilter);
-      return;
+    // Video records are read separately so a video-library issue never blocks music files.
+    currentVideoFiles = [];
+    const { data: videoRows, error: videoError } = await supabaseClient
+      .from("video_generations")
+      .select("id, prompt, model, duration, status, storage_path, created_at")
+      .eq("user_id", currentUser.id)
+      .eq("status", "SUCCEEDED")
+      .not("storage_path", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (videoError) {
+      console.warn("Could not load generated videos from the library:", videoError);
+    } else {
+      currentVideoFiles = videoRows || [];
     }
 
-    list.innerHTML = "";
+    list.replaceChildren();
+
+    currentVideoFiles.forEach(video => {
+      const row = document.createElement("div");
+      row.className = "file-row";
+      row.dataset.fileKind = "video";
+
+      const info = document.createElement("div");
+      info.className = "file-name";
+      info.textContent =
+        (video.prompt || "AI generated video").slice(0, 100) +
+        " · " + (video.duration || "?") + " sec";
+
+      const actions = document.createElement("div");
+      actions.className = "file-actions";
+      const openButton = document.createElement("button");
+      openButton.className = "secondary-btn";
+      openButton.textContent = "OPEN VIDEO";
+      openButton.onclick = async () => {
+        const { data: signed, error: signedError } = await supabaseClient.storage
+          .from("generated-videos")
+          .createSignedUrl(video.storage_path, 3600);
+        if (signedError || !signed?.signedUrl) {
+          showFileMessage("Could not open this video: " + (signedError?.message || "No download link."), true);
+          return;
+        }
+        window.open(signed.signedUrl, "_blank", "noopener,noreferrer");
+      };
+      actions.appendChild(openButton);
+      row.append(info, actions);
+      list.appendChild(row);
+    });
 
     currentFiles.forEach(file => {
       const row = document.createElement("div");
@@ -1631,6 +1766,7 @@ if (currentUser) {
       playButton.className = "secondary-btn";
       playButton.textContent = "PLAY";
       playButton.onclick = () => playSong(file.name);
+
       const downloadButton = document.createElement("button");
       downloadButton.className = "secondary-btn";
       downloadButton.textContent = "DOWNLOAD";
@@ -1641,15 +1777,14 @@ if (currentUser) {
       deleteButton.textContent = "DELETE";
       deleteButton.onclick = () => deleteSong(file.name);
 
-      actions.appendChild(playButton);
-      actions.appendChild(downloadButton);
-      actions.appendChild(deleteButton);
-
-      row.appendChild(name);
-      row.appendChild(actions);
-
+      actions.append(playButton, downloadButton, deleteButton);
+      row.append(name, actions);
       list.appendChild(row);
     });
+
+    if (!currentFiles.length && !currentVideoFiles.length) {
+      list.innerHTML = '<div class="library-empty"><strong>Your library is empty</strong>Your completed AI videos and music files will appear here.</div>';
+    }
 
     updateLibraryCounts();
     filterMyFiles(activeLibraryFilter);
@@ -1657,10 +1792,14 @@ if (currentUser) {
 
   function updateLibraryCounts() {
     const audioCount = currentFiles.length;
+    const videoCount = currentVideoFiles.length;
     document.getElementById("audioFileCount").textContent = audioCount;
-    document.getElementById("videoFileCount").textContent = "0";
+    document.getElementById("videoFileCount").textContent = videoCount;
     document.getElementById("imageFileCount").textContent = "0";
     document.getElementById("thumbnailFileCount").textContent = "0";
+
+    const videoEmpty = document.querySelector('#libraryEmptyStates [data-empty-kind="video"]');
+    if (videoEmpty) videoEmpty.classList.toggle("hidden", videoCount > 0);
   }
 
 
