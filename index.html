@@ -836,11 +836,11 @@
 <div class="video-tool-panel" id="lipSyncPanel" hidden>
   <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
   <p>Upload one photo of the face and an audio track up to 30 seconds. AI will animate the photo and synchronize the mouth movements to the audio.</p>
-  <label class="video-file-picker">CHOOSE PHOTO<input id="lipSyncImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="handleVideoToolFile('lipSyncImageFile','lipSyncImageFileName',20)"></label>
+  <label class="video-file-picker">CHOOSE PHOTO<input id="lipSyncImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="handleVideoToolFile('lipSyncImageFile','lipSyncImageFileName',15)"></label>
   <div class="video-file-name" id="lipSyncImageFileName" aria-live="polite">No photo selected.</div>
-  <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',30); updateLipSyncDuration()"></label>
+  <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',20); updateLipSyncDuration()"></label>
   <div class="video-file-name" id="lipSyncAudioFileName" aria-live="polite">No audio track selected.</div>
-  <div class="video-tool-note">Photo: JPG, PNG, WEBP · Audio: MP3, WAV, M4A, AAC, OGG · Max 20 MB photo / 30 MB audio · Maximum audio duration: 30 seconds</div>
+  <div class="video-tool-note">Photo: JPG, PNG, WEBP · Audio: MP3, WAV, M4A, AAC, OGG · Max 15 MB photo / 20 MB audio · Maximum audio duration: 30 seconds</div>
   <div class="cost-preview" id="lipSyncPricePreview" aria-live="polite">The total credit cost will appear here automatically after you choose an audio track.</div>
   <button class="video-tool-action" id="startLipSyncButton" type="button" onclick="startLipSync()">GENERATE VIDEO</button>
   <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Your files stay private. Credits are charged only after you confirm the price.</div>
@@ -1260,10 +1260,10 @@ async function startLipSync() {
     const form = new FormData();
     form.append("image", image, image.name);
     form.append("audio", audio, audio.name);
-    form.append("durationSeconds", String(lipSyncDurationSeconds));
-    form.append("videoDurationSeconds", String(parseInt(price.selectedDuration, 10)));
+    form.append("durationSeconds", String(parseInt(price.selectedDuration, 10)));
+    form.append("audioDurationSeconds", String(lipSyncDurationSeconds));
 
-    const response = await fetch(SUPABASE_URL + "/functions/v1/generate-lipsync", {
+    const response = await fetch(SUPABASE_URL + "/functions/v1/generate-video", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + token,
@@ -1306,9 +1306,9 @@ async function pollLipSyncStatus(generationId, creditsUsed) {
 
   const startedAt = Date.now();
   try {
-    while (Date.now() - startedAt < 15 * 60 * 1000) {
+    while (Date.now() - startedAt < 30 * 60 * 1000) {
       await new Promise(resolve => setTimeout(resolve, 5000));
-      const { data, error } = await supabaseClient.functions.invoke("generate-lipsync", {
+      const { data, error } = await supabaseClient.functions.invoke("generate-video", {
         body: { action: "status", generationId }
       });
       if (error) throw error;
