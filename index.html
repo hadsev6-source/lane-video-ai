@@ -1116,11 +1116,20 @@
 function toggleLipSyncOptions() {
   const checkbox = document.getElementById("enableLipSync");
   const panel = document.getElementById("lipSyncPanel");
+  const standardPrice = document.getElementById("videoCostPreview");
+  const standardGenerate = document.getElementById("generateVideoButton");
   if (!checkbox || !panel) return;
+
+  // Show only the pricing and action for the selected generation mode.
   panel.hidden = !checkbox.checked;
+  if (standardPrice) standardPrice.hidden = checkbox.checked;
+  if (standardGenerate) standardGenerate.hidden = checkbox.checked;
+
   if (checkbox.checked) {
-    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
     updateLipSyncDuration();
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  } else {
+    updateVideoCost();
   }
 }
 
@@ -1570,7 +1579,14 @@ async function prepareVideo() {
   function updateVideoCost() {
     const durationSelect = document.getElementById("duration");
     const preview = document.getElementById("videoCostPreview");
+    const lipSyncToggle = document.getElementById("enableLipSync");
+    const standardGenerate = document.getElementById("generateVideoButton");
     if (!durationSelect || !preview) return;
+
+    const lipSyncEnabled = !!(lipSyncToggle && lipSyncToggle.checked);
+    preview.hidden = lipSyncEnabled;
+    if (standardGenerate) standardGenerate.hidden = lipSyncEnabled;
+    if (lipSyncEnabled) return;
 
     const duration = durationSelect.value;
     const credits = videoCostForDuration(duration);
