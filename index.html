@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>LANE VIDEO AI — Create Anything You Can Imagine</title>
-<meta content="Create AI movies, mini-series, music videos, animations and advertisements with LANE VIDEO AI." name="description"/>
+<meta content="Create AI videos, images, music and advertisements with LANE VIDEO AI." name="description"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
@@ -606,6 +606,27 @@
     .generated-image-card img { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:7px; }
     .generated-image-card a { display:inline-block; margin:10px 2px 2px; color:#ff4a54; font-weight:800; font-size:12px; text-decoration:none; }
     #generateImageButton:disabled { opacity:.65; cursor:wait; }
+
+/* LANE VIDEO AI — red/black generation status visualizer */
+.video-live-panel{margin:18px 0;padding:20px;border:1px solid #78202a;border-radius:16px;background:radial-gradient(ellipse at 50% 0%,#351016 0,#170b0e 48%,#080808 100%);box-shadow:0 12px 34px #0008,0 0 22px #e5091420;color:#fff}
+.video-live-panel[hidden]{display:none!important}.video-live-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.video-live-title{font-weight:900;letter-spacing:1.8px;color:#fff}.video-live-badge{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#ff6974;border:1px solid #a82b38;border-radius:30px;padding:6px 10px;background:#3a0d14}
+.video-live-eq{height:104px;display:flex;align-items:center;justify-content:center;gap:5px;margin:12px 0 4px;padding:8px 5px;border-radius:10px;background:linear-gradient(180deg,#090909,#1b090d);overflow:hidden}
+.video-live-eq span{display:block;width:5px;height:var(--bar,24%);min-height:7px;border-radius:5px;background:linear-gradient(180deg,#ff727b,#ed2638 60%,#850817);box-shadow:0 0 9px #ff263855;animation:laneEq 850ms ease-in-out infinite alternate;animation-delay:var(--delay,0ms)}
+@keyframes laneEq{0%{transform:scaleY(.28);opacity:.7}100%{transform:scaleY(1);opacity:1}}
+.video-live-clock{text-align:center;font-size:30px;font-weight:900;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:5px 0 0}.video-live-caption{text-align:center;color:#bdaeb0;font-size:10px;letter-spacing:1.4px;margin-top:2px}.video-live-message{text-align:center;color:#ff6570;font-size:12px;font-weight:800;letter-spacing:1px;margin-top:12px}.video-live-meta{display:flex;justify-content:space-between;gap:10px;margin-top:15px;padding-top:12px;border-top:1px solid #4a2026;font-size:12px}.video-live-meta span:first-child{color:#a99b9d}.video-live-meta strong{color:#ff6974}.video-ready-action{display:inline-flex;align-items:center;justify-content:center;margin-top:15px;padding:13px 20px;border-radius:9px;background:linear-gradient(100deg,#ff3448,#b90017);border:1px solid #ff6671;color:#fff!important;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:1px;box-shadow:0 0 18px #e5091444;cursor:pointer}.video-ready-action:hover{filter:brightness(1.12)}
+@media(prefers-reduced-motion:reduce){.video-live-eq span{animation:none}}
+
+
+.video-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.video-tool-card{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:16px;border:1px solid #63202a;border-radius:13px;background:linear-gradient(145deg,#1a0c10,#090909);color:#fff;cursor:pointer;min-height:112px}
+.video-tool-card:hover,.video-tool-card:focus-visible{border-color:#ed2638;box-shadow:0 0 16px #e5091425;outline:none}
+.video-tool-icon{font-size:24px;font-weight:900;color:#ff4655}.video-tool-name{font-size:12px;font-weight:900;letter-spacing:1px}.video-tool-description{font-size:11px;line-height:1.45;color:#bdaeb0}
+.video-tool-panel{margin:12px 0;padding:17px;border:1px solid #78202a;border-radius:13px;background:linear-gradient(145deg,#1a0c10,#090909);color:#fff}
+.video-tool-panel[hidden]{display:none!important}.video-tool-panel-title{font-size:14px;font-weight:900;letter-spacing:1.3px;color:#ff5966}.video-tool-panel p{font-size:12px;line-height:1.55;color:#c4b7b9}
+.video-file-picker{display:flex;align-items:center;justify-content:center;margin-top:12px;padding:12px;border:1px dashed #a82b38;border-radius:9px;color:#ff6974;font-size:11px;font-weight:900;letter-spacing:.8px;cursor:pointer}
+.video-file-picker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.video-file-name{font-size:11px;color:#e7dfe0;margin:7px 2px 10px;overflow-wrap:anywhere}.video-tool-note{font-size:10px;line-height:1.5;color:#a99b9d;margin-top:8px}.video-tool-action{width:100%;margin-top:14px;padding:12px;border:1px solid #a82b38;border-radius:8px;background:#321016;color:#ff8a92;font-weight:900;letter-spacing:1px;cursor:pointer}
+@media(max-width:520px){.video-tools-grid{grid-template-columns:1fr}.video-tool-card{min-height:92px}}
+
 </style>
 </head>
 <body>
@@ -692,7 +713,7 @@
 <details class="studio-accordion"><summary>AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
-<div class="notice"><strong>One fixed rate:</strong> 25 credits per song. Describe the song you want in your prompt; there is no duration selector. Your song is generated with AI and saved to My Files.</div>
+<div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Your song is generated with AI and saved to My Files.</div>
 <div class="field"><label for="songTitle">Song Title (Optional)</label><input id="songTitle" placeholder="Give your song a title"/></div>
 <div class="form-grid">
 <div class="field"><label for="songGenre">Music Genre / Style</label><select id="songGenre">
@@ -732,6 +753,7 @@
 <optgroup label="Cinematic &amp; Ambient">
 <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
 </optgroup></select></div>
+<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240" selected="">4 minutes</option></select></div>
 <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
@@ -800,9 +822,48 @@
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
       Credit cost: <strong>102 credits</strong> · Selected duration: 5 seconds.
     </div>
-<button class="primary-btn" onclick="prepareVideo()" type="button">
+<button class="primary-btn" id="generateVideoButton" onclick="prepareVideo()" type="button">
       GENERATE VIDEO
     </button>
+
+<div class="video-tools-grid" aria-label="Additional video tools">
+  <button class="video-tool-card" id="uploadVideoToggle" type="button" onclick="toggleVideoTool('uploadVideoPanel')">
+    <span class="video-tool-icon">↑</span><span class="video-tool-name">UPLOAD VIDEO</span>
+    <span class="video-tool-description">Choose a video file to use in your project</span>
+  </button>
+  <button class="video-tool-card" id="lipSyncToggle" type="button" onclick="toggleVideoTool('lipSyncPanel')">
+    <span class="video-tool-icon">♫</span><span class="video-tool-name">LIP SYNC</span>
+    <span class="video-tool-description">Prepare a video and audio track for lip sync</span>
+  </button>
+</div>
+<div class="video-tool-panel" id="uploadVideoPanel" hidden>
+  <div class="video-tool-panel-title">UPLOAD YOUR VIDEO</div>
+  <p>Select a source video. The file selection is prepared; cloud upload and AI processing will be connected in the next integration step.</p>
+  <label class="video-file-picker">CHOOSE VIDEO FILE<input id="sourceVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('sourceVideoFile','sourceVideoFileName',100)"></label>
+  <div class="video-file-name" id="sourceVideoFileName" aria-live="polite">No video selected.</div>
+  <div class="video-tool-note">Supported formats: MP4, MOV, WEBM · Maximum 100 MB</div>
+</div>
+<div class="video-tool-panel" id="lipSyncPanel" hidden>
+  <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
+  <p>Choose the face video and the audio track that should drive the lip movements. Processing will be enabled when the Lip Sync provider is connected.</p>
+  <label class="video-file-picker">CHOOSE FACE VIDEO<input id="lipSyncVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('lipSyncVideoFile','lipSyncVideoFileName',100)"></label>
+  <div class="video-file-name" id="lipSyncVideoFileName" aria-live="polite">No face video selected.</div>
+  <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',30)"></label>
+  <div class="video-file-name" id="lipSyncAudioFileName" aria-live="polite">No audio track selected.</div>
+  <div class="video-tool-note">Video: MP4, MOV, WEBM · Audio: MP3, WAV, M4A, AAC, OGG · Max 100 MB video / 30 MB audio</div>
+  <button class="video-tool-action" type="button" onclick="showLipSyncIntegrationNotice()">PREPARE LIP SYNC</button>
+  <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Provider connection will be added before processing is enabled.</div>
+</div>
+<div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
+  <div class="video-live-top"><span class="video-live-title">LANE VIDEO AI</span><span class="video-live-badge" id="videoLiveBadge">PROCESSING</span></div>
+  <div class="video-live-eq" id="videoLiveEqualizer" aria-label="Video generation animation"></div>
+  <div class="video-live-clock" id="videoLiveClock">00:00</div>
+  <div class="video-live-caption">ELAPSED GENERATION TIME</div>
+  <div class="video-live-message" id="videoLiveMessage">AI IS CREATING YOUR VIDEO...</div>
+  <div class="video-live-meta"><span>STATUS</span><strong id="videoLiveStatus">PROCESSING</strong></div>
+  <div class="video-live-meta"><span>ESTIMATED WAIT</span><strong id="videoLiveEstimate">Not available</strong></div>
+  <div id="videoReadyAction" hidden></div>
+</div>
 <div class="project-output hidden" id="generalProjectOutput"></div>
 </div>
 </details></section>
@@ -934,7 +995,7 @@
 <div id="libraryEmptyStates">
 <div class="library-empty" data-empty-kind="video">
 <strong>🎬 No generated videos yet</strong>
-        Your completed AI videos will appear here when video generation is connected.
+        Your completed AI videos will appear here after generation.
       </div>
 <div class="library-empty" data-empty-kind="image">
 <strong>🖼️ No generated images yet</strong>
@@ -1046,6 +1107,7 @@
 
   let currentUser = null;
   let currentFiles = [];
+  let currentVideoFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
 
@@ -1059,14 +1121,109 @@
     });
   }
 
-  // GENERAL VIDEO PROJECT
+  
+function toggleVideoTool(panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const willOpen = panel.hidden;
+  document.getElementById("uploadVideoPanel").hidden = true;
+  document.getElementById("lipSyncPanel").hidden = true;
+  panel.hidden = !willOpen;
+  if (willOpen) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
+function handleVideoToolFile(inputId, labelId, maxSizeMb) {
+  const input = document.getElementById(inputId);
+  const label = document.getElementById(labelId);
+  if (!input || !label) return;
+  const file = input.files && input.files[0];
+  if (!file) { label.textContent = "No file selected."; return; }
+  if (file.size > maxSizeMb * 1024 * 1024) {
+    input.value = "";
+    label.textContent = "File is too large. Maximum size: " + maxSizeMb + " MB.";
+    alert("Please choose a file smaller than " + maxSizeMb + " MB.");
+    return;
+  }
+  label.textContent = file.name + " · " + (file.size / (1024 * 1024)).toFixed(1) + " MB · Selected on this device";
+}
+
+function showLipSyncIntegrationNotice() {
+  const video = document.getElementById("lipSyncVideoFile").files[0];
+  const audio = document.getElementById("lipSyncAudioFile").files[0];
+  const notice = document.getElementById("lipSyncNotice");
+  if (!video || !audio) {
+    notice.textContent = "Please choose both a face video and an audio track first.";
+    return;
+  }
+  notice.textContent = "Both files are selected. Lip Sync processing will be activated after its secure storage and AI provider connection are implemented. No files have been uploaded yet.";
+}
+
+// GENERAL VIDEO PROJECT
+
+
+let videoElapsedTimer = null;
+let videoStartedAt = 0;
+
+function renderVideoEqualizer() {
+  const equalizer = document.getElementById("videoLiveEqualizer");
+  if (!equalizer || equalizer.childElementCount) return;
+  for (let i = 0; i < 42; i++) {
+    const bar = document.createElement("span");
+    const height = 18 + Math.round((Math.sin(i * 0.77) + 1) * 30);
+    bar.style.setProperty("--bar", height + "%");
+    bar.style.setProperty("--delay", (i * 37 % 700) + "ms");
+    equalizer.appendChild(bar);
+  }
+}
+
+function formatVideoElapsed(milliseconds) {
+  const total = Math.max(0, Math.floor(milliseconds / 1000));
+  const minutes = String(Math.floor(total / 60)).padStart(2, "0");
+  const seconds = String(total % 60).padStart(2, "0");
+  return minutes + ":" + seconds;
+}
+
+function showVideoLiveState(state, message) {
+  const panel = document.getElementById("videoLivePanel");
+  const badge = document.getElementById("videoLiveBadge");
+  const status = document.getElementById("videoLiveStatus");
+  const messageNode = document.getElementById("videoLiveMessage");
+  const estimate = document.getElementById("videoLiveEstimate");
+  if (!panel) return;
+  panel.hidden = false;
+  renderVideoEqualizer();
+  badge.textContent = state;
+  status.textContent = state;
+  messageNode.textContent = message;
+  estimate.textContent = state === "PROCESSING" ? "Provider timing varies" : "—";
+  if (state !== "PROCESSING") {
+    document.getElementById("videoLiveEqualizer").style.opacity = state === "VIDEO READY" ? "0.45" : "0.25";
+  } else {
+    document.getElementById("videoLiveEqualizer").style.opacity = "1";
+  }
+}
+
+function startVideoElapsedTimer() {
+  stopVideoElapsedTimer();
+  videoStartedAt = Date.now();
+  const clock = document.getElementById("videoLiveClock");
+  const tick = () => { if (clock) clock.textContent = formatVideoElapsed(Date.now() - videoStartedAt); };
+  tick();
+  videoElapsedTimer = window.setInterval(tick, 1000);
+}
+
+function stopVideoElapsedTimer() {
+  if (videoElapsedTimer) window.clearInterval(videoElapsedTimer);
+  videoElapsedTimer = null;
+}
 
 async function prepareVideo() {
   const prompt = document.getElementById("prompt").value.trim();
   const style = document.getElementById("style").value;
+  const category = document.getElementById("category").value;
   const duration = document.getElementById("duration").value;
   const output = document.getElementById("generalProjectOutput");
+  const button = document.getElementById("generateVideoButton");
 
   if (!prompt) {
     alert("Please describe your video idea first.");
@@ -1086,178 +1243,163 @@ async function prepareVideo() {
     return;
   }
 
-  output.textContent = "Starting AI video generation...";
+  button.disabled = true;
+  button.textContent = "STARTING...";
+  output.replaceChildren();
   output.classList.remove("hidden");
+  output.textContent = "Starting AI video generation...";
+  document.getElementById("videoLivePanel").hidden = true;
+  showVideoLiveState("STARTING", "PREPARING YOUR VIDEO REQUEST...");
+  startVideoElapsedTimer();
+
+  const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
   try {
     const { data, error } = await supabaseClient.functions.invoke(
       "generate-video",
       {
         body: {
-          promptText: prompt + ". Visual style: " + style,
-          model: durationSeconds > 10 ? "seedance2.5" : "gen4.5",
+          promptText:
+            prompt + ". Category: " + category + ". Visual style: " + style,
           duration: durationSeconds,
           ratio: "854:480"
         }
       }
     );
 
-    if (error) throw error;
+    if (error) {
+      const message = data?.error || error.message || "Video generation could not start.";
+      throw new Error(message);
+    }
 
-    if (!data || !data.success || !data.taskId) {
+    if (!data || !data.success || !data.generationId || !data.taskId) {
       throw new Error(data?.error || "Video generation could not start.");
     }
 
-    output.textContent =
-      "LANE VIDEO AI — VIDEO GENERATION\n\n" +
-      "Your video generation task has started!\n\n" +
-      "Model: " + (data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5") + "\n" +
-      "Duration: " + data.duration + " seconds\n" +
-      "Task ID: " + data.taskId + "\n\n" +
-      "Status: Processing. The video is not ready yet.";
+    const modelName = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
+    output.textContent = "Your video is being generated. The status will update automatically.";
+    showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
+    button.textContent = "GENERATING...";
+    const maximumChecks = 180; // 30 minutes at 10-second intervals.
 
+    for (let check = 0; check < maximumChecks; check++) {
+      await wait(10000);
+
+      const { data: statusData, error: statusError } = await supabaseClient.functions.invoke(
+        "generate-video",
+        { body: { action: "status", generationId: data.generationId } }
+      );
+
+      if (statusError) {
+        console.warn("Video status check failed; will retry:", statusError);
+        output.textContent =
+          "LANE VIDEO AI — VIDEO GENERATION\n\n" +
+          "Your video is still being processed. Rechecking the status...\n\n" +
+          "Please keep this page open.";
+        continue;
+      }
+
+      if (!statusData) continue;
+
+      if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
+        output.replaceChildren();
+
+        const heading = document.createElement("strong");
+        heading.textContent = "Your video is ready!";
+
+        const details = document.createElement("p");
+        details.textContent =
+          "Model: " + modelName + " · Duration: " + durationSeconds + " seconds";
+
+        const player = document.createElement("video");
+        player.controls = true;
+        player.playsInline = true;
+        player.preload = "metadata";
+        player.style.width = "100%";
+        player.style.maxHeight = "520px";
+        player.style.borderRadius = "12px";
+        player.style.marginTop = "12px";
+        player.src = statusData.videoUrl;
+
+        const download = document.createElement("a");
+        download.href = statusData.videoUrl;
+        download.target = "_blank";
+        download.rel = "noopener noreferrer";
+        download.textContent = "OPEN / DOWNLOAD VIDEO";
+        download.className = "primary-btn";
+        download.style.display = "inline-block";
+        download.style.marginTop = "14px";
+
+        output.append(heading, details, player, download);
+        stopVideoElapsedTimer();
+        showVideoLiveState("VIDEO READY", "YOUR VIDEO HAS BEEN CREATED SUCCESSFULLY.");
+        const readyAction = document.getElementById("videoReadyAction");
+        readyAction.hidden = false;
+        readyAction.replaceChildren();
+        const readyButton = document.createElement("a");
+        readyButton.className = "video-ready-action";
+        readyButton.href = statusData.videoUrl;
+        readyButton.target = "_blank";
+        readyButton.rel = "noopener noreferrer";
+        readyButton.textContent = "VIDEO READY · OPEN VIDEO";
+        readyAction.appendChild(readyButton);
+        await loadMyFiles();
+        break;
+      }
+
+      if (statusData.status === "FAILED" || statusData.status === "CANCELED") {
+        output.textContent =
+          "Video generation did not complete.\n\n" +
+          (statusData.refunded
+            ? "The video credits have been returned to your wallet."
+            : "Credit refund is still being checked. Please contact support if the balance does not update.");
+        stopVideoElapsedTimer();
+        showVideoLiveState("FAILED", "VIDEO GENERATION DID NOT COMPLETE.");
+        break;
+      }
+
+      if (statusData.status === "SUBMISSION_UNKNOWN") {
+        output.textContent =
+          "Runway's response was interrupted, so the task status is uncertain.\n\n" +
+          "Your generation ID is: " + data.generationId +
+          "\nPlease contact support before starting the same video again.";
+        stopVideoElapsedTimer();
+        showVideoLiveState("CHECK REQUIRED", "THE PROVIDER RESPONSE NEEDS TO BE CHECKED.");
+        break;
+      }
+
+      showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
+      output.textContent = "Your video is still processing. Checking again automatically...";
+    }
+
+    if (output.textContent.includes("Checking again automatically")) {
+      output.textContent += "\n\nThis is taking longer than expected. You can refresh My Files later to check for the finished video.";
+      stopVideoElapsedTimer();
+      showVideoLiveState("STILL PROCESSING", "GENERATION IS TAKING LONGER THAN USUAL.");
+    }
   } catch (error) {
     console.error("Video generation error:", error);
     output.textContent =
       "Video generation error:\n" +
       (error.message || "Please try again.");
+    stopVideoElapsedTimer();
+    showVideoLiveState("ERROR", "WE COULD NOT START VIDEO GENERATION.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "GENERATE VIDEO";
   }
 
-  output.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest"
-  });
+  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
-
-  // MUSIC VIDEO PROJECT
-function prepareMusicVideo() {
-    const musicMode = document.getElementById("musicMode").value;
-    const selectedSong = document.getElementById("musicFileSelect").value;
-
-    if (musicMode === "upload" && !selectedSong) {
-      alert("Please select a song from My Files, or choose the concept-only option.");
-      return;
-    }
-
-    const musicType = document.getElementById("musicType").value;
-    const genre = document.getElementById("musicGenre").value;
-    const performer = document.getElementById("performerType").value;
-    const dancers = document.getElementById("dancers").value;
-    const stage = document.getElementById("stage").value;
-    const wardrobe = document.getElementById("wardrobe").value;
-    const lighting = document.getElementById("lighting").value;
-    const mood = document.getElementById("musicMood").value;
-    const vocalType = document.getElementById("musicVocalType").value;
-    const language = document.getElementById("musicLanguage").value;
-    const bpm = document.getElementById("musicBpm").value;
-    const customStyle = document.getElementById("musicCustomStyle").value.trim();
-
-    const performerDescription =
-      document.getElementById("performerDescription").value.trim();
-
-    const lipSync = document.getElementById("lipSync").checked;
-    const prompt = document.getElementById("musicPrompt").value.trim();
-
-    if (!prompt) {
-      alert("Please describe your music video scenes and actions.");
-      return;
-    }
-
-    const summary =
-`LANE VIDEO AI — AI MUSIC VIDEO PROJECT
-
-Music Video Type:
-${musicType}
-
-Music Source:
-${musicMode === "upload" ? selectedSong : "Concept only — no song selected"}
-
-Music Genre:
-${genre}
-
-Mood:
-${mood}
-
-Vocal Type:
-${vocalType}
-
-Language:
-${language}
-
-Tempo:
-${bpm}
-
-Custom Style:
-${customStyle || "Not specified"}
-
-AI Performer:
-${performer}
-
-Dancers:
-${dancers}
-
-Stage / Location:
-${stage}
-
-Singer's Wardrobe:
-${wardrobe}
-
-Lighting / Special Effects:
-${lighting}
-
-Lip-Sync:
-${lipSync ? "REQUESTED — synchronize mouth movements, facial expressions and emotions with the song." : "Not requested"}
-
-AI Performer Description:
-${performerDescription || "No additional description provided."}
-
-DETAILED MUSIC VIDEO INSTRUCTIONS:
-${prompt}
-
-PROJECT STATUS:
-Your music video project settings have been prepared.
-
-IMPORTANT:
-AI video generation, realistic AI singer creation, dance animation and Lip-Sync are not connected yet.
-These settings are a project brief and will be used when an AI generation provider is integrated.`;
-
-    const output = document.getElementById("musicProjectOutput");
-    output.textContent = summary;
-    output.classList.remove("hidden");
-
-    output.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest"
-    });
-  }
-
-  // MUSIC MODE
-
-  // The legacy music-video source selector is not present on this page.
-  // Bind its optional handler only when that section exists, so a missing
-  // legacy element cannot stop the rest of the script (including auth).
-  const musicModeSelect = document.getElementById("musicMode");
-  if (musicModeSelect) {
-    musicModeSelect.addEventListener("change", function() {
-      const field = document.getElementById("musicFileField");
-      if (!field) return;
-      if (this.value === "concept") {
-        field.classList.add("hidden");
-      } else {
-        field.classList.remove("hidden");
-      }
-    });
-  }
-
 
   // Video prices in credits, matched to the selected duration.
   function videoCostForDuration(label) {
     const prices = {
-      "5 seconds": 102,
-      "10 seconds": 203,
-      "15 seconds": 507,
-      "20 seconds": 676,
-      "30 seconds": 1014
+      "5 seconds": 192,
+      "10 seconds": 303,
+      "15 seconds": 557,
+      "20 seconds": 743,
+      "30 seconds": 1114
     };
     return Object.prototype.hasOwnProperty.call(prices, label) ? prices[label] : null;
   }
@@ -1361,6 +1503,7 @@ These settings are a project brief and will be used when an AI generation provid
 
     const title = document.getElementById("songTitle").value.trim();
     const style = document.getElementById("songGenre").value;
+    const durationSeconds = Number(document.getElementById("songDuration").value);
     const mood = document.getElementById("songMood").value;
     const vocalType = document.getElementById("songVocal").value;
     const language = document.getElementById("songLanguage").value;
@@ -1371,6 +1514,10 @@ These settings are a project brief and will be used when an AI generation provid
     const lyrics = document.getElementById("songLyrics").value.trim();
     const instructions = document.getElementById("songPrompt").value.trim();
 
+    if (![60, 120, 180, 240].includes(durationSeconds)) {
+      alert("Please choose a song length from 1 to 4 minutes.");
+      return;
+    }
     if (lyricsMode === "My Own Lyrics" && !lyrics && vocalType !== "Instrumental") {
       alert("Please enter your lyrics, or choose AI Write Lyrics / No Lyrics.");
       return;
@@ -1405,7 +1552,8 @@ These settings are a project brief and will be used when an AI generation provid
           voiceCharacter: vocalType === "Instrumental" ? "Instrumental" : voiceCharacter,
           instructions: providerInstructions,
           lyrics,
-          lyricsMode
+          lyricsMode,
+          durationSeconds
         }
       });
 
@@ -1414,7 +1562,7 @@ These settings are a project brief and will be used when an AI generation provid
         throw new Error(startData?.error || "The music generation request could not start.");
       }
 
-      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nCredits charged: 25\nStatus: Processing...";
+      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: 25\nStatus: Processing...";
       button.textContent = "GENERATING...";
 
       const maxAttempts = 120; // Up to 10 minutes at 5-second intervals.
@@ -1505,6 +1653,7 @@ These settings are a project brief and will be used when an AI generation provid
 
     currentUser = null;
     currentFiles = [];
+    currentVideoFiles = [];
     stopSongPreview();
 
     await refreshAuthState();
@@ -1565,12 +1714,11 @@ if (currentUser) {
       signedOut.classList.remove("hidden");
 
       currentFiles = [];
+      currentVideoFiles = [];
       updateLibraryCounts();
 
       document.getElementById("myFilesList").innerHTML =
         '<p class="hint">Please sign in to see your personal files.</p>';
-
-      refreshMusicFileOptions();
     }
   }
 
@@ -1612,7 +1760,7 @@ if (currentUser) {
 
     const descriptions = {
       all: "Showing all available files.",
-      video: "Showing generated videos. Video generation is not connected yet.",
+      video: "Showing your generated AI videos.",
       image: "Showing generated images. Image generation is not connected yet.",
       audio: "Showing your uploaded music and audio files.",
       thumbnail: "Showing project covers and thumbnails.",
@@ -1696,43 +1844,77 @@ if (currentUser) {
   // LOAD MY FILES
 
   async function loadMyFiles() {
-    if (!currentUser) {
-      return;
-    }
+    if (!currentUser) return;
 
     const list = document.getElementById("myFilesList");
-    list.innerHTML = '<p class="hint">Loading your music files...</p>';
+    list.innerHTML = '<p class="hint">Loading your files...</p>';
 
     const { data, error } = await supabaseClient.storage
       .from("user-songs")
       .list(currentUser.id, {
         limit: 100,
-        sortBy: {
-          column: "created_at",
-          order: "desc"
-        }
+        sortBy: { column: "created_at", order: "desc" }
       });
 
     if (error) {
-      list.innerHTML =
-        '<p class="hint">Could not load files: ' +
+      list.innerHTML = '<p class="hint">Could not load audio files: ' +
         escapeHTML(error.message) + '</p>';
-      return;
+      currentFiles = [];
+    } else {
+      currentFiles = (data || []).filter(file =>
+        file.name && !file.name.startsWith(".lane_mv_clip_")
+      );
     }
 
-    currentFiles = (data || []).filter(file => file.name && !file.name.startsWith(".lane_mv_clip_"));
+    // Video records are read separately so a video-library issue never blocks music files.
+    currentVideoFiles = [];
+    const { data: videoRows, error: videoError } = await supabaseClient
+      .from("video_generations")
+      .select("id, prompt, model, duration, status, storage_path, created_at")
+      .eq("user_id", currentUser.id)
+      .eq("status", "SUCCEEDED")
+      .not("storage_path", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(100);
 
-    refreshMusicFileOptions();
-
-    if (currentFiles.length === 0) {
-      list.innerHTML =
-        '<div class="library-empty"><strong>No audio files yet</strong>Your audio files will appear here.</div>';
-      updateLibraryCounts();
-      filterMyFiles(activeLibraryFilter);
-      return;
+    if (videoError) {
+      console.warn("Could not load generated videos from the library:", videoError);
+    } else {
+      currentVideoFiles = videoRows || [];
     }
 
-    list.innerHTML = "";
+    list.replaceChildren();
+
+    currentVideoFiles.forEach(video => {
+      const row = document.createElement("div");
+      row.className = "file-row";
+      row.dataset.fileKind = "video";
+
+      const info = document.createElement("div");
+      info.className = "file-name";
+      info.textContent =
+        (video.prompt || "AI generated video").slice(0, 100) +
+        " · " + (video.duration || "?") + " sec";
+
+      const actions = document.createElement("div");
+      actions.className = "file-actions";
+      const openButton = document.createElement("button");
+      openButton.className = "secondary-btn";
+      openButton.textContent = "OPEN VIDEO";
+      openButton.onclick = async () => {
+        const { data: signed, error: signedError } = await supabaseClient.storage
+          .from("generated-videos")
+          .createSignedUrl(video.storage_path, 3600);
+        if (signedError || !signed?.signedUrl) {
+          showFileMessage("Could not open this video: " + (signedError?.message || "No download link."), true);
+          return;
+        }
+        window.open(signed.signedUrl, "_blank", "noopener,noreferrer");
+      };
+      actions.appendChild(openButton);
+      row.append(info, actions);
+      list.appendChild(row);
+    });
 
     currentFiles.forEach(file => {
       const row = document.createElement("div");
@@ -1751,11 +1933,6 @@ if (currentUser) {
       playButton.textContent = "PLAY";
       playButton.onclick = () => playSong(file.name);
 
-      const useButton = document.createElement("button");
-      useButton.className = "secondary-btn";
-      useButton.textContent = "USE IN STUDIO";
-      useButton.onclick = () => useSongInStudio(file.name);
-
       const downloadButton = document.createElement("button");
       downloadButton.className = "secondary-btn";
       downloadButton.textContent = "DOWNLOAD";
@@ -1766,16 +1943,14 @@ if (currentUser) {
       deleteButton.textContent = "DELETE";
       deleteButton.onclick = () => deleteSong(file.name);
 
-      actions.appendChild(playButton);
-      actions.appendChild(useButton);
-      actions.appendChild(downloadButton);
-      actions.appendChild(deleteButton);
-
-      row.appendChild(name);
-      row.appendChild(actions);
-
+      actions.append(playButton, downloadButton, deleteButton);
+      row.append(name, actions);
       list.appendChild(row);
     });
+
+    if (!currentFiles.length && !currentVideoFiles.length) {
+      list.innerHTML = '<div class="library-empty"><strong>Your library is empty</strong>Your completed AI videos and music files will appear here.</div>';
+    }
 
     updateLibraryCounts();
     filterMyFiles(activeLibraryFilter);
@@ -1783,62 +1958,16 @@ if (currentUser) {
 
   function updateLibraryCounts() {
     const audioCount = currentFiles.length;
+    const videoCount = currentVideoFiles.length;
     document.getElementById("audioFileCount").textContent = audioCount;
-    document.getElementById("videoFileCount").textContent = "0";
+    document.getElementById("videoFileCount").textContent = videoCount;
     document.getElementById("imageFileCount").textContent = "0";
     document.getElementById("thumbnailFileCount").textContent = "0";
+
+    const videoEmpty = document.querySelector('#libraryEmptyStates [data-empty-kind="video"]');
+    if (videoEmpty) videoEmpty.classList.toggle("hidden", videoCount > 0);
   }
 
-  // UPDATE MUSIC FILE SELECT
-
-  function refreshMusicFileOptions() {
-    const select = document.getElementById("musicFileSelect");
-
-    select.innerHTML = "";
-
-    if (!currentUser) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "Sign in to select your songs";
-      select.appendChild(option);
-      return;
-    }
-
-    if (!currentFiles.length) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No uploaded songs yet";
-      select.appendChild(option);
-      return;
-    }
-
-    const firstOption = document.createElement("option");
-    firstOption.value = "";
-    firstOption.textContent = "Choose a song...";
-    select.appendChild(firstOption);
-
-    currentFiles.forEach(file => {
-      const option = document.createElement("option");
-      option.value = file.name;
-      option.textContent = file.name;
-      select.appendChild(option);
-    });
-  }
-
-  // USE SONG IN STUDIO
-
-  function useSongInStudio(fileName) {
-    const mode = document.getElementById("musicMode");
-    const field = document.getElementById("musicFileField");
-    const select = document.getElementById("musicFileSelect");
-    const studio = document.getElementById("musicStudio");
-    // This older music-video panel may not be included in the current page.
-    if (!mode || !field || !select || !studio) return;
-    mode.value = "upload";
-    field.classList.remove("hidden");
-    select.value = fileName;
-    studio.scrollIntoView({ behavior: "smooth" });
-  }
 
   // PLAY SONG
 
