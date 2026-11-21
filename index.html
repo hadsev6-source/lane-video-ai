@@ -773,136 +773,66 @@ hr,.divider { border-color:#80601e !important; }
 .share-status { color:#d9c58e !important; }
 
 
-/* LANE AI STUDIO — visible gold social buttons and subtle animated gold dust */
-body {
-  background-color: #050403 !important;
-  background-image:
-    radial-gradient(circle, rgba(255,218,125,.92) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgba(226,164,47,.75) 0 .8px, transparent 1.6px),
-    radial-gradient(circle, rgba(255,239,190,.58) 0 1.2px, transparent 2px),
-    radial-gradient(ellipse at 12% 18%, rgba(133,86,19,.20), transparent 36%),
-    radial-gradient(ellipse at 86% 72%, rgba(133,86,19,.15), transparent 40%),
-    linear-gradient(135deg, #050403 0%, #100c06 48%, #050403 100%) !important;
-  background-size: 190px 210px, 270px 250px, 360px 320px, 100% 100%, 100% 100%, 100% 100% !important;
-  background-position: 0 0, 70px 40px, 130px 110px, center, center, center !important;
-  background-attachment: fixed !important;
-  animation: laneGoldDustDrift 38s linear infinite !important;
+/* Clean, understated LANE AI STUDIO wordmark */
+header.site-header > div.logo {
+  display:inline-flex !important;
+  align-items:baseline !important;
+  gap:6px !important;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif !important;
+  font-size:20px !important;
+  font-weight:600 !important;
+  letter-spacing:.25px !important;
+  line-height:1 !important;
+  color:#f4f1e9 !important;
+  text-shadow:none !important;
+  white-space:nowrap !important;
 }
-@keyframes laneGoldDustDrift {
-  from { background-position: 0 0, 70px 40px, 130px 110px, center, center, center; }
-  to   { background-position: 190px 210px, -200px 290px, 490px -210px, center, center, center; }
+header.site-header > div.logo span {
+  font-family:inherit !important;
+  font-size:9px !important;
+  font-weight:500 !important;
+  letter-spacing:1.35px !important;
+  color:#d7b96c !important;
+  text-shadow:none !important;
 }
-@media (prefers-reduced-motion: reduce) {
-  body { animation: none !important; }
+@media(max-width:600px) {
+  header.site-header > div.logo { font-size:18px !important; gap:5px !important; }
+  header.site-header > div.logo span { font-size:8px !important; letter-spacing:1.1px !important; }
 }
 
-/* The six share buttons are present in the HTML; force a visible, consistent icon layout. */
-.lane-promo {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 3 !important;
-  width: 100% !important;
-  max-width: 1200px !important;
-  min-height: 112px !important;
-  margin: 0 auto !important;
-  padding: 18px 5% 30px !important;
+
+
+/* LANE AI STUDIO — luminous flowing gold-dust atmosphere */
+html { background:#030303 !important; }
+body { background:transparent !important; position:relative; isolation:isolate; }
+body::before {
+  content:"";
+  position:fixed;
+  inset:-8vh -5vw;
+  z-index:-1;
+  pointer-events:none;
+  background-color:#030303;
+  background-image:
+    radial-gradient(ellipse at 18% 32%, rgba(181,112,22,.18) 0%, rgba(181,112,22,.055) 13%, transparent 34%),
+    radial-gradient(ellipse at 82% 68%, rgba(210,145,35,.14) 0%, rgba(210,145,35,.045) 15%, transparent 38%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop stop-color='%23864b08' stop-opacity='0'/%3E%3Cstop offset='.22' stop-color='%23f4b947' stop-opacity='.75'/%3E%3Cstop offset='.5' stop-color='%23fff0b0'/%3E%3Cstop offset='.78' stop-color='%23d48a19' stop-opacity='.8'/%3E%3Cstop offset='1' stop-color='%23864b08' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cfilter id='glow' x='-30%25' y='-100%25' width='160%25' height='300%25'%3E%3CfeGaussianBlur stdDeviation='5' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23g)' stroke-linecap='round' filter='url(%23glow)'%3E%3Cpath d='M-80 330 C180 190 280 500 510 380 S850 230 1030 350 S1270 490 1520 250' stroke-width='2.4' opacity='.82'/%3E%3Cpath d='M-60 355 C190 220 300 520 520 400 S850 255 1045 370 S1280 510 1510 275' stroke-width='1' opacity='.6'/%3E%3Cpath d='M-90 690 C180 560 330 790 560 675 S900 545 1080 665 S1300 780 1530 610' stroke-width='2' opacity='.72'/%3E%3Cpath d='M-70 710 C190 580 330 810 565 695 S900 570 1090 685 S1310 800 1510 630' stroke-width='.9' opacity='.55'/%3E%3C/g%3E%3Cg fill='%23ffd782'%3E%3Ccircle cx='90' cy='300' r='1.8'/%3E%3Ccircle cx='130' cy='355' r='1'/%3E%3Ccircle cx='205' cy='270' r='1.2'/%3E%3Ccircle cx='255' cy='405' r='1.5'/%3E%3Ccircle cx='310' cy='335' r='.9'/%3E%3Ccircle cx='370' cy='455' r='1.2'/%3E%3Ccircle cx='445' cy='360' r='1.8'/%3E%3Ccircle cx='490' cy='420' r='1'/%3E%3Ccircle cx='565' cy='345' r='1.3'/%3E%3Ccircle cx='625' cy='300' r='.9'/%3E%3Ccircle cx='690' cy='390' r='1.5'/%3E%3Ccircle cx='750' cy='330' r='1'/%3E%3Ccircle cx='815' cy='280' r='1.8'/%3E%3Ccircle cx='875' cy='370' r='1'/%3E%3Ccircle cx='940' cy='320' r='1.4'/%3E%3Ccircle cx='1000' cy='420' r='1'/%3E%3Ccircle cx='1080' cy='355' r='1.8'/%3E%3Ccircle cx='1150' cy='405' r='1'/%3E%3Ccircle cx='1225' cy='315' r='1.5'/%3E%3Ccircle cx='1300' cy='390' r='1'/%3E%3Ccircle cx='1370' cy='275' r='1.7'/%3E%3C/g%3E%3Cg fill='%23e8a52d' opacity='.85'%3E%3Ccircle cx='160' cy='245' r='1'/%3E%3Ccircle cx='230' cy='470' r='.8'/%3E%3Ccircle cx='345' cy='285' r='1'/%3E%3Ccircle cx='420' cy='500' r='.8'/%3E%3Ccircle cx='535' cy='280' r='1'/%3E%3Ccircle cx='600' cy='455' r='.8'/%3E%3Ccircle cx='720' cy='250' r='1'/%3E%3Ccircle cx='790' cy='455' r='.8'/%3E%3Ccircle cx='920' cy='250' r='1'/%3E%3Ccircle cx='1040' cy='470' r='.8'/%3E%3Ccircle cx='1180' cy='280' r='1'/%3E%3Ccircle cx='1320' cy='465' r='.8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:100% 100%,100% 100%, min(100vw,1440px) auto;
+  background-position:center,center,center 42%;
+  background-repeat:no-repeat;
+  opacity:.72;
+  animation:laneGoldFlow 32s ease-in-out infinite alternate;
 }
-.lane-share, .lane-share h3, .share-buttons {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+@keyframes laneGoldFlow {
+  0% { background-position:center,center,48% 40%; filter:brightness(.82); }
+  100% { background-position:center,center,52% 46%; filter:brightness(1.12); }
 }
-.lane-share {
-  flex-direction: column !important;
-  align-items: center !important;
-  width: 100% !important;
-  text-align: center !important;
-}
-.lane-share h3 {
-  display: block !important;
-  margin: 0 0 15px !important;
-  color: #ffe08a !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  letter-spacing: .18em !important;
-  text-shadow: 0 0 12px rgba(255,190,40,.65) !important;
-}
-.share-buttons {
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 12px !important;
-  width: 100% !important;
-  min-height: 54px !important;
-}
-.lane-share .share-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 48px !important;
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
-  height: 48px !important;
-  min-height: 48px !important;
-  max-height: 48px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: visible !important;
-  border: 1px solid #e6b94d !important;
-  border-radius: 50% !important;
-  background: radial-gradient(circle at 35% 25%, #3a2a0c, #090806 75%) !important;
-  color: #ffe08a !important;
-  box-shadow: 0 0 10px rgba(235,177,49,.38), inset 0 0 8px rgba(255,220,120,.13) !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-}
-.lane-share .share-btn svg {
-  display: block !important;
-  width: 23px !important;
-  height: 23px !important;
-  min-width: 23px !important;
-  min-height: 23px !important;
-  max-width: 23px !important;
-  max-height: 23px !important;
-  fill: #ffe08a !important;
-  stroke: #ffe08a !important;
-  overflow: visible !important;
-}
-.lane-share .share-btn:hover,
-.lane-share .share-btn:focus-visible {
-  transform: translateY(-2px) !important;
-  border-color: #fff0ad !important;
-  box-shadow: 0 0 17px rgba(255,202,70,.72) !important;
-  outline: 2px solid rgba(255,220,130,.35) !important;
-}
-.lane-share .share-status {
-  min-height: 18px !important;
-  margin-top: 9px !important;
-  color: #d9c58e !important;
-  font-size: 12px !important;
-}
-@media (max-width: 600px) {
-  .share-buttons { gap: 10px !important; }
-  .lane-share .share-btn {
-    flex-basis: 44px !important;
-    width: 44px !important; min-width: 44px !important; max-width: 44px !important;
-    height: 44px !important; min-height: 44px !important; max-height: 44px !important;
-  }
-  .lane-share .share-btn svg {
-    width: 21px !important; height: 21px !important;
-    min-width: 21px !important; min-height: 21px !important;
-  }
-}
+@media(prefers-reduced-motion:reduce) { body::before { animation:none !important; } }
 
 </style>
 </head>
 <body>
 <header class="site-header">
-<div class="logo">LANE <span>VIDEO AI</span></div>
+<div class="logo">LANE <span>AI STUDIO</span></div>
 <nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
