@@ -840,7 +840,7 @@
   <div class="video-file-name" id="lipSyncImageFileName" aria-live="polite">No photo selected.</div>
   <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',20); updateLipSyncDuration()"></label>
   <div class="video-file-name" id="lipSyncAudioFileName" aria-live="polite">No audio track selected.</div>
-  <div class="video-tool-note">Photo: JPG, PNG, WEBP · Audio: MP3, WAV, M4A, AAC, OGG · Max 15 MB photo / 20 MB audio · Maximum audio duration: 30 seconds</div>
+  <div class="video-tool-note">Photo: JPG, PNG, WEBP · Audio: MP3, WAV, M4A, AAC, OGG · Max 15 MB photo / 20 MB audio · <span id="lipSyncAudioDurationHint">Audio duration: up to 15 seconds</span></div>
   <div class="cost-preview" id="lipSyncPricePreview" aria-live="polite">The total credit cost will appear here automatically after you choose an audio track.</div>
   <button class="video-tool-action" id="startLipSyncButton" type="button" onclick="startLipSync()">GENERATE VIDEO</button>
   <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Your files stay private. Credits are charged only after you confirm the price.</div>
@@ -1205,6 +1205,12 @@ async function updateLipSyncDuration() {
   const durationSelect = document.getElementById("duration");
   const selectedDuration = durationSelect ? durationSelect.value : "";
   const selectedSeconds = Number.parseInt(selectedDuration, 10);
+  const audioDurationHint = document.getElementById("lipSyncAudioDurationHint");
+  if (audioDurationHint) {
+    audioDurationHint.textContent = [15, 20, 30].includes(selectedSeconds)
+      ? "Audio duration: up to " + selectedSeconds + " seconds"
+      : "Audio duration: available for 15, 20 or 30-second videos";
+  }
 
   if (!syncLipSyncAvailability()) {
     if (preview) preview.textContent = "Lip Sync is available only for 15, 20 or 30-second videos.";
