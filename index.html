@@ -1113,6 +1113,29 @@
   }
 
   
+function syncLipSyncAvailability() {
+  const durationSelect = document.getElementById("duration");
+  const checkbox = document.getElementById("enableLipSync");
+  const panel = document.getElementById("lipSyncPanel");
+  const label = checkbox ? checkbox.closest(".lip-sync-optin") : null;
+  const helper = label ? label.querySelector("small") : null;
+  if (!durationSelect || !checkbox || !panel) return false;
+
+  const selectedSeconds = Number.parseInt(durationSelect.value, 10);
+  const available = selectedSeconds >= 15;
+  checkbox.disabled = !available;
+  if (label) label.style.opacity = available ? "1" : "0.55";
+  if (helper) {
+    helper.textContent = available
+      ? "Create a talking video from one photo and audio no longer than the selected video duration."
+      : "Lip Sync is available only for 15, 20 or 30-second videos.";
+  }
+
+  if (!available && checkbox.checked) checkbox.checked = false;
+  if (!available) panel.hidden = true;
+  return available;
+}
+
 function toggleLipSyncOptions() {
   const checkbox = document.getElementById("enableLipSync");
   const panel = document.getElementById("lipSyncPanel");
@@ -1120,7 +1143,9 @@ function toggleLipSyncOptions() {
   const standardGenerate = document.getElementById("generateVideoButton");
   if (!checkbox || !panel) return;
 
-  // Show only the pricing and action for the selected generation mode.
+  const available = syncLipSyncAvailability();
+  if (!available) checkbox.checked = false;
+
   panel.hidden = !checkbox.checked;
   if (standardPrice) standardPrice.hidden = checkbox.checked;
   if (standardGenerate) standardGenerate.hidden = checkbox.checked;
@@ -1152,17 +1177,18 @@ let lipSyncDurationSeconds = null;
 let lipSyncPollInProgress = false;
 
 function lipSyncPriceForDuration(seconds) {
-  // Lip Sync adds a fixed 100-credit surcharge to the selected standard video duration.
-  // The price is available immediately when the checkbox is enabled, even before files are selected.
-  if (seconds !== undefined && seconds !== null &&
-      (!Number.isFinite(seconds) || seconds <= 0 || seconds > 30)) return null;
+  // Lip Sync adds 100 credits to the selected 15, 20 or 30-second video tier.
+  // Audio may be shorter than the selected video, but must never be longer.
   const durationSelect = document.getElementById("duration");
   const selectedDuration = durationSelect ? durationSelect.value : "";
+  const selectedSeconds = Number.parseInt(selectedDuration, 10);
   const baseCredits = videoCostForDuration(selectedDuration);
-  if (baseCredits === null) return null;
-  const selectedSeconds = parseInt(selectedDuration, 10);
+  if (baseCredits === null || ![15, 20, 30].includes(selectedSeconds)) return null;
+  if (seconds !== undefined && seconds !== null &&
+      (!Number.isFinite(seconds) || seconds <= 0 || seconds > selectedSeconds)) return null;
   return {
     billableSeconds: seconds ? Math.ceil(seconds) : selectedSeconds,
+    maxAudioSeconds: selectedSeconds,
     baseCredits,
     lipSyncCredits: 100,
     credits: baseCredits + 100,
@@ -1173,17 +1199,30 @@ function lipSyncPriceForDuration(seconds) {
 async function updateLipSyncDuration() {
   const input = document.getElementById("lipSyncAudioFile");
   const preview = document.getElementById("lipSyncPricePreview");
+  const startButton = document.getElementById("startLipSyncButton");
   const file = input && input.files && input.files[0];
   lipSyncDurationSeconds = null;
+  const durationSelect = document.getElementById("duration");
+  const selectedDuration = durationSelect ? durationSelect.value : "";
+  const selectedSeconds = Number.parseInt(selectedDuration, 10);
+
+  if (!syncLipSyncAvailability()) {
+    if (preview) preview.textContent = "Lip Sync is available only for 15, 20 or 30-second videos.";
+    if (startButton) startButton.disabled = true;
+    return;
+  }
+
   if (!file) {
     const price = lipSyncPriceForDuration();
+    if (startButton) startButton.disabled = false;
     if (!price) {
-      preview.textContent = "Select a video duration to calculate the Lip Sync price.";
+      preview.textContent = "Select a valid video duration to calculate the Lip Sync price.";
       return;
     }
     preview.innerHTML = "TOTAL GENERATION COST: <strong>" + price.credits.toLocaleString() +
       " CREDITS</strong><div class=\"video-tool-note\">Standard video (" + price.selectedDuration + "): " +
-      price.baseCredits.toLocaleString() + " credits + Lip Sync: 100 credits · Choose an audio track up to 30 seconds.</div>";
+      price.baseCredits.toLocaleString() + " credits + Lip Sync: 100 credits · Choose audio up to " +
+      selectedSeconds + " seconds.</div>";
     return;
   }
 
@@ -1199,29 +1238,20 @@ async function updateLipSyncDuration() {
       probe.onerror = () => reject(new Error("Could not read the audio duration."));
     });
     lipSyncDurationSeconds = probe.duration;
-    const requiredDuration = [5, 10, 15, 20, 30].find(seconds => seconds >= Math.ceil(probe.duration));
-    if (!requiredDuration || probe.duration > 30) {
-      preview.textContent = "This service supports audio up to 30 seconds. Please choose a shorter audio track.";
-      return;
-    }
-
-    // Lip Sync billing follows the actual audio length, rounded up to the
-    // next supported duration tier. Keep the selector and displayed price aligned.
-    const durationSelect = document.getElementById("duration");
-    const durationAdjusted = !!(durationSelect && durationSelect.value !== requiredDuration + " seconds");
-    if (durationSelect) durationSelect.value = requiredDuration + " seconds";
-
     const price = lipSyncPriceForDuration(probe.duration);
     if (!price) {
-      preview.textContent = "Please choose a valid audio track no longer than 30 seconds.";
+      if (startButton) startButton.disabled = true;
+      preview.textContent = "The selected video is " + selectedSeconds +
+        " seconds. Please choose audio that is no longer than " + selectedSeconds + " seconds.";
       return;
     }
+    if (startButton) startButton.disabled = false;
     preview.innerHTML = "TOTAL GENERATION COST: <strong>" + price.credits.toLocaleString() +
       " CREDITS</strong><div class=\"video-tool-note\">Standard video (" + price.selectedDuration + "): " +
       price.baseCredits.toLocaleString() + " credits + Lip Sync: 100 credits · Audio: " +
-      probe.duration.toFixed(1) + " sec (maximum 30 seconds)" +
-      (durationAdjusted ? " · Duration and price matched to your audio length." : "") + "</div>";
+      probe.duration.toFixed(1) + " sec · Maximum allowed: " + selectedSeconds + " seconds.</div>";
   } catch (error) {
+    if (startButton) startButton.disabled = true;
     preview.textContent = error.message || "Could not read the audio duration.";
   } finally {
     URL.revokeObjectURL(objectUrl);
@@ -1245,9 +1275,15 @@ async function startLipSync() {
     return;
   }
   if (!lipSyncDurationSeconds) await updateLipSyncDuration();
+  if (!Number.isFinite(lipSyncDurationSeconds) || lipSyncDurationSeconds <= 0) {
+    notice.textContent = "Could not verify the audio duration. Please choose a supported audio file again.";
+    return;
+  }
   const price = lipSyncPriceForDuration(lipSyncDurationSeconds);
   if (!price) {
-    notice.textContent = "Please choose a valid audio track no longer than 30 seconds.";
+    const selected = document.getElementById("duration").value;
+    const selectedSeconds = Number.parseInt(selected, 10);
+    notice.textContent = "Choose audio no longer than " + selectedSeconds + " seconds for this video duration.";
     return;
   }
 
@@ -1619,6 +1655,7 @@ async function prepareVideo() {
     const standardGenerate = document.getElementById("generateVideoButton");
     if (!durationSelect || !preview) return;
 
+    syncLipSyncAvailability();
     const lipSyncEnabled = !!(lipSyncToggle && lipSyncToggle.checked);
     preview.hidden = lipSyncEnabled;
     if (standardGenerate) standardGenerate.hidden = lipSyncEnabled;
