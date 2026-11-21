@@ -624,7 +624,7 @@
 .video-tool-panel{margin:12px 0;padding:17px;border:1px solid #78202a;border-radius:13px;background:linear-gradient(145deg,#1a0c10,#090909);color:#fff}
 .video-tool-panel[hidden]{display:none!important}.video-tool-panel-title{font-size:14px;font-weight:900;letter-spacing:1.3px;color:#ff5966}.video-tool-panel p{font-size:12px;line-height:1.55;color:#c4b7b9}
 .video-file-picker{display:flex;align-items:center;justify-content:center;margin-top:12px;padding:12px;border:1px dashed #a82b38;border-radius:9px;color:#ff6974;font-size:11px;font-weight:900;letter-spacing:.8px;cursor:pointer}
-.video-file-picker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.video-file-name{font-size:11px;color:#e7dfe0;margin:7px 2px 10px;overflow-wrap:anywhere}.video-tool-note{font-size:10px;line-height:1.5;color:#a99b9d;margin-top:8px}.video-tool-action{width:100%;margin-top:14px;padding:12px;border:1px solid #a82b38;border-radius:8px;background:#321016;color:#ff8a92;font-weight:900;letter-spacing:1px;cursor:pointer}
+.video-file-picker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.video-file-name{font-size:11px;color:#e7dfe0;margin:7px 2px 10px;overflow-wrap:anywhere}.video-tool-note{font-size:10px;line-height:1.5;color:#a99b9d;margin-top:8px}.video-tool-action{width:100%;margin-top:14px;padding:12px;border:1px solid #a82b38;border-radius:8px;background:#321016;color:#ff8a92;font-weight:900;letter-spacing:1px;cursor:pointer}.video-tool-action::before{content:"✦";display:inline-block;margin-right:9px;font-size:16px;vertical-align:-1px}
 @media(max-width:520px){.video-tools-grid{grid-template-columns:1fr}.video-tool-card{min-height:92px}}
 
 </style>
@@ -820,7 +820,7 @@
 </div>
 </div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
-      Credit cost: <strong>102 credits</strong> · Selected duration: 5 seconds.
+      TOTAL GENERATION COST: <strong>192 CREDITS</strong> · Selected duration: 5 seconds.
     </div>
 <button class="primary-btn" id="generateVideoButton" onclick="prepareVideo()" type="button">
       GENERATE VIDEO
@@ -833,7 +833,7 @@
   </button>
   <button class="video-tool-card" id="lipSyncToggle" type="button" onclick="toggleVideoTool('lipSyncPanel')">
     <span class="video-tool-icon">♫</span><span class="video-tool-name">LIP SYNC</span>
-    <span class="video-tool-description">Prepare a video and audio track for lip sync</span>
+    <span class="video-tool-description">Animate your photo with an audio track</span>
   </button>
 </div>
 <div class="video-tool-panel" id="uploadVideoPanel" hidden>
@@ -845,14 +845,14 @@
 </div>
 <div class="video-tool-panel" id="lipSyncPanel" hidden>
   <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
-  <p>Choose a face video and the audio track that should drive the lip movements. The video is processed after you confirm the displayed credit cost.</p>
-  <label class="video-file-picker">CHOOSE FACE VIDEO<input id="lipSyncVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('lipSyncVideoFile','lipSyncVideoFileName',100); updateLipSyncDuration()"></label>
-  <div class="video-file-name" id="lipSyncVideoFileName" aria-live="polite">No face video selected.</div>
-  <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',30)"></label>
+  <p>Upload one photo of the face and an audio track up to 30 seconds. AI will animate the photo and synchronize the mouth movements to the audio.</p>
+  <label class="video-file-picker">CHOOSE PHOTO<input id="lipSyncImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="handleVideoToolFile('lipSyncImageFile','lipSyncImageFileName',20)"></label>
+  <div class="video-file-name" id="lipSyncImageFileName" aria-live="polite">No photo selected.</div>
+  <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',30); updateLipSyncDuration()"></label>
   <div class="video-file-name" id="lipSyncAudioFileName" aria-live="polite">No audio track selected.</div>
-  <div class="video-tool-note">Video: MP4, MOV, WEBM · Audio: MP3, WAV, M4A, AAC, OGG · Max 100 MB video / 30 MB audio · Maximum video duration: 30 seconds</div>
-  <div class="cost-preview" id="lipSyncPricePreview" aria-live="polite">Select a video to calculate the Lip Sync price.</div>
-  <button class="video-tool-action" id="startLipSyncButton" type="button" onclick="startLipSync()">START LIP SYNC</button>
+  <div class="video-tool-note">Photo: JPG, PNG, WEBP · Audio: MP3, WAV, M4A, AAC, OGG · Max 20 MB photo / 30 MB audio · Maximum audio duration: 30 seconds</div>
+  <div class="cost-preview" id="lipSyncPricePreview" aria-live="polite">The total credit cost will appear here automatically after you choose an audio track.</div>
+  <button class="video-tool-action" id="startLipSyncButton" type="button" onclick="startLipSync()">GENERATE VIDEO</button>
   <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Your files stay private. Credits are charged only after you confirm the price.</div>
 </div>
 <div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
@@ -1158,17 +1158,17 @@ function lipSyncPriceForDuration(seconds) {
 }
 
 async function updateLipSyncDuration() {
-  const input = document.getElementById("lipSyncVideoFile");
+  const input = document.getElementById("lipSyncAudioFile");
   const preview = document.getElementById("lipSyncPricePreview");
   const file = input && input.files && input.files[0];
   lipSyncDurationSeconds = null;
   if (!file) {
-    preview.textContent = "Select a video to calculate the Lip Sync price.";
+    preview.textContent = "The total credit cost will appear here automatically after you choose an audio track.";
     return;
   }
 
   const objectUrl = URL.createObjectURL(file);
-  const probe = document.createElement("video");
+  const probe = document.createElement("audio");
   probe.preload = "metadata";
   probe.muted = true;
   probe.src = objectUrl;
@@ -1176,19 +1176,19 @@ async function updateLipSyncDuration() {
   try {
     await new Promise((resolve, reject) => {
       probe.onloadedmetadata = resolve;
-      probe.onerror = () => reject(new Error("Could not read the video duration."));
+      probe.onerror = () => reject(new Error("Could not read the audio duration."));
     });
     lipSyncDurationSeconds = probe.duration;
     const price = lipSyncPriceForDuration(probe.duration);
     if (!price) {
-      preview.textContent = "This service supports videos up to 30 seconds. Please choose a shorter video.";
+      preview.textContent = "This service supports audio up to 30 seconds. Please choose a shorter audio track.";
       return;
     }
-    preview.innerHTML = "Video duration: <strong>" + probe.duration.toFixed(1) +
-      " sec</strong> · Billed as " + price.billableSeconds +
-      " sec · Lip Sync cost: <strong>" + price.credits + " credits</strong>.";
+    preview.innerHTML = "TOTAL GENERATION COST: <strong>" + price.credits.toLocaleString() +
+      " CREDITS</strong><div class=\"video-tool-note\">Audio: " + probe.duration.toFixed(1) +
+      " sec · Billing duration: " + price.billableSeconds + " sec</div>";
   } catch (error) {
-    preview.textContent = error.message || "Could not read the video duration.";
+    preview.textContent = error.message || "Could not read the audio duration.";
   } finally {
     URL.revokeObjectURL(objectUrl);
     probe.removeAttribute("src");
@@ -1197,7 +1197,7 @@ async function updateLipSyncDuration() {
 }
 
 async function startLipSync() {
-  const video = document.getElementById("lipSyncVideoFile").files[0];
+  const image = document.getElementById("lipSyncImageFile").files[0];
   const audio = document.getElementById("lipSyncAudioFile").files[0];
   const notice = document.getElementById("lipSyncNotice");
   const button = document.getElementById("startLipSyncButton");
@@ -1206,19 +1206,19 @@ async function startLipSync() {
     notice.textContent = "Please sign in before using Lip Sync.";
     return;
   }
-  if (!video || !audio) {
-    notice.textContent = "Please choose both a face video and an audio track first.";
+  if (!image || !audio) {
+    notice.textContent = "Please choose both a photo and an audio track first.";
     return;
   }
   if (!lipSyncDurationSeconds) await updateLipSyncDuration();
   const price = lipSyncPriceForDuration(lipSyncDurationSeconds);
   if (!price) {
-    notice.textContent = "Please choose a valid video no longer than 30 seconds.";
+    notice.textContent = "Please choose a valid audio track no longer than 30 seconds.";
     return;
   }
 
   const confirmed = window.confirm(
-    "Start Lip Sync for " + price.billableSeconds + " seconds?\\n\\n" +
+    "Create a talking photo from " + price.billableSeconds + " seconds of audio?\\n\\n" +
     "Cost: " + price.credits + " credits.\\n" +
     "Credits are deducted when processing starts. If the provider fails, the credits are refunded."
   );
@@ -1235,7 +1235,7 @@ async function startLipSync() {
     if (!token) throw new Error("Your session has expired. Please sign in again.");
 
     const form = new FormData();
-    form.append("video", video, video.name);
+    form.append("image", image, image.name);
     form.append("audio", audio, audio.name);
     form.append("durationSeconds", String(lipSyncDurationSeconds));
 
@@ -1259,7 +1259,7 @@ async function startLipSync() {
     console.error("Lip Sync error:", error);
     notice.textContent = "Lip Sync error: " + (error.message || "Please try again.");
     button.disabled = false;
-    button.textContent = "START LIP SYNC";
+    button.textContent = "GENERATE VIDEO";
     await refreshAuthState();
   }
 }
@@ -1275,7 +1275,7 @@ async function pollLipSyncStatus(generationId, creditsUsed) {
   const liveBadge = document.getElementById("videoLiveBadge");
 
   if (livePanel) livePanel.hidden = false;
-  if (liveMessage) liveMessage.textContent = "AI IS SYNCHRONIZING THE LIPS...";
+  if (liveMessage) liveMessage.textContent = "AI IS ANIMATING YOUR PHOTO...";
   if (liveStatus) liveStatus.textContent = "LIP SYNC PROCESSING";
   if (liveBadge) liveBadge.textContent = "PROCESSING";
   if (typeof renderVideoEqualizer === "function") renderVideoEqualizer();
@@ -1325,7 +1325,7 @@ async function pollLipSyncStatus(generationId, creditsUsed) {
   } finally {
     lipSyncPollInProgress = false;
     button.disabled = false;
-    button.textContent = "START LIP SYNC";
+    button.textContent = "GENERATE VIDEO";
     await refreshAuthState();
   }
 }
@@ -1584,8 +1584,8 @@ async function prepareVideo() {
     const duration = durationSelect.value;
     const credits = videoCostForDuration(duration);
     preview.innerHTML = credits === null
-      ? 'Credit cost: <strong>Price not available for this duration.</strong>'
-      : 'Credit cost for ' + duration + ': <strong>' + credits.toLocaleString() + ' credits</strong>.';
+      ? 'TOTAL GENERATION COST: <strong>Price not available for this duration.</strong>'
+      : 'TOTAL GENERATION COST: <strong>' + credits.toLocaleString() + ' CREDITS</strong> · Selected duration: ' + duration + '.';
   }
 
   const videoDurationSelect = document.getElementById("duration");
