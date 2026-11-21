@@ -829,23 +829,10 @@
       GENERATE VIDEO
     </button>
 
-<div class="video-tools-grid" aria-label="Additional video tools">
-  <button class="video-tool-card" id="uploadVideoToggle" type="button" onclick="toggleVideoTool('uploadVideoPanel')">
-    <span class="video-tool-icon">↑</span><span class="video-tool-name">UPLOAD VIDEO</span>
-    <span class="video-tool-description">Choose a video file to use in your project</span>
-  </button>
-</div>
 <label class="lip-sync-optin" for="enableLipSync">
   <input id="enableLipSync" type="checkbox" onchange="toggleLipSyncOptions()">
   <span>ENABLE LIP SYNC<small>Tick this box to create a talking video from one photo and an audio track.</small></span>
 </label>
-<div class="video-tool-panel" id="uploadVideoPanel" hidden>
-  <div class="video-tool-panel-title">UPLOAD YOUR VIDEO</div>
-  <p>Select a source video. The file selection is prepared; cloud upload and AI processing will be connected in the next integration step.</p>
-  <label class="video-file-picker">CHOOSE VIDEO FILE<input id="sourceVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" onchange="handleVideoToolFile('sourceVideoFile','sourceVideoFileName',100)"></label>
-  <div class="video-file-name" id="sourceVideoFileName" aria-live="polite">No video selected.</div>
-  <div class="video-tool-note">Supported formats: MP4, MOV, WEBM · Maximum 100 MB</div>
-</div>
 <div class="video-tool-panel" id="lipSyncPanel" hidden>
   <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
   <p>Upload one photo of the face and an audio track up to 30 seconds. AI will animate the photo and synchronize the mouth movements to the audio.</p>
@@ -1126,15 +1113,6 @@
   }
 
   
-function toggleVideoTool(panelId) {
-  const panel = document.getElementById(panelId);
-  if (!panel) return;
-  const willOpen = panel.hidden;
-  document.getElementById("uploadVideoPanel").hidden = true;
-  panel.hidden = !willOpen;
-  if (willOpen) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
 function toggleLipSyncOptions() {
   const checkbox = document.getElementById("enableLipSync");
   const panel = document.getElementById("lipSyncPanel");
