@@ -772,6 +772,132 @@ hr,.divider { border-color:#80601e !important; }
 .share-btn svg { fill:#ffe08a !important; }
 .share-status { color:#d9c58e !important; }
 
+
+/* LANE AI STUDIO — visible gold social buttons and subtle animated gold dust */
+body {
+  background-color: #050403 !important;
+  background-image:
+    radial-gradient(circle, rgba(255,218,125,.92) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(226,164,47,.75) 0 .8px, transparent 1.6px),
+    radial-gradient(circle, rgba(255,239,190,.58) 0 1.2px, transparent 2px),
+    radial-gradient(ellipse at 12% 18%, rgba(133,86,19,.20), transparent 36%),
+    radial-gradient(ellipse at 86% 72%, rgba(133,86,19,.15), transparent 40%),
+    linear-gradient(135deg, #050403 0%, #100c06 48%, #050403 100%) !important;
+  background-size: 190px 210px, 270px 250px, 360px 320px, 100% 100%, 100% 100%, 100% 100% !important;
+  background-position: 0 0, 70px 40px, 130px 110px, center, center, center !important;
+  background-attachment: fixed !important;
+  animation: laneGoldDustDrift 38s linear infinite !important;
+}
+@keyframes laneGoldDustDrift {
+  from { background-position: 0 0, 70px 40px, 130px 110px, center, center, center; }
+  to   { background-position: 190px 210px, -200px 290px, 490px -210px, center, center, center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none !important; }
+}
+
+/* The six share buttons are present in the HTML; force a visible, consistent icon layout. */
+.lane-promo {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 3 !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  min-height: 112px !important;
+  margin: 0 auto !important;
+  padding: 18px 5% 30px !important;
+}
+.lane-share, .lane-share h3, .share-buttons {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.lane-share {
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+.lane-share h3 {
+  display: block !important;
+  margin: 0 0 15px !important;
+  color: #ffe08a !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: .18em !important;
+  text-shadow: 0 0 12px rgba(255,190,40,.65) !important;
+}
+.share-buttons {
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 54px !important;
+}
+.lane-share .share-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 48px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border: 1px solid #e6b94d !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle at 35% 25%, #3a2a0c, #090806 75%) !important;
+  color: #ffe08a !important;
+  box-shadow: 0 0 10px rgba(235,177,49,.38), inset 0 0 8px rgba(255,220,120,.13) !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+.lane-share .share-btn svg {
+  display: block !important;
+  width: 23px !important;
+  height: 23px !important;
+  min-width: 23px !important;
+  min-height: 23px !important;
+  max-width: 23px !important;
+  max-height: 23px !important;
+  fill: #ffe08a !important;
+  stroke: #ffe08a !important;
+  overflow: visible !important;
+}
+.lane-share .share-btn:hover,
+.lane-share .share-btn:focus-visible {
+  transform: translateY(-2px) !important;
+  border-color: #fff0ad !important;
+  box-shadow: 0 0 17px rgba(255,202,70,.72) !important;
+  outline: 2px solid rgba(255,220,130,.35) !important;
+}
+.lane-share .share-status {
+  min-height: 18px !important;
+  margin-top: 9px !important;
+  color: #d9c58e !important;
+  font-size: 12px !important;
+}
+@media (max-width: 600px) {
+  .share-buttons { gap: 10px !important; }
+  .lane-share .share-btn {
+    flex-basis: 44px !important;
+    width: 44px !important; min-width: 44px !important; max-width: 44px !important;
+    height: 44px !important; min-height: 44px !important; max-height: 44px !important;
+  }
+  .lane-share .share-btn svg {
+    width: 21px !important; height: 21px !important;
+    min-width: 21px !important; min-height: 21px !important;
+  }
+}
+
 </style>
 </head>
 <body>
