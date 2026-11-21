@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>LANE AI STUDIO — Create Image, Video & Song</title>
-<meta content="Create images, videos and music with LANE AI STUDIO." name="description"/>
+<meta content="Create images, videos and songs with LANE AI STUDIO." name="description"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
@@ -615,7 +615,7 @@
     .generated-image-card a { display:inline-block; margin:10px 2px 2px; color:#ff4a54; font-weight:800; font-size:12px; text-decoration:none; }
     #generateImageButton:disabled { opacity:.65; cursor:wait; }
 
-/* LANE AI STUDIO — gold glow generation status visualizer */
+/* LANE AI STUDIO — red/black generation status visualizer */
 .video-live-panel{margin:18px 0;padding:20px;border:1px solid #78202a;border-radius:16px;background:radial-gradient(ellipse at 50% 0%,#351016 0,#170b0e 48%,#080808 100%);box-shadow:0 12px 34px #0008,0 0 22px #e5091420;color:#fff}
 .video-live-panel[hidden]{display:none!important}.video-live-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.video-live-title{font-weight:900;letter-spacing:1.8px;color:#fff}.video-live-badge{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#ff6974;border:1px solid #a82b38;border-radius:30px;padding:6px 10px;background:#3a0d14}
 .video-live-eq{height:104px;display:flex;align-items:center;justify-content:center;gap:5px;margin:12px 0 4px;padding:8px 5px;border-radius:10px;background:linear-gradient(180deg,#090909,#1b090d);overflow:hidden}
@@ -661,137 +661,137 @@
 }
 
 
-/* LANE AI STUDIO — approved Black & Gold Glow visual identity */
+/* LANE AI STUDIO — BLACK & GOLD GLOW visual theme */
 :root {
-  --red: #f2c34b;
-  --red-light: #ffe18a;
+  --red: #ffd34e;
+  --red-light: #ffe58a;
   --bg: #050505;
   --panel: #101010;
-  --border: #72551b;
+  --border: #73551b;
   --text: #fffaf0;
-  --muted: #c5b894;
-  --lane-gold: #ffd45a;
-  --lane-gold-bright: #fff0a6;
-  --lane-gold-deep: #9c6b13;
+  --muted: #c8b98f;
 }
-body { background:#050505; color:#fffaf0; }
+body { background:#050505 !important; color:#fffaf0; }
 .site-header {
-  background:linear-gradient(90deg,#030303 0%,#171106 50%,#030303 100%) !important;
-  border-color:#b88725 !important;
-  box-shadow:0 4px 28px rgba(255,195,55,.18),0 0 14px rgba(255,213,90,.10) !important;
+  background:linear-gradient(90deg,#030303 0%,#171207 48%,#030303 100%) !important;
+  border-color:#b88b2d !important;
+  box-shadow:0 4px 28px rgba(255,190,45,.22), inset 0 -1px 0 rgba(255,220,120,.35) !important;
 }
-.logo span,.menu-icon { color:var(--lane-gold-bright) !important; text-shadow:0 0 12px #ffc83d99; }
-.main-menu > summary,.main-menu-dropdown,.main-menu-dropdown > a,
-.main-menu-dropdown > details > summary,.notification-dropdown,.account-dropdown {
-  background:linear-gradient(145deg,#17130a,#080808) !important;
-  border-color:#bd8d2e !important;
-  box-shadow:0 0 14px #ffc83d22;
+.logo span,.hero h1 span { color:#ffd34e !important; text-shadow:0 0 12px #ffca38,0 0 28px #d99416 !important; }
+.main-menu > summary,.main-menu-dropdown {
+  border-color:#d7a936 !important;
+  background:linear-gradient(135deg,#171207,#050505) !important;
+  box-shadow:0 0 14px #e5ad2b44, inset 0 0 12px #d9a62b12 !important;
 }
 .main-menu > summary:hover,.main-menu[open] > summary,
-.main-menu-dropdown > a:hover,.main-menu-dropdown > details > summary:hover {
-  background:#30230c !important; border-color:#ffe18a !important;
+.main-menu-dropdown a:hover { background:#30220a !important; color:#ffe28a !important; }
+.menu-icon { color:#ffd34e !important; text-shadow:0 0 10px #ffbd24; }
+a, .visual-nav a:hover { color:#ffe08a; }
+button,.primary-btn,.hero .primary-btn,.buy-credit-btn,.premium-buy-btn {
+  background:linear-gradient(110deg,#ffe27a 0%,#d99a19 45%,#fff0a8 100%) !important;
+  color:#100c03 !important;
+  border:1px solid #ffe08a !important;
+  box-shadow:0 0 12px #f2b72b99,0 0 28px #d99a194d !important;
 }
-.hero.lane-ai-hero {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  min-height:0; padding:22px 4% 28px; background:#050505 !important;
-  border-bottom:1px solid #c59635; box-shadow:0 12px 35px #000;
+button:hover,.primary-btn:hover,.buy-credit-btn:hover,.premium-buy-btn:hover {
+  filter:brightness(1.12);
+  box-shadow:0 0 18px #ffd34e,0 0 38px #d99a1980 !important;
 }
-.lane-ai-hero-image {
-  display:block; width:min(1120px,100%); height:auto; max-height:560px;
-  object-fit:contain; border:1px solid #d4a63c; border-radius:18px;
-  box-shadow:0 0 18px #f6c64b55,0 0 55px #c58c2633;
+.secondary-btn,.studio-tabs a,.studio-accordion > summary {
+  color:#ffdf7a !important;
+  border-color:#98701f !important;
+  background:linear-gradient(145deg,#17130a,#090909) !important;
 }
-.lane-ai-hero-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:16px; }
-.lane-ai-hero-actions a {
-  display:inline-flex; align-items:center; justify-content:center; min-width:145px;
-  padding:12px 20px; border:1px solid #ffdf75; border-radius:9px;
-  background:linear-gradient(110deg,#171106,#080808 55%,#211707);
-  color:#ffe18a; text-decoration:none; font-size:12px; font-weight:900; letter-spacing:1px;
-  text-shadow:0 0 9px #ffd45a88; box-shadow:0 0 12px #ffd45a55,inset 0 0 12px #d69b2630;
+input,textarea,select {
+  accent-color:#ffd34e;
+  border-color:#80601e !important;
+  background-color:#0b0b0b !important;
+  color:#fff8e6 !important;
 }
-.lane-ai-hero-actions a:hover { background:linear-gradient(110deg,#382708,#100d07); box-shadow:0 0 22px #ffdb66aa; transform:translateY(-2px); }
-.primary-btn,.premium-buy-btn,.video-ready-action,.buy-credit-btn,
-button.primary-btn {
-  color:#171006 !important; border:1px solid #ffe18a !important;
-  background:linear-gradient(110deg,#fff0a6 0%,#f5c64d 42%,#b77b17 100%) !important;
-  box-shadow:0 0 16px #f4c34b66, inset 0 1px 0 #fff4c4 !important;
+input:focus,textarea:focus,select:focus {
+  outline:1px solid #ffd34e !important;
+  box-shadow:0 0 12px #eab52c55 !important;
 }
-.primary-btn:hover,.premium-buy-btn:hover,.video-ready-action:hover,.buy-credit-btn:hover {
-  filter:brightness(1.12); box-shadow:0 0 24px #ffd45aaa !important;
+.panel,.card,.price-card,.studio-accordion,.generation-limits-showcase,
+.premium-image-plan,.lane-promo-shell,.main-menu-dropdown {
+  background-color:#0b0b0b !important;
+  border-color:#98701f !important;
+  box-shadow:0 0 18px #d89f2630,inset 0 0 18px #c18a1710 !important;
 }
-.secondary-btn,.library-filter,.studio-tabs a {
-  background:linear-gradient(145deg,#1b170e,#090909) !important;
-  border:1px solid #8c6a27 !important; color:#f5d77e !important;
+.price-card,.generation-limits-showcase,.premium-image-plan {
+  background:linear-gradient(145deg,#171309,#080808 65%,#1c1508) !important;
 }
-.section-title,.section h2,.panel h3,.studio-accordion > summary,
-.video-tool-panel-title,.video-live-title { color:#ffe18a; text-shadow:0 0 12px #e6b83c33; }
-.category-card,.panel,.price-card,.library-stat,.library-empty,.studio-accordion,
-.video-tool-card,.video-tool-panel,.generated-image-card {
-  background:linear-gradient(145deg,#17140d,#080808 72%) !important;
-  border-color:#806022 !important;
-  box-shadow:0 8px 26px #0008,0 0 13px #d5a53b12;
+.price-card.featured,.premium-image-plan {
+  border-color:#ffd34e !important;
+  box-shadow:0 0 24px #e5ae2c55 !important;
 }
-.category-card:hover,.video-tool-card:hover,.video-tool-card:focus-visible {
-  border-color:#ffdf75 !important; box-shadow:0 0 22px #f5c64b44 !important;
+.hero {
+  background-image:linear-gradient(90deg,rgba(0,0,0,.04),rgba(0,0,0,.02)),url("lane-hero.webp") !important;
+  background-position:center 38% !important;
+  background-size:cover !important;
+  border-bottom:1px solid #d2a331 !important;
+  box-shadow:inset 0 -40px 60px rgba(0,0,0,.5),0 8px 30px #d59b2333 !important;
 }
-input,textarea,select,.project-output {
-  background:#080808 !important; color:#fffaf0 !important; border-color:#66501f !important;
+.hero h1 {
+  color:#fff5d8 !important;
+  border-color:#d9a72d !important;
+  background:rgba(0,0,0,.60) !important;
+  text-shadow:0 0 14px #000,0 0 18px #dba72f !important;
 }
-input:focus,textarea:focus,select:focus { border-color:#ffdc70 !important; box-shadow:0 0 10px #eab83c44; }
-label,.checkbox-row label { color:#f4dfaa !important; }
-.notice,.cost-preview,.checkbox-row,.file-row {
-  background:linear-gradient(145deg,#1b160a,#0b0b0b) !important;
-  border-color:#94702a !important; color:#f1e4c5 !important;
+.hero h2,.hero p { color:#fff1c8 !important; text-shadow:0 2px 12px #000; }
+.studio-accordion > summary:after { color:#ffd34e !important; }
+hr,.divider { border-color:#80601e !important; }
+
+
+/* Clickable hotspots precisely aligned with the three buttons in the approved hero artwork */
+.hero.hero-clickable {
+  position:relative !important;
+  min-height:0 !important;
+  height:auto !important;
+  padding:0 !important;
+  line-height:0;
+  overflow:hidden;
+  background:#050505 !important;
+  border-bottom:1px solid #d2a331 !important;
 }
-.notice,.lipsync-duration-guidance { border-left-color:#ffd45a !important; }
-.lipsync-duration-guidance strong,.cost-preview strong,.price-card .price,
-.premium-image-plan .price,.video-tool-icon,.video-tool-panel-title { color:#ffdf75 !important; }
-.checkbox-row input,.payment-choice input { accent-color:#e9b83e !important; }
-.payment-modal { background:rgba(0,0,0,.88) !important; }
-.payment-dialog,.payment-choice {
-  background:linear-gradient(145deg,#1a150b,#080808) !important; border-color:#b58a32 !important;
+.hero-banner-image {
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
 }
-.payment-choice:has(input:checked) { border-color:#ffe18a !important; background:#30240d !important; box-shadow:0 0 0 1px #d6a83c,0 0 15px #e5b63c44 !important; }
-.payment-close { border-color:#96722c !important; background:#171208 !important; color:#ffe18a !important; }
-.studio-accordion > summary:after { color:#ffdf75 !important; }
-.library-filter.active { background:#3a2a0b !important; border-color:#ffdf75 !important; color:#fff0b0 !important; }
-.generated-image-card a { color:#ffdf75 !important; }
-.video-live-panel,.video-live-eq {
-  background:radial-gradient(ellipse at 50% 0%,#3b2b0c 0,#171207 48%,#070707 100%) !important;
-  border-color:#b58a32 !important;
+.hero-hotspot {
+  position:absolute;
+  display:block;
+  z-index:5;
+  left:48.5%;
+  width:46.8%;
+  height:14.5%;
+  border-radius:999px;
+  background:transparent;
+  text-decoration:none;
+  cursor:pointer;
+  -webkit-tap-highlight-color:rgba(255,205,65,.18);
+  transition:background .18s ease, box-shadow .18s ease;
 }
-.video-live-badge { color:#ffe18a !important; border-color:#bd9137 !important; background:#30240d !important; }
-.video-live-eq span { background:linear-gradient(180deg,#fff1a6,#f5c64d 60%,#9c6b13) !important; box-shadow:0 0 10px #ffd45a99 !important; }
-.video-live-message,.video-live-meta strong { color:#ffe18a !important; }
-.video-tool-card:hover,.video-tool-card:focus-visible { border-color:#f5c64d !important; }
-.video-tool-icon { color:#ffdf75 !important; }
-.video-file-picker,.video-tool-action { border-color:#bd9137 !important; color:#ffe18a !important; background:linear-gradient(145deg,#241b09,#090909) !important; }
-.video-tool-action { width:100%; }
-.success-panel { border-color:#a88738 !important; background:#171408 !important; color:#f4dfaa !important; }
-.danger-btn { background:#30240d !important; border-color:#92702c !important; color:#ffe18a !important; }
-footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
-.lane-promo-shell {
-  background:radial-gradient(ellipse at 50% 45%,#392a0b 0,#171207 42%,#050505 78%) !important;
-  border-color:#c49738 !important; box-shadow:0 16px 45px #0008,0 0 32px #e5b63c33 !important;
+.hero-hotspot-image { top:44.0%; }
+.hero-hotspot-video { top:60.2%; }
+.hero-hotspot-song { top:76.2%; }
+.hero-hotspot:hover,.hero-hotspot:focus-visible {
+  background:rgba(255,204,66,.09);
+  box-shadow:inset 0 0 0 2px rgba(255,214,92,.9),0 0 22px rgba(255,190,40,.42);
+  outline:none;
 }
-.lane-promo-shell:before,.lane-promo-shell:after {
-  background:linear-gradient(90deg,transparent,#ffe18a,transparent) !important; box-shadow:0 0 18px #ffd45a !important;
-}
-.lane-brand-mark { text-shadow:0 0 18px #ffdb67aa !important; }
-.lane-brand-mark .lane-play { color:#171006 !important; background:linear-gradient(145deg,#fff0a6,#d79d28) !important; box-shadow:0 0 26px #ffd45aaa !important; }
-.lane-brand-mark .lane-ai { color:#ffdf75 !important; }
 @media(max-width:600px) {
-  .hero.lane-ai-hero { padding:12px 3% 20px; }
-  .lane-ai-hero-image { border-radius:12px; }
-  .lane-ai-hero-actions { width:100%; gap:8px; }
-  .lane-ai-hero-actions a { min-width:0; flex:1 1 28%; padding:11px 8px; font-size:10px; }
+  .hero.hero-clickable { width:100%; }
+  .hero-hotspot { left:48.5%; width:46.8%; }
 }
 
 </style>
 </head>
 <body>
 <header class="site-header">
-<div class="logo">LANE <span>AI STUDIO</span></div>
+<div class="logo">LANE <span>VIDEO AI</span></div>
 <nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
@@ -835,19 +835,17 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
 <span>🪙</span>
 <span id="headerCreditBalanceTop">0</span>
 </div>
-<section class="hero lane-ai-hero" id="home" aria-label="LANE AI STUDIO">
-  <img class="lane-ai-hero-image" src="lane-ai-studio-banner.png" alt="LANE AI STUDIO — Create Image, Video and Song"/>
-  <div class="lane-ai-hero-actions" aria-label="Choose a creative studio">
-    <a href="#imageStudio">CREATE IMAGE</a>
-    <a href="#studio">VIDEO</a>
-    <a href="#musicGenerator">SONG</a>
-  </div>
+<section class="hero hero-clickable" id="home" aria-label="LANE AI STUDIO — choose what to create">
+  <img class="hero-banner-image" src="lane-hero.webp" alt="LANE AI STUDIO — Create Image, Video, Song" fetchpriority="high"/>
+  <a class="hero-hotspot hero-hotspot-image" href="#imageStudio" aria-label="Open Create Image" title="Create Image" onclick="openStudioSection('imageStudio')"></a>
+  <a class="hero-hotspot hero-hotspot-video" href="#studio" aria-label="Open Create Video" title="Video" onclick="openStudioSection('studio')"></a>
+  <a class="hero-hotspot hero-hotspot-song" href="#musicGenerator" aria-label="Open Create Song" title="Song" onclick="openStudioSection('musicGenerator')"></a>
 </section>
 <section class="lane-promo" aria-label="LANE AI STUDIO brand and social sharing">
   <div class="lane-promo-shell">
     <div class="lane-brand-mark" aria-label="LANE AI STUDIO">
       <span class="lane-play" aria-hidden="true">▶</span>
-      <span>LANE AI <span class="lane-ai">STUDIO</span></span>
+      <span>LANE VIDEO <span class="lane-ai">AI</span></span>
     </div>
   </div>
   <div class="lane-share">
@@ -1011,7 +1009,7 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
   <div class="video-tool-note" id="lipSyncNotice" aria-live="polite">Your files stay private. Credits are charged only after you confirm the price.</div>
 </div>
 <div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
-  <div class="video-live-top"><span class="video-live-title">LANE VIDEO AI</span><span class="video-live-badge" id="videoLiveBadge">PROCESSING</span></div>
+  <div class="video-live-top"><span class="video-live-title">LANE AI STUDIO</span><span class="video-live-badge" id="videoLiveBadge">PROCESSING</span></div>
   <div class="video-live-eq" id="videoLiveEqualizer" aria-label="Video generation animation"></div>
   <div class="video-live-clock" id="videoLiveClock">00:00</div>
   <div class="video-live-caption">ELAPSED GENERATION TIME</div>
@@ -1117,7 +1115,7 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
 <section class="section" id="myfiles">
 <h2 class="section-title">My Files</h2>
 <p class="section-description">
-    Your personal library for uploaded music and all future LANE VIDEO AI creations.
+    Your personal library for uploaded music and all future LANE AI STUDIO creations.
     Videos, images, audio, thumbnails and project text will be kept together here.
   </p>
 <div class="library-summary">
@@ -1174,7 +1172,7 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
 <div class="panel">
 <div id="signedOut">
 <h3>Sign In or Create an Account</h3>
-<p class="mini-note">Use your Google account to sign in or create your LANE VIDEO AI account.</p>
+<p class="mini-note">Use your Google account to sign in or create your LANE AI STUDIO account.</p>
 <div class="account-buttons">
 <button class="primary-btn" onclick="googleSignIn()" type="button">CONTINUE WITH GOOGLE</button>
 </div>
@@ -1190,9 +1188,9 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
 </div>
 </section>
 <footer>
-<strong>LANE VIDEO AI</strong><br/>
+<strong>LANE AI STUDIO</strong><br/>
   CREATE ANYTHING YOU CAN IMAGINE.<br/>
-<span>© 2026 LANE VIDEO AI. All rights reserved.</span>
+<span>© 2026 LANE AI STUDIO. All rights reserved.</span>
 </footer>
 <script>
   // SUPABASE CONFIGURATION
@@ -1205,8 +1203,8 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
   // LANE social sharing: native share on supported devices, platform share links where available.
   async function shareLane(platform) {
     const shareUrl = SITE_URL;
-    const shareTitle = "LANE VIDEO AI";
-    const shareText = "Discover LANE VIDEO AI — create AI videos, images and music. No subscription. Buy credits only when you choose.";
+    const shareTitle = "LANE AI STUDIO";
+    const shareText = "Discover LANE AI STUDIO — create AI videos, images and music. No subscription. Buy credits only when you choose.";
     const status = document.getElementById("laneShareStatus");
     const setStatus = (message) => { if (status) status.textContent = message; };
 
@@ -1223,7 +1221,7 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
         await navigator.clipboard.writeText(shareUrl);
         setStatus("Link copied. You can paste it into any social network.");
       } catch (error) {
-        window.prompt("Copy the LANE VIDEO AI link:", shareUrl);
+        window.prompt("Copy the LANE AI STUDIO link:", shareUrl);
       }
       return;
     }
@@ -1244,7 +1242,7 @@ footer { border-top-color:#6f5420 !important; color:#bba875 !important; }
       await navigator.clipboard.writeText(shareUrl);
       setStatus("Link copied. Open " + platform + " and paste it into your post or profile.");
     } catch (error) {
-      window.prompt("Copy the LANE VIDEO AI link and share it on " + platform + ":", shareUrl);
+      window.prompt("Copy the LANE AI STUDIO link and share it on " + platform + ":", shareUrl);
     }
   }
 
@@ -1708,7 +1706,7 @@ async function prepareVideo() {
       if (statusError) {
         console.warn("Video status check failed; will retry:", statusError);
         output.textContent =
-          "LANE VIDEO AI — VIDEO GENERATION\n\n" +
+          "LANE AI STUDIO — VIDEO GENERATION\n\n" +
           "Your video is still being processed. Rechecking the status...\n\n" +
           "Please keep this page open.";
         continue;
@@ -2580,5 +2578,18 @@ async function continueToPayment() {
     }
   });
 </script>
+
+<script>
+function openStudioSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  const accordion = section.querySelector('details.studio-accordion');
+  if (accordion) accordion.open = true;
+  window.setTimeout(() => {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
+}
+</script>
+
 </body>
 </html>
