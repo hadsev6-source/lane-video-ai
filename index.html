@@ -1199,15 +1199,28 @@ async function updateLipSyncDuration() {
       probe.onerror = () => reject(new Error("Could not read the audio duration."));
     });
     lipSyncDurationSeconds = probe.duration;
+    const requiredDuration = [5, 10, 15, 20, 30].find(seconds => seconds >= Math.ceil(probe.duration));
+    if (!requiredDuration || probe.duration > 30) {
+      preview.textContent = "This service supports audio up to 30 seconds. Please choose a shorter audio track.";
+      return;
+    }
+
+    // Lip Sync billing follows the actual audio length, rounded up to the
+    // next supported duration tier. Keep the selector and displayed price aligned.
+    const durationSelect = document.getElementById("duration");
+    const durationAdjusted = !!(durationSelect && durationSelect.value !== requiredDuration + " seconds");
+    if (durationSelect) durationSelect.value = requiredDuration + " seconds";
+
     const price = lipSyncPriceForDuration(probe.duration);
     if (!price) {
-      preview.textContent = "This service supports audio up to 30 seconds. Please choose a shorter audio track.";
+      preview.textContent = "Please choose a valid audio track no longer than 30 seconds.";
       return;
     }
     preview.innerHTML = "TOTAL GENERATION COST: <strong>" + price.credits.toLocaleString() +
       " CREDITS</strong><div class=\"video-tool-note\">Standard video (" + price.selectedDuration + "): " +
       price.baseCredits.toLocaleString() + " credits + Lip Sync: 100 credits · Audio: " +
-      probe.duration.toFixed(1) + " sec (maximum 30 seconds)</div>";
+      probe.duration.toFixed(1) + " sec (maximum 30 seconds)" +
+      (durationAdjusted ? " · Duration and price matched to your audio length." : "") + "</div>";
   } catch (error) {
     preview.textContent = error.message || "Could not read the audio duration.";
   } finally {
@@ -1260,8 +1273,7 @@ async function startLipSync() {
     const form = new FormData();
     form.append("image", image, image.name);
     form.append("audio", audio, audio.name);
-    form.append("durationSeconds", String(parseInt(price.selectedDuration, 10)));
-    form.append("audioDurationSeconds", String(lipSyncDurationSeconds));
+    form.append("videoDurationSeconds", String(parseInt(price.selectedDuration, 10)));
 
     const response = await fetch(SUPABASE_URL + "/functions/v1/generate-video", {
       method: "POST",
