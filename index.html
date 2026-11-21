@@ -583,38 +583,6 @@
 .limit-row{flex-direction:column;gap:5px}.limit-row span{text-align:left}
 }
 
-/* LANE logo showcase and compact social sharing */
-.lane-promo { padding: 34px 5% 40px; max-width: 1200px; margin: 0 auto; }
-.lane-promo-shell { display:flex; align-items:center; justify-content:center; min-height:230px; padding:28px 20px; border:1px solid #81202b; border-radius:18px; background:radial-gradient(ellipse at 50% 45%,#4a1018 0,#19090d 42%,#070707 78%); box-shadow:0 16px 45px #0008,0 0 32px #e5091422; overflow:hidden; position:relative; }
-.lane-promo-shell:before,.lane-promo-shell:after { content:""; position:absolute; width:48%; height:1px; background:linear-gradient(90deg,transparent,#ff2638,transparent); box-shadow:0 0 18px #ff2638; transform:rotate(-12deg); }
-.lane-promo-shell:before { left:-8%; top:28%; }
-.lane-promo-shell:after { right:-8%; bottom:25%; transform:rotate(12deg); }
-.lane-brand-mark { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:14px; color:#fff; font-size:clamp(30px,5vw,58px); font-weight:950; letter-spacing:1px; text-align:center; text-shadow:0 0 18px #ff2438aa; }
-.lane-brand-mark .lane-play { display:grid; place-items:center; width:clamp(48px,6vw,70px); height:clamp(48px,6vw,70px); border-radius:17px; color:#fff; background:linear-gradient(145deg,#ff3448,#a90016); box-shadow:0 0 26px #ff1c35a6; font-size:clamp(25px,3.5vw,38px); }
-.lane-brand-mark .lane-ai { color:#ff3348; }
-.lane-share { margin-top:18px; text-align:center; }
-.lane-share h3 { margin:0 0 12px; font-size:14px; font-weight:700; letter-spacing:1.5px; color:#ddd; }
-.share-buttons { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; }
-.share-btn { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; min-width:36px; padding:7px; border:1px solid #454545; border-radius:50%; background:#171717; color:#fff; cursor:pointer; transition:transform .2s,filter .2s,box-shadow .2s; }
-.share-btn svg { display:block; width:18px; height:18px; fill:currentColor; }
-.share-btn:hover { transform:translateY(-2px) scale(1.06); filter:brightness(1.2); box-shadow:0 0 13px #e5091444; }
-.share-facebook { background:#1877f2; border-color:#1877f2; }
-.share-whatsapp { background:#128c4a; border-color:#128c4a; }
-.share-tiktok { background:#111; border-color:#555; }
-.share-instagram { background:linear-gradient(120deg,#7b2ff7,#d62976,#fa7e1e); border:0; }
-.share-youtube { background:#c00; border-color:#c00; }
-.share-copy { background:#292929; }
-.share-status { min-height:16px; margin-top:8px; color:#aaa; font-size:11px; }
-@media(max-width:760px) { .lane-promo { padding:24px 4% 30px; } .lane-promo-shell { min-height:175px; padding:20px 12px; } .lane-brand-mark { gap:9px; } .share-btn { width:34px; height:34px; min-width:34px; } }
-
-
-
-    .generated-image-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:16px; }
-    .generated-image-card { background:#111; border:1px solid #393939; border-radius:10px; padding:9px; min-width:0; }
-    .generated-image-card img { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:7px; }
-    .generated-image-card a { display:inline-block; margin:10px 2px 2px; color:#ff4a54; font-weight:800; font-size:12px; text-decoration:none; }
-    #generateImageButton:disabled { opacity:.65; cursor:wait; }
-
 /* LANE AI STUDIO — red/black generation status visualizer */
 .video-live-panel{margin:18px 0;padding:20px;border:1px solid #78202a;border-radius:16px;background:radial-gradient(ellipse at 50% 0%,#351016 0,#170b0e 48%,#080808 100%);box-shadow:0 12px 34px #0008,0 0 22px #e5091420;color:#fff}
 .video-live-panel[hidden]{display:none!important}.video-live-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.video-live-title{font-weight:900;letter-spacing:1.8px;color:#fff}.video-live-badge{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#ff6974;border:1px solid #a82b38;border-radius:30px;padding:6px 10px;background:#3a0d14}
@@ -787,6 +755,23 @@ hr,.divider { border-color:#80601e !important; }
   .hero-hotspot { left:48.5%; width:46.8%; }
 }
 
+
+
+/* Compact gold-glow social sharing */
+.lane-promo { padding: 12px 5% 28px !important; max-width:1200px; margin:0 auto; }
+.lane-share { margin-top:0 !important; text-align:center; }
+.lane-share h3 { color:#f5d77e !important; text-shadow:0 0 10px #d99a194d; }
+.share-buttons { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; }
+.share-btn {
+  background:linear-gradient(145deg,#211805,#080808) !important;
+  border:1px solid #d7a936 !important;
+  color:#ffe08a !important;
+  box-shadow:0 0 10px rgba(230,174,45,.28), inset 0 0 8px rgba(255,211,78,.08) !important;
+}
+.share-btn:hover { transform:translateY(-2px) scale(1.06); box-shadow:0 0 16px rgba(255,205,65,.65) !important; }
+.share-btn svg { fill:#ffe08a !important; }
+.share-status { color:#d9c58e !important; }
+
 </style>
 </head>
 <body>
@@ -842,12 +827,6 @@ hr,.divider { border-color:#80601e !important; }
   <a class="hero-hotspot hero-hotspot-song" href="#musicGenerator" aria-label="Open Create Song" title="Song" onclick="openStudioSection('musicGenerator')"></a>
 </section>
 <section class="lane-promo" aria-label="LANE AI STUDIO brand and social sharing">
-  <div class="lane-promo-shell">
-    <div class="lane-brand-mark" aria-label="LANE AI STUDIO">
-      <span class="lane-play" aria-hidden="true">▶</span>
-      <span>LANE VIDEO <span class="lane-ai">AI</span></span>
-    </div>
-  </div>
   <div class="lane-share">
     <h3>SHARE WITH</h3>
     <div class="share-buttons">
