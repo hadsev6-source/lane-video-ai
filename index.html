@@ -895,29 +895,112 @@ header.site-header > div.logo span {
 }
 
 
-/* CINEMATIC BLACK / RED / METALLIC HERO — visual-only layer */
-:root{--red:#f20b1b;--red-light:#ff4a55;--bg:#030303;--panel:#101010;--border:#5d1118;--text:#fff;--muted:#b9b9b9}
-.site-header{background:linear-gradient(90deg,#020202 0%,#111 55%,#030303 100%)!important;border:0!important;border-bottom:1px solid #353535!important;box-shadow:0 5px 30px #000!important;padding:16px 6%!important}
-header.site-header>div.logo{font-family:Arial,Helvetica,sans-serif!important;font-size:clamp(22px,3vw,38px)!important;font-weight:900!important;letter-spacing:1px!important;color:#eee!important;text-shadow:0 2px 3px #000,0 0 12px #aaa!important}
-header.site-header>div.logo span{font-size:inherit!important;font-weight:900!important;letter-spacing:inherit!important;color:#f21b27!important;text-shadow:0 0 12px #f00,0 2px 3px #000!important}
-.visual-nav a{font-size:clamp(14px,1.5vw,21px)!important;font-weight:700!important;color:#f5f5f5!important;border-bottom:2px solid transparent!important}
-.visual-nav a:hover{color:#ff555d!important;border-color:#ff1b2b!important}
-.lane-cinematic-hero{position:relative!important;isolation:isolate!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;width:100%!important;max-width:none!important;min-height:clamp(590px,68vw,790px)!important;padding:60px 5% 110px!important;overflow:hidden!important;border:0!important;border-bottom:1px solid #4c0b10!important;background:#030303 url('lane-metal-red-hero.png') center center/cover no-repeat!important}
-.lane-cinematic-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at center,rgba(0,0,0,.12),rgba(0,0,0,.30) 70%,rgba(0,0,0,.1))!important}
-.lane-hero-content{width:min(100%,1180px);margin:auto;position:relative;z-index:1;text-align:center}
-.lane-hero-wordmark{font-family:Arial,Helvetica,sans-serif;font-size:clamp(48px,8vw,104px);font-weight:900;font-style:italic;letter-spacing:-3px;line-height:1.05;color:#f4f4f4;text-shadow:0 3px 2px #555,0 8px 18px #000,0 0 18px #fff7}
-.lane-hero-wordmark strong{color:#f31320;text-shadow:0 2px 2px #5d0000,0 0 22px #f00;font-weight:900}
-.lane-hero-tagline{margin:22px auto 20px;color:#eee;letter-spacing:clamp(4px,1vw,10px);font-size:clamp(13px,1.6vw,23px);font-weight:600;text-shadow:0 2px 8px #000}
-.lane-hero-tagline i{color:#ff343e;font-style:normal;margin:0 8px}
-.lane-hero-content h1{font-family:Arial,Helvetica,sans-serif!important;font-size:clamp(25px,3.5vw,49px)!important;font-weight:800!important;font-style:italic!important;color:#f4f4f4!important;letter-spacing:-1px!important;margin:12px 0 48px!important;text-shadow:0 3px 8px #000!important}
-.lane-hero-content h1 em{color:#f31320;font-style:italic;text-shadow:0 0 15px #f00}
-.lane-hero-actions{display:flex;justify-content:center;gap:clamp(12px,2vw,26px);flex-wrap:wrap;margin:0 auto 34px}
-.lane-hero-action{min-width:clamp(190px,26vw,340px);min-height:104px;display:flex;align-items:center;justify-content:center;gap:18px;padding:18px 24px;border:2px solid #f22;border-radius:58px;background:linear-gradient(180deg,rgba(30,20,20,.96),rgba(0,0,0,.98) 55%,rgba(25,0,0,.96))!important;color:#fff!important;font-size:clamp(18px,2.2vw,30px);font-weight:900;text-decoration:none!important;text-shadow:0 2px 4px #000;box-shadow:0 0 8px #f22,0 0 24px #e00000aa,inset 0 0 18px #f004,inset 0 2px 5px #fff8;transition:transform .2s,box-shadow .2s}
-.lane-hero-action:hover{transform:translateY(-4px);box-shadow:0 0 14px #f44,0 0 36px #f00,inset 0 0 20px #f006}
-.lane-action-icon{font-size:clamp(34px,4vw,52px);color:#ff3945;text-shadow:0 0 12px #f00;line-height:1}
-.lane-hero-benefits{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap}
-.lane-hero-benefits span{padding:12px 23px;border:1px solid #86202a;border-radius:40px;background:rgba(5,5,5,.82);color:#fff;font-size:clamp(14px,1.5vw,21px);box-shadow:0 0 12px #f001,inset 0 0 12px #fff1}
-@media(max-width:650px){.site-header{padding:12px 4%!important}.visual-nav{gap:10px!important;flex-wrap:wrap}.lane-cinematic-hero{min-height:650px!important;padding:46px 5% 100px!important;background-position:center center!important}.lane-hero-wordmark{font-size:clamp(39px,11vw,66px);letter-spacing:-2px}.lane-hero-content h1{margin-bottom:30px!important}.lane-hero-actions{gap:13px}.lane-hero-action{width:min(100%,340px);min-height:76px}.lane-hero-benefits{gap:8px}.lane-hero-benefits span{padding:9px 13px;font-size:13px}}
+
+/* LANE AI STUDIO — final cinematic red / black / steel interface */
+:root {
+  --red:#f20d20 !important; --red-light:#ff4854 !important;
+  --bg:#030304 !important; --panel:#0b0c0f !important;
+  --border:#555b63 !important; --text:#f5f6f8 !important; --muted:#b9bdc4 !important;
+}
+html,body { background:#030304 !important; color:#f5f6f8 !important; }
+body::before { display:none !important; content:none !important; }
+.site-header {
+  background:linear-gradient(100deg,#030304 0%,#111216 50%,#030304 100%) !important;
+  border:0 !important; border-bottom:1px solid #555b63 !important;
+  box-shadow:0 5px 28px #000 !important;
+  min-height:88px; padding:14px clamp(18px,5vw,76px) !important;
+}
+header.site-header > div.logo {
+  display:inline-flex !important; align-items:baseline !important; gap:8px !important;
+  font-family:Arial,Helvetica,sans-serif !important; font-size:clamp(22px,2.4vw,34px) !important;
+  font-weight:900 !important; letter-spacing:.3px !important; color:#f4f5f7 !important;
+  text-shadow:0 2px 8px #fff6 !important;
+}
+header.site-header > div.logo::before { content:'🎬'; font-size:.9em; margin-right:4px; }
+header.site-header > div.logo span { color:#f20d20 !important; font:inherit !important; text-shadow:0 0 14px #f20d2080 !important; }
+.visual-nav a { color:#f4f5f7 !important; font-weight:700; }
+.visual-nav a:hover { color:#ff4854 !important; border-color:#f20d20 !important; }
+.main-menu > summary,.main-menu-dropdown,.main-menu-dropdown > a,.main-menu-dropdown > details > summary {
+  color:#f5f6f8 !important; border-color:#9da3ac !important;
+  background:linear-gradient(145deg,#17191e,#050506) !important;
+  box-shadow:0 0 12px #f20d2028 !important;
+}
+.main-menu > summary:hover,.main-menu[open] > summary,.main-menu-dropdown a:hover { background:#29090e !important; color:#fff !important; border-color:#f20d20 !important; }
+.menu-icon { color:#ff2638 !important; text-shadow:0 0 10px #f20d20 !important; }
+.credit-counter { color:#f4f5f7 !important; border:1px solid #9da3ac !important; background:linear-gradient(145deg,#17191e,#050506) !important; box-shadow:0 0 12px #f20d2025 !important; }
+.lane-cinematic-hero {
+  position:relative !important; isolation:isolate; overflow:hidden !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  width:100% !important; min-height:clamp(570px,54vw,790px) !important; height:auto !important;
+  padding:clamp(58px,6vw,92px) 24px clamp(130px,13vw,190px) !important;
+  text-align:center !important; border:0 !important;
+  background-color:#030304 !important;
+  background-image:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.04) 55%,rgba(0,0,0,.08)),url("lane-metal-red-hero.png") !important;
+  background-position:center center !important; background-repeat:no-repeat !important; background-size:cover !important;
+  box-shadow:none !important;
+}
+.lane-hero-content { position:relative; z-index:2; width:min(1120px,100%); margin:auto; display:flex; flex-direction:column; align-items:center; }
+.lane-hero-wordmark {
+  margin:0 0 12px; font-family:Arial,Helvetica,sans-serif; font-size:clamp(42px,7.3vw,104px);
+  line-height:1.04; font-weight:900; font-style:italic; letter-spacing:-.045em;
+  color:#f1f3f5; text-shadow:0 3px 0 #6f747a,0 7px 18px #000,0 0 20px #fff5;
+}
+.lane-hero-wordmark span { color:#f20d20; text-shadow:0 3px 0 #7a0009,0 7px 20px #000,0 0 24px #f20d2090; }
+.lane-hero-kicker { display:flex; align-items:center; justify-content:center; gap:clamp(10px,2vw,28px); color:#f3f4f6; font-size:clamp(12px,1.55vw,22px); font-weight:700; letter-spacing:.32em; margin:4px 0 24px; }
+.lane-hero-kicker span { display:block; width:clamp(24px,7vw,110px); height:2px; background:linear-gradient(90deg,transparent,#f20d20); box-shadow:0 0 9px #f20d20; }
+.lane-hero-kicker span:last-child { transform:scaleX(-1); }
+.lane-hero-kicker b { color:#ff3445; }
+.lane-hero-tagline { margin:0 0 clamp(28px,4vw,52px) !important; padding:0 !important; border:0 !important; background:transparent !important; box-shadow:none !important; border-radius:0 !important; color:#f4f5f7 !important; font-family:Arial,Helvetica,sans-serif !important; font-size:clamp(24px,3.5vw,48px) !important; line-height:1.15; font-weight:800 !important; font-style:italic; letter-spacing:-.02em !important; text-shadow:0 3px 12px #000,0 0 15px #fff3 !important; }
+.lane-hero-tagline span { color:#f20d20; text-shadow:0 0 16px #f20d20 !important; }
+.lane-hero-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(12px,2vw,24px); width:min(100%,1120px); }
+.lane-hero-action {
+  min-height:clamp(78px,8vw,118px); display:flex; align-items:center; justify-content:center; gap:clamp(10px,1.5vw,20px);
+  padding:14px 18px; border:2px solid #ff2638; border-radius:999px;
+  color:#f7f7f8 !important; text-decoration:none !important; font-size:clamp(17px,2.2vw,30px); font-weight:900;
+  background:linear-gradient(180deg,rgba(45,45,49,.92),rgba(2,2,3,.96) 52%,rgba(15,4,6,.96));
+  box-shadow:0 0 7px #fff8 inset,0 0 8px #ff2638,0 0 22px #f20d2090,inset 0 -8px 18px #f20d2028;
+  transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
+}
+.lane-hero-action:hover { transform:translateY(-4px); filter:brightness(1.16); box-shadow:0 0 10px #fff9 inset,0 0 13px #ff2638,0 0 34px #f20d20b0; }
+.lane-action-icon { color:#ff3445; font-size:clamp(28px,3.5vw,48px); line-height:1; text-shadow:0 0 13px #f20d20; }
+.lane-hero-benefits { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:12px 22px; margin-top:clamp(24px,3vw,42px); }
+.lane-hero-benefits span { border:1px solid #8e333b; border-radius:999px; padding:9px 20px; color:#f4f5f7; background:rgba(0,0,0,.68); font-size:clamp(13px,1.35vw,18px); box-shadow:0 0 12px #f20d2028; }
+/* Red/steel accents replace the previous gold treatment across the rest of the site. */
+button,.primary-btn,.buy-credit-btn,.premium-buy-btn { border-color:#ff4654 !important; background:linear-gradient(110deg,#ff4856 0%,#c60015 48%,#75000b 100%) !important; color:#fff !important; box-shadow:0 0 12px #f20d2055 !important; }
+.secondary-btn,.studio-tabs a,.studio-accordion > summary,.library-filter { border-color:#777e88 !important; color:#f1f3f5 !important; background:linear-gradient(145deg,#202228,#090a0c) !important; }
+input,textarea,select { border-color:#555b63 !important; background:#090a0c !important; color:#f5f6f8 !important; accent-color:#f20d20; }
+input:focus,textarea:focus,select:focus { outline:1px solid #ff3445 !important; box-shadow:0 0 12px #f20d2044 !important; }
+.panel,.card,.price-card,.studio-accordion,.generation-limits-showcase,.premium-image-plan,.lane-promo-shell,.main-menu-dropdown { border-color:#555b63 !important; box-shadow:0 0 18px #0009,inset 0 0 16px #fff1 !important; }
+.price-card,.generation-limits-showcase,.premium-image-plan { background:linear-gradient(145deg,#1a1c21,#08090b 68%,#16080b) !important; }
+.price-card.featured,.premium-image-plan { border-color:#f20d20 !important; }
+.lane-promo { border-top:1px solid #555b63 !important; background:linear-gradient(180deg,#090a0c,#030304) !important; }
+.lane-share h3 { color:#f2f3f5 !important; text-shadow:0 0 12px #f20d2070 !important; }
+.lane-promo .share-btn { color:#fff !important; background:radial-gradient(circle at 35% 25%,#30333a,#08090b 72%) !important; border:1px solid #aab0b8 !important; box-shadow:0 0 12px #f20d2033 !important; }
+.lane-promo .share-btn svg,.lane-promo .share-btn svg path { fill:#f2f3f5 !important; stroke:#f2f3f5 !important; }
+.share-status,.mini-note,.section-description { color:#b9bdc4 !important; }
+.notice,.cost-preview { border-color:#7c2832 !important; background:#17090c !important; }
+footer { border-color:#555b63 !important; }
+@media(max-width:900px) {
+  .lane-cinematic-hero { min-height:690px !important; padding:66px 22px 145px !important; background-size:auto 100% !important; background-position:center center !important; }
+  .lane-hero-wordmark { font-size:clamp(44px,8vw,70px); }
+  .lane-hero-actions { width:min(100%,700px); }
+}
+@media(max-width:600px) {
+  header.site-header > div.logo { font-size:clamp(17px,5vw,23px) !important; letter-spacing:0 !important; gap:4px !important; }
+  header.site-header > div.logo::before { font-size:.82em; margin-right:1px; }
+  .credit-counter { font-size:13px !important; }
+  .lane-cinematic-hero { min-height:760px !important; padding:54px 16px 150px !important; background-size:auto 100% !important; background-position:center center !important; }
+  .lane-hero-wordmark { font-size:clamp(38px,10vw,54px); margin-bottom:10px; }
+  .lane-hero-kicker { gap:8px; font-size:11px; letter-spacing:.22em; margin-bottom:18px; }
+  .lane-hero-kicker span { width:20px; }
+  .lane-hero-tagline { font-size:clamp(22px,6vw,29px) !important; margin-bottom:28px !important; }
+  .lane-hero-actions { grid-template-columns:1fr; gap:14px; width:min(100%,440px); }
+  .lane-hero-action { min-height:82px; font-size:22px; }
+  .lane-action-icon { font-size:34px; }
+  .lane-hero-benefits { gap:8px; margin-top:24px; }
+  .lane-hero-benefits span { padding:8px 12px; font-size:12px; }
+}
+@media(prefers-reduced-motion:reduce) { .lane-hero-action { transition:none !important; } }
 
 </style>
 </head>
@@ -969,15 +1052,15 @@ header.site-header>div.logo span{font-size:inherit!important;font-weight:900!imp
 </div>
 <section class="hero hero-clickable lane-cinematic-hero" id="home" aria-label="LANE AI STUDIO — choose what to create">
   <div class="lane-hero-content">
-    <div class="lane-hero-wordmark"><span>LANE AI</span> <strong>STUDIO</strong></div>
-    <div class="lane-hero-tagline">CREATE <i>·</i> EDIT <i>·</i> GENERATE</div>
-    <h1>Create Stunning Videos with <em>AI</em></h1>
+    <div class="lane-hero-wordmark" aria-label="LANE AI STUDIO">LANE AI <span>STUDIO</span></div>
+    <div class="lane-hero-kicker"><span></span> CREATE <b>·</b> EDIT <b>·</b> GENERATE <span></span></div>
+    <h1 class="lane-hero-tagline">Create Stunning Videos with <span>AI</span></h1>
     <div class="lane-hero-actions">
-      <a class="lane-hero-action" href="#imageStudio" onclick="openStudioSection('imageStudio'); return false;"><span class="lane-action-icon">▧</span> CREATE IMAGE</a>
-      <a class="lane-hero-action" href="#studio" onclick="openStudioSection('studio'); return false;"><span class="lane-action-icon">▣</span> VIDEO</a>
-      <a class="lane-hero-action" href="#musicGenerator" onclick="openStudioSection('musicGenerator'); return false;"><span class="lane-action-icon">♫</span> SONG</a>
+      <a class="lane-hero-action" href="#imageStudio" onclick="openStudioSection('imageStudio')"><span class="lane-action-icon" aria-hidden="true">▧</span> CREATE IMAGE</a>
+      <a class="lane-hero-action" href="#studio" onclick="openStudioSection('studio')"><span class="lane-action-icon" aria-hidden="true">▣</span> VIDEO</a>
+      <a class="lane-hero-action" href="#musicGenerator" onclick="openStudioSection('musicGenerator')"><span class="lane-action-icon" aria-hidden="true">♫</span> SONG</a>
     </div>
-    <div class="lane-hero-benefits"><span>ϟ &nbsp; Fast</span><span>▱ &nbsp; Easy to Use</span><span>♢ &nbsp; Professional Results</span></div>
+    <div class="lane-hero-benefits"><span>ϟ&nbsp; Fast</span><span>◇&nbsp; Easy to Use</span><span>♢&nbsp; Professional Results</span></div>
   </div>
 </section>
 <section class="lane-promo" aria-label="LANE AI STUDIO brand and social sharing">
