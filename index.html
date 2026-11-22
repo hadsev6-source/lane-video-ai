@@ -894,6 +894,215 @@ header.site-header > div.logo span {
   header.site-header > div.logo span {font-size:8px !important;letter-spacing:1.4px !important;}
 }
 
+
+/* LANE AI STUDIO — BLACK / CRIMSON / BRUSHED METAL visual refresh */
+:root {
+  --red:#ed1730 !important;
+  --red-light:#ff4054 !important;
+  --bg:#050609 !important;
+  --panel:#101217 !important;
+  --border:#454b55 !important;
+  --text:#f4f5f7 !important;
+  --muted:#aeb4bf !important;
+}
+html, body { background:#050609 !important; color:#f4f5f7 !important; }
+body::before {
+  background-color:#050609 !important;
+  background-image:
+    radial-gradient(ellipse at 14% 18%,rgba(180,12,35,.22),transparent 34%),
+    radial-gradient(ellipse at 86% 62%,rgba(100,112,130,.17),transparent 38%),
+    linear-gradient(135deg,transparent 0 46%,rgba(255,255,255,.025) 48%,transparent 51% 100%) !important;
+  background-size:100% 100%,100% 100%,100% 100% !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  animation:none !important;
+  opacity:1 !important;
+}
+.site-header {
+  background:linear-gradient(105deg,#050609,#171a20 48%,#090a0e) !important;
+  border:0 !important;
+  border-bottom:1px solid #8d1b2c !important;
+  box-shadow:0 8px 30px #000b,0 1px 0 #aab2bf33 inset !important;
+}
+header.site-header > div.logo {
+  color:#f4f5f7 !important;
+  font-family:Montserrat,Arial,sans-serif !important;
+  font-weight:800 !important;
+  letter-spacing:1.5px !important;
+  text-shadow:0 1px 0 #fff7,0 5px 18px #000 !important;
+}
+header.site-header > div.logo span {
+  color:#ff3048 !important;
+  font-family:Montserrat,Arial,sans-serif !important;
+  font-weight:800 !important;
+  letter-spacing:1.6px !important;
+  text-shadow:0 0 14px #ed173066 !important;
+}
+.visual-nav a { color:#e4e7ec !important; }
+.visual-nav a:hover { color:#ff5265 !important; border-color:#ed1730 !important; }
+.main-menu > summary,.main-menu-dropdown {
+  color:#f4f5f7 !important;
+  border-color:#8c2636 !important;
+  background:linear-gradient(145deg,#242831,#0a0b0f) !important;
+  box-shadow:0 5px 18px #0009,inset 0 1px 0 #ffffff24 !important;
+}
+.main-menu-dropdown > a,.main-menu-dropdown > details > summary {
+  background:linear-gradient(145deg,#20242c,#0c0e13) !important;
+  border-color:#4b515c !important;
+}
+.main-menu-dropdown > a:hover,.main-menu-dropdown > details > summary:hover {
+  background:linear-gradient(110deg,#48101c,#171a20) !important;
+  border-color:#ff4054 !important;
+}
+a,.menu-icon,.studio-accordion > summary:after { color:#ff4054; }
+button,.primary-btn,.buy-credit-btn,.premium-buy-btn,.video-ready-action {
+  background:linear-gradient(115deg,#ff4054 0%,#c20d29 48%,#76101f 100%) !important;
+  color:#fff !important;
+  border:1px solid #ff6575 !important;
+  box-shadow:0 5px 18px #0009,0 0 16px #ed173044,inset 0 1px 0 #ffffff55 !important;
+}
+button:hover,.primary-btn:hover,.buy-credit-btn:hover,.premium-buy-btn:hover {
+  filter:brightness(1.12) !important;
+  box-shadow:0 7px 22px #000b,0 0 22px #ed173077,inset 0 1px 0 #ffffff66 !important;
+}
+.secondary-btn,.studio-tabs a,.studio-accordion > summary,.library-filter {
+  color:#e8ebf0 !important;
+  border:1px solid #555d69 !important;
+  background:linear-gradient(145deg,#292e37,#101217) !important;
+}
+.panel,.card,.price-card,.studio-accordion,.generation-limits-showcase,
+.premium-image-plan,.video-live-panel,.video-tool-card,.video-tool-panel {
+  color:#f2f3f5 !important;
+  background:linear-gradient(145deg,#20242c 0%,#11141a 48%,#090b10 100%) !important;
+  border:1px solid #555d69 !important;
+  box-shadow:0 12px 28px #0009,inset 0 1px 0 #ffffff16 !important;
+}
+.price-card.featured,.premium-image-plan {
+  border-color:#ed334a !important;
+  box-shadow:0 0 22px #ed173033,inset 0 1px 0 #ffffff20 !important;
+}
+input,textarea,select {
+  color:#f5f6f8 !important;
+  background:linear-gradient(145deg,#090b10,#171b22) !important;
+  border:1px solid #555d69 !important;
+}
+input:focus,textarea:focus,select:focus {
+  border-color:#ff4054 !important;
+  outline:1px solid #ed1730 !important;
+  box-shadow:0 0 12px #ed173044 !important;
+}
+label,.section-title,.panel h3 { color:#f0f2f5 !important; }
+.section-description,.mini-note,.hint { color:#b2b8c2 !important; }
+.category-card,.file-row,.library-stat,.library-empty,.selected-file {
+  background:linear-gradient(145deg,#20242c,#0d1015) !important;
+  border-color:#505762 !important;
+  box-shadow:0 8px 22px #0007,inset 0 1px 0 #ffffff12 !important;
+}
+.category-card:hover { border-color:#ed334a !important; box-shadow:0 0 18px #ed173033 !important; }
+.notice { background:linear-gradient(110deg,#2a1119,#14161c) !important; border-left-color:#ed1730 !important; }
+footer { border-color:#454b55 !important; }
+.credit-counter {
+  color:#f4f5f7 !important;
+  border-color:#737b88 !important;
+  background:linear-gradient(145deg,#292e37,#0c0e13) !important;
+  box-shadow:0 0 14px #0008,inset 0 1px 0 #ffffff22 !important;
+}
+/* New homepage hero: metallic typography and red-lit action controls */
+.hero.hero-clickable.lane-metal-hero {
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:510px !important;
+  height:auto !important;
+  padding:72px 22px !important;
+  overflow:hidden !important;
+  text-align:center !important;
+  line-height:normal !important;
+  border:0 !important;
+  border-bottom:1px solid #8d1b2c !important;
+  background:
+    radial-gradient(ellipse at 50% 42%,rgba(95,102,116,.24),transparent 48%),
+    radial-gradient(ellipse at 50% 100%,rgba(190,10,37,.20),transparent 52%),
+    linear-gradient(135deg,#07080b 0%,#1a1e26 42%,#08090d 72%,#16080d 100%) !important;
+  box-shadow:inset 0 0 100px #000c,0 18px 45px #000b !important;
+}
+.hero.hero-clickable.lane-metal-hero::before {
+  content:"";
+  position:absolute; inset:18px;
+  border:1px solid #aeb7c522;
+  border-radius:18px;
+  box-shadow:inset 0 1px 0 #ffffff12,0 0 34px #ed173018;
+  pointer-events:none;
+}
+.lane-hero-inner { position:relative; z-index:2; width:min(100%,900px); margin:auto; }
+.lane-hero-kicker {
+  color:#ff5367; font:700 11px/1.5 Montserrat,Arial,sans-serif;
+  letter-spacing:4px; margin-bottom:18px;
+}
+.lane-brand-title {
+  margin:0 auto 8px !important; padding:0 !important; display:block !important;
+  border:0 !important; border-radius:0 !important; background:transparent !important;
+  color:#f6f7f9 !important;
+  font:900 clamp(42px,8vw,88px)/.98 Montserrat,Arial,sans-serif !important;
+  letter-spacing:clamp(2px,1vw,9px) !important;
+  text-shadow:0 2px 0 #7d8490,0 4px 0 #333943,0 8px 22px #000,
+              0 0 28px #c9d0dc33 !important;
+}
+.lane-brand-title span {
+  color:#ef334b !important;
+  text-shadow:0 1px 0 #ff9aa5,0 4px 0 #6b0c1a,0 8px 24px #000,
+              0 0 25px #ed173088 !important;
+}
+.lane-hero-subtitle {
+  margin:15px 0 34px !important;
+  color:#c3c9d2 !important;
+  font:600 clamp(13px,2vw,18px)/1.5 Montserrat,Arial,sans-serif !important;
+  letter-spacing:clamp(3px,.8vw,7px) !important;
+}
+.lane-hero-actions {
+  display:flex; justify-content:center; gap:16px; flex-wrap:wrap;
+}
+.lane-metal-action {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  min-width:210px; padding:17px 23px; border-radius:10px;
+  color:#f7f8fa !important; text-decoration:none !important;
+  font:800 14px/1 Montserrat,Arial,sans-serif; letter-spacing:1.4px;
+  background:linear-gradient(145deg,#424954 0%,#1a1e26 28%,#090b10 68%,#343a44 100%);
+  border:1px solid #aab2bf !important;
+  box-shadow:0 8px 20px #000b,inset 0 1px 0 #ffffff66,
+             inset 0 -3px 8px #0009,0 0 0 1px #11151b,
+             0 0 18px #ed173022;
+  transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
+}
+.lane-metal-action:hover {
+  transform:translateY(-3px);
+  filter:brightness(1.15);
+  border-color:#ff5367 !important;
+  box-shadow:0 12px 25px #000c,inset 0 1px 0 #ffffff77,
+             0 0 22px #ed173077;
+}
+.lane-action-symbol {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:7px;
+  color:#fff !important; font-size:20px;
+  background:linear-gradient(145deg,#fa4058,#8e0b20);
+  box-shadow:inset 0 1px 0 #ffffff66,0 0 12px #ed173055;
+}
+.lane-hero-foot {
+  margin-top:35px; color:#838b98;
+  font:600 10px/1.5 Montserrat,Arial,sans-serif; letter-spacing:4px;
+}
+@media(max-width:600px) {
+  .hero.hero-clickable.lane-metal-hero { min-height:470px !important; padding:58px 20px !important; }
+  .hero.hero-clickable.lane-metal-hero::before { inset:10px; }
+  .lane-hero-actions { flex-direction:column; align-items:stretch; width:min(100%,340px); margin:auto; }
+  .lane-metal-action { min-width:0; width:100%; padding:16px 18px; }
+  .lane-hero-kicker { letter-spacing:2.5px; }
+  .lane-hero-foot { letter-spacing:2px; }
+}
+@media(prefers-reduced-motion:reduce) { .lane-metal-action { transition:none !important; } }
+
 </style>
 </head>
 <body>
@@ -942,11 +1151,24 @@ header.site-header > div.logo span {
 <span>🪙</span>
 <span id="headerCreditBalanceTop">0</span>
 </div>
-<section class="hero hero-clickable" id="home" aria-label="LANE AI STUDIO — choose what to create">
-  <img class="hero-banner-image" src="lane-hero.webp" alt="LANE AI STUDIO — Create Image, Video, Song" fetchpriority="high"/>
-  <a class="hero-hotspot hero-hotspot-image" href="#imageStudio" aria-label="Open Create Image" title="Create Image" onclick="openStudioSection('imageStudio')"></a>
-  <a class="hero-hotspot hero-hotspot-video" href="#studio" aria-label="Open Create Video" title="Video" onclick="openStudioSection('studio')"></a>
-  <a class="hero-hotspot hero-hotspot-song" href="#musicGenerator" aria-label="Open Create Song" title="Song" onclick="openStudioSection('musicGenerator')"></a>
+<section class="hero hero-clickable lane-metal-hero" id="home" aria-label="LANE AI STUDIO — choose what to create">
+  <div class="lane-hero-inner">
+    <div class="lane-hero-kicker">NEXT GENERATION CREATIVE PLATFORM</div>
+    <h1 class="lane-brand-title">LANE <span>AI</span> STUDIO</h1>
+    <p class="lane-hero-subtitle">CREATE WITHOUT LIMITS</p>
+    <div class="lane-hero-actions">
+      <a class="lane-metal-action" href="#imageStudio" aria-label="Open Create Image" onclick="openStudioSection('imageStudio')">
+        <span class="lane-action-symbol">✧</span><span>CREATE IMAGE</span>
+      </a>
+      <a class="lane-metal-action" href="#studio" aria-label="Open Create Video" onclick="openStudioSection('studio')">
+        <span class="lane-action-symbol">▶</span><span>CREATE VIDEO</span>
+      </a>
+      <a class="lane-metal-action" href="#musicGenerator" aria-label="Open Create Song" onclick="openStudioSection('musicGenerator')">
+        <span class="lane-action-symbol">♫</span><span>CREATE SONG</span>
+      </a>
+    </div>
+    <div class="lane-hero-foot">IMAGE&nbsp; • &nbsp;VIDEO&nbsp; • &nbsp;MUSIC</div>
+  </div>
 </section>
 <section class="lane-promo" aria-label="LANE AI STUDIO brand and social sharing">
   <div class="lane-share">
