@@ -21,7 +21,7 @@ button.secondary{background:#17191e;color:#eee;border:1px solid var(--line)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel h2{font-size:18px;margin:0 0 14px}
 .tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:11px;border-bottom:1px solid #30343c;font-size:13px}th{color:var(--gold)}
 input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6px;padding:11px;width:min(340px,100%)}
-.hidden{display:none!important}.authbox{max-width:480px;margin:50px auto}.muted{color:var(--muted);font-size:12px;line-height:1.5}
+.hidden{display:none!important}.barrow{display:grid;grid-template-columns:minmax(90px,140px) 1fr 42px;gap:10px;align-items:center;margin:10px 0;font-size:13px}.bartrack{height:9px;background:#292d35;border-radius:99px;overflow:hidden}.barfill{height:100%;background:linear-gradient(90deg,#9f7b35,#f1d58a);border-radius:99px}.dayrow{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #30343c;font-size:13px}.authbox{max-width:480px;margin:50px auto}.muted{color:var(--muted);font-size:12px;line-height:1.5}
 @media(max-width:850px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
 @media(max-width:480px){.cards{grid-template-columns:1fr 1fr}.card strong{font-size:20px}}
 </style>
@@ -54,6 +54,25 @@ input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6
       <div class="card"><small>Генерации с отчетен разход</small><strong id="generations">—</strong></div>
       <div class="card"><small>Потребител</small><strong id="ownerEmail" style="font-size:15px">—</strong></div>
       <div class="card"><small>Валута</small><strong>EUR</strong></div>
+    </div>
+    <div class="panel" style="margin:22px 0;border-color:#8b713b">
+      <h2>Аналитика на сайта</h2>
+      <p class="muted">Тази секция е видима само в защитеното администраторско табло. Показва събитията, които сайтът действително записва в Supabase.</p>
+      <div id="analyticsStatus" class="status">Зареждане на аналитиката…</div>
+      <div class="cards">
+        <div class="card"><small>Посещения</small><strong id="aViews">—</strong></div>
+        <div class="card"><small>Уникални браузъри</small><strong id="aVisitors">—</strong></div>
+        <div class="card"><small>Входове</small><strong id="aLogins">—</strong></div>
+        <div class="card"><small>Стартирани генерации</small><strong id="aStarts">—</strong></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><h2>Генерации по услуга</h2><div id="analyticsTypes" class="muted">Няма данни.</div></div>
+        <div class="panel"><h2>Посещения по дни</h2><div id="analyticsDays" class="muted">Няма данни.</div></div>
+      </div>
+      <div class="panel">
+        <h2>Последни аналитични събития</h2>
+        <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Събитие</th><th>Услуга</th><th>Страница</th></tr></thead><tbody id="analyticsRows"><tr><td colspan="4">Няма записи.</td></tr></tbody></table></div>
+      </div>
     </div>
     <div class="panel">
       <h2>Последни финансови записи</h2>
@@ -108,8 +127,40 @@ async function loadDashboard(){
   }
   status("Данните са обновени. Показват се само записи, разрешени от Supabase RLS.");
 }
+async function loadAnalytics(){
+  const el=$("analyticsStatus");
+  el.textContent="Зареждане на аналитичните данни…";el.style.borderColor="#5a4928";
+  const {data,error}=await db.from("analytics_events")
+    .select("event_name,visitor_id,session_id,created_at,page_path,metadata")
+    .order("created_at",{ascending:false}).limit(10000);
+  if(error){
+    el.textContent="Аналитиката още не може да се зареди: "+error.message+". Финансовото табло остава достъпно. Проверяваме таблицата analytics_events и нейните права в Supabase.";
+    el.style.borderColor="#a33";return;
+  }
+  const count=name=>data.filter(x=>x.event_name===name).length;
+  $("aViews").textContent=count("page_view");
+  $("aVisitors").textContent=new Set(data.filter(x=>x.event_name==="page_view"&&x.visitor_id).map(x=>x.visitor_id)).size;
+  $("aLogins").textContent=count("login");
+  $("aStarts").textContent=count("generation_started");
+  const names={image:"Изображения",video:"Видео",lip_sync:"Lip Sync",music:"Музика"};
+  const typeCounts={};
+  data.filter(x=>x.event_name==="generation_started").forEach(x=>{const k=x.metadata?.service||"other";typeCounts[k]=(typeCounts[k]||0)+1;});
+  const maxType=Math.max(1,...Object.values(typeCounts));
+  $("analyticsTypes").innerHTML=Object.entries(names).map(([k,v])=>`<div class="barrow"><span>${v}</span><div class="bartrack"><div class="barfill" style="width:${(typeCounts[k]||0)/maxType*100}%"></div></div><b>${typeCounts[k]||0}</b></div>`).join("")+(!Object.keys(typeCounts).length?"<p>Все още няма стартирани генерации.</p>":"");
+  const dayCounts={};
+  data.filter(x=>x.event_name==="page_view").forEach(x=>{const d=new Date(x.created_at).toLocaleDateString("bg-BG");dayCounts[d]=(dayCounts[d]||0)+1;});
+  const days=Object.entries(dayCounts).slice(0,14);const maxDay=Math.max(1,...days.map(x=>x[1]));
+  $("analyticsDays").innerHTML=days.map(([d,n])=>`<div class="dayrow"><span>${d}</span><b>${n}</b></div>`).join("")||"Няма посещения до момента.";
+  const labels={page_view:"Посещение",registration:"Регистрация",login:"Вход",checkout_started:"Checkout започнат",generation_started:"Генериране — старт",generation_completed:"Генериране — завършено",generation_failed:"Генериране — неуспешно"};
+  $("analyticsRows").innerHTML=data.slice(0,50).map(x=>{const tr=document.createElement("tr");const vals=[new Date(x.created_at).toLocaleString("bg-BG"),labels[x.event_name]||x.event_name,names[x.metadata?.service]||"—",x.page_path||"—"];for(const v of vals){const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}return tr.outerHTML;}).join("")||'<tr><td colspan="4">Все още няма аналитични събития.</td></tr>' ;
+  el.textContent="Аналитиката е обновена. Показани са само събитията, записани в analytics_events.";
+}
+const oldLoadDashboard=loadDashboard;
+loadDashboard=async function(){await oldLoadDashboard();await loadAnalytics();};
+$("refresh").onclick=loadDashboard;
 db.auth.onAuthStateChange(()=>setTimeout(syncAuth,0));
 syncAuth();
 </script>
 </body>
 </html>
+
