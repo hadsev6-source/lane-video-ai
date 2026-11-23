@@ -1132,6 +1132,27 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 </nav>
 </details>
 </header>
+<section class="section" id="support">
+<h2 class="section-title">Your Account</h2>
+<div class="panel">
+<div id="signedOut">
+<h3>Sign In or Create an Account</h3>
+<p class="mini-note">Use your Google account to sign in or create your LANE AI STUDIO account.</p>
+<div class="account-buttons">
+<button class="primary-btn" onclick="googleSignIn()" type="button">CONTINUE WITH GOOGLE</button>
+</div>
+<div class="hint" id="authMessage" style="margin-top:15px"></div>
+</div>
+<div class="hidden" id="signedIn">
+<div class="success-panel">
+<strong>You are successfully signed in!</strong>
+<p id="userEmail" style="margin-bottom:0"></p>
+</div>
+<button class="danger-btn" onclick="signOut()">SIGN OUT</button>
+</div>
+</div>
+</section>
+
 <div class="credit-counter" title="Your credit balance">
 <span>🪙</span>
 <span id="headerCreditBalanceTop">0</span>
@@ -1469,26 +1490,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <audio class="hidden" controls="" id="audioPlayer" style="width:100%;margin-top:20px"></audio>
 </div>
 </section>
-<section class="section" id="support">
-<h2 class="section-title">Your Account</h2>
-<div class="panel">
-<div id="signedOut">
-<h3>Sign In or Create an Account</h3>
-<p class="mini-note">Use your Google account to sign in or create your LANE AI STUDIO account.</p>
-<div class="account-buttons">
-<button class="primary-btn" onclick="googleSignIn()" type="button">CONTINUE WITH GOOGLE</button>
-</div>
-<div class="hint" id="authMessage" style="margin-top:15px"></div>
-</div>
-<div class="hidden" id="signedIn">
-<div class="success-panel">
-<strong>You are successfully signed in!</strong>
-<p id="userEmail" style="margin-bottom:0"></p>
-</div>
-<button class="danger-btn" onclick="signOut()">SIGN OUT</button>
-</div>
-</div>
-</section>
+
 <footer>
 <strong>LANE AI STUDIO</strong><br/>
   CREATE ANYTHING YOU CAN IMAGINE.<br/>
