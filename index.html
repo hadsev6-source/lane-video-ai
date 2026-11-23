@@ -2748,6 +2748,41 @@ if (currentUser) {
     showFileMessage("Video download started. On some phones, the browser saves it to Downloads; use the phone's Save Video option to add it to Photos/Gallery.");
   }
 
+  // Share a generated image or audio file with the phone's native save/share menu.
+  async function saveFileToPhone(url, fileName, title, fallbackType) {
+    if (!url) {
+      showFileMessage("The file is not ready to save yet.", true);
+      return;
+    }
+
+    showFileMessage("Preparing file for your phone...");
+    if (navigator.share && navigator.canShare) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("The file could not be downloaded from storage.");
+        const blob = await response.blob();
+        const file = new File([blob], fileName, { type: blob.type || fallbackType });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title });
+          showFileMessage("File shared. Choose Save Image / Save to device in your phone's menu if available.");
+          return;
+        }
+      } catch (shareError) {
+        if (shareError?.name === "AbortError") return;
+        console.warn("Native file sharing is unavailable; using download instead.", shareError);
+      }
+    }
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    showFileMessage("Download started. Use your phone's save option to add the file to Photos/Gallery or Music.");
+  }
+
   // LOAD MY FILES
 
   async function loadMyFiles() {
@@ -2892,7 +2927,18 @@ if (currentUser) {
         await loadMyFiles();
       };
 
-      actions.append(openButton, downloadButton, deleteButton);
+      const phoneButton = document.createElement("button");
+      phoneButton.className = "primary-btn";
+      phoneButton.textContent = "SAVE TO PHONE";
+      phoneButton.onclick = () => saveFileToPhone(
+        file.signedUrl,
+        file.name,
+        "LANE AI image",
+        file.name.toLowerCase().endsWith(".png") ? "image/png" :
+          file.name.toLowerCase().endsWith(".webp") ? "image/webp" : "image/jpeg"
+      );
+
+      actions.append(openButton, downloadButton, phoneButton, deleteButton);
       row.append(preview, info, actions);
       list.appendChild(row);
     });
@@ -3006,12 +3052,30 @@ if (currentUser) {
       downloadButton.textContent = "DOWNLOAD";
       downloadButton.onclick = () => downloadSong(file.name);
 
+      const phoneButton = document.createElement("button");
+      phoneButton.className = "primary-btn";
+      phoneButton.textContent = "SAVE TO PHONE";
+      phoneButton.onclick = async () => {
+        const { data: signed, error: signedError } = await supabaseClient.storage
+          .from("user-songs")
+          .createSignedUrl(audioPath, 3600, { download: file.name });
+        if (signedError || !signed?.signedUrl) {
+          showFileMessage("Could not prepare audio file: " + (signedError?.message || "No download link."), true);
+          return;
+        }
+        const extension = file.name.split(".").pop().toLowerCase();
+        const audioType = extension === "mp3" ? "audio/mpeg" :
+          extension === "wav" ? "audio/wav" :
+          extension === "m4a" ? "audio/mp4" : "audio/" + extension;
+        await saveFileToPhone(signed.signedUrl, file.name, "LANE AI audio", audioType);
+      };
+
       const deleteButton = document.createElement("button");
       deleteButton.className = "danger-btn";
       deleteButton.textContent = "DELETE";
       deleteButton.onclick = () => deleteSong(file.name);
 
-      actions.append(downloadButton, deleteButton);
+      actions.append(downloadButton, phoneButton, deleteButton);
       details.append(name, player, actions);
       row.appendChild(details);
       list.appendChild(row);
