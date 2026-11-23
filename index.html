@@ -2779,8 +2779,8 @@ if (currentUser) {
             currentImageFiles.length + " preview(s) ready" +
             (failedSignedUrls ? " · " + failedSignedUrls + " signed URL(s) failed" : "") +
             " · Account ID: " + currentUser.id
-          : "No images found in this account folder · Account: " +
-            currentUser.id.slice(0, 8) + "…";
+          : "No image files returned. Account ID: " + currentUser.id +
+            " · Storage response: " + JSON.stringify(imageRows || []);
       }
     }
 
