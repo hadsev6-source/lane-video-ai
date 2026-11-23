@@ -2701,6 +2701,52 @@ if (currentUser) {
     }
   }
 
+  // Download a generated video or hand it to the phone's native share/save sheet.
+  async function downloadGeneratedVideo(video, saveToPhone = false) {
+    if (!currentUser) {
+      alert("Please sign in first.");
+      return;
+    }
+
+    const fileName = "lane-video-" + String(video.id || Date.now()).slice(0, 12) + ".mp4";
+    showFileMessage(saveToPhone ? "Preparing video for your phone..." : "Preparing video download...");
+
+    const { data, error } = await supabaseClient.storage
+      .from("generated-videos")
+      .createSignedUrl(video.storage_path, 3600, { download: fileName });
+
+    if (error || !data?.signedUrl) {
+      showFileMessage("Could not prepare video: " + (error?.message || "No download link."), true);
+      return;
+    }
+
+    if (saveToPhone && navigator.share && navigator.canShare) {
+      try {
+        const response = await fetch(data.signedUrl);
+        if (!response.ok) throw new Error("The video file could not be downloaded from storage.");
+        const blob = await response.blob();
+        const file = new File([blob], fileName, { type: blob.type || "video/mp4" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: "Your LANE AI video" });
+          showFileMessage("Video shared. Choose Save Video / Save to device in your phone's menu if available.");
+          return;
+        }
+      } catch (shareError) {
+        if (shareError?.name === "AbortError") return;
+        console.warn("Native video sharing is unavailable; using download instead.", shareError);
+      }
+    }
+
+    const link = document.createElement("a");
+    link.href = data.signedUrl;
+    link.download = fileName;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    showFileMessage("Video download started. On some phones, the browser saves it to Downloads; use the phone's Save Video option to add it to Photos/Gallery.");
+  }
+
   // LOAD MY FILES
 
   async function loadMyFiles() {
@@ -2863,6 +2909,7 @@ if (currentUser) {
 
       const actions = document.createElement("div");
       actions.className = "file-actions";
+
       const openButton = document.createElement("button");
       openButton.className = "secondary-btn";
       openButton.textContent = "OPEN VIDEO";
@@ -2876,7 +2923,18 @@ if (currentUser) {
         }
         window.open(signed.signedUrl, "_blank", "noopener,noreferrer");
       };
-      actions.appendChild(openButton);
+
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "secondary-btn";
+      downloadButton.textContent = "DOWNLOAD";
+      downloadButton.onclick = () => downloadGeneratedVideo(video, false);
+
+      const phoneButton = document.createElement("button");
+      phoneButton.className = "primary-btn";
+      phoneButton.textContent = "SAVE TO PHONE";
+      phoneButton.onclick = () => downloadGeneratedVideo(video, true);
+
+      actions.append(openButton, downloadButton, phoneButton);
       row.append(info, actions);
       list.appendChild(row);
     });
