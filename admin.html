@@ -279,6 +279,37 @@ async function loadNotifications(){
 }
 $("markNotificationsRead").onclick=()=>{saveNotificationIds(new Set(notificationItems.map(n=>n.key)));renderNotifications();};
 
+async function refreshPhonePushStatus(){
+  const button=$("enablePush"),test=$("testPush"),out=$("pushStatus");
+  if(!button||!test||!out)return;
+  try{
+    if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){
+      out.textContent="Този браузър не поддържа push известия.";
+      test.disabled=true;return;
+    }
+    const {data:{user}}=await db.auth.getUser();
+    if(!user||user.id!==OWNER_USER_ID)return;
+    const permission=Notification.permission;
+    const registration=await navigator.serviceWorker.getRegistration("/sw.js");
+    const subscription=registration?await registration.pushManager.getSubscription():null;
+    if(permission==="granted"&&subscription){
+      const {data:row,error}=await db.from("push_subscriptions").select("id").eq("endpoint",subscription.endpoint).maybeSingle();
+      if(!error&&row){
+        out.textContent="Известията са активни за този телефон. Не е необходимо да ги включваш отново.";
+        button.textContent="Известията са активни ✓";
+        test.disabled=false;
+        return;
+      }
+    }
+    button.textContent="Активирай известията";
+    test.disabled=true;
+    out.textContent=permission==="denied"
+      ?"Известията са блокирани от настройките на браузъра. Разреши ги за lane-video-ai.com."
+      :"Известията не са активни на това устройство. Натисни „Активирай известията“ само веднъж.";
+  }catch(error){
+    out.textContent="Не успях да проверя състоянието на известията: "+(error.message||"грешка");
+  }
+}
 async function enablePhonePush(){
   const button=$("enablePush"), test=$("testPush"), out=$("pushStatus");
   button.disabled=true;out.textContent="Настройване на известията…";
@@ -325,7 +356,7 @@ $("testPush").onclick=sendPhonePushTest;
 
 
 const oldLoadDashboard=loadDashboard;
-loadDashboard=async function(){await oldLoadDashboard();await loadAnalytics();await loadNotifications();};
+loadDashboard=async function(){await oldLoadDashboard();await loadAnalytics();await loadNotifications();await refreshPhonePushStatus();};
 $("refresh").onclick=loadDashboard;
 db.auth.onAuthStateChange(()=>setTimeout(syncAuth,0));
 syncAuth();
