@@ -2442,8 +2442,23 @@ if (currentUser) {
   }
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN") {
-      setTimeout(() => laneAnalytics.track("login"), 0);
+    if (event === "SIGNED_IN" && session?.user) {
+      const signedInUser = session.user;
+      setTimeout(() => {
+        try {
+          const createdAt = Date.parse(signedInUser.created_at || "");
+          const isNewRegistration = Number.isFinite(createdAt) &&
+            Date.now() - createdAt >= 0 && Date.now() - createdAt < 3 * 60 * 1000;
+          const eventName = isNewRegistration ? "registration" : "login";
+          const onceKey = "lane_auth_event_" + eventName + "_" + signedInUser.id;
+          if (!localStorage.getItem(onceKey)) {
+            localStorage.setItem(onceKey, "1");
+            laneAnalytics.track(eventName, { auth_provider: "google" });
+          }
+        } catch (_) {
+          laneAnalytics.track("login", { auth_provider: "google" });
+        }
+      }, 0);
     }
     if (
       event === "SIGNED_IN" ||
@@ -2861,6 +2876,11 @@ async function continueToPayment() {
       throw new Error("Stripe checkout URL was not returned.");
     }
 
+    laneAnalytics.track("checkout_started", {
+      plan_id: planId,
+      product: selectedPayment.name,
+      payment_method: document.querySelector('input[name="paymentMethod"]:checked')?.value || "card"
+    });
     window.location.href = data.url;
 
   } catch (error) {
