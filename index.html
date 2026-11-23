@@ -2652,16 +2652,19 @@ if (currentUser) {
       );
     });
 
+    const emptyCounts = {
+      video: currentVideoFiles.length,
+      image: currentImageFiles.length,
+      audio: currentFiles.length,
+      thumbnail: 0,
+      text: 0
+    };
     document.querySelectorAll("#libraryEmptyStates [data-empty-kind]").forEach(item => {
-      item.classList.toggle("hidden", kind !== "all" && item.dataset.emptyKind !== kind);
+      const itemKind = item.dataset.emptyKind;
+      const shouldShow = (kind === "all" || itemKind === kind) &&
+        (emptyCounts[itemKind] || 0) === 0;
+      item.classList.toggle("hidden", !shouldShow);
     });
-
-    // In All Files view, show empty-state notes only for asset types that are not connected yet.
-    if (kind === "all") {
-      document.querySelectorAll("#libraryEmptyStates [data-empty-kind]").forEach(item => {
-        item.classList.remove("hidden");
-      });
-    }
   }
 
   async function downloadSong(fileName) {
@@ -2945,8 +2948,18 @@ if (currentUser) {
     document.getElementById("imageFileCount").textContent = imageCount;
     document.getElementById("thumbnailFileCount").textContent = "0";
 
-    const videoEmpty = document.querySelector('#libraryEmptyStates [data-empty-kind="video"]');
-    if (videoEmpty) videoEmpty.classList.toggle("hidden", videoCount > 0);
+    const emptyCounts = {
+      video: videoCount,
+      image: imageCount,
+      audio: audioCount,
+      thumbnail: 0,
+      text: 0
+    };
+    document.querySelectorAll("#libraryEmptyStates [data-empty-kind]").forEach(item => {
+      if ((emptyCounts[item.dataset.emptyKind] || 0) > 0) {
+        item.classList.add("hidden");
+      }
+    });
   }
 
 
