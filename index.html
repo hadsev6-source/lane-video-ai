@@ -3027,21 +3027,13 @@ if (currentUser) {
         showFileMessage("Deleting video...");
 
         try {
-          const { error: storageError } = await supabaseClient.storage
-            .from("generated-videos")
-            .remove([video.storage_path]);
-          if (storageError) throw storageError;
-
-          const { error: recordError } = await supabaseClient
-            .from("video_generations")
-            .delete()
-            .eq("id", video.id)
-            .eq("user_id", currentUser.id);
-          if (recordError) {
-            showFileMessage("Video file deleted, but its library record could not be removed: " + recordError.message, true);
-          } else {
-            showFileMessage("Video deleted successfully.");
+          const { data: deleteResult, error: deleteError } = await supabaseClient.functions
+            .invoke("delete-video", { body: { videoId: video.id } });
+          if (deleteError) throw deleteError;
+          if (!deleteResult?.success) {
+            throw new Error(deleteResult?.error || "The server did not confirm deletion.");
           }
+          showFileMessage("Video deleted successfully.");
           await loadMyFiles();
         } catch (deleteError) {
           showFileMessage("Could not delete video: " + (deleteError.message || String(deleteError)), true);
