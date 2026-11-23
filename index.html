@@ -2918,7 +2918,10 @@ if (currentUser) {
     }
 
     updateLibraryCounts();
-    filterMyFiles(activeLibraryFilter);
+    // Always return to the complete gallery after refreshing so saved images
+    // cannot remain hidden by a previously selected category filter.
+    activeLibraryFilter = "all";
+    filterMyFiles("all");
   }
 
   function updateLibraryCounts() {
