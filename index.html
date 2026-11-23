@@ -1002,11 +1002,42 @@ footer { border-color:#555b63 !important; }
 }
 @media(prefers-reduced-motion:reduce) { .lane-hero-action { transition:none !important; } }
 
+
+/* LANE AI STUDIO — warm amber and ivory visual refresh */
+:root{--red:#f2a13a;--red-light:#ffc36a;--bg:#080909;--panel:#151412;--border:#51402b;--text:#fffaf2;--muted:#c4b9a8}
+.site-header{background:linear-gradient(100deg,#080909,#17130e 52%,#080909)!important;border-bottom:1px solid #9a6428!important;box-shadow:0 5px 28px #e99a3325!important}
+.logo span,.menu-icon{color:#f2a13a!important}
+.lane-croissant{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin:0 8px;font-size:clamp(22px,2.2vw,30px);line-height:1;filter:drop-shadow(0 0 8px #f2a13a55)}
+.main-menu>summary{border-color:#d18a36!important;background:#1b150e!important;box-shadow:0 0 14px #f2a13a24!important}
+.main-menu>summary:hover,.main-menu[open]>summary{background:#302010!important}
+.main-menu-dropdown{background:#100e0b!important;border-color:#d18a36!important;box-shadow:0 16px 40px #000d,0 0 20px #f2a13a25!important}
+.main-menu-dropdown>a,.main-menu-dropdown>details>summary{border-color:#80602f!important;background:#19150f!important}
+.main-menu-dropdown>a:hover,.main-menu-dropdown>details>summary:hover{background:#302313!important;border-color:#ffc36a!important}
+.hero,.hero h1{border-color:#b77a32!important}
+.hero h1{text-shadow:0 4px 18px #000,0 0 24px #f2a13a40!important}
+.hero h1 span{color:#f2a13a!important}
+.hero .primary-btn,.primary-btn,.premium-buy-btn,.price-card .buy-credit-btn{background:linear-gradient(110deg,#f5ad4b,#c97820)!important;border-color:#ffc36a!important;color:#17100a!important;box-shadow:0 0 20px #f2a13a35!important}
+.primary-btn:hover,.premium-buy-btn:hover{filter:brightness(1.08)}
+.category-card,.panel,.price-card,.studio-accordion,.generation-limits-showcase,.payment-dialog,.payment-choice,.premium-image-plan{border-color:#76552e!important}
+.category-card:hover,.price-card.featured,.premium-image-plan{box-shadow:0 0 22px #f2a13a22!important}
+.panel{background:linear-gradient(145deg,#1b1711,#101010)!important}
+input:focus,textarea:focus,select:focus,.studio-tabs a:hover{border-color:#f2a13a!important}
+.checkbox-row input,.payment-choice input{accent-color:#f2a13a!important}
+.notice{border-left-color:#f2a13a!important;background:#21180e!important}
+.library-filter.active{border-color:#f2a13a!important;background:#3a2814!important}
+.payment-dialog{background:#120f0b!important}
+.payment-choice{background:#1a150f!important}
+.payment-choice:has(input:checked){border-color:#ffc36a!important;background:#302313!important;box-shadow:0 0 0 1px #f2a13a!important}
+.studio-accordion>summary:after{color:#f2a13a!important}
+.visual-nav a:hover{color:#ffc36a!important;border-color:#f2a13a!important}
+@media(max-width:600px){.site-header>.lane-croissant{margin:0 5px 0 7px;font-size:24px}}
+
 </style>
 </head>
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>AI STUDIO</span></div>
+<span class="lane-croissant" aria-label="Croissant">🥐</span>
 <nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
