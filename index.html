@@ -1749,6 +1749,7 @@ async function pollLipSyncStatus(generationId, creditsUsed) {
       if (!data || !data.success) throw new Error(data?.error || "Could not check Lip Sync status.");
 
       if (data.status === "SUCCEEDED" && data.videoUrl) {
+        laneAnalytics.track("generation_completed", { service: "lip_sync", credits: creditsUsed });
         notice.textContent = "Lip Sync completed successfully. " + creditsUsed +
           " credits used. Your video is saved in My Files.";
         if (liveMessage) liveMessage.textContent = "YOUR LIP SYNC VIDEO IS READY";
@@ -2109,6 +2110,7 @@ async function prepareVideo() {
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.success) throw new Error(result.error || "Image generation failed.");
+      laneAnalytics.track("generation_completed", { service: "image", count: result.images.length, credits: result.creditsUsed });
       output.textContent = "Success! " + result.images.length + " image(s) generated. " + result.creditsUsed + " credits used.";
       result.images.forEach((item, index) => {
         const card = document.createElement("div");
@@ -2234,6 +2236,7 @@ async function prepareVideo() {
           }
           player.src = statusData.audioUrl;
           player.classList.remove("hidden");
+          laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed || 25, file_name: statusData.fileName || null });
           output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed || 25) + "\n\nUse the player below to listen. The song is also saved in My Files.";
           const downloadLink = document.createElement("a");
           downloadLink.href = statusData.audioUrl;
