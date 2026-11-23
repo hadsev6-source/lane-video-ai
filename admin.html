@@ -41,13 +41,18 @@ input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6
 
   <section id="dashboard" class="hidden">
     <div class="panel" style="margin:0 0 22px;border:2px solid #d9b96d;background:#211b0e">
-      <h2 style="font-size:20px">📱 Известия на телефона</h2>
-      <p class="muted">Включи push известията тук. Ще получаваш съобщения на Android и при затворен админ панел, след като абонаментът е активиран.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button id="enablePush" type="button">Включи известията на този телефон</button>
-        <button id="testPush" class="secondary" type="button" disabled>Изпрати тестово известие</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div><h2 style="font-size:20px;margin:0">📱 Известия на телефона</h2><p class="muted" style="margin:6px 0 0">Настройки за push известията на Android.</p></div>
+        <details style="position:relative">
+          <summary aria-label="Меню за известията" style="list-style:none;cursor:pointer;border:1px solid #d9b96d;border-radius:8px;padding:8px 14px;font-size:25px;line-height:1">⋮</summary>
+          <div style="position:absolute;right:0;top:44px;z-index:20;min-width:240px;padding:14px;background:#17191e;border:1px solid #d9b96d;border-radius:10px;box-shadow:0 8px 24px #0009">
+            <button id="enablePush" type="button" style="width:100%;margin-bottom:9px">Активирай известията</button>
+            <button id="testPush" class="secondary" type="button" style="width:100%" disabled>Изпрати тестово известие</button>
+            <p class="muted" style="margin:12px 0 0">Ако разрешението е отказано, отвори настройките на Chrome → Настройки на сайтовете → lane-video-ai.com → Известия → Разрешаване.</p>
+          </div>
+        </details>
       </div>
-      <div id="pushStatus" class="status" role="status">Натисни „Включи известията на този телефон“.</div>
+      <div id="pushStatus" class="status" role="status">Отвори менюто ⋮ и избери „Активирай известията“.</div>
     </div>
     <h1>Финансово табло</h1>
     <p class="sub">Суми в EUR. Нетната сума е приход минус отчетените Stripe такси и AI разходи. Данните се четат от Supabase.</p>
