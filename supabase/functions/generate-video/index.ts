@@ -88,6 +88,96 @@ async function createVideoSignedUrl(
   return data.signedUrl;
 }
 
+// Move the MP4 moov atom before media data so browsers can start playback
+// without downloading the entire file first. No re-encoding is performed.
+function fastStartMp4(input: ArrayBuffer): ArrayBuffer {
+  const bytes = new Uint8Array(input);
+  const view = new DataView(input);
+  const readAtom = (offset: number, limit: number) => {
+    if (offset + 8 > limit) throw new Error("Truncated MP4 atom header.");
+    let size = view.getUint32(offset);
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    let headerSize = 8;
+    if (size === 1) {
+      if (offset + 16 > limit) throw new Error("Truncated extended MP4 atom.");
+      const largeSize = view.getBigUint64(offset + 8);
+      if (largeSize > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("MP4 atom is too large.");
+      size = Number(largeSize);
+      headerSize = 16;
+    } else if (size === 0) {
+      size = limit - offset;
+    }
+    if (size < headerSize || offset + size > limit) throw new Error("Invalid MP4 atom size.");
+    return { offset, size, type, headerSize, end: offset + size };
+  };
+
+  try {
+    const top: ReturnType<typeof readAtom>[] = [];
+    for (let offset = 0; offset < bytes.length;) {
+      const atom = readAtom(offset, bytes.length);
+      top.push(atom);
+      offset = atom.end;
+    }
+    const moov = top.find((atom) => atom.type === "moov");
+    const mdat = top.find((atom) => atom.type === "mdat");
+    if (!moov || !mdat || moov.offset < mdat.offset) return input;
+
+    const containers = new Set([
+      "moov", "trak", "mdia", "minf", "stbl", "edts", "dinf", "mvex",
+      "udta", "tref", "ipro", "sinf", "schi", "meco", "mere",
+    ]);
+
+    const adjustOffsets = (start: number, end: number, parentType: string) => {
+      let offset = start;
+      if (parentType === "meta") offset += 4; // FullBox header before child atoms.
+      while (offset + 8 <= end) {
+        const atom = readAtom(offset, end);
+        if (atom.type === "stco" || atom.type === "co64") {
+          const countOffset = atom.offset + atom.headerSize + 4;
+          if (countOffset + 4 > atom.end) throw new Error("Invalid MP4 chunk offset table.");
+          const count = view.getUint32(countOffset);
+          const entrySize = atom.type === "stco" ? 4 : 8;
+          const entriesStart = countOffset + 4;
+          if (entriesStart + count * entrySize > atom.end) throw new Error("Truncated MP4 chunk offsets.");
+          for (let i = 0; i < count; i++) {
+            const entry = entriesStart + i * entrySize;
+            if (entrySize === 4) {
+              const value = view.getUint32(entry);
+              if (value >= mdat.offset) {
+                const updated = value + moov.size;
+                if (updated > 0xffffffff) throw new Error("MP4 chunk offset requires a 64-bit table.");
+                view.setUint32(entry, updated);
+              }
+            } else {
+              const value = view.getBigUint64(entry);
+              if (value >= BigInt(mdat.offset)) view.setBigUint64(entry, value + BigInt(moov.size));
+            }
+          }
+        } else if (containers.has(atom.type) || atom.type === "meta") {
+          adjustOffsets(atom.offset + atom.headerSize, atom.end, atom.type);
+        }
+        offset = atom.end;
+      }
+      if (offset !== end) throw new Error("Invalid MP4 child atom alignment.");
+    };
+
+    adjustOffsets(moov.offset + moov.headerSize, moov.end, "moov");
+    const output = new Uint8Array(bytes.length);
+    const beforeMdat = bytes.subarray(0, mdat.offset);
+    const moovBytes = bytes.subarray(moov.offset, moov.end);
+    const withoutMoov = new Uint8Array(bytes.length - moov.size);
+    withoutMoov.set(bytes.subarray(0, moov.offset), 0);
+    withoutMoov.set(bytes.subarray(moov.end), moov.offset);
+    output.set(withoutMoov.subarray(0, mdat.offset), 0);
+    output.set(moovBytes, mdat.offset);
+    output.set(withoutMoov.subarray(mdat.offset), mdat.offset + moov.size);
+    return output.buffer;
+  } catch (error) {
+    console.error("Could not optimize MP4 for fast start; storing original file:", error);
+    return input;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -278,7 +368,8 @@ Deno.serve(async (req: Request) => {
           if (!remoteVideoUrl.startsWith("https://")) return json({ error: "WaveSpeed completed without a usable video URL." }, 502);
           const videoResponse = await fetch(remoteVideoUrl);
           if (!videoResponse.ok) return json({ error: "Lip Sync is ready but could not be downloaded yet." }, 502);
-          const videoBytes = await videoResponse.arrayBuffer();
+          const downloadedVideo = await videoResponse.arrayBuffer();
+          const videoBytes = fastStartMp4(downloadedVideo);
           const storagePath = `${user.id}/${generationId}.mp4`;
           const { error: uploadError } = await admin.storage.from(STORAGE_BUCKET).upload(storagePath, videoBytes, {
             contentType: "video/mp4", upsert: true,
@@ -405,7 +496,8 @@ Deno.serve(async (req: Request) => {
           }, 502);
         }
 
-        const videoBytes = await videoResponse.arrayBuffer();
+        const downloadedVideo = await videoResponse.arrayBuffer();
+        const videoBytes = fastStartMp4(downloadedVideo);
         const storagePath = `${user.id}/${generationId}.mp4`;
 
         const { error: uploadError } = await admin.storage
