@@ -1596,6 +1596,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   let currentUser = null;
   let currentFiles = [];
   let currentVideoFiles = [];
+  let currentImageFiles = [];
   let currentAudioUrl = null;
   let deletingFile = false;
 
@@ -2552,6 +2553,7 @@ if (currentUser) {
 
       currentFiles = [];
       currentVideoFiles = [];
+      currentImageFiles = [];
       updateLibraryCounts();
 
       document.getElementById("myFilesList").innerHTML =
@@ -2616,7 +2618,7 @@ if (currentUser) {
     const descriptions = {
       all: "Showing all available files.",
       video: "Showing your generated AI videos.",
-      image: "Showing generated images. Image generation is not connected yet.",
+      image: "Showing your generated AI images.",
       audio: "Showing your uploaded music and audio files.",
       thumbnail: "Showing project covers and thumbnails.",
       text: "Showing saved prompts, captions and project text."
@@ -2721,7 +2723,36 @@ if (currentUser) {
       );
     }
 
-    // Video records are read separately so a video-library issue never blocks music files.
+    // Load generated images from the private per-user image folder.
+    currentImageFiles = [];
+    const { data: imageRows, error: imageError } = await supabaseClient.storage
+      .from("user-generated-images")
+      .list(currentUser.id, {
+        limit: 100,
+        sortBy: { column: "created_at", order: "desc" }
+      });
+
+    if (imageError) {
+      console.warn("Could not load generated images from the library:", imageError);
+    } else {
+      const imageObjects = (imageRows || []).filter(file =>
+        file.name && /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+      );
+      currentImageFiles = await Promise.all(imageObjects.map(async file => {
+        const path = currentUser.id + "/" + file.name;
+        const { data: signed, error: signedError } = await supabaseClient.storage
+          .from("user-generated-images")
+          .createSignedUrl(path, 3600);
+        if (signedError || !signed?.signedUrl) {
+          console.warn("Could not create image preview URL:", signedError);
+          return null;
+        }
+        return { ...file, path, signedUrl: signed.signedUrl };
+      }));
+      currentImageFiles = currentImageFiles.filter(Boolean);
+    }
+
+    // Video records are read separately so a video-library issue never blocks other files.
     currentVideoFiles = [];
     const { data: videoRows, error: videoError } = await supabaseClient
       .from("video_generations")
@@ -2739,6 +2770,68 @@ if (currentUser) {
     }
 
     list.replaceChildren();
+
+    currentImageFiles.forEach(file => {
+      const row = document.createElement("div");
+      row.className = "file-row";
+      row.dataset.fileKind = "image";
+
+      const preview = document.createElement("img");
+      preview.src = file.signedUrl;
+      preview.alt = file.name;
+      preview.loading = "lazy";
+      preview.style.width = "92px";
+      preview.style.height = "92px";
+      preview.style.objectFit = "cover";
+      preview.style.borderRadius = "8px";
+      preview.style.border = "1px solid #76552e";
+
+      const info = document.createElement("div");
+      info.className = "file-name";
+      info.style.flex = "1";
+      info.textContent = file.name;
+
+      const actions = document.createElement("div");
+      actions.className = "file-actions";
+
+      const openButton = document.createElement("button");
+      openButton.className = "secondary-btn";
+      openButton.textContent = "OPEN";
+      openButton.onclick = () => window.open(file.signedUrl, "_blank", "noopener,noreferrer");
+
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "secondary-btn";
+      downloadButton.textContent = "DOWNLOAD";
+      downloadButton.onclick = () => {
+        const link = document.createElement("a");
+        link.href = file.signedUrl;
+        link.download = file.name;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      };
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "danger-btn";
+      deleteButton.textContent = "DELETE";
+      deleteButton.onclick = async () => {
+        if (!confirm('Permanently delete "' + file.name + '"?')) return;
+        const { error: removeError } = await supabaseClient.storage
+          .from("user-generated-images")
+          .remove([file.path]);
+        if (removeError) {
+          showFileMessage("Could not delete image: " + removeError.message, true);
+          return;
+        }
+        showFileMessage("Image deleted.");
+        await loadMyFiles();
+      };
+
+      actions.append(openButton, downloadButton, deleteButton);
+      row.append(preview, info, actions);
+      list.appendChild(row);
+    });
 
     currentVideoFiles.forEach(video => {
       const row = document.createElement("div");
@@ -2803,8 +2896,8 @@ if (currentUser) {
       list.appendChild(row);
     });
 
-    if (!currentFiles.length && !currentVideoFiles.length) {
-      list.innerHTML = '<div class="library-empty"><strong>Your library is empty</strong>Your completed AI videos and music files will appear here.</div>';
+    if (!currentFiles.length && !currentVideoFiles.length && !currentImageFiles.length) {
+      list.innerHTML = '<div class="library-empty"><strong>Your library is empty</strong>Your completed AI videos, images and music files will appear here.</div>';
     }
 
     updateLibraryCounts();
@@ -2814,9 +2907,10 @@ if (currentUser) {
   function updateLibraryCounts() {
     const audioCount = currentFiles.length;
     const videoCount = currentVideoFiles.length;
+    const imageCount = currentImageFiles.length;
     document.getElementById("audioFileCount").textContent = audioCount;
     document.getElementById("videoFileCount").textContent = videoCount;
-    document.getElementById("imageFileCount").textContent = "0";
+    document.getElementById("imageFileCount").textContent = imageCount;
     document.getElementById("thumbnailFileCount").textContent = "0";
 
     const videoEmpty = document.querySelector('#libraryEmptyStates [data-empty-kind="video"]');
