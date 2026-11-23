@@ -2900,28 +2900,54 @@ if (currentUser) {
       const row = document.createElement("div");
       row.className = "file-row";
       row.dataset.fileKind = "video";
+      row.style.alignItems = "flex-start";
 
+      const preview = document.createElement("video");
+      preview.controls = true;
+      preview.playsInline = true;
+      preview.preload = "metadata";
+      preview.style.width = "min(220px, 100%)";
+      preview.style.maxWidth = "100%";
+      preview.style.aspectRatio = "16 / 9";
+      preview.style.objectFit = "cover";
+      preview.style.background = "#050505";
+      preview.style.border = "1px solid #76552e";
+      preview.style.borderRadius = "8px";
+      preview.setAttribute("aria-label", "Preview of generated video");
+      const { data: previewUrl, error: previewError } = await supabaseClient.storage
+        .from("generated-videos")
+        .createSignedUrl(video.storage_path, 3600);
+      if (!previewError && previewUrl?.signedUrl) {
+        preview.src = previewUrl.signedUrl;
+      } else {
+        preview.poster = "";
+        console.warn("Could not prepare video preview:", previewError);
+      }
+
+      const details = document.createElement("div");
+      details.style.flex = "1";
+      details.style.minWidth = "180px";
       const info = document.createElement("div");
       info.className = "file-name";
       info.textContent =
         (video.prompt || "AI generated video").slice(0, 100) +
         " · " + (video.duration || "?") + " sec";
+      details.appendChild(info);
 
       const actions = document.createElement("div");
       actions.className = "file-actions";
+      actions.style.marginTop = "12px";
 
       const openButton = document.createElement("button");
       openButton.className = "secondary-btn";
       openButton.textContent = "OPEN VIDEO";
-      openButton.onclick = async () => {
-        const { data: signed, error: signedError } = await supabaseClient.storage
-          .from("generated-videos")
-          .createSignedUrl(video.storage_path, 3600);
-        if (signedError || !signed?.signedUrl) {
-          showFileMessage("Could not open this video: " + (signedError?.message || "No download link."), true);
-          return;
+      openButton.onclick = () => {
+        if (preview.src) {
+          preview.scrollIntoView({ behavior: "smooth", block: "center" });
+          preview.play().catch(() => {});
+        } else {
+          showFileMessage("Video preview is not available. Try DOWNLOAD.", true);
         }
-        window.open(signed.signedUrl, "_blank", "noopener,noreferrer");
       };
 
       const downloadButton = document.createElement("button");
@@ -2935,7 +2961,8 @@ if (currentUser) {
       phoneButton.onclick = () => downloadGeneratedVideo(video, true);
 
       actions.append(openButton, downloadButton, phoneButton);
-      row.append(info, actions);
+      details.appendChild(actions);
+      row.append(preview, details);
       list.appendChild(row);
     });
 
@@ -2944,17 +2971,34 @@ if (currentUser) {
       row.className = "file-row";
       row.dataset.fileKind = "audio";
 
+      const details = document.createElement("div");
+      details.style.flex = "1";
+      details.style.minWidth = "180px";
       const name = document.createElement("div");
       name.className = "file-name";
       name.textContent = file.name;
 
+      const player = document.createElement("audio");
+      player.controls = true;
+      player.preload = "none";
+      player.style.display = "block";
+      player.style.width = "min(360px, 100%)";
+      player.style.maxWidth = "100%";
+      player.style.marginTop = "10px";
+      const audioPath = currentUser.id + "/" + file.name;
+      supabaseClient.storage.from("user-songs")
+        .createSignedUrl(audioPath, 3600)
+        .then(({ data: signed, error: signedError }) => {
+          if (signedError || !signed?.signedUrl) {
+            console.warn("Could not prepare audio preview:", signedError);
+            return;
+          }
+          player.src = signed.signedUrl;
+        });
+
       const actions = document.createElement("div");
       actions.className = "file-actions";
-
-      const playButton = document.createElement("button");
-      playButton.className = "secondary-btn";
-      playButton.textContent = "PLAY";
-      playButton.onclick = () => playSong(file.name);
+      actions.style.marginTop = "10px";
 
       const downloadButton = document.createElement("button");
       downloadButton.className = "secondary-btn";
@@ -2966,8 +3010,9 @@ if (currentUser) {
       deleteButton.textContent = "DELETE";
       deleteButton.onclick = () => deleteSong(file.name);
 
-      actions.append(playButton, downloadButton, deleteButton);
-      row.append(name, actions);
+      actions.append(downloadButton, deleteButton);
+      details.append(name, player, actions);
+      row.appendChild(details);
       list.appendChild(row);
     });
 
