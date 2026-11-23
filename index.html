@@ -3036,7 +3036,15 @@ if (currentUser) {
           showFileMessage("Video deleted successfully.");
           await loadMyFiles();
         } catch (deleteError) {
-          showFileMessage("Could not delete video: " + (deleteError.message || String(deleteError)), true);
+          let deleteMessage = deleteError?.message || String(deleteError);
+          try {
+            const response = deleteError?.context;
+            if (response && typeof response.json === "function") {
+              const details = await response.clone().json();
+              if (details?.error) deleteMessage = details.error;
+            }
+          } catch (_) {}
+          showFileMessage("Could not delete video: " + deleteMessage, true);
         } finally {
           deletingFile = false;
           deleteButton.disabled = false;
