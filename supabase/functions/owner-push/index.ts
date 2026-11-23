@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const OWNER_ID = "dce2d514-964d-49be-b83d-45e6721b49a7";
 const cors = {
   "Access-Control-Allow-Origin": "https://lane-video-ai.com",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-api-version, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Vary": "Origin",
 };
