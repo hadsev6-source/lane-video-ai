@@ -2952,22 +2952,25 @@ if (currentUser) {
       const preview = document.createElement("video");
       preview.controls = true;
       preview.playsInline = true;
-      preview.preload = "metadata";
-      preview.style.width = "min(220px, 100%)";
+      preview.preload = "auto";
+      preview.style.width = "min(100%, 480px)";
       preview.style.maxWidth = "100%";
       preview.style.aspectRatio = "16 / 9";
-      preview.style.objectFit = "cover";
+      preview.style.objectFit = "contain";
       preview.style.background = "#050505";
       preview.style.border = "1px solid #76552e";
       preview.style.borderRadius = "8px";
-      preview.setAttribute("aria-label", "Preview of generated video");
+      preview.setAttribute("aria-label", "Preview generated video. Play to watch, then use Save to Phone to save it.");
+      preview.addEventListener("error", () => {
+        showFileMessage("Video preview could not be loaded. Please use DOWNLOAD or SAVE TO PHONE.", true);
+      });
       const { data: previewUrl, error: previewError } = await supabaseClient.storage
         .from("generated-videos")
         .createSignedUrl(video.storage_path, 3600);
       if (!previewError && previewUrl?.signedUrl) {
         preview.src = previewUrl.signedUrl;
+        preview.load();
       } else {
-        preview.poster = "";
         console.warn("Could not prepare video preview:", previewError);
       }
 
