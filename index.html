@@ -2952,7 +2952,7 @@ if (currentUser) {
       const preview = document.createElement("video");
       preview.controls = true;
       preview.playsInline = true;
-      preview.preload = "auto";
+      preview.preload = "metadata";
       preview.style.width = "min(100%, 480px)";
       preview.style.maxWidth = "100%";
       preview.style.aspectRatio = "16 / 9";
@@ -2968,21 +2968,13 @@ if (currentUser) {
         .from("generated-videos")
         .createSignedUrl(video.storage_path, 3600);
       if (!previewError && previewUrl?.signedUrl) {
-        try {
-          // Buffer MP4 files whose playback index (moov atom) is stored at the end.
-          const mediaResponse = await fetch(previewUrl.signedUrl);
-          if (!mediaResponse.ok) throw new Error("Video download returned HTTP " + mediaResponse.status);
-          const mediaBlob = await mediaResponse.blob();
-          if (!mediaBlob.size) throw new Error("The video file is empty.");
-          preview.dataset.objectUrl = URL.createObjectURL(mediaBlob);
-          preview.src = preview.dataset.objectUrl;
-          preview.load();
-        } catch (mediaError) {
-          console.error("Could not load video preview data:", mediaError);
-          showFileMessage("Could not load video preview: " + mediaError.message, true);
-        }
+        // Stream directly from Supabase Storage. This allows the browser to use
+        // HTTP byte-range requests instead of downloading the entire video first.
+        preview.src = previewUrl.signedUrl;
+        preview.load();
       } else {
-        console.warn("Could not prepare video preview:", previewError);
+        console.error("Could not prepare video preview URL:", previewError);
+        showFileMessage("Could not prepare video preview. Please refresh My Files.", true);
       }
 
       const details = document.createElement("div");
