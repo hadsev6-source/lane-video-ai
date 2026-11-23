@@ -1553,7 +1553,9 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
     SUPABASE_KEY,
     {
       auth: {
+        // Keep the Google sign-in session across browser and device restarts.
         persistSession: true,
+        storage: window.localStorage,
         autoRefreshToken: true,
         detectSessionInUrl: true,
         flowType: "implicit"
