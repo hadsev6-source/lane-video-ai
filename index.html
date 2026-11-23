@@ -1086,48 +1086,13 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 .lane-promo .lane-share .share-buttons .share-btn:hover{transform:translateY(-2px) scale(1.06)!important;box-shadow:0 0 18px #ff9d1966!important}
 
 
-/* Compact language selector beside the main menu */
-.site-header{display:flex;align-items:center}
-.language-switcher{position:relative;flex:0 0 auto;margin-left:auto;margin-right:10px;z-index:1005}
-.language-switcher>summary{list-style:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #ff9d19;border-radius:12px;background:linear-gradient(145deg,#21150a,#050505);color:#fff;font-size:23px;cursor:pointer;box-shadow:0 0 13px #ff8a0040}
-.language-switcher>summary::-webkit-details-marker{display:none}
-.language-switcher[open]>summary{border-color:#ffc15a;box-shadow:0 0 18px #ff8a0070}
-.language-dropdown{position:absolute;right:0;top:calc(100% + 10px);display:flex;flex-direction:column;gap:5px;min-width:190px;padding:10px;background:#100e0b;border:1px solid #ff9d19;border-radius:13px;box-shadow:0 14px 35px #000d,0 0 18px #ff8a0035}
-.language-dropdown strong{padding:7px 9px;color:#ffc15a;font-size:12px}
-.language-dropdown button{width:100%;padding:9px 11px;text-align:left;border:1px solid #49351e;border-radius:8px;background:#19150f;color:#fff;font-size:14px;cursor:pointer}
-.language-dropdown button:hover{background:#302313;border-color:#ffc15a}
-.google-translate-hidden{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
-.goog-te-banner-frame,.goog-te-gadget,.goog-logo-link{display:none!important}
-body{top:0!important}
-@media(max-width:600px){.language-switcher{margin-left:auto;margin-right:7px}.language-switcher>summary{width:38px;height:38px;font-size:20px}.site-header>.main-menu{margin-left:0!important}}
-
-
-/* Make the language control self-explanatory */
-.language-switcher>summary{width:auto!important;min-width:112px!important;height:42px!important;padding:0 11px!important;display:inline-flex!important;flex-direction:row!important;gap:7px!important;white-space:nowrap!important}
-.language-switcher .language-globe{font-size:19px;line-height:1}
-.language-switcher .language-label{font-size:11px;font-weight:800;letter-spacing:.55px;color:#ffc15a;text-transform:uppercase}
-@media(max-width:600px){.language-switcher{margin-left:auto!important;margin-right:6px!important;z-index:1100!important}.language-switcher>summary{width:36px!important;min-width:36px!important;height:36px!important;padding:0!important;gap:0!important;justify-content:center!important}.language-switcher .language-label{display:none!important}.language-switcher .language-globe{font-size:17px!important}.language-dropdown{right:0!important;top:calc(100% + 6px)!important;width:180px!important;min-width:0!important;max-width:calc(100vw - 24px)!important;z-index:1101!important}}
-
 </style>
 </head>
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>AI STUDIO</span></div>
 <span class="lane-croissant" aria-label="Croissant">🥐</span>
-<details class="language-switcher" id="languageSwitcher">
-<summary aria-label="Change language" title="Change language"><span class="language-globe">🌐</span><span class="language-label">Change Lang</span></summary>
-<div class="language-dropdown">
-<strong>Choose language / Избери език</strong>
-<button type="button" data-lang="en">🇬🇧 English</button>
-<button type="button" data-lang="bg">🇧🇬 Български</button>
-<button type="button" data-lang="fr">🇫🇷 Français</button>
-<button type="button" data-lang="de">🇩🇪 Deutsch</button>
-<button type="button" data-lang="es">🇪🇸 Español</button>
-<button type="button" data-lang="it">🇮🇹 Italiano</button>
-<button type="button" data-lang="ro">🇷🇴 Română</button>
-</div>
-</details>
-<div id="google_translate_element" class="google-translate-hidden" aria-hidden="true"></div>
+
 <nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
@@ -3030,41 +2995,6 @@ function openStudioSection(sectionId) {
 }
 </script>
 
-<script>
 
-/* Google Translate-powered language selector */
-(function(){
-  const selector=document.getElementById("languageSwitcher");
-  if(!selector)return;
-  window.googleTranslateElementInit=function(){
-    if(window.google&&google.translate&&google.translate.TranslateElement){
-      new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,bg,fr,de,es,it,ro",autoDisplay:false}, "google_translate_element");
-    }
-  };
-  const script=document.createElement("script");
-  script.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-  script.async=true;
-  document.head.appendChild(script);
-  selector.querySelectorAll("[data-lang]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      const lang=button.getAttribute("data-lang");
-      const apply=()=>{
-        const select=document.querySelector("#google_translate_element select");
-        if(!select)return false;
-        select.value=lang;
-        select.dispatchEvent(new Event("change",{bubbles:true}));
-        selector.open=false;
-        return true;
-      };
-      if(!apply()){
-        const status=document.getElementById("laneShareStatus");
-        if(status)status.textContent="Language service is loading. Please try again in a moment.";
-        setTimeout(apply,900);
-      }
-    });
-  });
-})();
-
-</script>
 </body>
 </html>
