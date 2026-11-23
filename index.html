@@ -3013,7 +3013,46 @@ if (currentUser) {
       phoneButton.textContent = "SAVE TO PHONE";
       phoneButton.onclick = () => downloadGeneratedVideo(video, true);
 
-      actions.append(openButton, downloadButton, phoneButton);
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "danger-btn";
+      deleteButton.textContent = "DELETE";
+      deleteButton.onclick = async () => {
+        if (!currentUser || deletingFile) return;
+        const confirmed = confirm('Permanently delete this video from your account? This cannot be undone.');
+        if (!confirmed) return;
+
+        deletingFile = true;
+        deleteButton.disabled = true;
+        deleteButton.textContent = "DELETING...";
+        showFileMessage("Deleting video...");
+
+        try {
+          const { error: storageError } = await supabaseClient.storage
+            .from("generated-videos")
+            .remove([video.storage_path]);
+          if (storageError) throw storageError;
+
+          const { error: recordError } = await supabaseClient
+            .from("video_generations")
+            .delete()
+            .eq("id", video.id)
+            .eq("user_id", currentUser.id);
+          if (recordError) {
+            showFileMessage("Video file deleted, but its library record could not be removed: " + recordError.message, true);
+          } else {
+            showFileMessage("Video deleted successfully.");
+          }
+          await loadMyFiles();
+        } catch (deleteError) {
+          showFileMessage("Could not delete video: " + (deleteError.message || String(deleteError)), true);
+        } finally {
+          deletingFile = false;
+          deleteButton.disabled = false;
+          deleteButton.textContent = "DELETE";
+        }
+      };
+
+      actions.append(openButton, downloadButton, phoneButton, deleteButton);
       details.appendChild(actions);
       row.append(preview, details);
       list.appendChild(row);
