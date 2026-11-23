@@ -2968,8 +2968,19 @@ if (currentUser) {
         .from("generated-videos")
         .createSignedUrl(video.storage_path, 3600);
       if (!previewError && previewUrl?.signedUrl) {
-        preview.src = previewUrl.signedUrl;
-        preview.load();
+        try {
+          // Buffer MP4 files whose playback index (moov atom) is stored at the end.
+          const mediaResponse = await fetch(previewUrl.signedUrl);
+          if (!mediaResponse.ok) throw new Error("Video download returned HTTP " + mediaResponse.status);
+          const mediaBlob = await mediaResponse.blob();
+          if (!mediaBlob.size) throw new Error("The video file is empty.");
+          preview.dataset.objectUrl = URL.createObjectURL(mediaBlob);
+          preview.src = preview.dataset.objectUrl;
+          preview.load();
+        } catch (mediaError) {
+          console.error("Could not load video preview data:", mediaError);
+          showFileMessage("Could not load video preview: " + mediaError.message, true);
+        }
       } else {
         console.warn("Could not prepare video preview:", previewError);
       }
@@ -3038,12 +3049,24 @@ if (currentUser) {
       const audioPath = currentUser.id + "/" + file.name;
       supabaseClient.storage.from("user-songs")
         .createSignedUrl(audioPath, 3600)
-        .then(({ data: signed, error: signedError }) => {
+        .then(async ({ data: signed, error: signedError }) => {
           if (signedError || !signed?.signedUrl) {
             console.warn("Could not prepare audio preview:", signedError);
+            showFileMessage("Could not prepare audio preview: " + (signedError?.message || "No signed URL."), true);
             return;
           }
-          player.src = signed.signedUrl;
+          try {
+            const mediaResponse = await fetch(signed.signedUrl);
+            if (!mediaResponse.ok) throw new Error("Audio download returned HTTP " + mediaResponse.status);
+            const mediaBlob = await mediaResponse.blob();
+            if (!mediaBlob.size) throw new Error("The audio file is empty.");
+            player.dataset.objectUrl = URL.createObjectURL(mediaBlob);
+            player.src = player.dataset.objectUrl;
+            player.load();
+          } catch (mediaError) {
+            console.error("Could not load audio preview data:", mediaError);
+            showFileMessage("Could not load audio preview: " + mediaError.message, true);
+          }
         });
 
       const actions = document.createElement("div");
