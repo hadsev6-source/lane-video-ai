@@ -74,6 +74,14 @@ input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6
         <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Събитие</th><th>Услуга</th><th>Страница</th></tr></thead><tbody id="analyticsRows"><tr><td colspan="4">Няма записи.</td></tr></tbody></table></div>
       </div>
     </div>
+    <div class="panel" style="margin:22px 0;border-color:#8b713b">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div><h2 style="margin-bottom:6px">Известия</h2><p class="muted" style="margin:0">Нови посещения, входове, стартирали генерации и записани плащания.</p></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><strong id="notificationCount">0 непрочетени</strong><button id="soundToggle" class="secondary" type="button">🔔 Включи звука</button><button id="markNotificationsRead" class="secondary" type="button">Маркирай всички като прочетени</button></div>
+      </div>
+      <div id="notificationStatus" class="status">Зареждане на известията…</div>
+      <div id="notificationList" aria-live="polite"><p class="muted">Все още няма известия.</p></div>
+    </div>
     <div class="panel">
       <h2>Последни финансови записи</h2>
       <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Тип</th><th>Референция</th><th>Приход</th><th>Stripe такса</th><th>AI разход</th><th>Нетно</th></tr></thead><tbody id="ledgerRows"><tr><td colspan="7">Няма записи.</td></tr></tbody></table></div>
@@ -155,12 +163,88 @@ async function loadAnalytics(){
   $("analyticsRows").innerHTML=data.slice(0,50).map(x=>{const tr=document.createElement("tr");const vals=[new Date(x.created_at).toLocaleString("bg-BG"),labels[x.event_name]||x.event_name,names[x.metadata?.service]||"—",x.page_path||"—"];for(const v of vals){const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}return tr.outerHTML;}).join("")||'<tr><td colspan="4">Все още няма аналитични събития.</td></tr>' ;
   el.textContent="Аналитиката е обновена. Показани са само събитията, записани в analytics_events.";
 }
+// Известията се изграждат от реално записаните аналитични и финансови събития.
+// Прочетените ID се пазят само в браузъра на администратора.
+const NOTIFICATION_READ_KEY = "lane_owner_notifications_read_v1";
+let notificationItems = [];
+let notificationBaselineReady = false;
+let knownNotificationKeys = new Set();
+let notificationSoundEnabled = localStorage.getItem("lane_notification_sound") === "on";
+let notificationAudioContext = null;
+function updateSoundButton(){const b=$("soundToggle");if(b)b.textContent=notificationSoundEnabled?"🔔 Звукът е включен":"🔕 Включи звука";}
+function playNotificationSound(){
+  if(!notificationSoundEnabled || document.hidden) return;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+    notificationAudioContext=notificationAudioContext||new Ctx();
+    if(notificationAudioContext.state==="suspended")return;
+    const osc=notificationAudioContext.createOscillator();const gain=notificationAudioContext.createGain();
+    osc.type="sine";osc.frequency.setValueAtTime(880,notificationAudioContext.currentTime);
+    osc.frequency.setValueAtTime(1174,notificationAudioContext.currentTime+0.12);
+    gain.gain.setValueAtTime(0.0001,notificationAudioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.16,notificationAudioContext.currentTime+0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001,notificationAudioContext.currentTime+0.38);
+    osc.connect(gain);gain.connect(notificationAudioContext.destination);osc.start();osc.stop(notificationAudioContext.currentTime+0.4);
+  }catch(e){console.warn("Notification sound unavailable",e);}
+}
+$("soundToggle").onclick=async()=>{
+  notificationSoundEnabled=!notificationSoundEnabled;
+  localStorage.setItem("lane_notification_sound",notificationSoundEnabled?"on":"off");
+  if(notificationSoundEnabled){const Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx){notificationAudioContext=notificationAudioContext||new Ctx();if(notificationAudioContext.state==="suspended")await notificationAudioContext.resume();playNotificationSound();}}
+  updateSoundButton();
+};
+updateSoundButton();
+function readNotificationIds(){try{return new Set(JSON.parse(localStorage.getItem(NOTIFICATION_READ_KEY)||"[]"));}catch(_){return new Set();}}
+function saveNotificationIds(ids){try{localStorage.setItem(NOTIFICATION_READ_KEY,JSON.stringify([...ids].slice(-1000)));}catch(_){}}
+function notificationText(event){
+  const serviceNames={image:"изображение",video:"видео",music:"музика",lip_sync:"Lip Sync"};
+  const labels={page_view:"Нов посетител отвори сайта",login:"Потребител влезе в профила си",registration:"Нова регистрация",checkout_started:"Започнато плащане",generation_started:"Започната генерация",generation_completed:"Генерацията завърши успешно",generation_failed:"Генерацията е неуспешна"};
+  let title=labels[event.event_name]||event.event_name;
+  if(event.event_name.startsWith("generation_")){const service=serviceNames[event.metadata?.service];if(service)title+=" — "+service;}
+  return title;
+}
+function renderNotifications(){
+  const read=readNotificationIds();
+  const unread=notificationItems.filter(n=>!read.has(n.key)).length;
+  $("notificationCount").textContent=unread+" непрочетени";
+  const host=$("notificationList");host.innerHTML="";
+  if(!notificationItems.length){host.innerHTML='<p class="muted">Все още няма известия. Те ще се появят при нови събития.</p>';return;}
+  for(const n of notificationItems){
+    const isRead=read.has(n.key);const item=document.createElement("div");
+    item.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 4px;border-bottom:1px solid #30343c;"+(isRead?"opacity:.65":"");
+    const left=document.createElement("div");const title=document.createElement("strong");title.textContent=n.title;
+    const meta=document.createElement("div");meta.className="muted";meta.textContent=new Date(n.created_at).toLocaleString("bg-BG")+(n.detail?" · "+n.detail:"");
+    left.append(title,meta);item.appendChild(left);
+    if(!isRead){const btn=document.createElement("button");btn.className="secondary";btn.type="button";btn.textContent="Прочетено";btn.onclick=()=>{const ids=readNotificationIds();ids.add(n.key);saveNotificationIds(ids);renderNotifications();};item.appendChild(btn);}else{const tag=document.createElement("span");tag.className="muted";tag.textContent="Прочетено";item.appendChild(tag);}
+    host.appendChild(item);
+  }
+}
+async function loadNotifications(){
+  const statusEl=$("notificationStatus");
+  const [eventsResult,ledgerResult]=await Promise.all([
+    db.from("analytics_events").select("id,event_name,created_at,page_path,metadata").order("created_at",{ascending:false}).limit(50),
+    db.from("owner_financial_ledger").select("id,created_at,entry_type,gross_amount_cents,reference_id").order("created_at",{ascending:false}).limit(20)
+  ]);
+  if(eventsResult.error){statusEl.textContent="Известията от аналитиката не могат да се заредят: "+eventsResult.error.message;statusEl.style.borderColor="#a33";return;}
+  const events=(eventsResult.data||[]).map(e=>({key:"event:"+e.id,title:notificationText(e),created_at:e.created_at,detail:e.page_path||""}));
+  const ledger=(ledgerResult.error?[]:(ledgerResult.data||[])).filter(x=>x.entry_type==="payment").map(x=>({key:"payment:"+x.id,title:"Получено е записано плащане",created_at:x.created_at,detail:money(x.gross_amount_cents)+(x.reference_id?" · "+x.reference_id:"")}));
+  const nextItems=[...events,...ledger].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,50);
+  const nextKeys=new Set(nextItems.map(n=>n.key));
+  if(notificationBaselineReady && [...nextKeys].some(key=>!knownNotificationKeys.has(key))) playNotificationSound();
+  knownNotificationKeys=nextKeys;
+  notificationBaselineReady=true;
+  notificationItems=nextItems;
+  statusEl.textContent=ledgerResult.error?"Аналитичните известия са заредени. Финансовите известия временно не са достъпни.":"Известията са обновени автоматично на всеки 30 секунди.";
+  statusEl.style.borderColor="#5a4928";renderNotifications();
+}
+$("markNotificationsRead").onclick=()=>{saveNotificationIds(new Set(notificationItems.map(n=>n.key)));renderNotifications();};
+
 const oldLoadDashboard=loadDashboard;
-loadDashboard=async function(){await oldLoadDashboard();await loadAnalytics();};
+loadDashboard=async function(){await oldLoadDashboard();await loadAnalytics();await loadNotifications();};
 $("refresh").onclick=loadDashboard;
 db.auth.onAuthStateChange(()=>setTimeout(syncAuth,0));
 syncAuth();
+setInterval(async()=>{const {data:{user}}=await db.auth.getUser();if(user?.id===OWNER_USER_ID){await loadNotifications();}},30000);
 </script>
 </body>
 </html>
-
