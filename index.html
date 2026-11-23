@@ -1646,6 +1646,7 @@ async function updateLipSyncDuration() {
 }
 
 async function startLipSync() {
+  laneAnalytics.track("generation_started", { service: "lip_sync" });
   const image = document.getElementById("lipSyncImageFile").files[0];
   const audio = document.getElementById("lipSyncAudioFile").files[0];
   const notice = document.getElementById("lipSyncNotice");
@@ -1847,6 +1848,7 @@ function stopVideoElapsedTimer() {
 }
 
 async function prepareVideo() {
+  laneAnalytics.track("generation_started", { service: "video" });
   const prompt = document.getElementById("prompt").value.trim();
   const style = document.getElementById("style").value;
   const category = document.getElementById("category").value;
@@ -2073,6 +2075,7 @@ async function prepareVideo() {
   }
 
   async function generateImages() {
+    laneAnalytics.track("generation_started", { service: "image" });
     const prompt = document.getElementById("imagePrompt").value.trim();
     const quantity = 1; // Fixed: generate one image for 15 credits.
     const style = document.getElementById("imageStyle").value;
@@ -2132,6 +2135,7 @@ async function prepareVideo() {
   }
 
   async function generateMusic() {
+    laneAnalytics.track("generation_started", { service: "music" });
     const output = document.getElementById("songProjectOutput");
     const player = document.getElementById("generatedSongPlayer");
     const button = document.getElementById("generateMusicButton");
@@ -2264,6 +2268,38 @@ async function prepareVideo() {
     output.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
+  // LANE first-party analytics (separate from credits and finance)
+  const laneAnalytics = (() => {
+    const getId = (key) => {
+      try {
+        let value = localStorage.getItem(key);
+        if (!value) { value = crypto.randomUUID(); localStorage.setItem(key, value); }
+        return value;
+      } catch (_) { return crypto.randomUUID(); }
+    };
+    const visitorId = getId('lane_analytics_visitor');
+    const sessionId = (() => {
+      try { let v = sessionStorage.getItem('lane_analytics_session'); if (!v) { v=crypto.randomUUID(); sessionStorage.setItem('lane_analytics_session',v); } return v; }
+      catch (_) { return crypto.randomUUID(); }
+    })();
+    async function track(eventName, metadata = {}) {
+      try {
+        const userId = currentUser?.id || null;
+        await supabaseClient.from('analytics_events').insert({
+          event_name: eventName, visitor_id: visitorId, session_id: sessionId,
+          user_id: userId, page_path: location.pathname.slice(0,500),
+          referrer: document.referrer ? document.referrer.slice(0,1000) : null,
+          device_type: /tablet/i.test(navigator.userAgent) ? 'tablet' : (/Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop'),
+          browser_language: (navigator.language || '').slice(0,40),
+          timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0,100),
+          metadata: metadata
+        });
+      } catch (e) { console.debug('Analytics event skipped:', e); }
+    }
+    return { track };
+  })();
+  laneAnalytics.track('page_view');
+
   // AUTHENTICATION
 
   // Google-only sign-in is used by the account interface.
@@ -2363,6 +2399,9 @@ if (currentUser) {
   }
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN") {
+      setTimeout(() => laneAnalytics.track("login"), 0);
+    }
     if (
       event === "SIGNED_IN" ||
       event === "SIGNED_OUT" ||
