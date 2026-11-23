@@ -1099,7 +1099,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 .google-translate-hidden{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
 .goog-te-banner-frame,.goog-te-gadget,.goog-logo-link{display:none!important}
 body{top:0!important}
-@media(max-width:600px){.language-switcher{margin-left:auto;margin-right:7px}.language-switcher>summary{width:38px;height:38px;font-size:20px}.site-header>.main-menu{margin-left:0!important}}
+@media(max-width:600px){.language-switcher{display:none!important}.site-header>.main-menu{margin-left:auto!important}}
 
 
 /* Make the language control self-explanatory */
@@ -3034,6 +3034,8 @@ function openStudioSection(sectionId) {
 
 /* Google Translate-powered language selector */
 (function(){
+  /* Keep Google Translate off on mobile; retain the language selector on desktop. */
+  if(window.matchMedia("(max-width: 600px)").matches)return;
   const selector=document.getElementById("languageSwitcher");
   if(!selector)return;
   window.googleTranslateElementInit=function(){
