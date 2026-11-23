@@ -65,13 +65,14 @@ input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6
         <div class="card"><small>Входове</small><strong id="aLogins">—</strong></div>
         <div class="card"><small>Стартирани генерации</small><strong id="aStarts">—</strong></div>
       </div>
+      <div class="panel" style="margin:14px 0"><h2>Посетители по държави</h2><div id="analyticsCountries" class="muted">Няма данни за държави.</div></div>
       <div class="grid2">
         <div class="panel"><h2>Генерации по услуга</h2><div id="analyticsTypes" class="muted">Няма данни.</div></div>
         <div class="panel"><h2>Посещения по дни</h2><div id="analyticsDays" class="muted">Няма данни.</div></div>
       </div>
       <div class="panel">
         <h2>Последни аналитични събития</h2>
-        <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Събитие</th><th>Услуга</th><th>Страница</th></tr></thead><tbody id="analyticsRows"><tr><td colspan="4">Няма записи.</td></tr></tbody></table></div>
+        <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Събитие</th><th>Услуга</th><th>Държава</th><th>Страница</th></tr></thead><tbody id="analyticsRows"><tr><td colspan="5">Няма записи.</td></tr></tbody></table></div>
       </div>
     </div>
     <div class="panel" style="margin:22px 0;border-color:#8b713b">
@@ -139,7 +140,7 @@ async function loadAnalytics(){
   const el=$("analyticsStatus");
   el.textContent="Зареждане на аналитичните данни…";el.style.borderColor="#5a4928";
   const {data,error}=await db.from("analytics_events")
-    .select("event_name,visitor_id,session_id,created_at,page_path,metadata")
+    .select("event_name,visitor_id,session_id,created_at,page_path,metadata,country_code,country_name,user_id")
     .order("created_at",{ascending:false}).limit(10000);
   if(error){
     el.textContent="Аналитиката още не може да се зареди: "+error.message+". Финансовото табло остава достъпно. Проверяваме таблицата analytics_events и нейните права в Supabase.";
@@ -155,12 +156,16 @@ async function loadAnalytics(){
   data.filter(x=>x.event_name==="generation_started").forEach(x=>{const k=x.metadata?.service||"other";typeCounts[k]=(typeCounts[k]||0)+1;});
   const maxType=Math.max(1,...Object.values(typeCounts));
   $("analyticsTypes").innerHTML=Object.entries(names).map(([k,v])=>`<div class="barrow"><span>${v}</span><div class="bartrack"><div class="barfill" style="width:${(typeCounts[k]||0)/maxType*100}%"></div></div><b>${typeCounts[k]||0}</b></div>`).join("")+(!Object.keys(typeCounts).length?"<p>Все още няма стартирани генерации.</p>":"");
+  const countryCounts={};
+  data.filter(x=>x.event_name==="page_view" && x.country_name).forEach(x=>{const name=(x.country_name||"Неизвестна държава")+(x.country_code?" ("+x.country_code+")":"");countryCounts[name]=(countryCounts[name]||0)+1;});
+  const countryRows=Object.entries(countryCounts).sort((a,b)=>b[1]-a[1]);
+  $("analyticsCountries").innerHTML=countryRows.map(([name,n])=>`<div class="dayrow"><span>${name}</span><b>${n}</b></div>`).join("")||"Все още няма записани държави. Новите посещения ще започнат да ги попълват.";
   const dayCounts={};
   data.filter(x=>x.event_name==="page_view").forEach(x=>{const d=new Date(x.created_at).toLocaleDateString("bg-BG");dayCounts[d]=(dayCounts[d]||0)+1;});
   const days=Object.entries(dayCounts).slice(0,14);const maxDay=Math.max(1,...days.map(x=>x[1]));
   $("analyticsDays").innerHTML=days.map(([d,n])=>`<div class="dayrow"><span>${d}</span><b>${n}</b></div>`).join("")||"Няма посещения до момента.";
   const labels={page_view:"Посещение",registration:"Регистрация",login:"Вход",checkout_started:"Checkout започнат",generation_started:"Генериране — старт",generation_completed:"Генериране — завършено",generation_failed:"Генериране — неуспешно"};
-  $("analyticsRows").innerHTML=data.slice(0,50).map(x=>{const tr=document.createElement("tr");const vals=[new Date(x.created_at).toLocaleString("bg-BG"),labels[x.event_name]||x.event_name,names[x.metadata?.service]||"—",x.page_path||"—"];for(const v of vals){const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}return tr.outerHTML;}).join("")||'<tr><td colspan="4">Все още няма аналитични събития.</td></tr>' ;
+  $("analyticsRows").innerHTML=data.slice(0,50).map(x=>{const tr=document.createElement("tr");const vals=[new Date(x.created_at).toLocaleString("bg-BG"),labels[x.event_name]||x.event_name,names[x.metadata?.service]||"—",x.country_name||"Неизвестна",x.page_path||"—"];for(const v of vals){const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}return tr.outerHTML;}).join("")||'<tr><td colspan="5">Все още няма аналитични събития.</td></tr>' ;
   el.textContent="Аналитиката е обновена. Показани са само събитията, записани в analytics_events.";
 }
 // Известията се изграждат от реално записаните аналитични и финансови събития.
@@ -201,6 +206,7 @@ function notificationText(event){
   const labels={page_view:"Нов посетител отвори сайта",login:"Потребител влезе в профила си",registration:"Нова регистрация",checkout_started:"Започнато плащане",generation_started:"Започната генерация",generation_completed:"Генерацията завърши успешно",generation_failed:"Генерацията е неуспешна"};
   let title=labels[event.event_name]||event.event_name;
   if(event.event_name.startsWith("generation_")){const service=serviceNames[event.metadata?.service];if(service)title+=" — "+service;}
+  if(event.country_name) title += " от " + event.country_name;
   return title;
 }
 function renderNotifications(){
@@ -222,11 +228,11 @@ function renderNotifications(){
 async function loadNotifications(){
   const statusEl=$("notificationStatus");
   const [eventsResult,ledgerResult]=await Promise.all([
-    db.from("analytics_events").select("id,event_name,created_at,page_path,metadata").order("created_at",{ascending:false}).limit(50),
+    db.from("analytics_events").select("id,event_name,created_at,page_path,metadata,country_name,country_code").order("created_at",{ascending:false}).limit(50),
     db.from("owner_financial_ledger").select("id,created_at,entry_type,gross_amount_cents,reference_id").order("created_at",{ascending:false}).limit(20)
   ]);
   if(eventsResult.error){statusEl.textContent="Известията от аналитиката не могат да се заредят: "+eventsResult.error.message;statusEl.style.borderColor="#a33";return;}
-  const events=(eventsResult.data||[]).map(e=>({key:"event:"+e.id,title:notificationText(e),created_at:e.created_at,detail:e.page_path||""}));
+  const events=(eventsResult.data||[]).map(e=>({key:"event:"+e.id,title:notificationText(e),created_at:e.created_at,detail:[e.country_name||"Държавата не е установена",e.page_path||""].filter(Boolean).join(" · ")}));
   const ledger=(ledgerResult.error?[]:(ledgerResult.data||[])).filter(x=>x.entry_type==="payment").map(x=>({key:"payment:"+x.id,title:"Получено е записано плащане",created_at:x.created_at,detail:money(x.gross_amount_cents)+(x.reference_id?" · "+x.reference_id:"")}));
   const nextItems=[...events,...ledger].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,50);
   const nextKeys=new Set(nextItems.map(n=>n.key));
