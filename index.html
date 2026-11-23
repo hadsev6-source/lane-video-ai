@@ -2897,7 +2897,7 @@ if (currentUser) {
       list.appendChild(row);
     });
 
-    currentVideoFiles.forEach(video => {
+    for (const video of currentVideoFiles) {
       const row = document.createElement("div");
       row.className = "file-row";
       row.dataset.fileKind = "video";
@@ -2965,7 +2965,7 @@ if (currentUser) {
       details.appendChild(actions);
       row.append(preview, details);
       list.appendChild(row);
-    });
+    }
 
     currentFiles.forEach(file => {
       const row = document.createElement("div");
