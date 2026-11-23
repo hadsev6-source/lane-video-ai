@@ -2,21 +2,27 @@ import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const OWNER_ID = "dce2d514-964d-49be-b83d-45e6721b49a7";
-const cors = {
-  "Access-Control-Allow-Origin": "https://lane-video-ai.com",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-api-version, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Vary": "Origin",
-};
+const allowedOrigins = new Set(["https://lane-video-ai.com","https://www.lane-video-ai.com","https://lane-video-ai.vercel.app"]);
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  const requestedHeaders = req.headers.get("Access-Control-Request-Headers");
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://lane-video-ai.com",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": requestedHeaders || "authorization, x-client-info, apikey, content-type, x-supabase-api-version, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin, Access-Control-Request-Headers",
+  };
+}
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  if (req.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405, headers: cors });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
+  if (req.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405, headers: corsHeaders(req) });
 
   try {
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace(/^Bearer\s+/i, "");
-    if (!token) return Response.json({ error: "Authentication required" }, { status: 401, headers: cors });
+    if (!token) return Response.json({ error: "Authentication required" }, { status: 401, headers: corsHeaders(req) });
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
@@ -25,7 +31,7 @@ Deno.serve(async (req) => {
     const privateKey = Deno.env.get("VAPID_PRIVATE_KEY");
     const subject = Deno.env.get("VAPID_SUBJECT");
     if (!supabaseUrl || !anonKey || !serviceKey || !publicKey || !privateKey || !subject) {
-      return Response.json({ error: "Push service is not fully configured" }, { status: 500, headers: cors });
+      return Response.json({ error: "Push service is not fully configured" }, { status: 500, headers: corsHeaders(req) });
     }
 
     const userClient = createClient(supabaseUrl, anonKey, {
@@ -34,15 +40,15 @@ Deno.serve(async (req) => {
     });
     const { data: { user }, error: userError } = await userClient.auth.getUser(token);
     if (userError || !user || user.id !== OWNER_ID) {
-      return Response.json({ error: "Owner access required" }, { status: 403, headers: cors });
+      return Response.json({ error: "Owner access required" }, { status: 403, headers: corsHeaders(req) });
     }
 
     const body = await req.json().catch(() => ({}));
     if (body.action === "public_key") {
-      return Response.json({ publicKey }, { headers: cors });
+      return Response.json({ publicKey }, { headers: corsHeaders(req) });
     }
     if (body.action !== "test") {
-      return Response.json({ error: "Unsupported action" }, { status: 400, headers: cors });
+      return Response.json({ error: "Unsupported action" }, { status: 400, headers: corsHeaders(req) });
     }
 
     const admin = createClient(supabaseUrl, serviceKey, {
@@ -54,7 +60,7 @@ Deno.serve(async (req) => {
       .eq("owner_id", OWNER_ID);
     if (dbError) throw dbError;
     if (!subscriptions?.length) {
-      return Response.json({ error: "No phone subscription found. Enable notifications from the owner dashboard first." }, { status: 404, headers: cors });
+      return Response.json({ error: "No phone subscription found. Enable notifications from the owner dashboard first." }, { status: 404, headers: corsHeaders(req) });
     }
 
     webpush.setVapidDetails(subject, publicKey, privateKey);
@@ -88,10 +94,10 @@ Deno.serve(async (req) => {
 
     return Response.json({ success: sent > 0, sent, removed, failed: failures.length }, {
       status: sent > 0 ? 200 : 502,
-      headers: cors,
+      headers: corsHeaders(req),
     });
   } catch (error) {
     console.error("owner-push error:", error);
-    return Response.json({ error: "Push request failed" }, { status: 500, headers: cors });
+    return Response.json({ error: "Push request failed" }, { status: 500, headers: corsHeaders(req) });
   }
 });
