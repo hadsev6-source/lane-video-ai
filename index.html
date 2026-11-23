@@ -1646,7 +1646,6 @@ async function updateLipSyncDuration() {
 }
 
 async function startLipSync() {
-  laneAnalytics.track("generation_started", { service: "lip_sync" });
   const image = document.getElementById("lipSyncImageFile").files[0];
   const audio = document.getElementById("lipSyncAudioFile").files[0];
   const notice = document.getElementById("lipSyncNotice");
@@ -1682,6 +1681,7 @@ async function startLipSync() {
   );
   if (!confirmed) return;
 
+  laneAnalytics.track("generation_started", { service: "lip_sync" });
   button.disabled = true;
   button.textContent = "UPLOADING & STARTING...";
   notice.textContent = "Uploading your files securely and starting Lip Sync. Please keep this page open.";
@@ -1715,6 +1715,7 @@ async function startLipSync() {
     await pollLipSyncStatus(result.generationId, result.creditsUsed);
   } catch (error) {
     console.error("Lip Sync error:", error);
+    laneAnalytics.track("generation_failed", { service: "lip_sync", error: String(error?.message || error).slice(0, 300) });
     notice.textContent = "Lip Sync error: " + (error.message || "Please try again.");
     button.disabled = false;
     button.textContent = "GENERATE VIDEO";
@@ -1749,6 +1750,7 @@ async function pollLipSyncStatus(generationId, creditsUsed) {
       if (!data || !data.success) throw new Error(data?.error || "Could not check Lip Sync status.");
 
       if (data.status === "SUCCEEDED" && data.videoUrl) {
+        laneAnalytics.track("generation_completed", { service: "lip_sync", credits: creditsUsed });
         laneAnalytics.track("generation_completed", { service: "lip_sync", credits: creditsUsed });
         notice.textContent = "Lip Sync completed successfully. " + creditsUsed +
           " credits used. Your video is saved in My Files.";
@@ -1849,7 +1851,6 @@ function stopVideoElapsedTimer() {
 }
 
 async function prepareVideo() {
-  laneAnalytics.track("generation_started", { service: "video" });
   const prompt = document.getElementById("prompt").value.trim();
   const style = document.getElementById("style").value;
   const category = document.getElementById("category").value;
@@ -1875,6 +1876,7 @@ async function prepareVideo() {
     return;
   }
 
+  laneAnalytics.track("generation_started", { service: "video", duration_seconds: durationSeconds, category, style });
   button.disabled = true;
   button.textContent = "STARTING...";
   output.replaceChildren();
@@ -1934,6 +1936,7 @@ async function prepareVideo() {
       if (!statusData) continue;
 
       if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
+        laneAnalytics.track("generation_completed", { service: "video", duration_seconds: durationSeconds, model: modelName });
         output.replaceChildren();
 
         const heading = document.createElement("strong");
@@ -1980,6 +1983,7 @@ async function prepareVideo() {
       }
 
       if (statusData.status === "FAILED" || statusData.status === "CANCELED") {
+        laneAnalytics.track("generation_failed", { service: "video", status: statusData.status, error: String(statusData.error || "Provider failed").slice(0, 300) });
         output.textContent =
           "Video generation did not complete.\n\n" +
           (statusData.refunded
@@ -2011,6 +2015,7 @@ async function prepareVideo() {
     }
   } catch (error) {
     console.error("Video generation error:", error);
+    laneAnalytics.track("generation_failed", { service: "video", error: String(error?.message || error).slice(0, 300) });
     output.textContent =
       "Video generation error:\n" +
       (error.message || "Please try again.");
@@ -2076,7 +2081,6 @@ async function prepareVideo() {
   }
 
   async function generateImages() {
-    laneAnalytics.track("generation_started", { service: "image" });
     const prompt = document.getElementById("imagePrompt").value.trim();
     const quantity = 1; // Fixed: generate one image for 15 credits.
     const style = document.getElementById("imageStyle").value;
@@ -2087,6 +2091,8 @@ async function prepareVideo() {
     if (!prompt) { alert("Please describe your image first."); return; }
     if (!currentUser) { alert("Please sign in before generating images."); return; }
     if (reference && reference.size > 10 * 1024 * 1024) { alert("Please choose an image smaller than 10 MB."); return; }
+
+    laneAnalytics.track("generation_started", { service: "image", style, quantity });
 
     const form = new FormData();
     form.append("prompt", prompt);
@@ -2111,6 +2117,7 @@ async function prepareVideo() {
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.success) throw new Error(result.error || "Image generation failed.");
       laneAnalytics.track("generation_completed", { service: "image", count: result.images.length, credits: result.creditsUsed });
+      laneAnalytics.track("generation_completed", { service: "image", count: result.images.length, credits: result.creditsUsed });
       output.textContent = "Success! " + result.images.length + " image(s) generated. " + result.creditsUsed + " credits used.";
       result.images.forEach((item, index) => {
         const card = document.createElement("div");
@@ -2129,6 +2136,7 @@ async function prepareVideo() {
       });
       await refreshAuthState();
     } catch (error) {
+      laneAnalytics.track("generation_failed", { service: "image", error: String(error?.message || error).slice(0, 300) });
       output.textContent = "Generation failed: " + (error.message || "Please try again.");
     } finally {
       button.disabled = false;
@@ -2137,7 +2145,6 @@ async function prepareVideo() {
   }
 
   async function generateMusic() {
-    laneAnalytics.track("generation_started", { service: "music" });
     const output = document.getElementById("songProjectOutput");
     const player = document.getElementById("generatedSongPlayer");
     const button = document.getElementById("generateMusicButton");
@@ -2170,6 +2177,8 @@ async function prepareVideo() {
     }
     // Instrumental requests must use the provider's no-lyrics mode.
     if (vocalType === "Instrumental") lyricsMode = "No Lyrics";
+
+    laneAnalytics.track("generation_started", { service: "music", duration_seconds: durationSeconds, genre: style });
 
     const providerInstructions = [
       "Vocal type: " + vocalType,
@@ -2237,6 +2246,7 @@ async function prepareVideo() {
           player.src = statusData.audioUrl;
           player.classList.remove("hidden");
           laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed || 25, file_name: statusData.fileName || null });
+          laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed || 25, file_name: statusData.fileName || null });
           output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed || 25) + "\n\nUse the player below to listen. The song is also saved in My Files.";
           const downloadLink = document.createElement("a");
           downloadLink.href = statusData.audioUrl;
@@ -2261,6 +2271,7 @@ async function prepareVideo() {
       }
     } catch (error) {
       console.error("Music generation error:", error);
+      laneAnalytics.track("generation_failed", { service: "music", error: String(error?.message || error).slice(0, 300) });
       output.textContent = "Music generation error:\n" + (error?.message || "Please try again.");
       await refreshAuthState();
     } finally {
@@ -2302,7 +2313,8 @@ async function prepareVideo() {
             const info = await response.json();
             const result = {
               country_code: (info.country_code || '').slice(0, 2).toUpperCase() || null,
-              country_name: (info.country_name || '').slice(0, 100) || null
+              country_name: (info.country_name || '').slice(0, 100) || null,
+              city: (info.city || '').slice(0, 100) || null
             };
             try { sessionStorage.setItem('lane_analytics_country', JSON.stringify(result)); } catch (_) {}
             return result;
@@ -2323,7 +2335,7 @@ async function prepareVideo() {
           browser_language: (navigator.language || '').slice(0,40),
           timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0,100),
           country_code: country.country_code, country_name: country.country_name,
-          metadata: metadata
+          metadata: { ...metadata, visitor_city: country.city || null }
         });
       } catch (e) { console.debug('Analytics event skipped:', e); }
     }
