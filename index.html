@@ -1106,6 +1106,8 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 #support #authMessage { margin-top: 6px !important; }
 @media (max-width: 550px) { #support.section { padding: 10px 4% 8px; } #support .panel { padding: 11px 13px; } }
 
+
+#myFilesModal{display:none;position:fixed;inset:0;z-index:3000;background:#000d;padding:12px;align-items:center;justify-content:center}#myFilesModal.open{display:flex}#myFilesModal .my-files-dialog{width:min(1100px,100%);height:92vh;overflow:auto;background:#090909;border:1px solid #ff9d19;border-radius:14px;padding:14px}#myFilesModal .my-files-close{position:sticky;top:0;float:right;z-index:2;padding:10px;background:#21150a;color:white;border:1px solid #ff9d19;border-radius:8px}#myFilesModal #myfiles{padding:10px 0!important;max-width:none!important}body.my-files-open{overflow:hidden}#laneReadyToast{display:none;position:fixed;right:16px;bottom:16px;z-index:4000;width:min(420px,calc(100vw - 28px));padding:18px;background:#171008;border:1px solid #ffad32;border-radius:14px;box-shadow:0 12px 45px #000d;color:white}#laneReadyToast.show{display:block}#laneReadyToast strong{display:block;color:#ffd18a;font-size:18px;margin-bottom:6px}#laneReadyToast p{line-height:1.45}#laneReadyToast .toast-actions{display:flex;gap:8px;flex-wrap:wrap}@media(max-width:600px){#myFilesModal{padding:5px}#myFilesModal .my-files-dialog{height:95vh;padding:9px}}
 </style>
 </head>
 <body>
@@ -1121,7 +1123,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <a href="#imageStudio">AI Images</a>
 <a href="#musicGenerator">AI Music</a>
 <a href="#pricing">Credits</a>
-<a href="#myfiles">My Files</a>
+<a href="#myfiles" onclick="openMyFilesModal(event)">My Files</a>
 <details class="notification-menu">
 <summary>🔔 NOTIFICATIONS</summary>
 <div class="notification-dropdown">
@@ -1519,6 +1521,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 </div>
 </section>
 
+<div id="myFilesModal" role="dialog" aria-modal="true" aria-label="My Files"><div class="my-files-dialog"><button type="button" class="my-files-close" onclick="closeMyFilesModal()">CLOSE ✕</button><div id="myFilesModalContent"></div></div></div><div id="laneReadyToast" role="status" aria-live="polite"><strong id="laneReadyTitle">Your creation is ready!</strong><p id="laneReadyMessage"></p><div class="toast-actions"><button type="button" class="primary-btn" id="laneReadyOpen">OPEN FILE</button><button type="button" class="secondary-btn" onclick="openMyFilesModal();dismissReadyToast()">MY FILES</button><button type="button" class="secondary-btn" onclick="dismissReadyToast()">CLOSE</button></div></div>
 <footer>
 <strong>LANE AI STUDIO</strong><br/>
   CREATE ANYTHING YOU CAN IMAGINE.<br/>
@@ -2254,6 +2257,7 @@ async function prepareVideo() {
         gallery.appendChild(card);
       });
       await refreshAuthState();
+      showLaneReadyToast("Your image is ready!", "Your image was generated successfully and is available in My Files.", result.images?.[0]?.url);
     } catch (error) {
       laneAnalytics.track("generation_failed", { service: "image", error: String(error?.message || error).slice(0, 300) });
       output.textContent = "Generation failed: " + (error.message || "Please try again.");
@@ -3110,6 +3114,12 @@ async function continueToPayment() {
 </script>
 
 <script>
+
+function openMyFilesModal(event){if(event)event.preventDefault();const m=document.getElementById("myFilesModal"),sec=document.getElementById("myfiles"),host=document.getElementById("myFilesModalContent");if(sec&&host&&sec.parentElement!==host)host.appendChild(sec);m.classList.add("open");document.body.classList.add("my-files-open");const menu=document.querySelector(".main-menu");if(menu)menu.open=false;if(currentUser&&typeof loadMyFiles==="function")loadMyFiles();}
+function closeMyFilesModal(){document.getElementById("myFilesModal").classList.remove("open");document.body.classList.remove("my-files-open");}
+function showLaneReadyToast(title,message,url){document.getElementById("laneReadyTitle").textContent=title;document.getElementById("laneReadyMessage").textContent=message;const b=document.getElementById("laneReadyOpen");b.style.display=url?"":"none";if(url)b.onclick=()=>window.open(url,"_blank","noopener,noreferrer");document.getElementById("laneReadyToast").classList.add("show");}
+function dismissReadyToast(){document.getElementById("laneReadyToast").classList.remove("show");}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMyFilesModal();});document.addEventListener("click",e=>{if(e.target===document.getElementById("myFilesModal"))closeMyFilesModal();});
 function openStudioSection(sectionId) {
   const section = document.getElementById(sectionId);
   if (!section) return;
