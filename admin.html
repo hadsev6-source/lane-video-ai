@@ -83,6 +83,15 @@ input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6
       <div id="notificationStatus" class="status">Зареждане на известията…</div>
       <div id="notificationList" aria-live="polite"><p class="muted">Все още няма известия.</p></div>
     </div>
+    <div class="panel" style="border-color:#8b713b">
+      <h2>Известия на телефона</h2>
+      <p class="muted">Разреши известията в браузъра на Android. След това телефонът може да получава push известия и при заключен екран.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button id="enablePush" type="button">Включи известията на този телефон</button>
+        <button id="testPush" class="secondary" type="button" disabled>Изпрати тестово известие</button>
+      </div>
+      <div id="pushStatus" class="status" role="status">Известията на телефона още не са настроени.</div>
+    </div>
     <div class="panel">
       <h2>Последни финансови записи</h2>
       <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Тип</th><th>Референция</th><th>Приход</th><th>Stripe такса</th><th>AI разход</th><th>Нетно</th></tr></thead><tbody id="ledgerRows"><tr><td colspan="7">Няма записи.</td></tr></tbody></table></div>
@@ -244,6 +253,51 @@ async function loadNotifications(){
   statusEl.style.borderColor="#5a4928";renderNotifications();
 }
 $("markNotificationsRead").onclick=()=>{saveNotificationIds(new Set(notificationItems.map(n=>n.key)));renderNotifications();};
+
+async function enablePhonePush(){
+  const button=$("enablePush"), test=$("testPush"), out=$("pushStatus");
+  button.disabled=true;out.textContent="Настройване на известията…";
+  try{
+    if(!("serviceWorker" in navigator) || !("PushManager" in window)) throw new Error("Този браузър не поддържа Web Push. Отвори сайта в Chrome на Android.");
+    if(!("Notification" in window)) throw new Error("Известията не се поддържат от този браузър.");
+    const {data:{user},error:userError}=await db.auth.getUser();
+    if(userError || !user || user.id!==OWNER_USER_ID) throw new Error("Влез с администраторския Google профил.");
+    const permission=await Notification.requestPermission();
+    if(permission!=="granted") throw new Error("Разрешението за известия е отказано. Разреши го от настройките на сайта в Chrome.");
+    const {data:keyData,error:keyError}=await db.functions.invoke("owner-push",{body:{action:"public_key"}});
+    if(keyError || !keyData?.publicKey) throw new Error(keyError?.message || "Не може да се получи публичният VAPID ключ.");
+    const decodeKey=value=>{
+      const padded=value.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-value.length%4)%4);
+      const raw=atob(padded);return Uint8Array.from(raw,ch=>ch.charCodeAt(0));
+    };
+    const registration=await navigator.serviceWorker.register("/sw.js");
+    let subscription=await registration.pushManager.getSubscription();
+    if(!subscription) subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:decodeKey(keyData.publicKey)});
+    const json=subscription.toJSON();
+    const p256dh=json.keys?.p256dh, auth=json.keys?.auth;
+    if(!p256dh || !auth) throw new Error("Браузърът не върна необходимите данни за абонамента.");
+    const {error:saveError}=await db.from("push_subscriptions").upsert({
+      owner_id:user.id,endpoint:json.endpoint,p256dh,auth_key:auth,user_agent:navigator.userAgent,updated_at:new Date().toISOString()
+    },{onConflict:"endpoint"});
+    if(saveError) throw saveError;
+    out.textContent="Телефонът е абониран за push известия. Натисни „Изпрати тестово известие“, за да проверим.";
+    test.disabled=false;
+  }catch(error){out.textContent="Неуспешна настройка: "+(error.message||"неизвестна грешка");}
+  finally{button.disabled=false;}
+}
+async function sendPhonePushTest(){
+  const button=$("testPush"),out=$("pushStatus");button.disabled=true;out.textContent="Изпращане на тестово известие…";
+  try{
+    const {data,error}=await db.functions.invoke("owner-push",{body:{action:"test"}});
+    if(error) throw error;
+    if(!data?.success) throw new Error(data?.error||"Тестовото известие не беше изпратено.");
+    out.textContent="Успех! Изпратено е тестово известие до "+data.sent+" устройство(а).";
+  }catch(error){out.textContent="Грешка при теста: "+(error.message||"неизвестна грешка");}
+  finally{button.disabled=false;}
+}
+$("enablePush").onclick=enablePhonePush;
+$("testPush").onclick=sendPhonePushTest;
+
 
 const oldLoadDashboard=loadDashboard;
 loadDashboard=async function(){await oldLoadDashboard();await loadAnalytics();await loadNotifications();};
