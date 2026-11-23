@@ -37,6 +37,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: "Owner access required" }, { status: 403, headers: cors });
     }
 
+    const body = await req.json().catch(() => ({}));
+    if (body.action === "public_key") {
+      return Response.json({ publicKey }, { headers: cors });
+    }
+    if (body.action !== "test") {
+      return Response.json({ error: "Unsupported action" }, { status: 400, headers: cors });
+    }
+
     const admin = createClient(supabaseUrl, serviceKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
