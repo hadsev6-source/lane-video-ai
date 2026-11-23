@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LANE AI STUDIO — Owner Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#08090b;--panel:#121419;--line:#343943;--gold:#d9b96d;--muted:#aeb4bf;--red:#f20d20}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#19150b,#08090b 55%);color:#f5f6f8;font:15px Arial,sans-serif}
+header{padding:22px clamp(16px,4vw,56px);border-bottom:1px solid #67532b;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:Georgia,serif;font-size:25px;letter-spacing:2px}.brand span{font:10px Arial;letter-spacing:2px;color:var(--gold)}
+main{max-width:1400px;margin:auto;padding:28px clamp(14px,3vw,40px)}
+h1{font-size:28px;margin:0 0 8px}p.sub{color:var(--muted);margin:0 0 24px;line-height:1.5}
+button{background:linear-gradient(110deg,#ffe27a,#d99a19);color:#100c03;border:1px solid #ffe08a;border-radius:7px;padding:11px 16px;font-weight:700;cursor:pointer}
+button.secondary{background:#17191e;color:#eee;border:1px solid var(--line)}
+.status{padding:12px 14px;border:1px solid var(--line);background:#111319;border-radius:8px;margin:14px 0;color:#ddd;line-height:1.5}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}
+.card,.panel{background:rgba(18,20,25,.94);border:1px solid #5a4928;border-radius:12px;padding:18px;box-shadow:0 8px 26px #0005}
+.card small{color:var(--muted);display:block;margin-bottom:10px}.card strong{font-size:25px;overflow-wrap:anywhere}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel h2{font-size:18px;margin:0 0 14px}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:11px;border-bottom:1px solid #30343c;font-size:13px}th{color:var(--gold)}
+input{background:#090a0d;color:#fff;border:1px solid var(--line);border-radius:6px;padding:11px;width:min(340px,100%)}
+.hidden{display:none!important}.authbox{max-width:480px;margin:50px auto}.muted{color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:850px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media(max-width:480px){.cards{grid-template-columns:1fr 1fr}.card strong{font-size:20px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">LANE <span>AI STUDIO</span></div>
+  <div><button id="signIn">Вход с Google</button> <button id="signOut" class="secondary hidden">Изход</button></div>
+</header>
+<main>
+  <section id="authBox" class="panel authbox">
+    <h1>Owner Dashboard</h1>
+    <p class="sub">Защитен финансов панел за собственика на LANE AI STUDIO.</p>
+    <p id="authStatus" class="status">Влез с Google профила на собственика.</p>
+    <button id="signIn2">Вход с Google</button>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <h1>Финансово табло</h1>
+    <p class="sub">Суми в EUR. Нетната сума е приход минус отчетените Stripe такси и AI разходи. Данните се четат от Supabase.</p>
+    <div id="status" class="status">Зареждане…</div>
+    <div class="cards">
+      <div class="card"><small>Общи приходи</small><strong id="revenue">—</strong></div>
+      <div class="card"><small>Stripe такси</small><strong id="fees">—</strong></div>
+      <div class="card"><small>AI разходи</small><strong id="costs">—</strong></div>
+      <div class="card"><small>Натрупана нетна сума</small><strong id="net">—</strong></div>
+    </div>
+    <div class="cards">
+      <div class="card"><small>Плащания</small><strong id="payments">—</strong></div>
+      <div class="card"><small>Генерации с отчетен разход</small><strong id="generations">—</strong></div>
+      <div class="card"><small>Потребител</small><strong id="ownerEmail" style="font-size:15px">—</strong></div>
+      <div class="card"><small>Валута</small><strong>EUR</strong></div>
+    </div>
+    <div class="panel">
+      <h2>Последни финансови записи</h2>
+      <div class="tablewrap"><table><thead><tr><th>Дата</th><th>Тип</th><th>Референция</th><th>Приход</th><th>Stripe такса</th><th>AI разход</th><th>Нетно</th></tr></thead><tbody id="ledgerRows"><tr><td colspan="7">Няма записи.</td></tr></tbody></table></div>
+      <p class="muted">Празната таблица означава, че още няма финансови записи. Непотвърдени Stripe такси и неотчетени AI разходи не бива да се приемат за окончателна печалба.</p>
+      <button id="refresh" class="secondary">Обнови данните</button>
+    </div>
+  </section>
+</main>
+<script>
+const SUPABASE_URL = "https://lguqdvdjtkgepbhqznts.supabase.co";
+const SUPABASE_KEY = "sb_publishable_2QSiZlHF3xdTGVpiwRjvrw_h3oLC6CI";
+const OWNER_USER_ID = "dce2d514-964d-49be-b83d-45e6721b49a7";
+const SITE_URL = window.location.origin + "/";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+});
+const $ = id => document.getElementById(id);
+const money = cents => new Intl.NumberFormat("bg-BG",{style:"currency",currency:"EUR"}).format(Number(cents||0)/100);
+function status(message,isError=false){$("status").textContent=message;$("status").style.borderColor=isError?"#a33":"#5a4928";}
+async function signIn(){const {error}=await db.auth.signInWithOAuth({provider:"google",options:{redirectTo:SITE_URL+"admin"}});if(error)$("authStatus").textContent=error.message;}
+$("signIn").onclick=signIn;$("signIn2").onclick=signIn;
+$("signOut").onclick=async()=>{await db.auth.signOut();location.reload();};
+$("refresh").onclick=loadDashboard;
+async function syncAuth(){
+  const {data:{user},error}=await db.auth.getUser();
+  if(error||!user){$("authBox").classList.remove("hidden");$("dashboard").classList.add("hidden");$("signOut").classList.add("hidden");return;}
+  if(user.id!==OWNER_USER_ID){$("authBox").classList.remove("hidden");$("dashboard").classList.add("hidden");$("signOut").classList.remove("hidden");$("authStatus").textContent="Този профил няма администраторски достъп.";return;}
+  $("authBox").classList.add("hidden");$("dashboard").classList.remove("hidden");$("signOut").classList.remove("hidden");$("ownerEmail").textContent=user.email||"Owner";await loadDashboard();
+}
+async function loadDashboard(){
+  status("Зареждане на финансовите данни…");
+  const {data:summary,error:summaryError}=await db.from("owner_financial_summary").select("*").single();
+  if(summaryError){status("Неуспешно зареждане на обобщението: "+summaryError.message,true);return;}
+  $("revenue").textContent=money(summary.total_revenue_cents);
+  $("fees").textContent=money(summary.total_stripe_fees_cents);
+  $("costs").textContent=money(summary.total_ai_cost_cents);
+  $("net").textContent=money(summary.accumulated_net_cents);
+  $("payments").textContent=summary.payment_count??0;
+  $("generations").textContent=summary.generation_count??0;
+  const {data:rows,error}=await db.from("owner_financial_ledger")
+    .select("created_at,entry_type,reference_id,gross_amount_cents,stripe_fee_cents,ai_cost_cents,net_amount_cents")
+    .order("created_at",{ascending:false}).limit(50);
+  if(error){status("Обобщението е заредено, но историята не може да се прочете: "+error.message,true);return;}
+  $("ledgerRows").innerHTML="";
+  if(!rows?.length){$("ledgerRows").innerHTML='<tr><td colspan="7">Все още няма финансови записи.</td></tr>';}
+  else for(const r of rows){
+    const tr=document.createElement("tr");
+    const vals=[new Date(r.created_at).toLocaleString("bg-BG"),r.entry_type,r.reference_id||"—",money(r.gross_amount_cents),money(r.stripe_fee_cents),money(r.ai_cost_cents),money(r.net_amount_cents)];
+    for(const v of vals){const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}
+    $("ledgerRows").appendChild(tr);
+  }
+  status("Данните са обновени. Показват се само записи, разрешени от Supabase RLS.");
+}
+db.auth.onAuthStateChange(()=>setTimeout(syncAuth,0));
+syncAuth();
+</script>
+</body>
+</html>
