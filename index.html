@@ -1512,6 +1512,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <div id="myFilesList">
 <p class="hint">Sign in to see your personal files.</p>
 </div>
+<div id="libraryDiagnostics" class="hint" role="status" style="margin-top:10px"></div>
 <div id="libraryEmptyStates">
 <div class="library-empty" data-empty-kind="video">
 <strong>🎬 No generated videos yet</strong>
@@ -2749,8 +2750,12 @@ if (currentUser) {
         sortBy: { column: "created_at", order: "desc" }
       });
 
+    const diagnostics = document.getElementById("libraryDiagnostics");
     if (imageError) {
       console.warn("Could not load generated images from the library:", imageError);
+      if (diagnostics) diagnostics.textContent =
+        "Image storage error: " + imageError.message +
+        " · Signed-in account: " + currentUser.id.slice(0, 8) + "…";
     } else {
       const imageObjects = (imageRows || []).filter(file =>
         file.name && /\.(jpg|jpeg|png|webp)$/i.test(file.name)
@@ -2767,6 +2772,16 @@ if (currentUser) {
         return { ...file, path, signedUrl: signed.signedUrl };
       }));
       currentImageFiles = currentImageFiles.filter(Boolean);
+      const failedSignedUrls = imageObjects.length - currentImageFiles.length;
+      if (diagnostics) {
+        diagnostics.textContent = imageObjects.length
+          ? "Image storage: " + imageObjects.length + " file(s) found · " +
+            currentImageFiles.length + " preview(s) ready" +
+            (failedSignedUrls ? " · " + failedSignedUrls + " signed URL(s) failed" : "") +
+            " · Account: " + currentUser.id.slice(0, 8) + "…"
+          : "No images found in this account folder · Account: " +
+            currentUser.id.slice(0, 8) + "…";
+      }
     }
 
     // Video records are read separately so a video-library issue never blocks other files.
