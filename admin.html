@@ -259,7 +259,7 @@ async function loadNotifications(){
 }
 $("markNotificationsRead").onclick=()=>{saveNotificationIds(new Set(notificationItems.map(n=>n.key)));renderNotifications();};
 
-async function enablePhonePush(){
+async async function enablePhonePush(){
   const button=$("enablePush"), test=$("testPush"), out=$("pushStatus");
   button.disabled=true;out.textContent="Настройване на известията…";
   try{
