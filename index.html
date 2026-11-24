@@ -1349,6 +1349,53 @@ body>#myfiles,#myfiles{display:none}
 <div class="price-card"><h3>Ultimate</h3><div class="price">€100</div><strong>10,000 credits + 4,000 bonus = 14,000 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Ultimate', '€100', '14000', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
 </div>
 </section>
+<section class="lane-studio-showcase" id="laneDanceStudio" aria-label="LANE creative studios">
+  <article class="lane-showcase-card lane-showcase-video">
+    <div class="lane-showcase-icon" aria-hidden="true">▣</div>
+    <div class="lane-showcase-copy">
+      <span class="lane-showcase-brand">LANE</span><h2>VIDEO STUDIO</h2>
+      <p>CREATE · EDIT · DANCE · PERFORM</p>
+      <div class="lane-showcase-features"><span>▣ <small>AI VIDEO</small></span><span>♟ <small>DANCE VIDEOS</small></span><span>◎ <small>FACE REPLACE</small></span><span>HD <small>CINEMATIC</small></span></div>
+      <button type="button" class="lane-showcase-cta" onclick="openStudioSection('studio')">CREATE VIDEO <b>→</b></button>
+    </div>
+    <div class="lane-showcase-visual lane-showcase-dancers" role="img" aria-label="Cinematic dance crew performance"></div>
+  </article>
+
+  <article class="lane-showcase-card lane-showcase-image">
+    <div class="lane-showcase-icon" aria-hidden="true">▧</div>
+    <div class="lane-showcase-copy">
+      <span class="lane-showcase-brand">LANE</span><h2>AI IMAGE STUDIO</h2>
+      <p>GENERATE · EDIT · ENHANCE · STYLE</p>
+      <div class="lane-showcase-features"><span>▧ <small>AI IMAGES</small></span><span>✎ <small>IMAGE EDIT</small></span><span>◇ <small>STYLE & EFFECTS</small></span><span>HD <small>HIGH QUALITY</small></span></div>
+      <button type="button" class="lane-showcase-cta" onclick="openStudioSection('imageStudio')">CREATE IMAGE <b>→</b></button>
+    </div>
+    <div class="lane-showcase-visual lane-showcase-portrait" role="img" aria-label="Artistic portrait with glowing orange flowers"></div>
+  </article>
+
+  <article class="lane-showcase-card lane-showcase-music">
+    <div class="lane-showcase-icon lane-music-headphones" aria-hidden="true">♫</div>
+    <div class="lane-showcase-copy">
+      <span class="lane-showcase-brand">LANE</span><h2>AI MUSIC STUDIO</h2>
+      <p>GENERATE · REMIX · BEATS · VOCALS</p>
+      <div class="lane-showcase-features"><span>♫ <small>AI MUSIC</small></span><span>≋ <small>BEATS</small></span><span>♩ <small>VOCALS</small></span><span>☷ <small>MIX & MASTER</small></span></div>
+      <button type="button" class="lane-showcase-cta" onclick="openStudioSection('musicGenerator')">CREATE MUSIC <b>→</b></button>
+    </div>
+    <div class="lane-showcase-equalizer" aria-hidden="true"><div class="lane-eq-bars"><i style="--h:29%;--d:0s"></i><i style="--h:66%;--d:0.11s"></i><i style="--h:27%;--d:0.22s"></i><i style="--h:64%;--d:0.33s"></i><i style="--h:25%;--d:0.44s"></i><i style="--h:62%;--d:0.55s"></i><i style="--h:23%;--d:0.66s"></i><i style="--h:60%;--d:0s"></i><i style="--h:21%;--d:0.11s"></i><i style="--h:58%;--d:0.22s"></i><i style="--h:19%;--d:0.33s"></i><i style="--h:56%;--d:0.44s"></i><i style="--h:93%;--d:0.55s"></i><i style="--h:54%;--d:0.66s"></i><i style="--h:91%;--d:0s"></i><i style="--h:52%;--d:0.11s"></i><i style="--h:89%;--d:0.22s"></i><i style="--h:50%;--d:0.33s"></i><i style="--h:87%;--d:0.44s"></i><i style="--h:48%;--d:0.55s"></i><i style="--h:85%;--d:0.66s"></i><i style="--h:46%;--d:0s"></i><i style="--h:83%;--d:0.11s"></i><i style="--h:44%;--d:0.22s"></i><i style="--h:81%;--d:0.33s"></i><i style="--h:42%;--d:0.44s"></i><i style="--h:79%;--d:0.55s"></i><i style="--h:40%;--d:0.66s"></i><i style="--h:77%;--d:0s"></i><i style="--h:38%;--d:0.11s"></i><i style="--h:75%;--d:0.22s"></i><i style="--h:36%;--d:0.33s"></i><i style="--h:73%;--d:0.44s"></i><i style="--h:34%;--d:0.55s"></i></div><div class="lane-eq-wave"></div><div class="lane-eq-headphones">◖<span>♫</span>◗</div></div>
+  </article>
+
+  <article class="lane-showcase-card lane-showcase-face">
+    <div class="lane-showcase-icon lane-face-icon" aria-hidden="true">◎</div>
+    <div class="lane-showcase-copy">
+      <span class="lane-showcase-brand">LANE</span><h2>FACE LAB STUDIO</h2>
+      <p>PUT YOUR FACE IN ANY PERFORMANCE</p>
+      <div class="lane-showcase-features"><span>♧ <small>UPLOAD FACE</small></span><span>▣ <small>CHOOSE SCENE</small></span><span>☷ <small>SELECT STYLE</small></span><span>✧ <small>GENERATE</small></span></div>
+      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button>
+    </div>
+    <div class="lane-showcase-face-visual" role="img" aria-label="Hip-hop and Afrobeat performers in a cinematic music video"></div>
+    <div class="lane-showcase-genres"><span>AFROBEAT</span><span>HIP-HOP</span><span>R&amp;B</span><span>AMAPIANO</span><span>RAP</span></div>
+  </article>
+</section>
+
 <!-- Removed duplicate promotional studio cards; the functional studio workspaces remain below. -->
 
 <section class="section" id="musicGenerator">
@@ -1681,52 +1728,7 @@ body>#myfiles,#myfiles{display:none}
 </div>
 </section>
 
-<section class="lane-studio-showcase" id="laneDanceStudio" aria-label="LANE creative studios">
-  <article class="lane-showcase-card lane-showcase-video">
-    <div class="lane-showcase-icon" aria-hidden="true">▣</div>
-    <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>VIDEO STUDIO</h2>
-      <p>CREATE · EDIT · DANCE · PERFORM</p>
-      <div class="lane-showcase-features"><span>▣ <small>AI VIDEO</small></span><span>♟ <small>DANCE VIDEOS</small></span><span>◎ <small>FACE REPLACE</small></span><span>HD <small>CINEMATIC</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openStudioSection('studio')">CREATE VIDEO <b>→</b></button>
-    </div>
-    <div class="lane-showcase-visual lane-showcase-dancers" role="img" aria-label="Cinematic dance crew performance"></div>
-  </article>
 
-  <article class="lane-showcase-card lane-showcase-image">
-    <div class="lane-showcase-icon" aria-hidden="true">▧</div>
-    <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>AI IMAGE STUDIO</h2>
-      <p>GENERATE · EDIT · ENHANCE · STYLE</p>
-      <div class="lane-showcase-features"><span>▧ <small>AI IMAGES</small></span><span>✎ <small>IMAGE EDIT</small></span><span>◇ <small>STYLE & EFFECTS</small></span><span>HD <small>HIGH QUALITY</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openStudioSection('imageStudio')">CREATE IMAGE <b>→</b></button>
-    </div>
-    <div class="lane-showcase-visual lane-showcase-portrait" role="img" aria-label="Artistic portrait with glowing orange flowers"></div>
-  </article>
-
-  <article class="lane-showcase-card lane-showcase-music">
-    <div class="lane-showcase-icon lane-music-headphones" aria-hidden="true">♫</div>
-    <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>AI MUSIC STUDIO</h2>
-      <p>GENERATE · REMIX · BEATS · VOCALS</p>
-      <div class="lane-showcase-features"><span>♫ <small>AI MUSIC</small></span><span>≋ <small>BEATS</small></span><span>♩ <small>VOCALS</small></span><span>☷ <small>MIX & MASTER</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openStudioSection('musicGenerator')">CREATE MUSIC <b>→</b></button>
-    </div>
-    <div class="lane-showcase-equalizer" aria-hidden="true"><div class="lane-eq-bars"><i style="--h:29%;--d:0s"></i><i style="--h:66%;--d:0.11s"></i><i style="--h:27%;--d:0.22s"></i><i style="--h:64%;--d:0.33s"></i><i style="--h:25%;--d:0.44s"></i><i style="--h:62%;--d:0.55s"></i><i style="--h:23%;--d:0.66s"></i><i style="--h:60%;--d:0s"></i><i style="--h:21%;--d:0.11s"></i><i style="--h:58%;--d:0.22s"></i><i style="--h:19%;--d:0.33s"></i><i style="--h:56%;--d:0.44s"></i><i style="--h:93%;--d:0.55s"></i><i style="--h:54%;--d:0.66s"></i><i style="--h:91%;--d:0s"></i><i style="--h:52%;--d:0.11s"></i><i style="--h:89%;--d:0.22s"></i><i style="--h:50%;--d:0.33s"></i><i style="--h:87%;--d:0.44s"></i><i style="--h:48%;--d:0.55s"></i><i style="--h:85%;--d:0.66s"></i><i style="--h:46%;--d:0s"></i><i style="--h:83%;--d:0.11s"></i><i style="--h:44%;--d:0.22s"></i><i style="--h:81%;--d:0.33s"></i><i style="--h:42%;--d:0.44s"></i><i style="--h:79%;--d:0.55s"></i><i style="--h:40%;--d:0.66s"></i><i style="--h:77%;--d:0s"></i><i style="--h:38%;--d:0.11s"></i><i style="--h:75%;--d:0.22s"></i><i style="--h:36%;--d:0.33s"></i><i style="--h:73%;--d:0.44s"></i><i style="--h:34%;--d:0.55s"></i></div><div class="lane-eq-wave"></div><div class="lane-eq-headphones">◖<span>♫</span>◗</div></div>
-  </article>
-
-  <article class="lane-showcase-card lane-showcase-face">
-    <div class="lane-showcase-icon lane-face-icon" aria-hidden="true">◎</div>
-    <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>FACE LAB STUDIO</h2>
-      <p>PUT YOUR FACE IN ANY PERFORMANCE</p>
-      <div class="lane-showcase-features"><span>♧ <small>UPLOAD FACE</small></span><span>▣ <small>CHOOSE SCENE</small></span><span>☷ <small>SELECT STYLE</small></span><span>✧ <small>GENERATE</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button>
-    </div>
-    <div class="lane-showcase-face-visual" role="img" aria-label="Hip-hop and Afrobeat performers in a cinematic music video"></div>
-    <div class="lane-showcase-genres"><span>AFROBEAT</span><span>HIP-HOP</span><span>R&amp;B</span><span>AMAPIANO</span><span>RAP</span></div>
-  </article>
-</section>
 
 <div id="myFilesModal" role="dialog" aria-modal="true" aria-label="My Files"><div class="my-files-dialog"><button type="button" class="my-files-close" onclick="closeMyFilesModal()">CLOSE ✕</button><div id="myFilesModalContent"></div></div></div><div id="laneReadyToast" role="status" aria-live="polite"><strong id="laneReadyTitle">Your creation is ready!</strong><p id="laneReadyMessage"></p><div class="toast-actions"><button type="button" class="primary-btn" id="laneReadyOpen">OPEN FILE</button><button type="button" class="secondary-btn" onclick="openMyFilesModal();dismissReadyToast()">MY FILES</button><button type="button" class="secondary-btn" onclick="dismissReadyToast()">CLOSE</button></div></div>
 <footer>
