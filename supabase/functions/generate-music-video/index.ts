@@ -132,6 +132,8 @@ Deno.serve(async (req: Request) => {
 
     const ratioChoice = body.ratio;
     const lipSync = body.lipSync === true;
+    const lyrics = typeof body.lyrics === "string" ? body.lyrics.trim() : "";
+    if (lyrics.length > 2000) return respond({ error: "Lyrics must be 2,000 characters or fewer." }, 400);
 
     if (!promptText || promptText.length > 1000) {
       return respond({ error: "Please describe your video." }, 400);
@@ -229,9 +231,12 @@ Deno.serve(async (req: Request) => {
     const runwayRatio =
       ratioChoice === "portrait" ? "480:854" : "854:480";
 
+    const lyricsInstruction = lyrics
+      ? ` Display these exact lyrics as large, high-contrast subtitles synchronized to the vocals. Do not paraphrase, translate, add, remove, or invent words. Exact lyrics: "${lyrics.replace(/\\s+/g, " ").replace(/"/g, "'")}"`
+      : " Do not invent any lyrics or captions.";
     const videoPrompt = lipSync
-      ? `${promptText} Show a visible singer or character performing the provided reference song. Attempt to synchronize mouth movements and facial expressions with the vocals. Display the supplied lyrics exactly as readable, well-timed subtitles on screen. Avoid unrelated text, logos and watermarks.`
-      : `${promptText} Create a music video guided by the provided reference song. Do not display lyrics, subtitles, captions, karaoke words, titles, logos or readable text.`;
+      ? `${promptText} Show a visible singer or character performing the provided reference song. Attempt to synchronize mouth movements and facial expressions with the vocals.${lyricsInstruction} Avoid unrelated text, logos and watermarks.`
+      : `${promptText} Create a music video guided by the provided reference song.${lyricsInstruction} Avoid unrelated text, logos and watermarks.`;
 
     let runwayResponse: Response;
 
