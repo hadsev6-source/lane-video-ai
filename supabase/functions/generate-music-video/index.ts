@@ -30,12 +30,18 @@ async function recordMusicVideoOwnerCost(admin: any, userId: string, task: any) 
   if (!Number.isFinite(seconds) || seconds <= 0) return;
   const usd = Number(task.owner_provider_cost_usd ?? (seconds * 0.20));
   const rate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  const metadata = { costSource: task.owner_provider_cost_usd == null ? "published_rate_estimate" : "provider_task_estimate", resolution: "480p", audioReference: true };
+  const { data: existing, error: lookupError } = await admin.from("owner_api_costs")
+    .select("metadata").eq("user_id", userId).eq("service", "music_video_generation")
+    .eq("generation_id", task.id).maybeSingle();
+  if (lookupError) { console.error("Could not inspect existing owner music video cost:", lookupError); return; }
+  if (existing?.metadata?.costSource === "provider_billing_record") return;
   const { error } = await admin.from("owner_api_costs").upsert({
     user_id: userId, service: "music_video_generation", provider: "Runway", model: "seedance2_5",
     amount_usd: usd, usd_to_eur: rate, amount_eur: usd * rate,
     credits_charged: ownerCreditsForUsd(usd), generation_id: task.id, duration_seconds: seconds,
-    metadata: { costSource: task.owner_provider_cost_usd == null ? "published_rate_estimate" : "provider_task_estimate", resolution: "480p", audioReference: true },
-  }, { onConflict: "user_id,service,generation_id", ignoreDuplicates: true });
+    metadata,
+  }, { onConflict: "user_id,service,generation_id" });
   if (error) console.error("Could not record owner music video API cost:", error);
 }
 
