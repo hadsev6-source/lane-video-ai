@@ -1711,7 +1711,7 @@ async function updateLipSyncDuration() {
   }
 
   if (!syncLipSyncAvailability()) {
-    if (preview) preview.textContent = "Lip Sync is available only for 15, 20 or 30-second videos.";
+    if (preview) preview.textContent = "Lip Sync is available for 5, 10, 15, 20 and 30-second videos.";
     if (startButton) startButton.disabled = true;
     return;
   }
