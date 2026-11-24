@@ -1603,29 +1603,6 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   }
 
   
-function syncLipSyncAvailability() {
-  const durationSelect = document.getElementById("duration");
-  const checkbox = document.getElementById("enableLipSync");
-  const panel = document.getElementById("lipSyncPanel");
-  const label = checkbox ? checkbox.closest(".lip-sync-optin") : null;
-  const helper = label ? label.querySelector("small") : null;
-  if (!durationSelect || !checkbox || !panel) return false;
-
-  const selectedSeconds = Number.parseInt(durationSelect.value, 10);
-  const available = [5, 10, 15, 20, 30].includes(selectedSeconds);
-  checkbox.disabled = !available;
-  if (label) label.style.opacity = available ? "1" : "0.55";
-  if (helper) {
-    helper.textContent = available
-      ? "Create a talking video from one photo and audio no longer than the selected video duration."
-      : "Lip Sync is available for 5, 10, 15, 20 and 30-second videos.";
-  }
-
-  if (!available && checkbox.checked) checkbox.checked = false;
-  if (!available) panel.hidden = true;
-  return available;
-}
-
 function renderVideoEqualizer() {
   const equalizer = document.getElementById("videoLiveEqualizer");
   if (!equalizer || equalizer.childElementCount) return;
