@@ -234,9 +234,13 @@ Deno.serve(async (req: Request) => {
 
       if (job.status === "completed") {
         if (!job.storage_path) return response({ error: "The completed job has no stored audio file." }, 500);
-        const { data: signedFile, error: signedError } = await admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600);
+        const fileName = job.storage_path.split("/").pop() || "AI_Music.mp3";
+        const [{ data: signedFile, error: signedError }, { data: downloadFile, error: downloadError }] = await Promise.all([
+          admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600),
+          admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600, { download: fileName }),
+        ]);
         if (signedError || !signedFile?.signedUrl) return response({ error: "Audio is saved, but a playback link could not be created." }, 500);
-        return response({ success: true, status: "completed", audioUrl: signedFile.signedUrl, fileName: job.storage_path.split("/").pop(), creditsUsed: MUSIC_CREDITS, durationSeconds: job.duration_seconds });
+        return response({ success: true, status: "completed", audioUrl: signedFile.signedUrl, downloadUrl: downloadError ? null : downloadFile?.signedUrl || null, fileName, creditsUsed: MUSIC_CREDITS, durationSeconds: job.duration_seconds });
       }
 
       if (job.status === "failed") {
@@ -304,11 +308,15 @@ Deno.serve(async (req: Request) => {
 
         if (completeError || !completedJob) throw new Error("Audio was saved, but the job status could not be safely updated.");
 
-        const { data: signedFile, error: signedError } = await admin.storage.from("user-songs").createSignedUrl(storagePath, 3600);
+        const [{ data: signedFile, error: signedError }, { data: downloadFile, error: downloadError }] = await Promise.all([
+          admin.storage.from("user-songs").createSignedUrl(storagePath, 3600),
+          admin.storage.from("user-songs").createSignedUrl(storagePath, 3600, { download: fileName }),
+        ]);
         return response({
           success: true,
           status: "completed",
           audioUrl: signedError ? null : signedFile?.signedUrl || null,
+          downloadUrl: downloadError ? null : downloadFile?.signedUrl || null,
           fileName,
           creditsUsed: MUSIC_CREDITS,
           durationSeconds: job.duration_seconds,
