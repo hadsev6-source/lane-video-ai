@@ -49,12 +49,12 @@ function getProviderData(payload: any): any {
 function extractAudioUrl(outputs: unknown): string | null {
   if (!Array.isArray(outputs)) return null;
   for (const item of outputs) {
-    if (typeof item === "string" && /^https?:\/\/i.test(item)) return item;
+    if (typeof item === "string" && /^https?:\/\//i.test(item)) return item;
     if (item && typeof item === "object") {
       const record = item as Record<string, unknown>;
       for (const key of ["url", "audio_url", "audioUrl", "file_url", "download_url"]) {
         const value = record[key];
-        if (typeof value === "string" && /^https?:\/\/i.test(value)) return value;
+        if (typeof value === "string" && /^https?:\/\//i.test(value)) return value;
       }
     }
   }
