@@ -131,6 +131,8 @@ Deno.serve(async (req) => {
   let reservedCredits = 0;
   let generatedCount = 0;
   let creditsReserved = false;
+  let owner = false;
+  let creditsPerImage = CREDITS_PER_IMAGE;
 
   const generated: Array<{
     path: string;
@@ -201,8 +203,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    const owner = isOwnerUser(user.id);
-    const creditsPerImage = owner ? ownerCreditsForUsd(0.014) : CREDITS_PER_IMAGE;
+    owner = isOwnerUser(user.id);
+    creditsPerImage = owner ? ownerCreditsForUsd(0.014) : CREDITS_PER_IMAGE;
     reservedCredits = quantity * creditsPerImage;
 
     const { data: debitData, error: debitError } =
