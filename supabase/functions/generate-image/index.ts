@@ -379,7 +379,7 @@ Deno.serve(async (req) => {
       if (owner) await recordOwnerApiCost(admin, {
         userId: user.id, service: "image_generation", provider: "DeepInfra",
         model: MODEL, usd: 0.014, credits: creditsPerImage,
-        generationId: path, metadata: { size: "1024x1024", referenceImage: reference instanceof File },
+        generationId: path, metadata: { size: "1024x1024", referenceImage: reference instanceof File, costSource: "published_rate_estimate" },
       });
     }
 
