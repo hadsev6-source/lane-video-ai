@@ -1376,6 +1376,54 @@ body>#myfiles,#myfiles{display:none}
 }
 </style>
 
+
+<style>
+/* Mobile-only refinements: move credits into the header and reduce account/hero scale */
+@media (max-width:600px) {
+  header.site-header { position:relative !important; }
+  header.site-header .credit-counter {
+    position:absolute !important;
+    top:50% !important;
+    right:112px !important;
+    transform:translateY(-50%) !important;
+    z-index:30 !important;
+    min-width:66px !important;
+    min-height:36px !important;
+    padding:5px 9px !important;
+    margin:0 !important;
+    font-size:13px !important;
+    border-radius:10px !important;
+  }
+  #support.section { padding:5px 4% 4px !important; }
+  #support .section-title { font-size:20px !important; margin:0 0 5px !important; }
+  #support .panel { padding:8px 10px !important; border-radius:12px !important; }
+  #support .success-panel { padding:8px 10px !important; margin:5px 0 7px !important; border-radius:10px !important; }
+  #support .success-panel strong { font-size:15px !important; line-height:1.2 !important; }
+  #support .success-panel p { font-size:13px !important; line-height:1.2 !important; margin-top:5px !important; }
+  #support .danger-btn { font-size:14px !important; min-height:34px !important; padding:6px 11px !important; }
+  .lane-hero-wordmark { font-size:clamp(27px,7vw,35px) !important; margin-bottom:6px !important; }
+  .lane-cinematic-hero { min-height:520px !important; padding:26px 12px 55px !important; }
+  .lane-hero-tagline { font-size:clamp(18px,4.8vw,22px) !important; margin-bottom:16px !important; }
+}
+@media (max-width:380px) {
+  header.site-header .credit-counter { right:104px !important; min-width:60px !important; }
+  .lane-hero-wordmark { font-size:26px !important; }
+}
+</style>
+<script>
+(function(){
+  function placeMobileCredits(){
+    if(!window.matchMedia || !window.matchMedia('(max-width:600px)').matches) return;
+    var badge=document.querySelector('body > .credit-counter');
+    var header=document.querySelector('header.site-header');
+    if(badge && header && !header.contains(badge)) header.appendChild(badge);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',placeMobileCredits);
+  else placeMobileCredits();
+  window.addEventListener('resize',placeMobileCredits);
+})();
+</script>
+
 </head>
 <body>
 <header class="site-header">
