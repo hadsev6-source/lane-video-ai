@@ -1324,7 +1324,10 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 .lane-video-studio .video-builder-model{padding:15px;border:1px solid #403326;border-radius:12px;background:#0c0b09}
 .lane-video-studio .video-builder-model b{display:block;color:#f3d3a7;margin-bottom:5px}
 .lane-video-studio .video-builder-model span{font-size:12px;color:#aaa195;line-height:1.5}
-.lane-video-studio .video-builder-placeholder{width:100%;min-height:56px;border-radius:12px;font-weight:900;letter-spacing:.08em;opacity:.68;cursor:not-allowed}
+.lane-video-studio .video-builder-placeholder{width:100%;min-height:56px;border-radius:12px;font-weight:900;letter-spacing:.08em}
+.lane-video-studio .video-builder-placeholder:disabled{opacity:.55;cursor:wait}
+.lane-video-studio #videoNegativePrompt{width:100%}
+.lane-video-studio #newVideoResult video{width:100%;border-radius:12px;background:#000}
 @media(max-width:850px){.lane-video-studio .video-builder-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.lane-video-studio .video-builder-head{padding:22px 18px}.lane-video-studio .video-builder-grid{padding:13px;gap:13px}.lane-video-studio .video-builder-card{padding:16px}.lane-video-studio .video-builder-fields{grid-template-columns:1fr}}
 </style>
@@ -1382,20 +1385,43 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
           </select>
         </div>
       </div>
+      <div class="video-builder-fields">
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoCameraMove">CAMERA MOVEMENT</label>
+          <select id="videoCameraMove"><option value="smooth cinematic camera movement">Cinematic / smooth</option><option value="static locked camera">Static shot</option><option value="slow dolly in">Slow dolly in</option><option value="tracking camera shot">Tracking shot</option><option value="wide orbit camera movement">Orbit / 360°</option><option value="handheld documentary camera">Handheld</option><option value="crane or aerial camera movement">Crane / aerial</option></select>
+        </div>
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoLighting">LIGHTING & MOOD</label>
+          <select id="videoLighting"><option value="cinematic natural lighting">Natural cinematic</option><option value="dramatic high contrast lighting">Dramatic contrast</option><option value="soft warm golden hour lighting">Golden hour</option><option value="neon night lighting">Neon night</option><option value="moody dark atmospheric lighting">Dark atmosphere</option><option value="bright clean studio lighting">Bright studio</option></select>
+        </div>
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoShot">SHOT COMPOSITION</label>
+          <select id="videoShot"><option value="medium cinematic shot">Medium shot</option><option value="wide establishing shot">Wide / establishing</option><option value="close-up detail shot">Close-up</option><option value="extreme close-up shot">Extreme close-up</option><option value="aerial bird's-eye view">Aerial view</option><option value="low angle hero shot">Low angle</option></select>
+        </div>
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoMotion">MOTION INTENSITY</label>
+          <select id="videoMotion"><option value="natural realistic motion">Natural</option><option value="subtle slow motion">Subtle slow motion</option><option value="dynamic energetic motion">Dynamic</option><option value="fast action motion">Fast action</option></select>
+        </div>
+      </div>
+      <div class="video-builder-field">
+        <label class="video-builder-label" for="videoNegativePrompt">AVOID IN THE VIDEO (OPTIONAL)</label>
+        <input id="videoNegativePrompt" maxlength="400" placeholder="e.g. blurry image, distorted hands, text, watermark"/>
+      </div>
       <div class="video-builder-cost">Estimated generation cost <strong id="videoEstimatedCost">192 credits</strong></div>
-      <button class="primary-btn video-builder-placeholder" id="newVideoGenerateButton" type="button" disabled>VIDEO ENGINE CONNECTION — NEXT STEP</button>
-      <div class="video-builder-note">The new generation engine will be connected after this clean workspace is in place. No request is sent and no credits are charged yet.</div>
+      <button class="primary-btn video-builder-placeholder" id="newVideoGenerateButton" type="button" onclick="startNewVideoGeneration()">✦ &nbsp; GENERATE VIDEO</button>
+      <div class="video-builder-note">Your selected duration determines the model automatically. Credits are charged by the server only when a job is created.</div>
     </div>
     <aside class="video-builder-side">
       <div class="video-builder-card">
         <h3>02 · Generation status</h3>
         <div class="video-builder-status">
-          <strong id="newVideoStatusTitle">Ready for setup</strong>
-          <p id="newVideoStatusText">Your new video workspace is ready. The model connection and live job tracking will be added as the next step.</p>
+          <strong id="newVideoStatusTitle">READY TO CREATE</strong>
+          <p id="newVideoStatusText">Describe your idea and press Generate Video. Your progress and result will appear here.</p>
+          <div id="newVideoResult" style="margin-top:14px"></div>
         </div>
       </div>
-      <div class="video-builder-model"><b>Runway Gen-4.5</b><span>Planned model route for short generations: 5–10 seconds.</span></div>
-      <div class="video-builder-model"><b>Seedance 2.5</b><span>Planned model route for longer generations: 15–30 seconds.</span></div>
+      <div class="video-builder-model"><b>Runway Gen-4.5</b><span>Automatically selected for 5–10 second videos.</span></div>
+      <div class="video-builder-model"><b>Seedance 2.5</b><span>Automatically selected for 15–30 second videos.</span></div>
       <div class="video-builder-model"><b>Your LANE library stays connected</b><span>Existing account, credits, payment and My Files features remain part of the platform.</span></div>
     </aside>
   </div>
@@ -1641,6 +1667,115 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   
 // The previous video submission UI was retired. The new video module is isolated
 // from the legacy generator while preserving existing library and history features.
+
+  // New standalone video generation flow. It uses the existing secure server endpoint,
+  // server-side provider credentials, credit wallet and saved video library.
+  let newVideoStartInProgress = false;
+  let newVideoPollTimer = null;
+  const newVideoPrices = { "5": 192, "10": 303, "15": 557, "20": 743, "30": 1114 };
+  const newVideoDuration = document.getElementById("videoDuration");
+  const newVideoCost = document.getElementById("videoEstimatedCost");
+  function updateNewVideoCost() {
+    if (!newVideoDuration || !newVideoCost) return;
+    newVideoCost.textContent = (newVideoPrices[newVideoDuration.value] || 0).toLocaleString() + " credits";
+  }
+  if (newVideoDuration) {
+    newVideoDuration.addEventListener("change", updateNewVideoCost);
+    updateNewVideoCost();
+  }
+
+  function setNewVideoStatus(title, message) {
+    const titleNode = document.getElementById("newVideoStatusTitle");
+    const messageNode = document.getElementById("newVideoStatusText");
+    if (titleNode) titleNode.textContent = title;
+    if (messageNode) messageNode.textContent = message;
+  }
+
+  async function startNewVideoGeneration() {
+    if (newVideoStartInProgress) return;
+    const button = document.getElementById("newVideoGenerateButton");
+    const prompt = document.getElementById("videoPrompt")?.value.trim() || "";
+    const duration = Number(newVideoDuration?.value || 5);
+    const ratio = document.getElementById("videoAspectRatio")?.value || "1280:720";
+    const result = document.getElementById("newVideoResult");
+    if (!currentUser) { alert("Please sign in first."); return; }
+    if (prompt.length < 3) { alert("Please enter a video description of at least 3 characters."); return; }
+    if (prompt.length > 1000) { alert("Please shorten the main description to 1,000 characters."); return; }
+
+    const style = document.getElementById("videoVisualStyle")?.selectedOptions[0]?.text || "Cinematic realism";
+    const category = document.getElementById("videoCategory")?.selectedOptions[0]?.text || "General";
+    const camera = document.getElementById("videoCameraMove")?.value || "";
+    const lighting = document.getElementById("videoLighting")?.value || "";
+    const shot = document.getElementById("videoShot")?.value || "";
+    const motion = document.getElementById("videoMotion")?.value || "";
+    const avoid = document.getElementById("videoNegativePrompt")?.value.trim() || "";
+    const finalPrompt = [prompt, "Visual direction: " + style, "Category: " + category, "Camera: " + camera, "Lighting: " + lighting, "Composition: " + shot, "Motion: " + motion, avoid ? "Avoid: " + avoid : ""].filter(Boolean).join(". ");
+    if (finalPrompt.length > 1000) {
+      alert("Your combined prompt and selected settings exceed the provider's 1,000-character limit. Please shorten the description or remove some details.");
+      return;
+    }
+
+    newVideoStartInProgress = true;
+    button.disabled = true;
+    button.textContent = "STARTING VIDEO...";
+    if (result) result.replaceChildren();
+    setNewVideoStatus("SUBMITTING REQUEST", "Connecting securely to LANE video generation...");
+    try {
+      const { data, error } = await supabaseClient.functions.invoke("generate-video", {
+        body: { promptText: finalPrompt, duration, ratio }
+      });
+      if (error || !data?.success || !data?.generationId || !data?.taskId) {
+        throw new Error(data?.error || error?.message || "The video request could not be started.");
+      }
+      const modelLabel = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
+      setNewVideoStatus("GENERATING · " + modelLabel, "Your " + duration + "-second video is processing. This panel will update automatically. Generation ID: " + data.generationId);
+      button.textContent = "VIDEO GENERATING...";
+      let checks = 0;
+      while (checks < 180) {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        checks++;
+        const statusResponse = await supabaseClient.functions.invoke("generate-video", {
+          body: { action: "status", generationId: data.generationId }
+        });
+        const statusData = statusResponse.data;
+        if (statusResponse.error || !statusData || statusData.error) {
+          setNewVideoStatus("CHECKING CONNECTION", "The video task was accepted. Temporary status issue; retrying safely...");
+          continue;
+        }
+        if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
+          setNewVideoStatus("VIDEO READY", "Your video has been generated and saved to My Files.");
+          if (result) {
+            const video = document.createElement("video");
+            video.controls = true;
+            video.playsInline = true;
+            video.src = statusData.videoUrl;
+            const download = document.createElement("a");
+            download.href = statusData.videoUrl;
+            download.download = "lane-ai-video.mp4";
+            download.className = "primary-btn";
+            download.textContent = "DOWNLOAD VIDEO";
+            download.style.display = "inline-flex";
+            download.style.marginTop = "12px";
+            result.replaceChildren(video, download);
+          }
+          if (typeof loadMyFiles === "function") loadMyFiles();
+          break;
+        }
+        if (statusData.status === "FAILED" || statusData.status === "CANCELED" || statusData.status === "CANCELLED") {
+          throw new Error((statusData.error || "The provider could not complete this video.") + (statusData.refunded ? " Credits have been refunded." : ""));
+        }
+        setNewVideoStatus("GENERATING · " + modelLabel, "Status: " + (statusData.status || "PROCESSING") + " · Check " + checks + " of 180");
+      }
+      if (checks >= 180) setNewVideoStatus("STILL PROCESSING", "The provider is taking longer than usual. Check My Files shortly before submitting another request.");
+    } catch (error) {
+      console.error("New video generation failed:", error);
+      setNewVideoStatus("GENERATION ERROR", error?.message || "Please try again.");
+    } finally {
+      newVideoStartInProgress = false;
+      button.disabled = false;
+      button.textContent = "✦  GENERATE VIDEO";
+    }
+  }
 
   // Pricing preview for the new, disconnected video workspace.
   const newVideoPrices = { "5": 192, "10": 303, "15": 557, "20": 743, "30": 1114 };
