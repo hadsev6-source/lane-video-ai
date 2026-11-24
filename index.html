@@ -3124,7 +3124,16 @@ if (currentUser) {
         const audioType = extension === "mp3" ? "audio/mpeg" :
           extension === "wav" ? "audio/wav" :
           extension === "m4a" ? "audio/mp4" : "audio/" + extension;
-        await saveFileToPhone(signed.signedUrl, file.name, "LANE AI audio", audioType);
+        // Audio should download directly to the device, not open Android's share sheet.
+        const downloadLink = document.createElement("a");
+        downloadLink.href = signed.signedUrl;
+        downloadLink.download = file.name;
+        downloadLink.rel = "noopener";
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+        showFileMessage("Audio download started. Check your phone's Downloads folder.");
       };
 
       const deleteButton = document.createElement("button");
