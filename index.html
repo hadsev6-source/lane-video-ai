@@ -1700,12 +1700,19 @@ async function prepareVideo() {
     );
     // Never leave the UI in STARTING indefinitely. If the outcome is unknown,
     // tell the user to check My Files before retrying (the server may have accepted it).
-    const startTimeout = new Promise((_, reject) =>
-      window.setTimeout(() => reject(new Error(
-        "The server did not confirm the start within 45 seconds. Check My Files before trying again; the task may have been accepted."
-      )), 45000)
-    );
+    let startTimeoutId;
+    const startTimeout = new Promise((_, reject) => {
+      startTimeoutId = window.setTimeout(() => {
+        // The request may still be accepted server-side. Keep the start lock
+        // until the user checks My Files, so a retry cannot double-charge.
+        window.__laneVideoStartOutcomeUnknown = true;
+        reject(new Error(
+          "The server did not confirm the start within 45 seconds. Check My Files before trying again; the task may have been accepted."
+        ));
+      }, 45000);
+    });
     const { data, error } = await Promise.race([startRequest, startTimeout]);
+    window.clearTimeout(startTimeoutId);
 
     if (error) {
       const message = data?.error || error.message || "Video generation could not start.";
@@ -1851,9 +1858,16 @@ async function prepareVideo() {
     stopVideoElapsedTimer();
     showVideoLiveState("ERROR", "WE COULD NOT START VIDEO GENERATION.");
   } finally {
-    window.__laneVideoStartLock = false;
-    button.disabled = false;
-    button.textContent = "GENERATE VIDEO";
+    // If the start request timed out, its server-side outcome is unknown.
+    // Do not allow another paid submission from this page until checked.
+    if (!window.__laneVideoStartOutcomeUnknown) {
+      window.__laneVideoStartLock = false;
+      button.disabled = false;
+      button.textContent = "GENERATE VIDEO";
+    } else {
+      button.disabled = true;
+      button.textContent = "CHECK MY FILES";
+    }
   }
 
   output.scrollIntoView({ behavior: "smooth", block: "nearest" });
