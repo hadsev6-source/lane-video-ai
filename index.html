@@ -1289,7 +1289,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
 <div class="field"><label for="songBpm">Tempo / BPM</label><select id="songBpm"><option>Slow</option><option selected="">Medium</option><option>Fast</option><option>Very Fast</option></select></div>
-<div class="field"><label for="songLyricsMode">Lyrics</label><select id="songLyricsMode"><option>AI Write Lyrics</option><option>My Own Lyrics</option><option>No Lyrics</option></select></div>
+<div class="field"><label for="songLyricsMode">Lyrics</label><select id="songLyricsMode"><option>My Own Lyrics</option><option>AI Write Lyrics</option><option>No Lyrics</option></select></div>
 <div class="field"><label for="songVoiceCharacter">Voice Character</label><select id="songVoiceCharacter"><option>Gentle / Romantic</option><option>Powerful</option><option>Deep / Full</option><option>Soft / Sensual</option><option>Energetic / Dance</option><option>Raspy</option><option>Youthful</option><option>Operatic / Dramatic</option></select></div>
 <div class="field full"><label for="songCustomStyle">Custom Style (Optional)</label><input id="songCustomStyle" placeholder="Describe a unique sound or combination of influences"/></div>
 <div class="field full"><label for="songLyrics">Your Lyrics / Song Story (Optional)</label><textarea id="songLyrics" placeholder="Enter your lyrics, theme, story or key phrases..."></textarea></div>
@@ -2342,7 +2342,7 @@ async function prepareVideo() {
         throw new Error(startData?.error || "The music generation request could not start.");
       }
 
-      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: 25\nStatus: Processing...";
+      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds === 10 ? "10 seconds" : (durationSeconds / 60) + " minute(s)") + "\nCredits charged: " + (startData.creditsUsed || 25) + "\nStatus: Processing...";
       button.textContent = "GENERATING...";
 
       const maxAttempts = 120; // Up to 10 minutes at 5-second intervals.
