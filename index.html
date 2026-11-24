@@ -2412,9 +2412,9 @@ async function prepareVideo() {
                 videoLink.style.display = "inline-block";
                 videoLink.style.marginTop = "14px";
                 videoLink.style.color = "#ff6673";
+                output.textContent += "\nYour 10-second music video is ready.";
                 output.appendChild(document.createElement("br"));
                 output.appendChild(videoLink);
-                output.textContent += "\nYour 10-second music video is ready.";
                 videoReady = true;
                 break;
               }
