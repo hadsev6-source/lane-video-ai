@@ -765,8 +765,8 @@ Deno.serve(async (req: Request) => {
       if (!Number.isFinite(audioSeconds) || audioSeconds <= 0) {
         return json({ error: "Could not verify a valid audio duration." }, 400);
       }
-      if (![15, 20, 30].includes(videoDuration)) {
-        return json({ error: "Lip Sync is available only for 15, 20 or 30-second videos." }, 400);
+      if (![5, 10, 15, 20, 30].includes(videoDuration)) {
+        return json({ error: "Lip Sync is available for 5, 10, 15, 20 and 30-second videos." }, 400);
       }
       if (audioSeconds > videoDuration) {
         return json({ error: `Audio must be no longer than the selected ${videoDuration}-second video.` }, 400);
