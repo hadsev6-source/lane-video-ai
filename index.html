@@ -1107,6 +1107,21 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 @media (max-width: 550px) { #support.section { padding: 10px 4% 8px; } #support .panel { padding: 11px 13px; } }
 
 
+/* My Files is a modal library, not a page section */
+body>#myfiles,#myfiles{display:none}
+#myFilesModal.open #myfiles{display:block}
+#myFilesModal #myfiles>.section-title,#myFilesModal #myfiles>.section-description{display:none}
+.my-files-folders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:16px 0 20px}
+.my-files-folder{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-height:112px;padding:16px;border:1px solid #76552e;border-radius:12px;background:linear-gradient(145deg,#21180e,#0b0b0b);color:#fff;text-align:left;cursor:pointer}
+.my-files-folder:hover,.my-files-folder.active{border-color:#ff9d19;background:linear-gradient(145deg,#38220c,#111);box-shadow:0 0 0 1px #ff9d1944}
+.my-files-folder .folder-symbol{font-size:23px;color:#ff9d19}
+.my-files-folder strong{font-size:15px}
+.my-files-folder small{font-size:11px;color:#aaa}
+.my-files-folder small b{color:#ffbd69}
+#myFilesModal #myfiles>.library-summary{display:none}
+#myFilesModal #myfiles>.library-toolbar{display:none}
+#myFilesModal #myfiles .panel{margin-top:10px}
+@media(max-width:520px){.my-files-folders{gap:8px}.my-files-folder{padding:11px;min-height:100px}.my-files-folder strong{font-size:13px}}
 #myFilesModal{display:none;position:fixed;inset:0;z-index:3000;background:#000d;padding:12px;align-items:center;justify-content:center}#myFilesModal.open{display:flex}#myFilesModal .my-files-dialog{width:min(1100px,100%);height:92vh;overflow:auto;background:#090909;border:1px solid #ff9d19;border-radius:14px;padding:14px}#myFilesModal .my-files-close{position:sticky;top:0;float:right;z-index:2;padding:10px;background:#21150a;color:white;border:1px solid #ff9d19;border-radius:8px}#myFilesModal #myfiles{padding:10px 0!important;max-width:none!important}body.my-files-open{overflow:hidden}#laneReadyToast{display:none;position:fixed;right:16px;bottom:16px;z-index:4000;width:min(420px,calc(100vw - 28px));padding:18px;background:#171008;border:1px solid #ffad32;border-radius:14px;box-shadow:0 12px 45px #000d;color:white}#laneReadyToast.show{display:block}#laneReadyToast strong{display:block;color:#ffd18a;font-size:18px;margin-bottom:6px}#laneReadyToast p{line-height:1.45}#laneReadyToast .toast-actions{display:flex;gap:8px;flex-wrap:wrap}@media(max-width:600px){#myFilesModal{padding:5px}#myFilesModal .my-files-dialog{height:95vh;padding:9px}}
 
 .library-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 22px}.library-filter{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:42px;padding:9px 16px!important;border:1px solid #76552e!important;border-radius:12px!important;background:linear-gradient(145deg,#21180e,#0b0b0b)!important;color:#eee!important;font-weight:700;letter-spacing:.02em;box-shadow:0 3px 12px #0008,inset 0 1px #ffffff12!important;transition:transform .18s,border-color .18s,box-shadow .18s}.library-filter:hover{transform:translateY(-2px);border-color:#ffbd58!important;box-shadow:0 5px 18px #ff9d1925!important}.library-filter.active{border-color:#ffb02e!important;background:linear-gradient(145deg,#55300d,#211305)!important;color:#fff!important;box-shadow:0 0 0 1px #ff9d1960,0 0 18px #ff9d1935!important}.library-icon{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:7px;background:#ff9d1918;color:#ffc15a;font-size:17px;line-height:1}.library-filter.active .library-icon{background:#ffb02e24;color:#fff}@media(max-width:550px){.library-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.library-filter{padding:8px 9px!important;font-size:11px}}
@@ -1532,6 +1547,11 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
     Your personal library for uploaded music and all future LANE AI STUDIO creations.
     Videos, images, audio, thumbnails and project text will be kept together here.
   </p>
+<div class="my-files-folders" aria-label="My Files folders">
+<button type="button" class="my-files-folder" onclick="selectLibraryFolder('audio',this)"><span class="folder-symbol">♫</span><strong>Music</strong><small><b id="folderAudioCount">0</b> files</small></button>
+<button type="button" class="my-files-folder" onclick="selectLibraryFolder('image',this)"><span class="folder-symbol">▧</span><strong>Photos</strong><small><b id="folderImageCount">0</b> files</small></button>
+<button type="button" class="my-files-folder" onclick="selectLibraryFolder('video',this)"><span class="folder-symbol">▶</span><strong>Videos</strong><small><b id="folderVideoCount">0</b> files</small></button>
+</div>
 <div class="library-summary">
 <div class="library-stat"><strong id="videoFileCount">0</strong><span>My Videos</span></div>
 <div class="library-stat"><strong id="imageFileCount">0</strong><span>My Images</span></div>
@@ -2292,6 +2312,18 @@ if (currentUser) {
 
   let activeLibraryFilter = "all";
 
+  function selectLibraryFolder(kind, button) {
+    document.querySelectorAll(".my-files-folder").forEach(item => item.classList.toggle("active", item === button));
+    const panel = document.querySelector("#myFilesModal #myfiles .panel");
+    if (panel) panel.classList.remove("hidden");
+    filterMyFiles(kind);
+    const title = { audio: "Music", image: "Photos", video: "Videos" }[kind] || "My Files";
+    const heading = document.querySelector("#myFilesModal .library-section-heading h3");
+    if (heading) heading.textContent = title;
+    const desc = document.getElementById("libraryFilterDescription");
+    if (desc) desc.textContent = "Your " + title.toLowerCase() + " files.";
+  }
+
   function filterMyFiles(kind, button) {
     activeLibraryFilter = kind;
 
@@ -2883,6 +2915,12 @@ if (currentUser) {
     document.getElementById("videoFileCount").textContent = videoCount;
     document.getElementById("imageFileCount").textContent = imageCount;
     document.getElementById("thumbnailFileCount").textContent = "0";
+    const folderAudio = document.getElementById("folderAudioCount");
+    const folderImage = document.getElementById("folderImageCount");
+    const folderVideo = document.getElementById("folderVideoCount");
+    if (folderAudio) folderAudio.textContent = audioCount;
+    if (folderImage) folderImage.textContent = imageCount;
+    if (folderVideo) folderVideo.textContent = videoCount;
 
     const emptyCounts = {
       video: videoCount,
