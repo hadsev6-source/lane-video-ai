@@ -12,6 +12,45 @@ const WAVESPEED_API = "https://api.wavespeed.ai/api/v3";
 const MUSIC_CREDITS = 25;
 const MAX_AUDIO_SIZE = 50 * 1024 * 1024;
 
+const OWNER_USER_ID = "dce2d514-964d-49be-b83d-45e6721b49a7";
+const OWNER_CREDITS_PER_EUR = 140;
+const OWNER_DEFAULT_USD_TO_EUR = 0.9168;
+
+function isOwnerUser(userId: string): boolean {
+  return userId === OWNER_USER_ID;
+}
+
+function ownerCreditsForUsd(usd: number): number {
+  const configuredRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  if (!Number.isFinite(configuredRate) || configuredRate <= 0 || !Number.isFinite(usd) || usd < 0) {
+    throw new Error("Invalid owner API cost conversion configuration.");
+  }
+  return Math.max(1, Math.ceil(usd * configuredRate * OWNER_CREDITS_PER_EUR));
+}
+
+async function recordOwnerApiCost(admin: any, entry: {
+  userId: string; service: string; provider: string; model: string;
+  usd: number; credits: number; generationId?: string; durationSeconds?: number;
+  metadata?: Record<string, unknown>;
+}) {
+  const exchangeRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  const { error } = await admin.from("owner_api_costs").upsert({
+    user_id: entry.userId,
+    service: entry.service,
+    provider: entry.provider,
+    model: entry.model,
+    amount_usd: entry.usd,
+    usd_to_eur: exchangeRate,
+    amount_eur: entry.usd * exchangeRate,
+    credits_charged: entry.credits,
+    generation_id: entry.generationId || null,
+    duration_seconds: entry.durationSeconds ?? null,
+    metadata: entry.metadata || {},
+  }, { onConflict: "user_id,service,generation_id", ignoreDuplicates: true });
+  if (error) console.error("Could not record owner API cost:", error);
+}
+
+
 function response(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -59,6 +98,33 @@ function extractAudioUrl(outputs: unknown): string | null {
     }
   }
   return null;
+}
+
+
+async function getWaveSpeedActualCost(apiKey: string, predictionId: string): Promise<number | null> {
+  if (!predictionId) return null;
+  try {
+    const response = await fetch("https://api.wavespeed.ai/api/v3/billings/search", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ prediction_uuids: [predictionId], page: 1, page_size: 10 }),
+    });
+    if (!response.ok) {
+      console.warn("WaveSpeed billing lookup unavailable:", response.status);
+      return null;
+    }
+    const payload = await response.json();
+    const items = payload?.data?.items;
+    if (!Array.isArray(items)) return null;
+    const matched = items.filter((item: any) =>
+      item?.prediction?.uuid === predictionId && Number.isFinite(Number(item?.price))
+    );
+    if (!matched.length) return null;
+    return matched.reduce((sum: number, item: any) => sum + Number(item.price), 0);
+  } catch (error) {
+    console.warn("WaveSpeed billing lookup failed:", error);
+    return null;
+  }
 }
 
 Deno.serve(async (req: Request) => {
@@ -141,6 +207,10 @@ Deno.serve(async (req: Request) => {
         ? { prompt: tags, instrumental: false, duration: requestedDuration, seed: -1 }
         : { tags, lyrics: providerLyrics, duration: requestedDuration, seed: -1 };
 
+      const owner = isOwnerUser(user.id);
+      const ownerUsdCost = requestedDuration * 0.0002;
+      const creditsToCharge = owner ? ownerCreditsForUsd(ownerUsdCost) : MUSIC_CREDITS;
+
       const { data: job, error: jobError } = await admin
         .from("music_generation_jobs")
         .insert({
@@ -150,7 +220,7 @@ Deno.serve(async (req: Request) => {
           title: title.slice(0, 120),
           genre: (style || customStyle).slice(0, 250),
           duration_seconds: requestedDuration,
-          credits_charged: MUSIC_CREDITS,
+          credits_charged: creditsToCharge,
           lyrics_mode: lyricsMode,
           provider_model: providerModel,
           status: "queued",
@@ -166,7 +236,7 @@ Deno.serve(async (req: Request) => {
       const { data: charged, error: debitError } = await admin.rpc("debit_music_credits", { p_job_id: job.id });
       if (debitError || charged !== true) {
         await admin.from("music_generation_jobs").delete().eq("id", job.id).eq("user_id", user.id);
-        return response({ error: "Not enough credits. You need 25 credits." }, 402);
+        return response({ error: `Not enough credits. You need ${creditsToCharge} credits.` }, 402);
       }
 
       let providerResponse: Response;
@@ -202,6 +272,8 @@ Deno.serve(async (req: Request) => {
         return response({ error: reason, refunded: true }, 502);
       }
 
+
+
       const { error: updateError } = await admin.from("music_generation_jobs")
         .update({ request_id: String(requestId), status: "processing", updated_at: new Date().toISOString() })
         .eq("id", job.id).eq("user_id", user.id);
@@ -218,7 +290,7 @@ Deno.serve(async (req: Request) => {
         status: "processing",
         lyricsMode,
         providerModel,
-        creditsUsed: MUSIC_CREDITS,
+        creditsUsed: creditsToCharge,
         durationSeconds: requestedDuration,
         message: "Your music generation has started.",
       });
@@ -234,13 +306,25 @@ Deno.serve(async (req: Request) => {
 
       if (job.status === "completed") {
         if (!job.storage_path) return response({ error: "The completed job has no stored audio file." }, 500);
+        if (isOwnerUser(user.id)) {
+          const billedDuration = Number(job.duration_seconds || 0);
+          const actual = await getWaveSpeedActualCost(wavespeedKey, String(job.request_id || ""));
+          await recordOwnerApiCost(admin, {
+            userId: user.id, service: "music_generation", provider: "WaveSpeed",
+            model: job.provider_model || WAVESPEED_MODEL,
+            usd: actual ?? billedDuration * 0.0002,
+            credits: Number(job.credits_charged || 0), generationId: job.id,
+            durationSeconds: billedDuration,
+            metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
+          });
+        }
         const fileName = job.storage_path.split("/").pop() || "AI_Music.mp3";
         const [{ data: signedFile, error: signedError }, { data: downloadFile, error: downloadError }] = await Promise.all([
           admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600),
           admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600, { download: fileName }),
         ]);
         if (signedError || !signedFile?.signedUrl) return response({ error: "Audio is saved, but a playback link could not be created." }, 500);
-        return response({ success: true, status: "completed", audioUrl: signedFile.signedUrl, downloadUrl: downloadError ? null : downloadFile?.signedUrl || null, fileName, creditsUsed: MUSIC_CREDITS, durationSeconds: job.duration_seconds });
+        return response({ success: true, status: "completed", audioUrl: signedFile.signedUrl, downloadUrl: downloadError ? null : downloadFile?.signedUrl || null, fileName, creditsUsed: Number(job.credits_charged ?? MUSIC_CREDITS), durationSeconds: job.duration_seconds });
       }
 
       if (job.status === "failed") {
@@ -307,6 +391,18 @@ Deno.serve(async (req: Request) => {
           .select("id").maybeSingle();
 
         if (completeError || !completedJob) throw new Error("Audio was saved, but the job status could not be safely updated.");
+        if (isOwnerUser(user.id)) {
+          const billedDuration = Number(job.duration_seconds || 0);
+          const estimate = billedDuration * 0.0002;
+          const actual = await getWaveSpeedActualCost(wavespeedKey, String(job.request_id || ""));
+          await recordOwnerApiCost(admin, {
+            userId: user.id, service: "music_generation", provider: "WaveSpeed",
+            model: job.provider_model || WAVESPEED_MODEL,
+            usd: actual ?? estimate, credits: Number(job.credits_charged || 0),
+            generationId: job.id, durationSeconds: billedDuration,
+            metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
+          });
+        }
 
         const [{ data: signedFile, error: signedError }, { data: downloadFile, error: downloadError }] = await Promise.all([
           admin.storage.from("user-songs").createSignedUrl(storagePath, 3600),
@@ -318,7 +414,7 @@ Deno.serve(async (req: Request) => {
           audioUrl: signedError ? null : signedFile?.signedUrl || null,
           downloadUrl: downloadError ? null : downloadFile?.signedUrl || null,
           fileName,
-          creditsUsed: MUSIC_CREDITS,
+          creditsUsed: Number(job.credits_charged ?? MUSIC_CREDITS),
           durationSeconds: job.duration_seconds,
           lyrics: job.lyrics || "",
           tags: job.genre || "",
@@ -332,7 +428,7 @@ Deno.serve(async (req: Request) => {
         if (latestJob?.status === "completed") {
           const { data: signedFile, error: signedError } = await admin.storage.from("user-songs")
             .createSignedUrl(latestJob.storage_path || `${user.id}/AI_Music_${job.id}.wav`, 3600);
-          return response({ success: true, status: "completed", audioUrl: signedError ? null : signedFile?.signedUrl || null, fileName: latestJob.storage_path?.split("/").pop() || `AI_Music_${job.id}.wav`, creditsUsed: MUSIC_CREDITS, durationSeconds: job.duration_seconds, warning: "Audio was saved, but a later processing step reported an error." });
+          return response({ success: true, status: "completed", audioUrl: signedError ? null : signedFile?.signedUrl || null, fileName: latestJob.storage_path?.split("/").pop() || `AI_Music_${job.id}.wav`, creditsUsed: Number(job.credits_charged ?? MUSIC_CREDITS), durationSeconds: job.duration_seconds, warning: "Audio was saved, but a later processing step reported an error." });
         }
 
         const { data: refundSucceeded, error: refundError } = await admin.rpc("refund_music_credits", { p_job_id: job.id });
