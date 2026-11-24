@@ -1284,7 +1284,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <optgroup label="Cinematic &amp; Ambient">
 <option>Film Score</option><option>Epic Cinematic</option><option>Trailer Music</option><option>Ambient</option><option>Meditation</option><option>Chillout</option><option>Lo-Fi</option><option>New Age</option><option>Soundscape</option>
 </optgroup></select></div>
-<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option value="10">10-second music video</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240" selected="">4 minutes</option></select></div>
+<div class="field"><label for="songDuration">Song Duration</label><select id="songDuration"><option value="10" selected="">10-second music video</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option></select></div>
 <div class="field"><label for="songMood">Mood</label><select id="songMood"><option>Romantic</option><option>Happy</option><option>Sad</option><option>Emotional</option><option>Energetic</option><option>Dark</option><option>Sexy</option><option>Motivational</option><option>Epic</option><option>Party</option><option>Relaxing</option></select></div>
 <div class="field"><label for="songVocal">Vocal Type</label><select id="songVocal"><option>Instrumental</option><option>Male Vocals</option><option>Female Vocals</option><option>Duet</option><option>Choir</option></select></div>
 <div class="field"><label for="songLanguage">Language</label><select id="songLanguage"><option>Bulgarian</option><option>English</option><option>Spanish</option><option>Serbian</option><option>Greek</option><option>Turkish</option><option>Arabic</option><option>French</option><option>German</option><option>Italian</option><option>Other</option></select></div>
@@ -2394,7 +2394,7 @@ async function prepareVideo() {
             const { error: uploadError } = await supabaseClient.storage.from("user-songs").upload(tempPath, audioBlob, { contentType: "audio/wav", upsert: false });
             if (uploadError) throw uploadError;
             const { data: videoData, error: videoError } = await supabaseClient.functions.invoke("generate-music-video", {
-              body: { promptText: document.getElementById("musicVideoPrompt").value.trim() || "Cinematic music video matching the song.", duration: 10, songPath: tempPath, ratio: "portrait", lipSync: false, lyrics: lyrics }
+              body: { promptText: document.getElementById("musicVideoPrompt").value.trim() || "Cinematic music video matching the song.", duration: 10, songPath: tempPath, ratio: "portrait", lipSync: true, lyrics: lyrics }
             });
             if (videoError || !videoData?.success || !videoData?.generationId) throw new Error(videoData?.error || "The music video could not be started.");
             output.textContent += "\nVideo generation started. Waiting for the finished MP4...";
