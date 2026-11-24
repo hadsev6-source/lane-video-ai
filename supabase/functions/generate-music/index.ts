@@ -12,6 +12,45 @@ const WAVESPEED_API = "https://api.wavespeed.ai/api/v3";
 const MUSIC_CREDITS = 25;
 const MAX_AUDIO_SIZE = 50 * 1024 * 1024;
 
+const OWNER_USER_ID = "dce2d514-964d-49be-b83d-45e6721b49a7";
+const OWNER_CREDITS_PER_EUR = 140;
+const OWNER_DEFAULT_USD_TO_EUR = 0.9168;
+
+function isOwnerUser(userId: string): boolean {
+  return userId === OWNER_USER_ID;
+}
+
+function ownerCreditsForUsd(usd: number): number {
+  const configuredRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  if (!Number.isFinite(configuredRate) || configuredRate <= 0 || !Number.isFinite(usd) || usd < 0) {
+    throw new Error("Invalid owner API cost conversion configuration.");
+  }
+  return Math.max(1, Math.ceil(usd * configuredRate * OWNER_CREDITS_PER_EUR));
+}
+
+async function recordOwnerApiCost(admin: any, entry: {
+  userId: string; service: string; provider: string; model: string;
+  usd: number; credits: number; generationId?: string; durationSeconds?: number;
+  metadata?: Record<string, unknown>;
+}) {
+  const exchangeRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  const { error } = await admin.from("owner_api_costs").insert({
+    user_id: entry.userId,
+    service: entry.service,
+    provider: entry.provider,
+    model: entry.model,
+    amount_usd: entry.usd,
+    usd_to_eur: exchangeRate,
+    amount_eur: entry.usd * exchangeRate,
+    credits_charged: entry.credits,
+    generation_id: entry.generationId || null,
+    duration_seconds: entry.durationSeconds ?? null,
+    metadata: entry.metadata || {},
+  });
+  if (error) console.error("Could not record owner API cost:", error);
+}
+
+
 function response(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -141,6 +180,10 @@ Deno.serve(async (req: Request) => {
         ? { prompt: tags, instrumental: false, duration: requestedDuration, seed: -1 }
         : { tags, lyrics: providerLyrics, duration: requestedDuration, seed: -1 };
 
+      const owner = isOwnerUser(user.id);
+      const ownerUsdCost = requestedDuration * 0.0002;
+      const creditsToCharge = owner ? ownerCreditsForUsd(ownerUsdCost) : MUSIC_CREDITS;
+
       const { data: job, error: jobError } = await admin
         .from("music_generation_jobs")
         .insert({
@@ -150,7 +193,7 @@ Deno.serve(async (req: Request) => {
           title: title.slice(0, 120),
           genre: (style || customStyle).slice(0, 250),
           duration_seconds: requestedDuration,
-          credits_charged: MUSIC_CREDITS,
+          credits_charged: creditsToCharge,
           lyrics_mode: lyricsMode,
           provider_model: providerModel,
           status: "queued",
@@ -166,7 +209,7 @@ Deno.serve(async (req: Request) => {
       const { data: charged, error: debitError } = await admin.rpc("debit_music_credits", { p_job_id: job.id });
       if (debitError || charged !== true) {
         await admin.from("music_generation_jobs").delete().eq("id", job.id).eq("user_id", user.id);
-        return response({ error: "Not enough credits. You need 25 credits." }, 402);
+        return response({ error: `Not enough credits. You need ${creditsToCharge} credits.` }, 402);
       }
 
       let providerResponse: Response;
@@ -202,6 +245,13 @@ Deno.serve(async (req: Request) => {
         return response({ error: reason, refunded: true }, 502);
       }
 
+      if (owner) await recordOwnerApiCost(admin, {
+        userId: user.id, service: "music_generation", provider: "WaveSpeed",
+        model: providerModel, usd: ownerUsdCost, credits: creditsToCharge,
+        generationId: job.id, durationSeconds: requestedDuration,
+        metadata: { lyricsMode, durationSeconds: requestedDuration },
+      });
+
       const { error: updateError } = await admin.from("music_generation_jobs")
         .update({ request_id: String(requestId), status: "processing", updated_at: new Date().toISOString() })
         .eq("id", job.id).eq("user_id", user.id);
@@ -218,7 +268,7 @@ Deno.serve(async (req: Request) => {
         status: "processing",
         lyricsMode,
         providerModel,
-        creditsUsed: MUSIC_CREDITS,
+        creditsUsed: creditsToCharge,
         durationSeconds: requestedDuration,
         message: "Your music generation has started.",
       });
