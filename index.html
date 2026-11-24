@@ -1678,9 +1678,9 @@ async function prepareVideo() {
           output.textContent =
             "A recent video request is still active (" + String(activeJobs[0].status || "PROCESSING") +
             "). It has not been resubmitted, to avoid charging you twice. Open My Files and check again shortly.";
-          button.textContent = "CHECK MY FILES";
+          button.textContent = "CHECK STATUS AGAIN";
           button.disabled = false;
-          button.onclick = (event) => openMyFilesModal(event);
+          button.onclick = () => prepareVideo();
           return;
         }
 
@@ -1695,9 +1695,9 @@ async function prepareVideo() {
         console.error("Could not safely recover the video start lock:", recoveryError);
         output.textContent =
           "Could not verify the previous request yet. No new video was submitted and no additional credits were charged. Please use My Files to check existing videos, then try again.";
-        button.textContent = "CHECK MY FILES";
+        button.textContent = "CHECK STATUS AGAIN";
         button.disabled = false;
-        button.onclick = (event) => openMyFilesModal(event);
+        button.onclick = () => prepareVideo();
       }
     }
     return;
