@@ -2369,10 +2369,10 @@ async function prepareVideo() {
           laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed || 25, file_name: statusData.fileName || null });
           output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed || 25) + "\n\nUse the player below to listen. The song is also saved in My Files.";
           const downloadLink = document.createElement("a");
-          downloadLink.href = statusData.audioUrl;
-          downloadLink.target = "_blank";
+          downloadLink.href = statusData.downloadUrl || statusData.audioUrl;
+          downloadLink.target = "_self";
           downloadLink.rel = "noopener";
-          downloadLink.textContent = "OPEN / DOWNLOAD SONG";
+          downloadLink.textContent = "DOWNLOAD SONG TO DEVICE";
           downloadLink.style.display = "inline-block";
           downloadLink.style.marginTop = "12px";
           downloadLink.style.color = "#ff6673";
