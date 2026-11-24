@@ -21,3 +21,12 @@ create index if not exists owner_api_costs_user_created_idx
 alter table public.owner_api_costs enable row level security;
 revoke all on public.owner_api_costs from anon, authenticated;
 grant all on public.owner_api_costs to service_role;
+
+
+-- Persist the audio duration used for owner Lip Sync cost calculation.
+alter table public.video_generations
+  add column if not exists owner_billable_seconds integer;
+
+-- Unique index makes audit writes idempotent across retries and concurrent status polling.
+create unique index if not exists owner_api_costs_generation_unique_idx
+  on public.owner_api_costs (user_id, service, generation_id);
