@@ -394,7 +394,7 @@ Deno.serve(async (req: Request) => {
               userId: user.id, service: "video_lipsync", provider: "WaveSpeed",
               model: "wavespeed-ai/infinitetalk-fast",
               usd: actual ?? billableSeconds * 0.015,
-              credits: Number(job.credits_charged || 0), generationId,
+              credits: ownerCreditsForUsd(actual ?? billableSeconds * 0.015), generationId,
               durationSeconds: billableSeconds,
               metadata: { costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
             });
@@ -405,7 +405,7 @@ Deno.serve(async (req: Request) => {
               userId: user.id, service: "video_generation", provider: "Runway",
               model: completedModel,
               usd: completedDuration * (completedModel === "gen4.5" ? 0.12 : 0.20),
-              credits: Number(job.credits_charged || 0), generationId,
+              credits: ownerCreditsForUsd(completedDuration * (completedModel === "gen4.5" ? 0.12 : 0.20)), generationId,
               durationSeconds: completedDuration,
               metadata: { costSource: "published_rate_estimate" },
             });
@@ -481,7 +481,7 @@ Deno.serve(async (req: Request) => {
             await recordOwnerApiCost(admin, {
               userId: user.id, service: "video_lipsync", provider: "WaveSpeed",
               model: "wavespeed-ai/infinitetalk-fast", usd: actual ?? estimate,
-              credits: Number(job.credits_charged || 0), generationId,
+              credits: ownerCreditsForUsd(actual ?? estimate), generationId,
               durationSeconds: billableSeconds,
               metadata: { selectedVideoDuration: job.duration, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
             });
@@ -643,7 +643,7 @@ Deno.serve(async (req: Request) => {
           await recordOwnerApiCost(admin, {
             userId: user.id, service: "video_generation", provider: "Runway",
             model: completedModel, usd: completedDuration * rate,
-            credits: Number(job.credits_charged || 0), generationId,
+            credits: ownerCreditsForUsd(completedDuration * rate), generationId,
             durationSeconds: completedDuration,
             metadata: { costSource: "published_rate_estimate" },
           });
