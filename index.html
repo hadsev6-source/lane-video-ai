@@ -2220,6 +2220,15 @@ body>#myfiles,#myfiles{display:none}
     }
   }
 
+  // Expose and bind the video action explicitly so the Generate button works
+  // even if inline onclick handlers are unavailable in the page context.
+  window.startNewVideoGeneration = startNewVideoGeneration;
+  const newVideoGenerateButton = document.getElementById("newVideoGenerateButton");
+  if (newVideoGenerateButton) {
+    newVideoGenerateButton.removeAttribute("onclick");
+    newVideoGenerateButton.addEventListener("click", startNewVideoGeneration);
+  }
+
   const imageReferenceInput = document.getElementById("imageReference");
   if (imageReferenceInput) {
     imageReferenceInput.addEventListener("change", function() {
