@@ -18,7 +18,7 @@ Deno.serve(async (req: Request) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("MY_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !anonKey || !serviceRoleKey) {
     return json({ error: "Server configuration is incomplete." }, 500);
   }
@@ -52,17 +52,19 @@ Deno.serve(async (req: Request) => {
   if (lookupError) return json({ error: lookupError.message }, 500);
   if (!video) return json({ error: "Video not found or access denied." }, 404);
 
-  const { error: storageError } = await admin.storage
-    .from("generated-videos")
-    .remove([video.storage_path]);
-  if (storageError) return json({ error: "Could not delete video file: " + storageError.message }, 500);
+  if (video.storage_path) {
+    const { error: storageError } = await admin.storage
+      .from("generated-videos")
+      .remove([video.storage_path]);
+    if (storageError) return json({ error: "Could not delete video file: " + storageError.message }, 500);
+  }
 
   const { error: rowError } = await admin
     .from("video_generations")
     .delete()
     .eq("id", video.id)
     .eq("user_id", authData.user.id);
-  if (rowError) return json({ error: "Video file deleted, but database record removal failed: " + rowError.message }, 500);
+  if (rowError) return json({ error: "Video record removal failed: " + rowError.message }, 500);
 
   return json({ success: true });
 });
