@@ -1742,6 +1742,8 @@ async function prepareVideo() {
     showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
     button.textContent = "GENERATING...";
     const maximumChecks = 180; // 30 minutes at 10-second intervals.
+    let consecutiveStatusErrors = 0;
+    let completed = false;
 
     for (let check = 0; check < maximumChecks; check++) {
       await wait(10000);
@@ -1751,16 +1753,21 @@ async function prepareVideo() {
         { body: { action: "status", generationId: data.generationId } }
       );
 
-      if (statusError) {
-        console.warn("Video status check failed; will retry:", statusError);
+      if (statusError || !statusData || statusData.error) {
+        consecutiveStatusErrors++;
+        const detail = statusData?.error || statusError?.message || "No status response was received.";
+        console.warn("Video status check failed:", detail);
+        if (consecutiveStatusErrors >= 3) {
+          throw new Error("The video task started, but its status cannot be checked after 3 attempts. Your generation ID is " + data.generationId + ". Please check My Files before trying again. Details: " + detail);
+        }
         output.textContent =
           "LANE AI STUDIO — VIDEO GENERATION\n\n" +
-          "Your video is still being processed. Rechecking the status...\n\n" +
-          "Please keep this page open.";
+          "Temporary status connection issue (" + consecutiveStatusErrors + "/3). Retrying safely...\n\n" +
+          "Generation ID: " + data.generationId;
         continue;
       }
 
-      if (!statusData) continue;
+      consecutiveStatusErrors = 0;
 
       if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
         laneAnalytics.track("generation_completed", { service: "video", duration_seconds: durationSeconds, model: modelName });
@@ -1806,6 +1813,7 @@ async function prepareVideo() {
         readyButton.textContent = "VIDEO READY · OPEN VIDEO";
         readyAction.appendChild(readyButton);
         await loadMyFiles();
+        completed = true;
         break;
       }
 
@@ -1818,6 +1826,7 @@ async function prepareVideo() {
             : "Credit refund is still being checked. Please contact support if the balance does not update.");
         stopVideoElapsedTimer();
         showVideoLiveState("FAILED", "VIDEO GENERATION DID NOT COMPLETE.");
+        completed = true;
         break;
       }
 
@@ -1828,6 +1837,7 @@ async function prepareVideo() {
           "\nPlease contact support before starting the same video again.";
         stopVideoElapsedTimer();
         showVideoLiveState("CHECK REQUIRED", "THE PROVIDER RESPONSE NEEDS TO BE CHECKED.");
+        completed = true;
         break;
       }
 
@@ -1835,7 +1845,12 @@ async function prepareVideo() {
       output.textContent = "Your video is still processing. Checking again automatically...";
     }
 
-    if (output.textContent.includes("Checking again automatically")) {
+    if (!completed && !output.textContent.includes("Checking again automatically")) {
+      // The polling window expired while the provider task may still be running.
+      output.textContent += "\n\nThe provider is taking longer than expected. Check My Files using generation ID " + data.generationId + " before starting another video.";
+      stopVideoElapsedTimer();
+      showVideoLiveState("STILL PROCESSING", "GENERATION IS TAKING LONGER THAN USUAL.");
+    } else if (output.textContent.includes("Checking again automatically")) {
       output.textContent += "\n\nThis is taking longer than expected. You can refresh My Files later to check for the finished video.";
       stopVideoElapsedTimer();
       showVideoLiveState("STILL PROCESSING", "GENERATION IS TAKING LONGER THAN USUAL.");
