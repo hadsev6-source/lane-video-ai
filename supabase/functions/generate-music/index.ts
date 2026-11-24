@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 const WAVESPEED_MODEL = "wavespeed-ai/ace-step";
+const WAVESPEED_PROMPT_MODEL = "wavespeed-ai/ace-step-prompt-to-audio";
 const WAVESPEED_API = "https://api.wavespeed.ai/api/v3";
 const MUSIC_CREDITS = 25;
 const MAX_AUDIO_SIZE = 50 * 1024 * 1024;
@@ -120,6 +121,10 @@ Deno.serve(async (req: Request) => {
       ].filter(Boolean);
       const tags = promptParts.join(", ").slice(0, 3000);
       const providerLyrics = lyricsMode === "my_own" ? lyricsInput : lyricsMode === "no_lyrics" ? "[inst]" : "";
+      const providerModel = lyricsMode === "ai_write" ? WAVESPEED_PROMPT_MODEL : WAVESPEED_MODEL;
+      const providerInput = lyricsMode === "ai_write"
+        ? { prompt: tags, instrumental: false, duration: requestedDuration, seed: -1 }
+        : { tags, lyrics: providerLyrics, duration: requestedDuration, seed: -1 };
 
       const { data: job, error: jobError } = await admin
         .from("music_generation_jobs")
@@ -132,7 +137,7 @@ Deno.serve(async (req: Request) => {
           duration_seconds: requestedDuration,
           credits_charged: MUSIC_CREDITS,
           lyrics_mode: lyricsMode,
-          provider_model: WAVESPEED_MODEL,
+          provider_model: providerModel,
           status: "queued",
         })
         .select("id")
@@ -151,15 +156,10 @@ Deno.serve(async (req: Request) => {
 
       let providerResponse: Response;
       try {
-        providerResponse = await fetch(`${WAVESPEED_API}/${WAVESPEED_MODEL}`, {
+        providerResponse = await fetch(`${WAVESPEED_API}/${providerModel}`, {
           method: "POST",
           headers: providerHeaders,
-          body: JSON.stringify({
-            tags,
-            lyrics: providerLyrics,
-            duration: requestedDuration,
-            seed: -1,
-          }),
+          body: JSON.stringify(providerInput),
         });
       } catch (providerError) {
         console.error("WaveSpeed submission connection error:", providerError);
@@ -202,7 +202,7 @@ Deno.serve(async (req: Request) => {
         requestId,
         status: "processing",
         lyricsMode,
-        providerModel: WAVESPEED_MODEL,
+        providerModel,
         creditsUsed: MUSIC_CREDITS,
         durationSeconds: requestedDuration,
         message: "Your music generation has started.",
