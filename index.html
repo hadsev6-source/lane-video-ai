@@ -1281,6 +1281,41 @@ body>#myfiles,#myfiles{display:none}
 }
 </style>
 
+
+<style>
+/* LANE VIDEO STUDIO — rapper artwork with the requested slogan */
+.lane-showcase-dancers {
+  background:
+    linear-gradient(90deg,#050505 0%,rgba(5,5,5,.12) 46%,rgba(5,5,5,.04) 100%),
+    linear-gradient(0deg,rgba(5,5,5,.22),rgba(5,5,5,.08)),
+    url("https://images.unsplash.com/photo-1741344993160-bfc197032b23?auto=format&fit=crop&w=1800&q=90")
+      center 38% / cover no-repeat !important;
+}
+.lane-showcase-dancers::after {
+  content:"YOU ARE WHAT YOU LISTEN TO";
+  position:absolute;
+  right:5%;
+  top:12%;
+  width:min(42%,300px);
+  color:#fff4e7;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(17px,2.1vw,30px);
+  font-weight:950;
+  font-style:italic;
+  line-height:1.05;
+  letter-spacing:.035em;
+  text-align:right;
+  text-shadow:0 3px 8px #000,0 0 18px #ff6b16;
+  transform:rotate(-3deg);
+}
+@media(max-width:760px) {
+  .lane-showcase-dancers::after {
+    top:9%; right:5%; width:48%;
+    font-size:clamp(15px,4vw,23px);
+  }
+}
+</style>
+
 </head>
 <body>
 <header class="site-header">
