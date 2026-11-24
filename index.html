@@ -1221,6 +1221,13 @@ body>#myfiles,#myfiles{display:none}
 .lane-showcase-card{min-height:228px}
 @media(max-width:560px){.lane-showcase-card{min-height:194px}.lane-showcase-face{min-height:210px}}
 
+
+/* Keep the connected generator workspaces available while removing only their duplicate title strips. */
+.studio-strip-hidden { display:none !important; }
+.studio-accordion[open] > .section-description,
+.studio-accordion[open] > .panel,
+.ivideo-accordion[open] > .video-builder { display:block; }
+
 </style>
 </head>
 <body>
@@ -1345,7 +1352,7 @@ body>#myfiles,#myfiles{display:none}
 <!-- Removed duplicate promotional studio cards; the functional studio workspaces remain below. -->
 
 <section class="section" id="musicGenerator">
-<details class="studio-accordion"><summary>AI Music Generator</summary>
+<details class="studio-accordion" open><summary class="studio-strip-hidden">AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
 <div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Your song is generated with AI and saved to My Files.</div>
@@ -1452,8 +1459,8 @@ body>#myfiles,#myfiles{display:none}
 @media(max-width:850px){.lane-video-studio .video-builder-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.lane-video-studio .video-builder-head{padding:22px 18px}.lane-video-studio .video-builder-grid{padding:13px;gap:13px}.lane-video-studio .video-builder-card{padding:16px}.lane-video-studio .video-builder-fields{grid-template-columns:1fr}}
 </style>
-<details class="studio-accordion ivideo-accordion">
-  <summary>LANE VIDEO STUDIO</summary>
+<details class="studio-accordion ivideo-accordion" open>
+  <summary class="studio-strip-hidden">LANE VIDEO STUDIO</summary>
   <div class="video-builder">
   <header class="video-builder-head">
     <div class="video-builder-kicker">LANE VIDEO STUDIO</div>
@@ -1601,7 +1608,7 @@ body>#myfiles,#myfiles{display:none}
 </details>
 </section>
 <section class="section" id="imageStudio">
-<details class="studio-accordion"><summary>AI Image Generator</summary>
+<details class="studio-accordion" open><summary class="studio-strip-hidden">AI Image Generator</summary>
 <p class="section-description">Create realistic images or transform a reference photo with a text instruction. 15 credits per image.</p>
 <div class="panel">
 <div class="field"><label for="imagePrompt">Describe Your Image</label>
