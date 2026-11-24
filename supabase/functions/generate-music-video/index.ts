@@ -9,6 +9,7 @@ const corsHeaders = {
 
 // Нови цени за Make Video with Your Song
 const VIDEO_PRICES: Record<number, number> = {
+  10: 303,
   15: 607,
   20: 776,
   30: 1114,
@@ -136,8 +137,8 @@ Deno.serve(async (req: Request) => {
       return respond({ error: "Please describe your video." }, 400);
     }
 
-    if (![15, 20, 30].includes(duration)) {
-      return respond({ error: "Only 15, 20 or 30 seconds are supported." }, 400);
+    if (![10, 15, 20, 30].includes(duration)) {
+      return respond({ error: "Only 10, 15, 20 or 30 seconds are supported." }, 400);
     }
 
     if (ratioChoice !== "landscape" && ratioChoice !== "portrait") {
@@ -229,7 +230,7 @@ Deno.serve(async (req: Request) => {
       ratioChoice === "portrait" ? "480:854" : "854:480";
 
     const videoPrompt = lipSync
-      ? `${promptText} Show a visible singer or character performing the provided reference song. Attempt to synchronize mouth movements and facial expressions with the vocals. Do not display lyrics, subtitles, captions, karaoke words, titles, logos or readable text.`
+      ? `${promptText} Show a visible singer or character performing the provided reference song. Attempt to synchronize mouth movements and facial expressions with the vocals. Display the supplied lyrics exactly as readable, well-timed subtitles on screen. Avoid unrelated text, logos and watermarks.`
       : `${promptText} Create a music video guided by the provided reference song. Do not display lyrics, subtitles, captions, karaoke words, titles, logos or readable text.`;
 
     let runwayResponse: Response;
@@ -339,6 +340,7 @@ Deno.serve(async (req: Request) => {
 
     return respond({
       success: true,
+      generationId: job.id,
       taskId: runwayData.id,
       model: "seedance2_5",
       duration,
