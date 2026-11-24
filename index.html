@@ -1818,54 +1818,6 @@ body>#myfiles,#myfiles{display:none}
           <select id="videoMotion"><option value="natural realistic motion">Natural</option><option value="subtle slow motion">Subtle slow motion</option><option value="dynamic energetic motion">Dynamic</option><option value="fast action motion">Fast action</option></select>
         </div>
       </div>
-      <details class="dance-setup">
-        <summary>✦ DANCE CHOREOGRAPHY <span>Ready-made dance concepts</span></summary>
-        <div class="dance-setup-grid">
-          <div class="video-builder-field">
-            <label class="video-builder-label" for="danceStyle">DANCE STYLE</label>
-            <select id="danceStyle">
-              <option value="">No preset · use my own idea</option>
-              <option value="Afrobeat">Afrobeat</option>
-              <option value="Hip-hop">Hip-hop</option>
-              <option value="Street dance">Street dance</option>
-              <option value="Amapiano">Amapiano</option>
-              <option value="Dancehall">Dancehall</option>
-              <option value="K-pop">K-pop</option>
-              <option value="Contemporary">Contemporary</option>
-            </select>
-          </div>
-          <div class="video-builder-field">
-            <label class="video-builder-label" for="danceLocation">CITY / LOCATION</label>
-            <input id="danceLocation" maxlength="90" placeholder="e.g. New York street at night"/>
-          </div>
-          <div class="video-builder-field">
-            <label class="video-builder-label" for="danceFormation">CHOREOGRAPHY</label>
-            <select id="danceFormation">
-              <option value="synchronized group choreography with sharp coordinated moves">Synchronized crew routine</option>
-              <option value="a lead dancer performs while the crew responds in formation">Lead dancer + crew</option>
-              <option value="a freestyle dance circle with dancers taking turns">Street dance circle</option>
-              <option value="a smooth partner choreography with coordinated footwork">Partner choreography</option>
-              <option value="a high-energy group routine with formation changes">Formation changes</option>
-            </select>
-          </div>
-          <div class="video-builder-field">
-            <label class="video-builder-label" for="danceEnergy">ENERGY</label>
-            <select id="danceEnergy">
-              <option value="high-energy and expressive">High energy</option>
-              <option value="smooth, stylish and controlled">Smooth & stylish</option>
-              <option value="playful and joyful">Playful</option>
-              <option value="powerful and intense">Powerful</option>
-            </select>
-          </div>
-        </div>
-        <p class="video-builder-note">These choices guide the choreography in the text prompt. Results depend on the selected video model.</p>
-      </details>
-      <details class="face-replacement-setup">
-        <summary>FACE REPLACEMENT <span>Personal face in the dance video</span></summary>
-        <div class="face-replacement-notice">
-          Face replacement is not connected to the current video API yet. We’ll add secure photo upload and identity-preserving video generation after integrating a compatible model. No photo is uploaded or stored here.
-        </div>
-      </details>
       <div class="video-builder-field">
         <label class="video-builder-label" for="videoNegativePrompt">AVOID IN THE VIDEO (OPTIONAL)</label>
         <input id="videoNegativePrompt" maxlength="400" placeholder="e.g. blurry image, distorted hands, text, watermark"/>
@@ -2146,15 +2098,7 @@ body>#myfiles,#myfiles{display:none}
     const shot = document.getElementById("videoShot")?.value || "";
     const motion = document.getElementById("videoMotion")?.value || "";
     const avoid = includeAvoid ? (document.getElementById("videoNegativePrompt")?.value.trim() || "") : "";
-    const danceStyle = document.getElementById("danceStyle")?.value || "";
-    const danceLocation = document.getElementById("danceLocation")?.value.trim() || "";
-    const danceFormation = document.getElementById("danceFormation")?.value || "";
-    const danceEnergy = document.getElementById("danceEnergy")?.value || "";
-    const danceAddition = danceStyle
-      ? "Dance choreography: " + danceStyle + " style, " + danceFormation + ", " + danceEnergy + " energy" + (danceLocation ? ", performed on location in " + danceLocation : "") + ". Clear full-body movement, coordinated timing, natural footwork and consistent dancers"
-      : "";
     const additions = [
-      danceAddition,
       "Style: " + style,
       cameraLabels[camera] || "",
       lightLabels[lighting] || "",
@@ -2190,7 +2134,7 @@ body>#myfiles,#myfiles{display:none}
     }
   }
 
-  ["videoPrompt", "videoVisualStyle", "videoCameraMove", "videoLighting", "videoShot", "videoMotion", "videoNegativePrompt", "danceStyle", "danceLocation", "danceFormation", "danceEnergy"].forEach(id => {
+  ["videoPrompt", "videoVisualStyle", "videoCameraMove", "videoLighting", "videoShot", "videoMotion", "videoNegativePrompt"].forEach(id => {
     const field = document.getElementById(id);
     if (field) field.addEventListener(field.tagName === "TEXTAREA" || field.tagName === "INPUT" ? "input" : "change", updateNewVideoPromptCounter);
   });
