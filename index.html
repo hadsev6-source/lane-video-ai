@@ -1700,7 +1700,11 @@ async function prepareVideo() {
         button.onclick = () => prepareVideo();
       }
     }
-    return;
+    // If recovery found no unfinished server-side job, continue this click
+    // into a fresh generation instead of requiring a second click.
+    if (window.__laneVideoStartLock) {
+      return;
+    }
   }
 
   if (!prompt) {
