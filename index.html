@@ -2952,7 +2952,9 @@ if (currentUser) {
       const preview = document.createElement("video");
       preview.controls = true;
       preview.playsInline = true;
-      preview.preload = "metadata";
+      preview.setAttribute("playsinline", "");
+      preview.setAttribute("webkit-playsinline", "");
+      preview.preload = "auto";
       preview.style.width = "min(100%, 480px)";
       preview.style.maxWidth = "100%";
       preview.style.aspectRatio = "16 / 9";
@@ -2995,9 +2997,10 @@ if (currentUser) {
       openButton.className = "secondary-btn";
       openButton.textContent = "OPEN VIDEO";
       openButton.onclick = () => {
-        if (preview.src) {
-          preview.scrollIntoView({ behavior: "smooth", block: "center" });
-          preview.play().catch(() => {});
+        if (previewUrl?.signedUrl) {
+          // Open the signed MP4 directly so mobile browsers can use their
+          // native media viewer when inline playback is unavailable.
+          window.open(previewUrl.signedUrl, "_blank", "noopener,noreferrer");
         } else {
           showFileMessage("Video preview is not available. Try DOWNLOAD.", true);
         }
