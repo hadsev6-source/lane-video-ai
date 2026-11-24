@@ -46,7 +46,7 @@ async function recordOwnerApiCost(admin: any, entry: {
   metadata?: Record<string, unknown>;
 }) {
   const exchangeRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
-  const { error } = await admin.from("owner_api_costs").insert({
+  const { error } = await admin.from("owner_api_costs").upsert({
     user_id: entry.userId,
     service: entry.service,
     provider: entry.provider,
@@ -58,12 +58,39 @@ async function recordOwnerApiCost(admin: any, entry: {
     generation_id: entry.generationId || null,
     duration_seconds: entry.durationSeconds ?? null,
     metadata: entry.metadata || {},
-  });
+  }, { onConflict: "user_id,service,generation_id", ignoreDuplicates: true });
   if (error) console.error("Could not record owner API cost:", error);
 }
 
 const WAVESPEED_SUBMIT_URL = "https://api.wavespeed.ai/api/v3/wavespeed-ai/infinitetalk-fast";
 const WAVESPEED_RESULT_BASE = "https://api.wavespeed.ai/api/v3/predictions";
+
+async function getWaveSpeedActualCost(apiKey: string, predictionId: string): Promise<number | null> {
+  if (!predictionId) return null;
+  try {
+    const response = await fetch("https://api.wavespeed.ai/api/v3/billings/search", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ prediction_uuids: [predictionId], page: 1, page_size: 10 }),
+    });
+    if (!response.ok) {
+      console.warn("WaveSpeed billing lookup unavailable:", response.status);
+      return null;
+    }
+    const payload = await response.json();
+    const items = payload?.data?.items;
+    if (!Array.isArray(items)) return null;
+    const matched = items.filter((item: any) =>
+      item?.prediction?.uuid === predictionId && Number.isFinite(Number(item?.price))
+    );
+    if (!matched.length) return null;
+    return matched.reduce((sum: number, item: any) => sum + Number(item.price), 0);
+  } catch (error) {
+    console.warn("WaveSpeed billing lookup failed:", error);
+    return null;
+  }
+}
+
 
 const RUNWAY_BASE = "https://api.dev.runwayml.com/v1";
 const RUNWAY_VERSION = "2024-11-06";
@@ -347,7 +374,7 @@ Deno.serve(async (req: Request) => {
       const { data: job, error: jobError } = await admin
         .from("video_generations")
         .select(
-          "id, user_id, runway_task_id, model, status, storage_path, refunded, error_message",
+          "id, user_id, runway_task_id, model, status, storage_path, refunded, error_message, duration, credits_charged, owner_billable_seconds",
         )
         .eq("id", generationId)
         .eq("user_id", user.id)
@@ -422,6 +449,18 @@ Deno.serve(async (req: Request) => {
             error_message: null, updated_at: new Date().toISOString(),
           }).eq("id", generationId).eq("user_id", user.id);
           if (saveError) return json({ error: "Video saved but its database record could not be updated." }, 500);
+          if (isOwnerUser(user.id)) {
+            const billableSeconds = Number(job.owner_billable_seconds || 0);
+            const estimate = billableSeconds * 0.015;
+            const actual = await getWaveSpeedActualCost(wavespeedKey, predictionId);
+            await recordOwnerApiCost(admin, {
+              userId: user.id, service: "video_lipsync", provider: "WaveSpeed",
+              model: "wavespeed-ai/infinitetalk-fast", usd: actual ?? estimate,
+              credits: Number(job.credits_charged || 0), generationId,
+              durationSeconds: billableSeconds,
+              metadata: { selectedVideoDuration: job.duration, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
+            });
+          }
           const videoUrl = await createVideoSignedUrl(admin, storagePath);
           return json({ success: true, generationId, status: "SUCCEEDED", storagePath, ...(videoUrl ? { videoUrl } : {}) });
         }
@@ -572,6 +611,19 @@ Deno.serve(async (req: Request) => {
           }, 500);
         }
 
+        if (isOwnerUser(user.id)) {
+          const completedDuration = Number(job.duration || 0);
+          const completedModel = String(job.model || "");
+          const rate = completedModel === "gen4.5" ? 0.12 : 0.20;
+          await recordOwnerApiCost(admin, {
+            userId: user.id, service: "video_generation", provider: "Runway",
+            model: completedModel, usd: completedDuration * rate,
+            credits: Number(job.credits_charged || 0), generationId,
+            durationSeconds: completedDuration,
+            metadata: { costSource: "published_rate_estimate" },
+          });
+        }
+
         const videoUrl = await createVideoSignedUrl(admin, storagePath);
 
         return json({
@@ -710,7 +762,8 @@ Deno.serve(async (req: Request) => {
       }
       const { data: job, error: insertError } = await admin.from("video_generations").insert({
         user_id: user.id, runway_task_id: `pending-${crypto.randomUUID()}`, prompt: "Lip Sync photo animation",
-        model: "infinitetalk-fast", duration: videoDuration, status: "SUBMITTING", credits_charged: credits,
+        model: "infinitetalk-fast", duration: videoDuration, owner_billable_seconds: billableAudioSeconds,
+        status: "SUBMITTING", credits_charged: credits,
       }).select("id").single();
       if (insertError || !job) {
         await admin.storage.from(STORAGE_BUCKET).remove([imagePath, audioPath]);
@@ -758,12 +811,6 @@ Deno.serve(async (req: Request) => {
       const providerStatus = typeof task.status === "string" ? task.status.toUpperCase() : "PENDING";
       const { error: taskSaveError } = await admin.from("video_generations").update({ runway_task_id: predictionId, status: providerStatus, updated_at: new Date().toISOString() }).eq("id", generationId).eq("user_id", user.id);
       if (taskSaveError) console.error("Could not save WaveSpeed prediction ID:", taskSaveError);
-      if (owner) await recordOwnerApiCost(admin, {
-        userId: user.id, service: "video_lipsync", provider: "WaveSpeed",
-        model: "wavespeed-ai/infinitetalk-fast", usd: ownerUsdCost,
-        credits, generationId, durationSeconds: billableAudioSeconds,
-        metadata: { billedAudioSeconds: billableAudioSeconds, selectedVideoDuration: videoDuration, minimumBillableSeconds: 3 },
-      });
       return json({ success: true, generationId, taskId: predictionId, status: providerStatus, model: "infinitetalk-fast", duration: videoDuration, creditsUsed: credits, message: "Lip Sync task started." });
     }
 
@@ -990,11 +1037,6 @@ Deno.serve(async (req: Request) => {
     }
 
     const taskId = providerData.id.trim();
-    if (owner) await recordOwnerApiCost(admin, {
-      userId: user.id, service: "video_generation", provider: "Runway",
-      model, usd: ownerUsdCost, credits, generationId, durationSeconds: duration,
-      metadata: { ratio, durationSeconds: duration },
-    });
     const taskStatus = normalizedRunwayStatus(providerData.status);
 
     // Save the Runway task ID. Retry once for transient database errors.
