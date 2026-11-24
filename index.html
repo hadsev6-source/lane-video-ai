@@ -1350,7 +1350,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 </select>
 </div>
 </div>
-<div class="video-tool-note lipsync-duration-guidance" role="note"><strong>IMPORTANT FOR LIP SYNC:</strong> Select a video duration of at least 15 seconds to enable Lip Sync. Available durations: 15, 20 or 30 seconds.</div>
+<div class="video-tool-note lipsync-duration-guidance" role="note"><strong>IMPORTANT FOR LIP SYNC:</strong> Lip Sync supports 5, 10, 15, 20 and 30-second videos.</div>
 <div aria-live="polite" class="cost-preview" id="videoCostPreview">
       TOTAL GENERATION COST: <strong>192 CREDITS</strong> · Selected duration: 5 seconds.
     </div>
@@ -1620,13 +1620,13 @@ function syncLipSyncAvailability() {
   if (!durationSelect || !checkbox || !panel) return false;
 
   const selectedSeconds = Number.parseInt(durationSelect.value, 10);
-  const available = selectedSeconds >= 15;
+  const available = [5, 10, 15, 20, 30].includes(selectedSeconds);
   checkbox.disabled = !available;
   if (label) label.style.opacity = available ? "1" : "0.55";
   if (helper) {
     helper.textContent = available
       ? "Create a talking video from one photo and audio no longer than the selected video duration."
-      : "Lip Sync is available only for 15, 20 or 30-second videos.";
+      : "Lip Sync is available for 5, 10, 15, 20 and 30-second videos.";
   }
 
   if (!available && checkbox.checked) checkbox.checked = false;
@@ -1675,13 +1675,13 @@ let lipSyncDurationSeconds = null;
 let lipSyncPollInProgress = false;
 
 function lipSyncPriceForDuration(seconds) {
-  // Lip Sync adds 100 credits to the selected 15, 20 or 30-second video tier.
+  // Lip Sync adds 100 credits to the selected 5, 10, 15, 20 or 30-second video tier.
   // Audio may be shorter than the selected video, but must never be longer.
   const durationSelect = document.getElementById("duration");
   const selectedDuration = durationSelect ? durationSelect.value : "";
   const selectedSeconds = Number.parseInt(selectedDuration, 10);
   const baseCredits = videoCostForDuration(selectedDuration);
-  if (baseCredits === null || ![15, 20, 30].includes(selectedSeconds)) return null;
+  if (baseCredits === null || ![5, 10, 15, 20, 30].includes(selectedSeconds)) return null;
   if (seconds !== undefined && seconds !== null &&
       (!Number.isFinite(seconds) || seconds <= 0 || seconds > selectedSeconds)) return null;
   return {
@@ -1705,9 +1705,9 @@ async function updateLipSyncDuration() {
   const selectedSeconds = Number.parseInt(selectedDuration, 10);
   const audioDurationHint = document.getElementById("lipSyncAudioDurationHint");
   if (audioDurationHint) {
-    audioDurationHint.textContent = [15, 20, 30].includes(selectedSeconds)
+    audioDurationHint.textContent = [5, 10, 15, 20, 30].includes(selectedSeconds)
       ? "Audio duration: up to " + selectedSeconds + " seconds"
-      : "Audio duration: available for 15, 20 or 30-second videos";
+      : "Audio duration: available for 5, 10, 15, 20 or 30-second videos";
   }
 
   if (!syncLipSyncAvailability()) {
