@@ -267,19 +267,6 @@ Deno.serve(async (req: Request) => {
         return response({ success: true, status: "processing", jobId: job.id });
       }
 
-      const staleBefore = new Date(Date.now() - 60 * 1000).toISOString();
-      const { data: claimedJob, error: claimError } = await admin.from("music_generation_jobs")
-        .update({ status: "finalizing", updated_at: new Date().toISOString() })
-        .eq("id", job.id).eq("user_id", user.id)
-        .or(`status.eq.processing,and(status.eq.finalizing,updated_at.lt.${staleBefore})`)
-        .select("id").maybeSingle();
-
-      if (claimError) {
-        console.error("Music finalization claim error:", claimError);
-        return response({ error: "Could not safely finalize the music job." }, 500);
-      }
-      if (!claimedJob) return response({ success: true, status: "processing", jobId: job.id });
-
       if (failed || !audioUrl) {
         const reason = errorMessage(resultData?.error, !audioUrl ? "WaveSpeed completed without returning an audio file." : "The music provider failed to generate audio.");
         const { data: refundSucceeded, error: refundError } = await admin.rpc("refund_music_credits", { p_job_id: job.id });
@@ -288,7 +275,7 @@ Deno.serve(async (req: Request) => {
           status: "failed",
           error_message: reason.slice(0, 1000),
           updated_at: new Date().toISOString(),
-        }).eq("id", job.id).eq("user_id", user.id).eq("status", "finalizing");
+        }).eq("id", job.id).eq("user_id", user.id);
         return response({ success: false, status: "failed", error: reason, refunded: !refundError && refundSucceeded === true });
       }
 
@@ -312,7 +299,7 @@ Deno.serve(async (req: Request) => {
 
         const { data: completedJob, error: completeError } = await admin.from("music_generation_jobs")
           .update({ status: "completed", storage_path: storagePath, audio_url: null, updated_at: new Date().toISOString() })
-          .eq("id", job.id).eq("user_id", user.id).eq("status", "finalizing")
+          .eq("id", job.id).eq("user_id", user.id)
           .select("id").maybeSingle();
 
         if (completeError || !completedJob) throw new Error("Audio was saved, but the job status could not be safely updated.");
@@ -346,7 +333,7 @@ Deno.serve(async (req: Request) => {
           status: "failed",
           error_message: reason.slice(0, 1000),
           updated_at: new Date().toISOString(),
-        }).eq("id", job.id).eq("user_id", user.id).eq("status", "finalizing");
+        }).eq("id", job.id).eq("user_id", user.id);
         return response({ success: false, status: "failed", error: reason, refunded: !refundError && refundSucceeded === true }, 500);
       }
     }
