@@ -313,7 +313,7 @@ Deno.serve(async (req: Request) => {
             userId: user.id, service: "music_generation", provider: "WaveSpeed",
             model: job.provider_model || WAVESPEED_MODEL,
             usd: actual ?? billedDuration * 0.0002,
-            credits: Number(job.credits_charged || 0), generationId: job.id,
+            credits: ownerCreditsForUsd(actual ?? estimate), generationId: job.id,
             durationSeconds: billedDuration,
             metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
           });
@@ -398,7 +398,7 @@ Deno.serve(async (req: Request) => {
           await recordOwnerApiCost(admin, {
             userId: user.id, service: "music_generation", provider: "WaveSpeed",
             model: job.provider_model || WAVESPEED_MODEL,
-            usd: actual ?? estimate, credits: Number(job.credits_charged || 0),
+            usd: actual ?? estimate, credits: ownerCreditsForUsd(actual ?? estimate),
             generationId: job.id, durationSeconds: billedDuration,
             metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
           });
