@@ -1302,6 +1302,10 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 </div>
 </details></section><section class="section lane-video-studio" id="studio">
 <style>
+.lane-video-studio .ivideo-accordion{border-color:#6c4926;background:#090909;box-shadow:0 12px 38px #0008}
+.lane-video-studio .ivideo-accordion>summary{padding:20px 24px;color:#f4d5ad;font-size:19px;font-weight:850;letter-spacing:.02em}
+.lane-video-studio .ivideo-accordion>summary:after{color:#ffbd62;font-size:26px;line-height:1}
+.lane-video-studio .ivideo-accordion[open]>.video-builder{margin:0;border:0;border-top:1px solid #49351f;border-radius:0;box-shadow:none}
 .lane-video-studio .video-builder{border:1px solid #6c4926;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 80% 0%,#34200e 0,#15110d 42%,#090909 100%);box-shadow:0 20px 65px #000a}
 .lane-video-studio .video-builder-head{padding:28px 30px;border-bottom:1px solid #49351f}
 .lane-video-studio .video-builder-kicker{color:#ffbd62;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
@@ -1331,9 +1335,11 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 @media(max-width:850px){.lane-video-studio .video-builder-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.lane-video-studio .video-builder-head{padding:22px 18px}.lane-video-studio .video-builder-grid{padding:13px;gap:13px}.lane-video-studio .video-builder-card{padding:16px}.lane-video-studio .video-builder-fields{grid-template-columns:1fr}}
 </style>
-<div class="video-builder">
+<details class="studio-accordion ivideo-accordion">
+  <summary>iVideo Studio</summary>
+  <div class="video-builder">
   <header class="video-builder-head">
-    <div class="video-builder-kicker">LANE AI STUDIO · VIDEO LAB</div>
+    <div class="video-builder-kicker">LANE AI STUDIO · iVIDEO STUDIO</div>
     <h2>Create your next video</h2>
     <p>A fresh video creation workspace. Describe the scene, choose your visual direction and format, then prepare your generation.</p>
   </header>
@@ -1426,7 +1432,8 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
       <div class="video-builder-model"><b>Your LANE library stays connected</b><span>Existing account, credits, payment and My Files features remain part of the platform.</span></div>
     </aside>
   </div>
-</div>
+  </div>
+</details>
 </section>
 <section class="section" id="imageStudio">
 <details class="studio-accordion"><summary>AI Image Generator</summary>
