@@ -306,6 +306,18 @@ Deno.serve(async (req: Request) => {
 
       if (job.status === "completed") {
         if (!job.storage_path) return response({ error: "The completed job has no stored audio file." }, 500);
+        if (isOwnerUser(user.id)) {
+          const billedDuration = Number(job.duration_seconds || 0);
+          const actual = await getWaveSpeedActualCost(wavespeedKey, String(job.request_id || ""));
+          await recordOwnerApiCost(admin, {
+            userId: user.id, service: "music_generation", provider: "WaveSpeed",
+            model: job.provider_model || WAVESPEED_MODEL,
+            usd: actual ?? billedDuration * 0.0002,
+            credits: Number(job.credits_charged || 0), generationId: job.id,
+            durationSeconds: billedDuration,
+            metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
+          });
+        }
         const fileName = job.storage_path.split("/").pop() || "AI_Music.mp3";
         const [{ data: signedFile, error: signedError }, { data: downloadFile, error: downloadError }] = await Promise.all([
           admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600),
