@@ -23,6 +23,45 @@ const VIDEO_PRICES: Record<number, number> = {
   30: 1114,
 };
 const LIP_SYNC_SURCHARGE = 100;
+
+const OWNER_USER_ID = "dce2d514-964d-49be-b83d-45e6721b49a7";
+const OWNER_CREDITS_PER_EUR = 140;
+const OWNER_DEFAULT_USD_TO_EUR = 0.9168;
+
+function isOwnerUser(userId: string): boolean {
+  return userId === OWNER_USER_ID;
+}
+
+function ownerCreditsForUsd(usd: number): number {
+  const configuredRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  if (!Number.isFinite(configuredRate) || configuredRate <= 0 || !Number.isFinite(usd) || usd < 0) {
+    throw new Error("Invalid owner API cost conversion configuration.");
+  }
+  return Math.max(1, Math.ceil(usd * configuredRate * OWNER_CREDITS_PER_EUR));
+}
+
+async function recordOwnerApiCost(admin: any, entry: {
+  userId: string; service: string; provider: string; model: string;
+  usd: number; credits: number; generationId?: string; durationSeconds?: number;
+  metadata?: Record<string, unknown>;
+}) {
+  const exchangeRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  const { error } = await admin.from("owner_api_costs").insert({
+    user_id: entry.userId,
+    service: entry.service,
+    provider: entry.provider,
+    model: entry.model,
+    amount_usd: entry.usd,
+    usd_to_eur: exchangeRate,
+    amount_eur: entry.usd * exchangeRate,
+    credits_charged: entry.credits,
+    generation_id: entry.generationId || null,
+    duration_seconds: entry.durationSeconds ?? null,
+    metadata: entry.metadata || {},
+  });
+  if (error) console.error("Could not record owner API cost:", error);
+}
+
 const WAVESPEED_SUBMIT_URL = "https://api.wavespeed.ai/api/v3/wavespeed-ai/infinitetalk-fast";
 const WAVESPEED_RESULT_BASE = "https://api.wavespeed.ai/api/v3/predictions";
 
@@ -646,7 +685,10 @@ Deno.serve(async (req: Request) => {
         return json({ error: `Audio must be no longer than the selected ${videoDuration}-second video.` }, 400);
       }
 
-      const credits = VIDEO_PRICES[videoDuration] + LIP_SYNC_SURCHARGE;
+      const owner = isOwnerUser(user.id);
+      const billableAudioSeconds = Math.min(600, Math.max(3, Math.ceil(audioSeconds)));
+      const ownerUsdCost = billableAudioSeconds * 0.015;
+      const credits = owner ? ownerCreditsForUsd(ownerUsdCost) : VIDEO_PRICES[videoDuration] + LIP_SYNC_SURCHARGE;
       const ext = (file: File, fallback: string) => {
         const nameExt = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || fallback;
         return nameExt.slice(0, 8) || fallback;
@@ -716,6 +758,12 @@ Deno.serve(async (req: Request) => {
       const providerStatus = typeof task.status === "string" ? task.status.toUpperCase() : "PENDING";
       const { error: taskSaveError } = await admin.from("video_generations").update({ runway_task_id: predictionId, status: providerStatus, updated_at: new Date().toISOString() }).eq("id", generationId).eq("user_id", user.id);
       if (taskSaveError) console.error("Could not save WaveSpeed prediction ID:", taskSaveError);
+      if (owner) await recordOwnerApiCost(admin, {
+        userId: user.id, service: "video_lipsync", provider: "WaveSpeed",
+        model: "wavespeed-ai/infinitetalk-fast", usd: ownerUsdCost,
+        credits, generationId, durationSeconds: billableAudioSeconds,
+        metadata: { billedAudioSeconds: billableAudioSeconds, selectedVideoDuration: videoDuration, minimumBillableSeconds: 3 },
+      });
       return json({ success: true, generationId, taskId: predictionId, status: providerStatus, model: "infinitetalk-fast", duration: videoDuration, creditsUsed: credits, message: "Lip Sync task started." });
     }
 
@@ -760,7 +808,9 @@ Deno.serve(async (req: Request) => {
       ? (isPortrait ? "480:854" : "854:480")
       : (isPortrait ? "720:1280" : "1280:720");
 
-    const credits = VIDEO_PRICES[duration];
+    const owner = isOwnerUser(user.id);
+    const ownerUsdCost = duration * (model === "gen4.5" ? 0.12 : 0.20);
+    const credits = owner ? ownerCreditsForUsd(ownerUsdCost) : VIDEO_PRICES[duration];
 
     // Create the job before charging credits.
     const { data: job, error: insertError } = await admin
@@ -940,6 +990,11 @@ Deno.serve(async (req: Request) => {
     }
 
     const taskId = providerData.id.trim();
+    if (owner) await recordOwnerApiCost(admin, {
+      userId: user.id, service: "video_generation", provider: "Runway",
+      model, usd: ownerUsdCost, credits, generationId, durationSeconds: duration,
+      metadata: { ratio, durationSeconds: duration },
+    });
     const taskStatus = normalizedRunwayStatus(providerData.status);
 
     // Save the Runway task ID. Retry once for transient database errors.
