@@ -405,7 +405,7 @@ Deno.serve(async (req: Request) => {
               userId: user.id, service: "video_generation", provider: "Runway",
               model: completedModel,
               usd: Number(job.owner_provider_cost_usd ?? (completedDuration * (completedModel === "gen4.5" ? 0.12 : 0.20))),
-              credits: ownerCreditsForUsd(Number(job.owner_provider_cost_usd ?? (completedDuration * (completedModel === "gen4.5" ? 0.12 : 0.20)))), generationId,
+              credits: ownerCreditsForUsd(completedDuration * (completedModel === "gen4.5" ? 0.12 : 0.20)), generationId,
               durationSeconds: completedDuration,
               metadata: { costSource: job.owner_provider_cost_usd == null ? "published_rate_estimate" : "provider_task_estimate" },
             });
@@ -643,9 +643,9 @@ Deno.serve(async (req: Request) => {
           await recordOwnerApiCost(admin, {
             userId: user.id, service: "video_generation", provider: "Runway",
             model: completedModel, usd: Number(job.owner_provider_cost_usd ?? (completedDuration * rate)),
-            credits: ownerCreditsForUsd(Number(job.owner_provider_cost_usd ?? (completedDuration * rate))), generationId,
+            credits: ownerCreditsForUsd(completedDuration * rate), generationId,
             durationSeconds: completedDuration,
-            metadata: { costSource: "published_rate_estimate" },
+            metadata: { costSource: job.owner_provider_cost_usd == null ? "published_rate_estimate" : "provider_task_estimate" },
           });
         }
 
