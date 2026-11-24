@@ -46,19 +46,29 @@ async function recordOwnerApiCost(admin: any, entry: {
   metadata?: Record<string, unknown>;
 }) {
   const exchangeRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
+  const incomingSource = String(entry.metadata?.costSource || "");
+  if (!["provider_billing_record", "provider_task_estimate", "published_rate_estimate"].includes(incomingSource)) {
+    console.error("Owner API cost record rejected: missing or invalid cost source.");
+    return;
+  }
+  if (!Number.isFinite(entry.usd) || entry.usd < 0 || !Number.isFinite(exchangeRate) || exchangeRate <= 0) {
+    console.error("Owner API cost record rejected: invalid amount or exchange rate.");
+    return;
+  }
+  if (entry.generationId) {
+    const { data: existing, error: lookupError } = await admin.from("owner_api_costs")
+      .select("metadata").eq("user_id", entry.userId).eq("service", entry.service)
+      .eq("generation_id", entry.generationId).maybeSingle();
+    if (lookupError) { console.error("Could not inspect existing owner API cost:", lookupError); return; }
+    const existingSource = String(existing?.metadata?.costSource || "");
+    if (existingSource === "provider_billing_record" && incomingSource !== "provider_billing_record") return;
+  }
   const { error } = await admin.from("owner_api_costs").upsert({
-    user_id: entry.userId,
-    service: entry.service,
-    provider: entry.provider,
-    model: entry.model,
-    amount_usd: entry.usd,
-    usd_to_eur: exchangeRate,
-    amount_eur: entry.usd * exchangeRate,
-    credits_charged: entry.credits,
-    generation_id: entry.generationId || null,
-    duration_seconds: entry.durationSeconds ?? null,
-    metadata: entry.metadata || {},
-  }, { onConflict: "user_id,service,generation_id", ignoreDuplicates: true });
+    user_id: entry.userId, service: entry.service, provider: entry.provider, model: entry.model,
+    amount_usd: entry.usd, usd_to_eur: exchangeRate, amount_eur: entry.usd * exchangeRate,
+    credits_charged: entry.credits, generation_id: entry.generationId || null,
+    duration_seconds: entry.durationSeconds ?? null, metadata: entry.metadata || {},
+  }, { onConflict: "user_id,service,generation_id" });
   if (error) console.error("Could not record owner API cost:", error);
 }
 
