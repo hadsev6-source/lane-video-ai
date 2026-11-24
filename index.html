@@ -2954,28 +2954,51 @@ if (currentUser) {
       preview.playsInline = true;
       preview.setAttribute("playsinline", "");
       preview.setAttribute("webkit-playsinline", "");
-      preview.preload = "auto";
-      preview.style.width = "min(100%, 480px)";
-      preview.style.maxWidth = "100%";
+      preview.preload = "metadata";
+      preview.controlsList = "nodownload";
+      preview.disablePictureInPicture = false;
+      preview.style.display = "block";
+      preview.style.width = "100%";
+      preview.style.maxWidth = "480px";
       preview.style.aspectRatio = "16 / 9";
       preview.style.objectFit = "contain";
       preview.style.background = "#050505";
       preview.style.border = "1px solid #76552e";
       preview.style.borderRadius = "8px";
-      preview.setAttribute("aria-label", "Preview generated video. Play to watch, then use Save to Phone to save it.");
+      preview.setAttribute("aria-label", "Generated video player");
+      const playerStatus = document.createElement("div");
+      playerStatus.className = "hint";
+      playerStatus.textContent = "Preparing video player...";
+      playerStatus.style.marginTop = "8px";
+      preview.addEventListener("loadedmetadata", () => {
+        playerStatus.textContent = Number.isFinite(preview.duration)
+          ? "Video ready · " + Math.round(preview.duration) + " seconds"
+          : "Video loaded.";
+      });
+      preview.addEventListener("canplay", () => {
+        playerStatus.textContent = "Video ready to play.";
+      });
       preview.addEventListener("error", () => {
-        showFileMessage("Video preview could not be loaded. Please use DOWNLOAD or SAVE TO PHONE.", true);
+        const mediaError = preview.error;
+        const errorCode = mediaError ? mediaError.code : "unknown";
+        playerStatus.textContent =
+          "The embedded player could not load this video (code " + errorCode + "). Use OPEN VIDEO to play it directly.";
+        showFileMessage("The embedded video player could not load this file. Try OPEN VIDEO.", true);
       });
       const { data: previewUrl, error: previewError } = await supabaseClient.storage
         .from("generated-videos")
         .createSignedUrl(video.storage_path, 3600);
       if (!previewError && previewUrl?.signedUrl) {
-        // Stream directly from Supabase Storage. This allows the browser to use
-        // HTTP byte-range requests instead of downloading the entire video first.
-        preview.src = previewUrl.signedUrl;
+        // Use an explicit MP4 source element so mobile browsers identify the
+        // media type before requesting the signed Supabase Storage URL.
+        const source = document.createElement("source");
+        source.src = previewUrl.signedUrl;
+        source.type = "video/mp4";
+        preview.appendChild(source);
         preview.load();
       } else {
         console.error("Could not prepare video preview URL:", previewError);
+        playerStatus.textContent = "Could not prepare video preview. Refresh My Files.";
         showFileMessage("Could not prepare video preview. Please refresh My Files.", true);
       }
 
@@ -2987,7 +3010,7 @@ if (currentUser) {
       info.textContent =
         (video.prompt || "AI generated video").slice(0, 100) +
         " · " + (video.duration || "?") + " sec";
-      details.appendChild(info);
+      details.append(info, playerStatus);
 
       const actions = document.createElement("div");
       actions.className = "file-actions";
