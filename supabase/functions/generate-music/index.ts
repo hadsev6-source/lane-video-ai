@@ -61,7 +61,7 @@ Deno.serve(async (req: Request) => {
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return response({ error: "Authentication required." }, 401);
-  const token = authHeader.replace(/^Bearer\\s+/i, "");
+  const token = authHeader.replace(/^Bearer\s+/i, "");
 
   const userClient = createClient(supabaseUrl, anonKey);
   const { data: userData, error: authError } = await userClient.auth.getUser(token);
@@ -245,7 +245,7 @@ Deno.serve(async (req: Request) => {
       }
 
       const outputs = Array.isArray(resultData?.outputs) ? resultData.outputs : [];
-      const audioUrl = outputs.find((item: unknown) => typeof item === "string" && /^https?:\\/\\//i.test(item));
+      const audioUrl = outputs.find((item: unknown) => typeof item === "string" && /^https?:\/\//i.test(item));
       const failed = providerStatus === "failed" || providerStatus === "cancelled" || Boolean(resultData?.error);
 
       if (!failed && providerStatus !== "completed") {
