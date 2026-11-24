@@ -1650,6 +1650,9 @@ async function prepareVideo() {
   const output = document.getElementById("generalProjectOutput");
   const button = document.getElementById("generateVideoButton");
 
+  // Prevent duplicate starts from rapid clicks or multiple event bindings.
+  if (window.__laneVideoStartLock) return;
+
   if (!prompt) {
     alert("Please describe your video idea first.");
     return;
@@ -1670,6 +1673,8 @@ async function prepareVideo() {
 
   const finalPrompt = prompt + ". Category: " + category + ". Visual style: " + style;
 
+  window.__laneVideoStartLock = true;
+
   laneAnalytics.track("generation_started", { service: "video", duration_seconds: durationSeconds, category, style });
   button.disabled = true;
   button.textContent = "STARTING...";
@@ -1683,7 +1688,7 @@ async function prepareVideo() {
   const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
   try {
-    const { data, error } = await supabaseClient.functions.invoke(
+    const startRequest = supabaseClient.functions.invoke(
       "generate-video",
       {
         body: {
@@ -1693,6 +1698,14 @@ async function prepareVideo() {
         }
       }
     );
+    // Never leave the UI in STARTING indefinitely. If the outcome is unknown,
+    // tell the user to check My Files before retrying (the server may have accepted it).
+    const startTimeout = new Promise((_, reject) =>
+      window.setTimeout(() => reject(new Error(
+        "The server did not confirm the start within 45 seconds. Check My Files before trying again; the task may have been accepted."
+      )), 45000)
+    );
+    const { data, error } = await Promise.race([startRequest, startTimeout]);
 
     if (error) {
       const message = data?.error || error.message || "Video generation could not start.";
@@ -1734,6 +1747,14 @@ async function prepareVideo() {
       }
 
       consecutiveStatusErrors = 0;
+
+      if (statusData.status === "SUCCEEDED" && !statusData.videoUrl) {
+        output.textContent = "The provider reports that the video is complete, but the download link is not ready. Open My Files and refresh the video list before starting another generation.";
+        stopVideoElapsedTimer();
+        showVideoLiveState("VIDEO COMPLETE", "CHECK MY FILES FOR THE SAVED VIDEO.");
+        completed = true;
+        break;
+      }
 
       if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
         laneAnalytics.track("generation_completed", { service: "video", duration_seconds: durationSeconds, model: modelName });
@@ -1830,6 +1851,7 @@ async function prepareVideo() {
     stopVideoElapsedTimer();
     showVideoLiveState("ERROR", "WE COULD NOT START VIDEO GENERATION.");
   } finally {
+    window.__laneVideoStartLock = false;
     button.disabled = false;
     button.textContent = "GENERATE VIDEO";
   }
