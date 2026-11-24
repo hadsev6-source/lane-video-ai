@@ -323,7 +323,7 @@ Deno.serve(async (req: Request) => {
             userId: user.id, service: "music_generation", provider: "WaveSpeed",
             model: job.provider_model || WAVESPEED_MODEL,
             usd: actual ?? billedDuration * 0.0002,
-            credits: ownerCreditsForUsd(actual ?? estimate), generationId: job.id,
+            credits: ownerCreditsForUsd(actual ?? billedDuration * 0.0002), generationId: job.id,
             durationSeconds: billedDuration,
             metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
           });
