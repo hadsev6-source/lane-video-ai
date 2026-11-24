@@ -171,7 +171,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: task, error: findError } = await admin
       .from("video_generations")
-      .select("id, runway_task_id, storage_path, status, error_message, refunded, model, duration, credits_charged")
+      .select("id, runway_task_id, storage_path, status, error_message, refunded, model, duration, credits_charged, owner_provider_cost_usd")
       .eq("runway_task_id", taskId)
       .eq("user_id", user.id)
       .maybeSingle();
