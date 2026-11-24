@@ -189,10 +189,10 @@ Deno.serve(async (req: Request) => {
       const voiceCharacter = String(body.voiceCharacter || body.voice_character || "").trim();
       const customStyle = String(body.customStyle || body.custom_style || "").trim();
       const requestedDuration = Number(body.durationSeconds ?? body.duration_seconds ?? 240);
-      const allowedDurations = [60, 120, 180, 240];
+      const allowedDurations = [10, 60, 120, 180, 240];
 
       if (!allowedDurations.includes(requestedDuration)) {
-        return response({ error: "Choose a song length between 1 and 4 minutes." }, 400);
+        return response({ error: "Choose a 10-second track or a song length between 1 and 4 minutes." }, 400);
       }
       if (!style && !customStyle) return response({ error: "Please enter a music style or description." }, 400);
       if (lyricsMode === "my_own" && !lyricsInput) return response({ error: "Please enter your own lyrics." }, 400);
