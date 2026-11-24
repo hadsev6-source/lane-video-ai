@@ -1777,19 +1777,6 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
     }
   }
 
-  // Pricing preview for the new, disconnected video workspace.
-  const newVideoPrices = { "5": 192, "10": 303, "15": 557, "20": 743, "30": 1114 };
-  const newVideoDuration = document.getElementById("videoDuration");
-  const newVideoCost = document.getElementById("videoEstimatedCost");
-  function updateNewVideoCost() {
-    if (!newVideoDuration || !newVideoCost) return;
-    newVideoCost.textContent = (newVideoPrices[newVideoDuration.value] || 0).toLocaleString() + " credits";
-  }
-  if (newVideoDuration) {
-    newVideoDuration.addEventListener("change", updateNewVideoCost);
-    updateNewVideoCost();
-  }
-
   const imageReferenceInput = document.getElementById("imageReference");
   if (imageReferenceInput) {
     imageReferenceInput.addEventListener("change", function() {
