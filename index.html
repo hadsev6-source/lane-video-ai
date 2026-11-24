@@ -1569,7 +1569,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   const SUPABASE_URL = "https://lguqdvdjtkgepbhqznts.supabase.co";
   const SUPABASE_KEY = "sb_publishable_2QSiZlHF3xdTGVpiwRjvrw_h3oLC6CI";
   // Use the public custom domain as the single canonical sign-in destination.
-  const SITE_URL = "https://lane-video-ai.com/";
+  const SITE_URL = "https://www.lane-video-ai.com/";
 
 
   // LANE social sharing: native share on supported devices, platform share links where available.
@@ -2056,15 +2056,19 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   async function googleSignIn() {
     showAuthMessage("Connecting to Google...");
 
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: SITE_URL
-      }
-    });
-
-    if (error) {
-      showAuthMessage(error.message);
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin + "/"
+        }
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("Google sign-in did not return an authorization URL.");
+      showAuthMessage("Opening Google sign-in...");
+    } catch (error) {
+      console.error("Google sign-in failed:", error);
+      showAuthMessage("Google sign-in could not start: " + (error?.message || "Unknown authentication error."));
     }
   }
 
