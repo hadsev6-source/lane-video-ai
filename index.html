@@ -1321,7 +1321,11 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <option>Advertising &amp; Promos</option>
 </select>
 </div>
-<div class="video-tool-panel" id="musicVideoSettings">
+<div class="checkbox-row music-video-toggle">
+  <input type="checkbox" id="enableMusicVideo" onchange="updateVideoCost()"/>
+  <label for="enableMusicVideo">Enable Music Video Mode <span class="hint">Add detailed music-video direction and performer settings (+100 credits).</span></label>
+</div>
+<div class="video-tool-panel hidden" id="musicVideoSettings">
   <div class="video-tool-panel-title">MUSIC VIDEO SETTINGS</div>
   <p>Set the musical direction and performers for your video. These choices are added to the video-generation prompt.</p>
   <div class="form-grid">
@@ -1366,6 +1370,8 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 </select>
 </div>
 </div>
+<div class="cost-preview" id="videoCostPreview" aria-live="polite"></div>
+<button class="primary-btn" id="generateVideoButton" onclick="prepareVideo()" type="button">GENERATE VIDEO</button>
 <div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
   <div class="video-live-top"><span class="video-live-title">LANE AI STUDIO</span><span class="video-live-badge" id="videoLiveBadge">PROCESSING</span></div>
   <div class="video-live-eq" id="videoLiveEqualizer" aria-label="Video generation animation"></div>
@@ -1661,11 +1667,12 @@ async function prepareVideo() {
   const style = document.getElementById("style").value;
   const category = document.getElementById("category").value;
   const duration = document.getElementById("duration").value;
-  const musicGenre = document.getElementById("videoMusicGenre")?.value || "";
-  const performerType = document.getElementById("videoPerformerType")?.value || "";
-  const vocalGender = document.getElementById("videoVocalGender")?.value || "";
-  const musicMood = document.getElementById("videoMusicMood")?.value || "";
-  const musicLyrics = document.getElementById("videoMusicLyrics")?.value.trim() || "";
+  const musicVideoMode = !!document.getElementById("enableMusicVideo")?.checked;
+  const musicGenre = musicVideoMode ? (document.getElementById("videoMusicGenre")?.value || "") : "";
+  const performerType = musicVideoMode ? (document.getElementById("videoPerformerType")?.value || "") : "";
+  const vocalGender = musicVideoMode ? (document.getElementById("videoVocalGender")?.value || "") : "";
+  const musicMood = musicVideoMode ? (document.getElementById("videoMusicMood")?.value || "") : "";
+  const musicLyrics = musicVideoMode ? (document.getElementById("videoMusicLyrics")?.value.trim() || "") : "";
   const output = document.getElementById("generalProjectOutput");
   const button = document.getElementById("generateVideoButton");
 
@@ -1715,6 +1722,7 @@ async function prepareVideo() {
             musicLyrics ? "Perform the following exact lyrics or chorus with synchronized visible singing or rapping: " + musicLyrics : ""
           ].filter(Boolean).join(". "),
           duration: durationSeconds,
+          musicVideoMode,
           ratio: "854:480"
         }
       }
@@ -1863,13 +1871,20 @@ async function prepareVideo() {
   function updateVideoCost() {
     const durationSelect = document.getElementById("duration");
     const preview = document.getElementById("videoCostPreview");
+    const musicToggle = document.getElementById("enableMusicVideo");
+    const musicSettings = document.getElementById("musicVideoSettings");
     if (!durationSelect || !preview) return;
     const duration = durationSelect.value;
-    const credits = videoCostForDuration(duration);
+    const baseCredits = videoCostForDuration(duration);
+    const musicMode = !!musicToggle?.checked;
+    if (musicSettings) musicSettings.classList.toggle("hidden", !musicMode);
+    const totalCredits = baseCredits === null ? null : baseCredits + (musicMode ? 100 : 0);
     preview.hidden = false;
-    preview.innerHTML = credits === null
+    preview.innerHTML = totalCredits === null
       ? 'TOTAL GENERATION COST: <strong>Price not available for this duration.</strong>'
-      : 'TOTAL GENERATION COST: <strong>' + credits.toLocaleString() + ' CREDITS</strong> · Selected duration: ' + duration + '.';
+      : 'VIDEO GENERATION: <strong>' + baseCredits.toLocaleString() + ' CREDITS</strong>' +
+        (musicMode ? ' + MUSIC VIDEO MODE: <strong>100 CREDITS</strong>' : '') +
+        ' · TOTAL: <strong>' + totalCredits.toLocaleString() + ' CREDITS</strong> · ' + duration + '.';
   }
 
   const videoDurationSelect = document.getElementById("duration");
