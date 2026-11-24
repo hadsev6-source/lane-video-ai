@@ -1302,82 +1302,103 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 </div>
 </details></section><section class="section lane-video-studio" id="studio">
 <style>
-.lane-video-studio{--video-accent:#ff6a3d;--video-gold:#f2c078}
-.lane-video-studio .video-workspace{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:22px;align-items:start}
-.lane-video-studio .video-card{background:linear-gradient(155deg,#191919,#0b0b0b);border:1px solid #343434;border-radius:18px;padding:24px;min-width:0}
-.lane-video-studio .video-card h3{margin:0 0 20px;font-size:18px}
-.lane-video-studio .video-kicker{color:var(--video-accent);font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;margin-bottom:9px}
-.lane-video-studio .video-intro{max-width:720px;color:#bdbdbd;line-height:1.65;margin:0 0 24px}
-.lane-video-studio .video-field{margin:0 0 18px}
-.lane-video-studio .video-field label{display:block;margin:0 0 8px;color:#eee;font-size:12px;font-weight:800;letter-spacing:.08em}
-.lane-video-studio #prompt{width:100%;min-height:190px;resize:vertical;line-height:1.65}
-.lane-video-studio .video-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.lane-video-studio .video-cost{padding:17px 18px;border:1px solid #70402b;border-radius:13px;background:#1b100d;margin:18px 0;color:#ddd}
-.lane-video-studio .video-cost strong{color:#ffc18b;font-size:22px}
-.lane-video-studio .video-generate{width:100%;min-height:58px;border-radius:12px;font-weight:900;letter-spacing:.1em;background:linear-gradient(100deg,#ff643d,#c82b24);color:white}
-.lane-video-studio .video-generate:disabled{opacity:.55;cursor:not-allowed}
-.lane-video-studio .video-live-panel{border:1px solid #4a382c;border-radius:14px;padding:18px;background:#100e0d}
-.lane-video-studio .video-live-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.lane-video-studio .video-live-title{font-weight:900;letter-spacing:.12em}
-.lane-video-studio .video-live-badge{font-size:10px;font-weight:900;color:#ffd29a;border:1px solid #91613d;border-radius:30px;padding:6px 10px}
-.lane-video-studio .video-live-eq{display:flex;align-items:center;justify-content:center;gap:4px;height:65px;margin:18px 0}
-.lane-video-studio .video-live-eq span{width:4px;height:var(--bar);max-height:54px;background:#ff764c;border-radius:8px;animation:laneVideoPulse 850ms ease-in-out infinite alternate;animation-delay:var(--delay)}
-@keyframes laneVideoPulse{from{transform:scaleY(.35);opacity:.55}to{transform:scaleY(1);opacity:1}}
-.lane-video-studio .video-live-clock{text-align:center;font-size:36px;font-weight:900;font-variant-numeric:tabular-nums}
-.lane-video-studio .video-live-caption{text-align:center;color:#888;font-size:10px;letter-spacing:.12em}
-.lane-video-studio .video-live-message{text-align:center;color:#ff9b78;font-size:12px;font-weight:900;margin:15px 0}
-.lane-video-studio .video-live-meta{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #30231e;padding:11px 0;font-size:12px}
-.lane-video-studio .video-live-meta strong{color:#ffc18b}
-.lane-video-studio .video-note{color:#999;font-size:12px;line-height:1.6;margin-top:12px}
-.lane-video-studio .video-feature{padding:17px;border:1px solid #303030;border-radius:13px;background:#111;margin-top:12px}
-.lane-video-studio .video-feature b{display:block;color:#f4c38c;margin-bottom:6px}
-.lane-video-studio .video-feature span{font-size:12px;color:#aaa;line-height:1.55}
-@media(max-width:850px){.lane-video-studio .video-workspace{grid-template-columns:1fr}}
-@media(max-width:560px){.lane-video-studio .video-card{padding:16px}.lane-video-studio .video-fields{grid-template-columns:1fr}}
+.lane-video-studio .video-builder{border:1px solid #6c4926;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 80% 0%,#34200e 0,#15110d 42%,#090909 100%);box-shadow:0 20px 65px #000a}
+.lane-video-studio .video-builder-head{padding:28px 30px;border-bottom:1px solid #49351f}
+.lane-video-studio .video-builder-kicker{color:#ffbd62;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+.lane-video-studio .video-builder-head h2{margin:9px 0;font-size:clamp(25px,4vw,38px);letter-spacing:-.04em}
+.lane-video-studio .video-builder-head p{max-width:680px;color:#c6b9a8;line-height:1.65;margin:0}
+.lane-video-studio .video-builder-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(270px,.85fr);gap:20px;padding:22px}
+.lane-video-studio .video-builder-card{min-width:0;padding:22px;border:1px solid #4b3926;border-radius:16px;background:#100e0beF}
+.lane-video-studio .video-builder-card h3{margin:0 0 18px;font-size:17px}
+.lane-video-studio .video-builder-field{margin-bottom:18px}
+.lane-video-studio .video-builder-label{display:block;margin:0 0 9px;color:#f4e4cf;font-size:12px;font-weight:850;letter-spacing:.08em}
+.lane-video-studio #videoPrompt{width:100%;min-height:190px;resize:vertical;line-height:1.65}
+.lane-video-studio .video-builder-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lane-video-studio .video-builder-note{font-size:12px;color:#aaa195;line-height:1.55;margin-top:8px}
+.lane-video-studio .video-builder-cost{padding:16px;border:1px solid #725027;border-radius:12px;background:#1b130a;color:#e8d4b8;margin:8px 0 18px}
+.lane-video-studio .video-builder-cost strong{color:#ffc36d;font-size:20px}
+.lane-video-studio .video-builder-side{display:flex;flex-direction:column;gap:14px}
+.lane-video-studio .video-builder-status{padding:18px;border:1px solid #594027;border-radius:14px;background:linear-gradient(145deg,#1b1711,#0b0b0b)}
+.lane-video-studio .video-builder-status strong{display:block;color:#ffd18a;margin-bottom:8px}
+.lane-video-studio .video-builder-status p{font-size:13px;color:#c1b7aa;line-height:1.6;margin:0}
+.lane-video-studio .video-builder-model{padding:15px;border:1px solid #403326;border-radius:12px;background:#0c0b09}
+.lane-video-studio .video-builder-model b{display:block;color:#f3d3a7;margin-bottom:5px}
+.lane-video-studio .video-builder-model span{font-size:12px;color:#aaa195;line-height:1.5}
+.lane-video-studio .video-builder-placeholder{width:100%;min-height:56px;border-radius:12px;font-weight:900;letter-spacing:.08em;opacity:.68;cursor:not-allowed}
+@media(max-width:850px){.lane-video-studio .video-builder-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.lane-video-studio .video-builder-head{padding:22px 18px}.lane-video-studio .video-builder-grid{padding:13px;gap:13px}.lane-video-studio .video-builder-card{padding:16px}.lane-video-studio .video-builder-fields{grid-template-columns:1fr}}
 </style>
-<div class="video-kicker">LANE AI STUDIO · VIDEO LAB</div>
-<h2 class="section-title">AI Video Generator</h2>
-<p class="video-intro">Create cinematic videos from a text prompt. Choose your duration and aspect ratio; the generation engine will be selected automatically.</p>
-<div class="video-workspace">
-<div class="video-card">
-<div class="video-kicker">01 / Your creative brief</div>
-<h3>Describe the video you want to create</h3>
-<div class="video-field">
-<label for="prompt">VIDEO PROMPT</label>
-<textarea id="prompt" maxlength="1000" placeholder="Describe the scene, subject, action, environment, lighting, camera movement and mood..."></textarea>
-<p class="video-note">Be specific. Maximum 1,000 characters.</p>
-</div>
-<div class="video-fields">
-<div class="video-field"><label for="style">VISUAL STYLE</label><select id="style"><option>Realistic / Photorealistic</option><option>Hollywood Cinematic</option><option>Animated / 3D</option><option>Anime</option><option>Dreamlike / Surreal</option><option>Documentary</option><option>Vintage Film</option><option>My Own Idea</option></select></div>
-<div class="video-field"><label for="category">CATEGORY</label><select id="category"><option value="General Studio">General Studio</option><option>Movies &amp; Mini-Series</option><option>Drama &amp; Romance</option><option>Comedy &amp; Fun</option><option>Animals &amp; Animation</option><option>Fantasy &amp; Sci-Fi</option><option>Action &amp; Adventure</option><option>Singers &amp; Performers</option><option>Music &amp; Dance</option><option>Advertising &amp; Promos</option></select></div>
-<div class="video-field"><label for="duration">DURATION</label><select id="duration"><option>5 seconds</option><option>10 seconds</option><option>15 seconds</option><option>20 seconds</option><option>30 seconds</option></select></div>
-<div class="video-field"><label for="videoRatio">FORMAT</label><select id="videoRatio"><option value="landscape">Landscape · 16:9</option><option value="portrait">Portrait · 9:16</option></select></div>
-</div>
-<div class="video-cost" id="videoCostPreview" aria-live="polite">GENERATION COST</div>
-<button class="primary-btn video-generate" id="generateVideoButton" onclick="prepareVideo()" type="button">CREATE VIDEO</button>
-<p class="video-note">Your credits are charged by the server when a generation is successfully submitted.</p>
-<div class="project-output hidden" id="generalProjectOutput" aria-live="polite"></div>
-</div>
-<aside>
-<div class="video-card">
-<div class="video-kicker">02 / Live generation</div>
-<h3>Your video</h3>
-<div class="video-live-panel" id="videoLivePanel" hidden aria-live="polite">
-<div class="video-live-top"><span class="video-live-title">LANE AI STUDIO</span><span class="video-live-badge" id="videoLiveBadge">STARTING</span></div>
-<div class="video-live-eq" id="videoLiveEqualizer" aria-label="Generation activity"></div>
-<div class="video-live-clock" id="videoLiveClock">00:00</div>
-<div class="video-live-caption">ELAPSED GENERATION TIME</div>
-<div class="video-live-message" id="videoLiveMessage">PREPARING YOUR VIDEO...</div>
-<div class="video-live-meta"><span>STATUS</span><strong id="videoLiveStatus">STARTING</strong></div>
-<div class="video-live-meta"><span>ESTIMATED WAIT</span><strong id="videoLiveEstimate">—</strong></div>
-<div id="videoReadyAction" hidden></div>
-</div>
-<p class="video-note">Your generation progress and finished video will appear here.</p>
-</div>
-<div class="video-feature"><b>Automatic model routing</b><span>Runway Gen-4.5 for 5–10 seconds. Seedance 2.5 for 15–30 seconds.</span></div>
-<div class="video-feature"><b>Made for every screen</b><span>Landscape 16:9 and portrait 9:16 output formats.</span></div>
-<div class="video-feature"><b>Saved to your library</b><span>Completed generations remain available in My Files.</span></div>
-</aside>
+<div class="video-builder">
+  <header class="video-builder-head">
+    <div class="video-builder-kicker">LANE AI STUDIO · VIDEO LAB</div>
+    <h2>Create your next video</h2>
+    <p>A fresh video creation workspace. Describe the scene, choose your visual direction and format, then prepare your generation.</p>
+  </header>
+  <div class="video-builder-grid">
+    <div class="video-builder-card">
+      <h3>01 · Build your video</h3>
+      <div class="video-builder-field">
+        <label class="video-builder-label" for="videoPrompt">YOUR VIDEO IDEA</label>
+        <textarea id="videoPrompt" maxlength="2000" placeholder="Describe the subject, what happens, the environment, lighting, camera movement and atmosphere..."></textarea>
+        <div class="video-builder-note">Be descriptive. You can refine your idea before sending it to the video model.</div>
+      </div>
+      <div class="video-builder-fields">
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoVisualStyle">VISUAL DIRECTION</label>
+          <select id="videoVisualStyle">
+            <option value="cinematic">Cinematic realism</option>
+            <option value="photorealistic">Photorealistic</option>
+            <option value="animation">3D animation</option>
+            <option value="anime">Anime</option>
+            <option value="documentary">Documentary</option>
+            <option value="surreal">Dreamlike / surreal</option>
+            <option value="custom">My own direction</option>
+          </select>
+        </div>
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoCategory">VIDEO CATEGORY</label>
+          <select id="videoCategory">
+            <option value="general">General</option>
+            <option value="film">Film & story</option>
+            <option value="music">Music & performance</option>
+            <option value="advertising">Advertising & promo</option>
+            <option value="social">Social media</option>
+            <option value="fantasy">Fantasy & sci-fi</option>
+            <option value="action">Action & adventure</option>
+          </select>
+        </div>
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoDuration">DURATION</label>
+          <select id="videoDuration">
+            <option value="5">5 seconds</option><option value="10">10 seconds</option>
+            <option value="15">15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option>
+          </select>
+        </div>
+        <div class="video-builder-field">
+          <label class="video-builder-label" for="videoAspectRatio">FORMAT</label>
+          <select id="videoAspectRatio">
+            <option value="1280:720">Landscape · 16:9</option>
+            <option value="720:1280">Portrait · 9:16</option>
+          </select>
+        </div>
+      </div>
+      <div class="video-builder-cost">Estimated generation cost <strong id="videoEstimatedCost">192 credits</strong></div>
+      <button class="primary-btn video-builder-placeholder" id="newVideoGenerateButton" type="button" disabled>VIDEO ENGINE CONNECTION — NEXT STEP</button>
+      <div class="video-builder-note">The new generation engine will be connected after this clean workspace is in place. No request is sent and no credits are charged yet.</div>
+    </div>
+    <aside class="video-builder-side">
+      <div class="video-builder-card">
+        <h3>02 · Generation status</h3>
+        <div class="video-builder-status">
+          <strong id="newVideoStatusTitle">Ready for setup</strong>
+          <p id="newVideoStatusText">Your new video workspace is ready. The model connection and live job tracking will be added as the next step.</p>
+        </div>
+      </div>
+      <div class="video-builder-model"><b>Runway Gen-4.5</b><span>Planned model route for short generations: 5–10 seconds.</span></div>
+      <div class="video-builder-model"><b>Seedance 2.5</b><span>Planned model route for longer generations: 15–30 seconds.</span></div>
+      <div class="video-builder-model"><b>Your LANE library stays connected</b><span>Existing account, credits, payment and My Files features remain part of the platform.</span></div>
+    </aside>
+  </div>
 </div>
 </section>
 <section class="section" id="imageStudio">
@@ -1596,7 +1617,21 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   // CATEGORY SELECTION
 
   function chooseCategory(category) {
-    document.getElementById("category").value = category;
+    const categorySelect = document.getElementById("videoCategory");
+    if (categorySelect) {
+      const categoryMap = {
+        "Movies & Mini-Series": "film",
+        "Drama & Romance": "film",
+        "Comedy & Fun": "film",
+        "Animals & Animation": "fantasy",
+        "Fantasy & Sci-Fi": "fantasy",
+        "Action & Adventure": "action",
+        "Singers & Performers": "music",
+        "Music & Dance": "music",
+        "Advertising & Promos": "advertising"
+      };
+      categorySelect.value = categoryMap[category] || "general";
+    }
 
     document.getElementById("studio").scrollIntoView({
       behavior: "smooth"
@@ -1604,374 +1639,20 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
   }
 
   
-function renderVideoEqualizer() {
-  const equalizer = document.getElementById("videoLiveEqualizer");
-  if (!equalizer || equalizer.childElementCount) return;
-  for (let i = 0; i < 42; i++) {
-    const bar = document.createElement("span");
-    const height = 18 + Math.round((Math.sin(i * 0.77) + 1) * 30);
-    bar.style.setProperty("--bar", height + "%");
-    bar.style.setProperty("--delay", (i * 37 % 700) + "ms");
-    equalizer.appendChild(bar);
+// The previous video submission UI was retired. The new video module is isolated
+// from the legacy generator while preserving existing library and history features.
+
+  // Pricing preview for the new, disconnected video workspace.
+  const newVideoPrices = { "5": 192, "10": 303, "15": 557, "20": 743, "30": 1114 };
+  const newVideoDuration = document.getElementById("videoDuration");
+  const newVideoCost = document.getElementById("videoEstimatedCost");
+  function updateNewVideoCost() {
+    if (!newVideoDuration || !newVideoCost) return;
+    newVideoCost.textContent = (newVideoPrices[newVideoDuration.value] || 0).toLocaleString() + " credits";
   }
-}
-
-function formatVideoElapsed(milliseconds) {
-  const total = Math.max(0, Math.floor(milliseconds / 1000));
-  const minutes = String(Math.floor(total / 60)).padStart(2, "0");
-  const seconds = String(total % 60).padStart(2, "0");
-  return minutes + ":" + seconds;
-}
-
-function showVideoLiveState(state, message) {
-  const panel = document.getElementById("videoLivePanel");
-  const badge = document.getElementById("videoLiveBadge");
-  const status = document.getElementById("videoLiveStatus");
-  const messageNode = document.getElementById("videoLiveMessage");
-  const estimate = document.getElementById("videoLiveEstimate");
-  if (!panel) return;
-  panel.hidden = false;
-  renderVideoEqualizer();
-  badge.textContent = state;
-  status.textContent = state;
-  messageNode.textContent = message;
-  estimate.textContent = state === "PROCESSING" ? "Provider timing varies" : "—";
-  if (state !== "PROCESSING") {
-    document.getElementById("videoLiveEqualizer").style.opacity = state === "VIDEO READY" ? "0.45" : "0.25";
-  } else {
-    document.getElementById("videoLiveEqualizer").style.opacity = "1";
-  }
-}
-
-function startVideoElapsedTimer() {
-  stopVideoElapsedTimer();
-  videoStartedAt = Date.now();
-  const clock = document.getElementById("videoLiveClock");
-  const tick = () => { if (clock) clock.textContent = formatVideoElapsed(Date.now() - videoStartedAt); };
-  tick();
-  videoElapsedTimer = window.setInterval(tick, 1000);
-}
-
-function stopVideoElapsedTimer() {
-  if (videoElapsedTimer) window.clearInterval(videoElapsedTimer);
-  videoElapsedTimer = null;
-}
-
-async function prepareVideo() {
-  const prompt = document.getElementById("prompt").value.trim();
-  const style = document.getElementById("style").value;
-  const category = document.getElementById("category").value;
-  const duration = document.getElementById("duration").value;
-  const output = document.getElementById("generalProjectOutput");
-  const button = document.getElementById("generateVideoButton");
-
-  // Prevent duplicate starts, but recover safely after an earlier start request timed out.
-  if (window.__laneVideoStartLock) {
-    if (window.__laneVideoStartOutcomeUnknown) {
-      button.disabled = true;
-      button.textContent = "CHECKING STATUS...";
-      output.replaceChildren();
-      output.classList.remove("hidden");
-      output.textContent = "Checking whether the previous video request was accepted. This prevents duplicate charges.";
-
-      try {
-        const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-        const { data: recentJobs, error: recoveryError } = await supabaseClient
-          .from("video_generations")
-          .select("id, status, created_at")
-          .eq("user_id", currentUser.id)
-          .gte("created_at", cutoff)
-          .order("created_at", { ascending: false })
-          .limit(30);
-
-        if (recoveryError) throw recoveryError;
-
-        const terminalStatuses = new Set(["SUCCEEDED", "FAILED", "CANCELED", "CANCELLED"]);
-        const activeJobs = (recentJobs || []).filter(job => !terminalStatuses.has(String(job.status || "").toUpperCase()));
-
-        if (activeJobs.length) {
-          output.textContent =
-            "A recent video request is still active (" + String(activeJobs[0].status || "PROCESSING") +
-            "). It has not been resubmitted, to avoid charging you twice. Open My Files and check again shortly.";
-          button.textContent = "CHECK STATUS AGAIN";
-          button.disabled = false;
-          button.onclick = () => prepareVideo();
-          return;
-        }
-
-        // No unfinished server-side job exists, so the timed-out lock is stale and safe to clear.
-        window.__laneVideoStartOutcomeUnknown = false;
-        window.__laneVideoStartLock = false;
-        button.disabled = false;
-        button.textContent = "GENERATE VIDEO";
-        button.onclick = () => prepareVideo();
-        output.textContent = "No unfinished video request was found. The generator is unlocked; press Generate Video again.";
-      } catch (recoveryError) {
-        console.error("Could not safely recover the video start lock:", recoveryError);
-        output.textContent =
-          "Could not verify the previous request yet. No new video was submitted and no additional credits were charged. Please use My Files to check existing videos, then try again.";
-        button.textContent = "CHECK STATUS AGAIN";
-        button.disabled = false;
-        button.onclick = () => prepareVideo();
-      }
-    }
-    // If recovery found no unfinished server-side job, continue this click
-    // into a fresh generation instead of requiring a second click.
-    if (window.__laneVideoStartLock) {
-      return;
-    }
-  }
-
-  if (!prompt) {
-    alert("Please describe your video idea first.");
-    return;
-  }
-
-  const durationSeconds = Number.parseInt(duration, 10);
-  const supportedDurations = [5, 10, 15, 20, 30];
-
-  if (!supportedDurations.includes(durationSeconds)) {
-    alert("Please choose 5, 10, 15, 20 or 30 seconds.");
-    return;
-  }
-
-  if (!currentUser) {
-    alert("Please sign in first.");
-    return;
-  }
-
-  const finalPrompt = prompt + ". Category: " + category + ". Visual style: " + style;
-
-  window.__laneVideoStartLock = true;
-
-  laneAnalytics.track("generation_started", { service: "video", duration_seconds: durationSeconds, category, style });
-  button.disabled = true;
-  button.textContent = "STARTING...";
-  output.replaceChildren();
-  output.classList.remove("hidden");
-  output.textContent = "Starting AI video generation...";
-  document.getElementById("videoLivePanel").hidden = true;
-  showVideoLiveState("STARTING", "PREPARING YOUR VIDEO REQUEST...");
-  startVideoElapsedTimer();
-
-  const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
-
-  try {
-    const startRequest = supabaseClient.functions.invoke(
-      "generate-video",
-      {
-        body: {
-          promptText: finalPrompt,
-          duration: durationSeconds,
-          ratio: document.getElementById("videoRatio")?.value === "portrait" ? "720:1280" : "1280:720"
-        }
-      }
-    );
-    // Never leave the UI in STARTING indefinitely. If the outcome is unknown,
-    // tell the user to check My Files before retrying (the server may have accepted it).
-    let startTimeoutId;
-    const startTimeout = new Promise((_, reject) => {
-      startTimeoutId = window.setTimeout(() => {
-        // The request may still be accepted server-side. Keep the start lock
-        // until the user checks My Files, so a retry cannot double-charge.
-        window.__laneVideoStartOutcomeUnknown = true;
-        reject(new Error(
-          "The server did not confirm the start within 45 seconds. Check My Files before trying again; the task may have been accepted."
-        ));
-      }, 45000);
-    });
-    const { data, error } = await Promise.race([startRequest, startTimeout]);
-    window.clearTimeout(startTimeoutId);
-
-    if (error) {
-      const message = data?.error || error.message || "Video generation could not start.";
-      throw new Error(message);
-    }
-
-    if (!data || !data.success || !data.generationId || !data.taskId) {
-      throw new Error(data?.error || "Video generation could not start.");
-    }
-
-    const modelName = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
-    output.textContent = "Your video is being generated. The status will update automatically.";
-    showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
-    button.textContent = "GENERATING...";
-    const maximumChecks = 180; // 30 minutes at 10-second intervals.
-    let consecutiveStatusErrors = 0;
-    let completed = false;
-
-    for (let check = 0; check < maximumChecks; check++) {
-      await wait(10000);
-
-      const { data: statusData, error: statusError } = await supabaseClient.functions.invoke(
-        "generate-video",
-        { body: { action: "status", generationId: data.generationId } }
-      );
-
-      if (statusError || !statusData || statusData.error) {
-        consecutiveStatusErrors++;
-        const detail = statusData?.error || statusError?.message || "No status response was received.";
-        console.warn("Video status check failed:", detail);
-        if (consecutiveStatusErrors >= 3) {
-          throw new Error("The video task started, but its status cannot be checked after 3 attempts. Your generation ID is " + data.generationId + ". Please check My Files before trying again. Details: " + detail);
-        }
-        output.textContent =
-          "LANE AI STUDIO — VIDEO GENERATION\n\n" +
-          "Temporary status connection issue (" + consecutiveStatusErrors + "/3). Retrying safely...\n\n" +
-          "Generation ID: " + data.generationId;
-        continue;
-      }
-
-      consecutiveStatusErrors = 0;
-
-      if (statusData.status === "SUCCEEDED" && !statusData.videoUrl) {
-        output.textContent = "The provider reports that the video is complete, but the download link is not ready. Open My Files and refresh the video list before starting another generation.";
-        stopVideoElapsedTimer();
-        showVideoLiveState("VIDEO COMPLETE", "CHECK MY FILES FOR THE SAVED VIDEO.");
-        completed = true;
-        break;
-      }
-
-      if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
-        laneAnalytics.track("generation_completed", { service: "video", duration_seconds: durationSeconds, model: modelName });
-        output.replaceChildren();
-
-        const heading = document.createElement("strong");
-        heading.textContent = "Your video is ready!";
-
-        const details = document.createElement("p");
-        details.textContent =
-          "Model: " + modelName + " · Duration: " + durationSeconds + " seconds";
-
-        const player = document.createElement("video");
-        player.controls = true;
-        player.playsInline = true;
-        player.preload = "metadata";
-        player.style.width = "100%";
-        player.style.maxHeight = "520px";
-        player.style.borderRadius = "12px";
-        player.style.marginTop = "12px";
-        player.src = statusData.videoUrl;
-
-        const download = document.createElement("a");
-        download.href = statusData.videoUrl;
-        download.target = "_blank";
-        download.rel = "noopener noreferrer";
-        download.textContent = "OPEN / DOWNLOAD VIDEO";
-        download.className = "primary-btn";
-        download.style.display = "inline-block";
-        download.style.marginTop = "14px";
-
-        output.append(heading, details, player, download);
-        stopVideoElapsedTimer();
-        showVideoLiveState("VIDEO READY", "YOUR VIDEO HAS BEEN CREATED SUCCESSFULLY.");
-        const readyAction = document.getElementById("videoReadyAction");
-        readyAction.hidden = false;
-        readyAction.replaceChildren();
-        const readyButton = document.createElement("a");
-        readyButton.className = "video-ready-action";
-        readyButton.href = statusData.videoUrl;
-        readyButton.target = "_blank";
-        readyButton.rel = "noopener noreferrer";
-        readyButton.textContent = "VIDEO READY · OPEN VIDEO";
-        readyAction.appendChild(readyButton);
-        await loadMyFiles();
-        completed = true;
-        break;
-      }
-
-      if (statusData.status === "FAILED" || statusData.status === "CANCELED") {
-        laneAnalytics.track("generation_failed", { service: "video", status: statusData.status, error: String(statusData.error || "Provider failed").slice(0, 300) });
-        output.textContent =
-          "Video generation did not complete.\n\n" +
-          (statusData.refunded
-            ? "The video credits have been returned to your wallet."
-            : "Credit refund is still being checked. Please contact support if the balance does not update.");
-        stopVideoElapsedTimer();
-        showVideoLiveState("FAILED", "VIDEO GENERATION DID NOT COMPLETE.");
-        completed = true;
-        break;
-      }
-
-      if (statusData.status === "SUBMISSION_UNKNOWN") {
-        output.textContent =
-          "Runway's response was interrupted, so the task status is uncertain.\n\n" +
-          "Your generation ID is: " + data.generationId +
-          "\nPlease contact support before starting the same video again.";
-        stopVideoElapsedTimer();
-        showVideoLiveState("CHECK REQUIRED", "THE PROVIDER RESPONSE NEEDS TO BE CHECKED.");
-        completed = true;
-        break;
-      }
-
-      showVideoLiveState("PROCESSING", "AI IS CREATING YOUR VIDEO...");
-      output.textContent = "Your video is still processing. Checking again automatically...";
-    }
-
-    if (!completed && !output.textContent.includes("Checking again automatically")) {
-      // The polling window expired while the provider task may still be running.
-      output.textContent += "\n\nThe provider is taking longer than expected. Check My Files using generation ID " + data.generationId + " before starting another video.";
-      stopVideoElapsedTimer();
-      showVideoLiveState("STILL PROCESSING", "GENERATION IS TAKING LONGER THAN USUAL.");
-    } else if (output.textContent.includes("Checking again automatically")) {
-      output.textContent += "\n\nThis is taking longer than expected. You can refresh My Files later to check for the finished video.";
-      stopVideoElapsedTimer();
-      showVideoLiveState("STILL PROCESSING", "GENERATION IS TAKING LONGER THAN USUAL.");
-    }
-  } catch (error) {
-    console.error("Video generation error:", error);
-    laneAnalytics.track("generation_failed", { service: "video", error: String(error?.message || error).slice(0, 300) });
-    output.textContent =
-      "Video generation error:\n" +
-      (error.message || "Please try again.");
-    stopVideoElapsedTimer();
-    showVideoLiveState("ERROR", "WE COULD NOT START VIDEO GENERATION.");
-  } finally {
-    // If the start request timed out, its server-side outcome is unknown.
-    // Do not allow another paid submission from this page until checked.
-    if (!window.__laneVideoStartOutcomeUnknown) {
-      window.__laneVideoStartLock = false;
-      button.disabled = false;
-      button.textContent = "GENERATE VIDEO";
-    } else {
-      button.disabled = true;
-      button.textContent = "CHECK MY FILES";
-    }
-  }
-
-  output.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-  // Video prices in credits, matched to the selected duration.
-  function videoCostForDuration(label) {
-    const prices = {
-      "5 seconds": 192,
-      "10 seconds": 303,
-      "15 seconds": 557,
-      "20 seconds": 743,
-      "30 seconds": 1114
-    };
-    return Object.prototype.hasOwnProperty.call(prices, label) ? prices[label] : null;
-  }
-
-  function updateVideoCost() {
-    const durationSelect = document.getElementById("duration");
-    const preview = document.getElementById("videoCostPreview");
-    if (!durationSelect || !preview) return;
-    const duration = durationSelect.value;
-    const credits = videoCostForDuration(duration);
-    preview.hidden = false;
-    preview.innerHTML = credits === null
-      ? 'TOTAL GENERATION COST: <strong>Price not available for this duration.</strong>'
-      : 'TOTAL GENERATION COST: <strong>' + credits.toLocaleString() + ' CREDITS</strong> · Selected duration: ' + duration + '.';
-  }
-
-  const videoDurationSelect = document.getElementById("duration");
-  if (videoDurationSelect) {
-    videoDurationSelect.addEventListener("change", updateVideoCost);
-    videoDurationSelect.addEventListener("input", updateVideoCost);
-    // Render the correct price on initial load and whenever the duration changes.
-    updateVideoCost();
+  if (newVideoDuration) {
+    newVideoDuration.addEventListener("change", updateNewVideoCost);
+    updateNewVideoCost();
   }
 
   const imageReferenceInput = document.getElementById("imageReference");
