@@ -1400,7 +1400,10 @@ body>#myfiles,#myfiles{display:none}
 
 <!-- Removed duplicate promotional studio cards; the functional studio workspaces remain below. -->
 
-<section class="section" id="musicGenerator">
+<div id="studioWorkspaceModal" class="studio-workspace-modal" aria-hidden="true">
+  <div class="studio-workspace-dialog" role="dialog" aria-modal="true" aria-label="Studio workspace">
+    <div class="studio-workspace-toolbar"><strong id="studioWorkspaceTitle">LANE STUDIO</strong><button type="button" class="studio-workspace-close" onclick="closeStudioWorkspace()">CLOSE ✕</button></div>
+    <section class="section" id="musicGenerator">
 <details class="studio-accordion"><summary class="studio-strip-hidden">AI Music Generator</summary>
 <p class="section-description">Create a song concept with genre, mood, vocals, language, tempo and lyrics preferences.</p>
 <div class="panel">
@@ -1507,6 +1510,18 @@ body>#myfiles,#myfiles{display:none}
 .lane-video-studio #newVideoResult video{width:100%;border-radius:12px;background:#000}
 @media(max-width:850px){.lane-video-studio .video-builder-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.lane-video-studio .video-builder-head{padding:22px 18px}.lane-video-studio .video-builder-grid{padding:13px;gap:13px}.lane-video-studio .video-builder-card{padding:16px}.lane-video-studio .video-builder-fields{grid-template-columns:1fr}}
+
+/* Generator workspaces open in an overlay from their matching showcase buttons. */
+.studio-workspace-modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);overflow:auto;padding:24px 14px}
+.studio-workspace-modal.is-open{display:block}
+.studio-workspace-dialog{position:relative;width:min(1180px,100%);margin:0 auto 30px;background:#080808;border:1px solid #ff9b32;border-radius:18px;box-shadow:0 24px 90px #000;overflow:hidden}
+.studio-workspace-toolbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#15100b;border-bottom:1px solid #70451e;color:#ffd08a}
+.studio-workspace-close{border:1px solid #ff9b32;border-radius:30px;padding:9px 16px;background:#211407;color:#ffd08a;font-weight:800;cursor:pointer}
+.studio-workspace-dialog>.section{display:none;margin:0!important;padding:18px!important}
+.studio-workspace-dialog>.section.active-workspace{display:block}
+.studio-workspace-dialog .studio-strip-hidden{display:none!important}
+@media(max-width:600px){.studio-workspace-modal{padding:8px}.studio-workspace-toolbar{padding:10px 12px}.studio-workspace-dialog>.section{padding:10px!important}}
+
 </style>
 <details class="studio-accordion ivideo-accordion">
   <summary class="studio-strip-hidden">LANE VIDEO STUDIO</summary>
@@ -1685,6 +1700,10 @@ body>#myfiles,#myfiles{display:none}
 
 
 
+
+
+  </div>
+</div>
 
 <section class="section" id="myfiles">
 <h2 class="section-title">My Files</h2>
@@ -3283,13 +3302,28 @@ function showLaneReadyToast(title,message,url){document.getElementById("laneRead
 function dismissReadyToast(){document.getElementById("laneReadyToast").classList.remove("show");}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMyFilesModal();});document.addEventListener("click",e=>{if(e.target===document.getElementById("myFilesModal"))closeMyFilesModal();});
 function openStudioSection(sectionId) {
-  const section = document.getElementById(sectionId);
-  if (!section) return;
-  const accordion = section.querySelector('details.studio-accordion');
-  if (accordion) accordion.open = true;
-  window.setTimeout(() => {
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 80);
+  const modal = document.getElementById("studioWorkspaceModal");
+  const dialog = modal && modal.querySelector(".studio-workspace-dialog");
+  if (!modal || !dialog) return;
+  dialog.querySelectorAll(":scope > .section").forEach(section => {
+    section.classList.toggle("active-workspace", section.id === sectionId);
+    const accordion = section.querySelector("details.studio-accordion");
+    if (accordion) accordion.open = true;
+  });
+  const titles = {studio:"LANE VIDEO STUDIO", imageStudio:"LANE AI IMAGE STUDIO", musicGenerator:"LANE AI MUSIC STUDIO"};
+  const title = document.getElementById("studioWorkspaceTitle");
+  if (title) title.textContent = titles[sectionId] || "LANE STUDIO";
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+  modal.scrollTop = 0;
+}
+function closeStudioWorkspace() {
+  const modal = document.getElementById("studioWorkspaceModal");
+  if (!modal) return;
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
 }
 
 function openFaceSwapComingSoon(){showLaneReadyToast("LANE FACE LAB STUDIO","This is the new performance studio. The interface is ready; face upload, scene library and video generation will be connected in the next development phase.",null);}
