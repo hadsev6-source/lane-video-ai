@@ -1694,6 +1694,32 @@ async function prepareVideo() {
     return;
   }
 
+  const musicDirections = musicVideoMode
+    ? [
+        "Music video",
+        "Genre: " + musicGenre,
+        "Performers: " + performerType,
+        "Performer gender: " + vocalGender,
+        "Mood: " + musicMood,
+        musicLyrics ? "Lyrics/chorus: " + musicLyrics : ""
+      ].filter(Boolean).join("; ")
+    : "";
+  const finalPrompt = [
+    prompt,
+    "Category: " + category,
+    "Visual style: " + style,
+    musicDirections
+  ].filter(Boolean).join(". ");
+
+  if (finalPrompt.length > 1000) {
+    const message = "Your combined video description and music settings are " + finalPrompt.length +
+      " characters. Please shorten them to 1000 characters or fewer before generating.";
+    output.classList.remove("hidden");
+    output.textContent = message;
+    alert(message);
+    return;
+  }
+
   laneAnalytics.track("generation_started", { service: "video", duration_seconds: durationSeconds, category, style });
   button.disabled = true;
   button.textContent = "STARTING...";
@@ -1711,16 +1737,7 @@ async function prepareVideo() {
       "generate-video",
       {
         body: {
-          promptText: [
-            prompt,
-            "Video category: " + category,
-            "Visual style: " + style,
-            musicGenre ? "Music genre: " + musicGenre : "",
-            performerType ? "Performer setup: " + performerType : "",
-            vocalGender ? "Performer / vocal gender: " + vocalGender : "",
-            musicMood ? "Music mood: " + musicMood : "",
-            musicLyrics ? "Perform the following exact lyrics or chorus with synchronized visible singing or rapping: " + musicLyrics : ""
-          ].filter(Boolean).join(". "),
+          promptText: finalPrompt,
           duration: durationSeconds,
           musicVideoMode,
           ratio: "854:480"
