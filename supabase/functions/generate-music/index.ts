@@ -34,7 +34,7 @@ async function recordOwnerApiCost(admin: any, entry: {
   metadata?: Record<string, unknown>;
 }) {
   const exchangeRate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
-  const { error } = await admin.from("owner_api_costs").insert({
+  const { error } = await admin.from("owner_api_costs").upsert({
     user_id: entry.userId,
     service: entry.service,
     provider: entry.provider,
@@ -46,7 +46,7 @@ async function recordOwnerApiCost(admin: any, entry: {
     generation_id: entry.generationId || null,
     duration_seconds: entry.durationSeconds ?? null,
     metadata: entry.metadata || {},
-  });
+  }, { onConflict: "user_id,service,generation_id", ignoreDuplicates: true });
   if (error) console.error("Could not record owner API cost:", error);
 }
 
@@ -98,6 +98,33 @@ function extractAudioUrl(outputs: unknown): string | null {
     }
   }
   return null;
+}
+
+
+async function getWaveSpeedActualCost(apiKey: string, predictionId: string): Promise<number | null> {
+  if (!predictionId) return null;
+  try {
+    const response = await fetch("https://api.wavespeed.ai/api/v3/billings/search", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ prediction_uuids: [predictionId], page: 1, page_size: 10 }),
+    });
+    if (!response.ok) {
+      console.warn("WaveSpeed billing lookup unavailable:", response.status);
+      return null;
+    }
+    const payload = await response.json();
+    const items = payload?.data?.items;
+    if (!Array.isArray(items)) return null;
+    const matched = items.filter((item: any) =>
+      item?.prediction?.uuid === predictionId && Number.isFinite(Number(item?.price))
+    );
+    if (!matched.length) return null;
+    return matched.reduce((sum: number, item: any) => sum + Number(item.price), 0);
+  } catch (error) {
+    console.warn("WaveSpeed billing lookup failed:", error);
+    return null;
+  }
 }
 
 Deno.serve(async (req: Request) => {
@@ -354,13 +381,14 @@ Deno.serve(async (req: Request) => {
         if (completeError || !completedJob) throw new Error("Audio was saved, but the job status could not be safely updated.");
         if (isOwnerUser(user.id)) {
           const billedDuration = Number(job.duration_seconds || 0);
-          const ownerUsdCost = billedDuration * 0.0002;
+          const estimate = billedDuration * 0.0002;
+          const actual = await getWaveSpeedActualCost(wavespeedKey, String(job.request_id || ""));
           await recordOwnerApiCost(admin, {
             userId: user.id, service: "music_generation", provider: "WaveSpeed",
             model: job.provider_model || WAVESPEED_MODEL,
-            usd: ownerUsdCost, credits: Number(job.credits_charged || 0),
+            usd: actual ?? estimate, credits: Number(job.credits_charged || 0),
             generationId: job.id, durationSeconds: billedDuration,
-            metadata: { lyricsMode: job.lyrics_mode, completed: true },
+            metadata: { lyricsMode: job.lyrics_mode, completed: true, costSource: actual === null ? "published_rate_estimate" : "provider_billing_record" },
           });
         }
 
