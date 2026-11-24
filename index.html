@@ -1344,6 +1344,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
         <label class="video-builder-label" for="videoPrompt">YOUR VIDEO IDEA</label>
         <textarea id="videoPrompt" maxlength="2000" placeholder="Describe the subject, what happens, the environment, lighting, camera movement and atmosphere..."></textarea>
         <div class="video-builder-note">Be descriptive. You can refine your idea before sending it to the video model.</div>
+        <div class="video-builder-note" id="videoPromptCounter" aria-live="polite">0 prompt characters / 1,000 total</div>
       </div>
       <div class="video-builder-fields">
         <div class="video-builder-field">
@@ -1691,6 +1692,89 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
     if (messageNode) messageNode.textContent = message;
   }
 
+  // Keep the user's description intact; add optional settings only while the
+  // complete provider prompt remains within the 1,000-character limit.
+  function buildNewVideoPrompt(includeAvoid = true) {
+    const prompt = document.getElementById("videoPrompt")?.value.trim() || "";
+    const style = document.getElementById("videoVisualStyle")?.selectedOptions[0]?.text || "Cinematic realism";
+    const cameraLabels = {
+      "smooth cinematic camera movement": "Smooth camera",
+      "static locked camera": "Static camera",
+      "slow dolly in": "Slow dolly in",
+      "tracking camera shot": "Tracking camera",
+      "wide orbit camera movement": "Orbit camera",
+      "handheld documentary camera": "Handheld camera",
+      "crane or aerial camera movement": "Aerial camera"
+    };
+    const lightLabels = {
+      "cinematic natural lighting": "Natural cinematic light",
+      "dramatic high contrast lighting": "Dramatic contrast light",
+      "soft warm golden hour lighting": "Golden-hour light",
+      "neon night lighting": "Neon lighting",
+      "moody dark atmospheric lighting": "Dark atmospheric light",
+      "bright clean studio lighting": "Bright studio light"
+    };
+    const shotLabels = {
+      "medium cinematic shot": "Medium shot",
+      "wide establishing shot": "Wide shot",
+      "close-up detail shot": "Close-up",
+      "extreme close-up shot": "Extreme close-up",
+      "aerial bird's-eye view": "Aerial view",
+      "low angle hero shot": "Low angle"
+    };
+    const motionLabels = {
+      "natural realistic motion": "Natural motion",
+      "subtle slow motion": "Slow motion",
+      "dynamic energetic motion": "Dynamic motion",
+      "fast action motion": "Fast motion"
+    };
+    const camera = document.getElementById("videoCameraMove")?.value || "";
+    const lighting = document.getElementById("videoLighting")?.value || "";
+    const shot = document.getElementById("videoShot")?.value || "";
+    const motion = document.getElementById("videoMotion")?.value || "";
+    const avoid = includeAvoid ? (document.getElementById("videoNegativePrompt")?.value.trim() || "") : "";
+    const additions = [
+      "Style: " + style,
+      cameraLabels[camera] || "",
+      lightLabels[lighting] || "",
+      shotLabels[shot] || "",
+      motionLabels[motion] || "",
+      avoid ? "Avoid: " + avoid : ""
+    ].filter(Boolean);
+    let combined = prompt;
+    const included = [];
+    for (const item of additions) {
+      const candidate = combined ? combined + ". " + item : item;
+      if (candidate.length <= 1000) {
+        combined = candidate;
+        included.push(item);
+      }
+    }
+    return { prompt, combined, included, omitted: additions.filter(item => !included.includes(item)) };
+  }
+
+  function updateNewVideoPromptCounter() {
+    const prompt = buildNewVideoPrompt();
+    const counter = document.getElementById("videoPromptCounter");
+    if (!counter) return;
+    const total = prompt.combined.length;
+    const base = prompt.prompt.length;
+    counter.textContent = base + " description characters + settings = " + total + " / 1,000 total";
+    counter.style.color = total >= 950 ? "#ffb36b" : "#aaa195";
+    if (base > 1000) {
+      counter.textContent = base + " description characters — shorten to 1,000";
+      counter.style.color = "#ff7078";
+    } else if (prompt.omitted.length) {
+      counter.textContent += " · some optional settings will be skipped to keep the prompt within the limit";
+    }
+  }
+
+  ["videoPrompt", "videoVisualStyle", "videoCameraMove", "videoLighting", "videoShot", "videoMotion", "videoNegativePrompt"].forEach(id => {
+    const field = document.getElementById(id);
+    if (field) field.addEventListener(field.tagName === "TEXTAREA" || field.tagName === "INPUT" ? "input" : "change", updateNewVideoPromptCounter);
+  });
+  updateNewVideoPromptCounter();
+
   async function startNewVideoGeneration() {
     if (newVideoStartInProgress) return;
     const button = document.getElementById("newVideoGenerateButton");
@@ -1702,17 +1786,11 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
     if (prompt.length < 3) { alert("Please enter a video description of at least 3 characters."); return; }
     if (prompt.length > 1000) { alert("Please shorten the main description to 1,000 characters."); return; }
 
-    const style = document.getElementById("videoVisualStyle")?.selectedOptions[0]?.text || "Cinematic realism";
-    const category = document.getElementById("videoCategory")?.selectedOptions[0]?.text || "General";
-    const camera = document.getElementById("videoCameraMove")?.value || "";
-    const lighting = document.getElementById("videoLighting")?.value || "";
-    const shot = document.getElementById("videoShot")?.value || "";
-    const motion = document.getElementById("videoMotion")?.value || "";
-    const avoid = document.getElementById("videoNegativePrompt")?.value.trim() || "";
-    const finalPrompt = [prompt, "Visual direction: " + style, "Category: " + category, "Camera: " + camera, "Lighting: " + lighting, "Composition: " + shot, "Motion: " + motion, avoid ? "Avoid: " + avoid : ""].filter(Boolean).join(". ");
-    if (finalPrompt.length > 1000) {
-      alert("Your combined prompt and selected settings exceed the provider's 1,000-character limit. Please shorten the description or remove some details.");
-      return;
+    const promptBuild = buildNewVideoPrompt();
+    const finalPrompt = promptBuild.combined;
+    if (finalPrompt.length < 3) { alert("Please enter a video description of at least 3 characters."); return; }
+    if (promptBuild.omitted.length) {
+      console.info("LANE prompt limit: optional settings omitted to preserve the main description.", promptBuild.omitted);
     }
 
     newVideoStartInProgress = true;
