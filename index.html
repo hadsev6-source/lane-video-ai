@@ -2702,85 +2702,77 @@ if (currentUser) {
     }
   }
 
-  // Download a generated video or hand it to the phone's native share/save sheet.
+  // Download the actual file bytes and trigger a same-origin Blob download.
+  // This is more reliable on Android than downloading a cross-origin signed URL
+  // or opening the native share sheet.
+  async function downloadUrlToDevice(url, fileName, fallbackType, successMessage) {
+    if (!url) throw new Error("The file is not ready to download.");
+    const response = await fetch(url, { method: "GET", mode: "cors", cache: "no-store" });
+    if (!response.ok) throw new Error("File download failed (HTTP " + response.status + ").");
+    const blob = await response.blob();
+    if (!blob.size) throw new Error("The downloaded file is empty.");
+    const typedBlob = blob.type ? blob : new Blob([blob], { type: fallbackType || "application/octet-stream" });
+    const objectUrl = URL.createObjectURL(typedBlob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = fileName;
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+    showFileMessage(successMessage || "Download started. Check your phone's Downloads folder.");
+  }
+
+  async function getVideoDownloadUrl(video) {
+    const { data, error } = await supabaseClient.functions.invoke(
+      "generate-video",
+      { body: { action: "status", generationId: video.id } }
+    );
+    if (error) throw error;
+    if (!data?.success || !data?.videoUrl) {
+      throw new Error(data?.error || "The secure video download link could not be created.");
+    }
+    return data.videoUrl;
+  }
+
   async function downloadGeneratedVideo(video, saveToPhone = false) {
     if (!currentUser) {
       alert("Please sign in first.");
       return;
     }
-
     const fileName = "lane-video-" + String(video.id || Date.now()).slice(0, 12) + ".mp4";
     showFileMessage(saveToPhone ? "Preparing video for your phone..." : "Preparing video download...");
-
-    const { data, error } = await supabaseClient.storage
-      .from("generated-videos")
-      .createSignedUrl(video.storage_path, 3600, { download: fileName });
-
-    if (error || !data?.signedUrl) {
-      showFileMessage("Could not prepare video: " + (error?.message || "No download link."), true);
-      return;
+    try {
+      const url = await getVideoDownloadUrl(video);
+      await downloadUrlToDevice(
+        url,
+        fileName,
+        "video/mp4",
+        saveToPhone
+          ? "Video download started. Check your phone's Downloads folder."
+          : "Video download started."
+      );
+    } catch (error) {
+      console.error("Video download failed:", error);
+      showFileMessage("Could not download video: " + (error?.message || String(error)), true);
     }
-
-    if (saveToPhone && navigator.share && navigator.canShare) {
-      try {
-        const response = await fetch(data.signedUrl);
-        if (!response.ok) throw new Error("The video file could not be downloaded from storage.");
-        const blob = await response.blob();
-        const file = new File([blob], fileName, { type: blob.type || "video/mp4" });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: "Your LANE AI video" });
-          showFileMessage("Video shared. Choose Save Video / Save to device in your phone's menu if available.");
-          return;
-        }
-      } catch (shareError) {
-        if (shareError?.name === "AbortError") return;
-        console.warn("Native video sharing is unavailable; using download instead.", shareError);
-      }
-    }
-
-    const link = document.createElement("a");
-    link.href = data.signedUrl;
-    link.download = fileName;
-    link.rel = "noopener";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    showFileMessage("Video download started. On some phones, the browser saves it to Downloads; use the phone's Save Video option to add it to Photos/Gallery.");
   }
 
-  // Share a generated image or audio file with the phone's native save/share menu.
+  // Save generated images directly to the device Downloads folder, like music.
   async function saveFileToPhone(url, fileName, title, fallbackType) {
-    if (!url) {
-      showFileMessage("The file is not ready to save yet.", true);
-      return;
-    }
-
     showFileMessage("Preparing file for your phone...");
-    if (navigator.share && navigator.canShare) {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("The file could not be downloaded from storage.");
-        const blob = await response.blob();
-        const file = new File([blob], fileName, { type: blob.type || fallbackType });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title });
-          showFileMessage("File shared. Choose Save Image / Save to device in your phone's menu if available.");
-          return;
-        }
-      } catch (shareError) {
-        if (shareError?.name === "AbortError") return;
-        console.warn("Native file sharing is unavailable; using download instead.", shareError);
-      }
+    try {
+      await downloadUrlToDevice(
+        url,
+        fileName,
+        fallbackType,
+        "Download started. Check your phone's Downloads folder."
+      );
+    } catch (error) {
+      console.error("File download failed:", error);
+      showFileMessage("Could not save file: " + (error?.message || String(error)), true);
     }
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    link.rel = "noopener";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    showFileMessage("Download started. Use your phone's save option to add the file to Photos/Gallery or Music.");
   }
 
   // LOAD MY FILES
@@ -3024,15 +3016,25 @@ if (currentUser) {
       openButton.className = "secondary-btn";
       openButton.textContent = "OPEN VIDEO";
       openButton.onclick = async () => {
-        const { data: openData, error: openError } = await supabaseClient.functions.invoke(
-          "generate-video",
-          { body: { action: "status", generationId: video.id } }
-        );
-        if (openError || !openData?.videoUrl) {
-          showFileMessage("Could not open video: " + (openData?.error || openError?.message || "Video link unavailable."), true);
-          return;
+        // Open a tab immediately inside the click gesture to avoid popup blockers.
+        const tab = window.open("about:blank", "_blank");
+        try {
+          const url = await getVideoDownloadUrl(video);
+          if (tab) {
+            tab.location.href = url;
+          } else {
+            const link = document.createElement("a");
+            link.href = url;
+            link.target = "_self";
+            link.rel = "noopener";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          }
+        } catch (error) {
+          if (tab) tab.close();
+          showFileMessage("Could not open video: " + (error?.message || String(error)), true);
         }
-        window.open(openData.videoUrl, "_blank", "noopener,noreferrer");
       };
 
       const downloadButton = document.createElement("button");
