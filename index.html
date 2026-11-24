@@ -1231,51 +1231,49 @@ body>#myfiles,#myfiles{display:none}
 </style>
 
 <style>
-/* Credit packages redesigned as roomy purchase strips */
+/* Credit packages: six cards, three per row */
 #pricing .price-grid {
-  display:flex !important;
-  flex-direction:column !important;
-  gap:10px !important;
-  width:min(100%,900px) !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:14px !important;
+  width:min(100%,1080px) !important;
   margin:22px auto 0 !important;
 }
 #pricing .price-card {
-  display:grid !important;
-  grid-template-columns:minmax(130px,1fr) minmax(90px,.55fr) minmax(190px,1.4fr) auto !important;
+  display:flex !important;
+  flex-direction:column !important;
   align-items:center !important;
-  gap:18px !important;
-  min-height:82px !important;
-  padding:14px 20px !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  min-height:190px !important;
+  padding:18px 14px !important;
   border:1px solid #555b63 !important;
-  border-left:4px solid #f20d20 !important;
-  border-radius:9px !important;
-  background:linear-gradient(100deg,#17191e,#09090b 72%) !important;
+  border-top:3px solid #f20d20 !important;
+  border-radius:10px !important;
+  background:linear-gradient(145deg,#17191e,#09090b 72%) !important;
   box-shadow:0 5px 18px #0008 !important;
-  text-align:left !important;
+  text-align:center !important;
 }
 #pricing .price-card.featured {
   border-color:#f20d20 !important;
-  border-left-width:5px !important;
-  background:linear-gradient(100deg,#260b10,#101014 72%) !important;
+  background:linear-gradient(145deg,#260b10,#101014 72%) !important;
 }
 #pricing .price-card h3 { margin:0 !important; font-size:19px !important; }
-#pricing .price-card .price { margin:0 !important; font-size:27px !important; white-space:nowrap !important; }
+#pricing .price-card .price { margin:0 !important; font-size:29px !important; white-space:nowrap !important; }
 #pricing .price-card strong { color:#c9cbd0 !important; font-size:13px !important; line-height:1.45 !important; }
 #pricing .price-card .buy-credit-btn {
-  min-width:138px !important; margin:0 !important; padding:12px 17px !important;
+  width:min(100%,190px) !important; margin:0 !important; padding:11px 14px !important;
   border-radius:6px !important; font-size:12px !important; font-weight:900 !important;
-  white-space:nowrap !important;
 }
 @media(max-width:650px) {
-  #pricing .price-card {
-    grid-template-columns:1fr auto !important;
-    gap:7px 12px !important;
-    padding:13px 14px !important;
-  }
-  #pricing .price-card h3 { grid-column:1; }
-  #pricing .price-card .price { grid-column:2; grid-row:1; font-size:24px !important; }
-  #pricing .price-card strong { grid-column:1 / -1; grid-row:2; }
-  #pricing .price-card .buy-credit-btn { grid-column:1 / -1; grid-row:3; width:100% !important; }
+  #pricing .price-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:10px !important; }
+  #pricing .price-card { min-height:176px !important; padding:14px 10px !important; }
+  #pricing .price-card h3 { font-size:16px !important; }
+  #pricing .price-card .price { font-size:24px !important; }
+}
+@media(max-width:390px) {
+  #pricing .price-grid { grid-template-columns:1fr !important; }
+  #pricing .price-card { min-height:0 !important; }
 }
 </style>
 
