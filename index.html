@@ -1241,7 +1241,7 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <div class="price-card"><h3>Ultimate</h3><div class="price">€100</div><strong>10,000 credits + 4,000 bonus = 14,000 credits total</strong><button class="buy-credit-btn" onclick="openPaymentModal('Ultimate', '€100', '14000', 'ONE-TIME PURCHASE')" type="button">BUY CREDITS</button></div>
 </div>
 </section><section class="section" id="musicGenerator">
-<details class="studio-accordion"><summary>AI Music Generator</summary>
+<details class="studio-accordion" open><summary>AI Music Generator — CHOOSE GENRE & CREATE SONG</summary>
 <p class="section-description">Create an original song from your selected genre and lyrics. No audio track or photo upload is required. Choose Drill, Rap, Trap, Afrobeats, Amapiano and more, then generate the music and optional 10-second video automatically.</p>
 <div class="panel">
 <div class="notice"><strong>One fixed rate:</strong> 25 credits per complete song, regardless of selected duration or vocal type. Your song is generated with AI and saved to My Files.</div>
@@ -2397,7 +2397,7 @@ async function prepareVideo() {
             const videoStylePrompt = ["Music genre: " + style + ".", "Mood: " + mood + ".", "Vocal style: " + vocalType + (vocalType !== "Instrumental" ? ", " + voiceCharacter : "") + ".", "Tempo: " + bpm + ".", "The visuals must match the selected genre and rhythm.", lyrics ? "The performers should visibly sing the supplied chorus together." : "", visualPrompt].filter(Boolean).join(" ");
             const { data: videoData, error: videoError } = await supabaseClient.functions.invoke("generate-music-video", {
               body: { promptText: videoStylePrompt, duration: 10, songPath: tempPath, ratio: "portrait", lipSync: true, lyrics: lyrics }
-            });;
+            });
             if (videoError || !videoData?.success || !videoData?.generationId) throw new Error(videoData?.error || "The music video could not be started.");
             output.textContent += "\nVideo generation started. Waiting for the finished MP4...";
             let videoReady = false;
