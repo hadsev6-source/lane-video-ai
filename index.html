@@ -1119,6 +1119,7 @@ body>#myfiles,#myfiles{display:none}
 .my-files-folder small{font-size:11px;color:#aaa}
 .my-files-folder small b{color:#ffbd69}
 #myFilesModal #myfiles>.library-summary{display:none}
+#myFilesModal #myfiles:not(.folder-selected) .panel{display:none}
 #myFilesModal #myfiles>.library-toolbar{display:none}
 #myFilesModal #myfiles .panel{margin-top:10px}
 @media(max-width:520px){.my-files-folders{gap:8px}.my-files-folder{padding:11px;min-height:100px}.my-files-folder strong{font-size:13px}}
@@ -2314,8 +2315,8 @@ if (currentUser) {
 
   function selectLibraryFolder(kind, button) {
     document.querySelectorAll(".my-files-folder").forEach(item => item.classList.toggle("active", item === button));
-    const panel = document.querySelector("#myFilesModal #myfiles .panel");
-    if (panel) panel.classList.remove("hidden");
+    const librarySection = document.querySelector("#myFilesModal #myfiles");
+    if (librarySection) librarySection.classList.add("folder-selected");
     filterMyFiles(kind);
     const title = { audio: "Music", image: "Photos", video: "Videos" }[kind] || "My Files";
     const heading = document.querySelector("#myFilesModal .library-section-heading h3");
