@@ -1137,6 +1137,37 @@ body>#myfiles,#myfiles{display:none}
 .library-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:600px){.library-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.library-filter{width:100%;padding:8px 10px;justify-content:flex-start;font-size:12px}}
 
+/* LANE DANCE STUDIO — compact orange / black campaign section */
+.lane-dance-section{padding:34px 5% 30px!important;max-width:1440px;margin:0 auto}
+.lane-dance-hero{display:grid;grid-template-columns:minmax(300px,.86fr) minmax(0,1.14fr);min-height:410px;overflow:hidden;border:1px solid #75471f;border-radius:18px;background:#090909;box-shadow:0 18px 48px #0009}
+.lane-dance-copy{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(24px,4vw,52px);background:radial-gradient(ellipse at 0 0,#4a260e66,transparent 58%),linear-gradient(135deg,#111,#080808)}
+.lane-dance-eyebrow{color:#ff9b27;font-size:10px;font-weight:900;letter-spacing:.2em}
+.lane-dance-copy h2{margin:14px 0 10px;color:#fff;font-size:clamp(28px,4vw,48px);line-height:.98;font-weight:950;letter-spacing:-.04em}
+.lane-dance-copy h2 em{color:#ff941c;font-style:normal}
+.lane-dance-lead{margin:4px 0 10px;color:#f5c18b;font-size:clamp(15px,1.6vw,20px);font-weight:800}
+.lane-dance-description{max-width:490px;margin:0;color:#c6c0b8;font-size:13px;line-height:1.65}
+.lane-dance-tags{display:flex;flex-wrap:wrap;gap:7px;margin:19px 0}
+.lane-dance-tags span{padding:6px 9px;border:1px solid #70451f;border-radius:20px;background:#1c120a;color:#ffc17b;font-size:9px;font-weight:900;letter-spacing:.08em}
+.lane-dance-cta{display:inline-flex;align-items:center;gap:16px;padding:12px 17px;border:0;border-radius:7px;background:linear-gradient(100deg,#ff9e24,#e56a0a);color:#100b06;font-size:11px;font-weight:950;letter-spacing:.06em;cursor:pointer;box-shadow:0 7px 22px #ff8a002c}
+.lane-dance-cta span{font-size:16px}
+.lane-dance-note{margin-top:12px;color:#897d70;font-size:10px;line-height:1.45}
+.lane-dance-visual{position:relative;min-height:410px;overflow:hidden;background:linear-gradient(90deg,#090909 0%,#09090900 28%),linear-gradient(0deg,#080808aa,transparent 48%),url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1400&q=85') center 40%/cover no-repeat,#21160e}
+.lane-dance-visual:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#08080866,transparent 40%),linear-gradient(0deg,#09090988,transparent 38%);pointer-events:none}
+.lane-dance-visual-label{position:absolute;right:22px;bottom:20px;display:flex;flex-direction:column;gap:4px;text-align:right;text-shadow:0 2px 8px #000}
+.lane-dance-visual-label b{color:#ff9a20;font-size:22px;letter-spacing:.08em}
+.lane-dance-visual-label span{color:#fff;font-size:9px;font-weight:800;letter-spacing:.2em}
+.lane-dance-bottom{display:flex;justify-content:space-between;gap:12px;padding:12px 4px 0;color:#9b8b7a;font-size:9px;font-weight:800;letter-spacing:.16em}
+.lane-dance-bottom span:last-child{color:#ff9a20}
+@media(max-width:760px){.lane-dance-section{padding:22px 4% 24px!important}.lane-dance-hero{grid-template-columns:1fr}.lane-dance-copy{padding:26px 22px}.lane-dance-visual{min-height:260px;grid-row:1}.lane-dance-copy h2{font-size:34px}.lane-dance-bottom{font-size:8px}}
+/* Compact controls and iconography to reclaim first-screen space */
+.menu-icon{font-size:14px!important}
+.library-icon{width:21px;height:21px;flex-basis:21px;border-radius:6px}
+.library-icon svg{width:13px;height:13px}
+.library-filter{min-height:38px;padding:7px 11px;gap:7px;font-size:12px}
+.studio-accordion>summary{padding:13px 16px;font-size:15px}
+.studio-accordion>summary:after{font-size:18px}
+.account-dropdown a,.main-menu-dropdown a{padding:8px 10px;font-size:12px}
+@media(max-width:600px){.library-filter{min-height:35px;padding:6px 8px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -1586,6 +1617,24 @@ body>#myfiles,#myfiles{display:none}
 </div>
 </section>
 
+<section class="section lane-dance-section" id="laneDanceStudio">
+  <div class="lane-dance-hero">
+    <div class="lane-dance-copy">
+      <span class="lane-dance-eyebrow">NEW · LANE AI STUDIO</span>
+      <h2>LANE <em>DANCE</em> STUDIO</h2>
+      <p class="lane-dance-lead">Bring the rhythm. Become the main character.</p>
+      <p class="lane-dance-description">Create cinematic dance videos with a lead performer and a full crew. Choose your style, choreography, energy and location — then bring your own creative vision to the dance floor.</p>
+      <div class="lane-dance-tags"><span>AFROBEAT</span><span>HIP-HOP</span><span>STREET DANCE</span><span>AMAPIANO</span></div>
+      <button type="button" class="lane-dance-cta" onclick="openStudioSection('studio')">CREATE A DANCE VIDEO <span>↗</span></button>
+      <small class="lane-dance-note">Personal face replacement is planned as a separate feature and is not active yet.</small>
+    </div>
+    <div class="lane-dance-visual" role="img" aria-label="Dance crew concept: lead street dancer performing with a synchronized group">
+      <div class="lane-dance-visual-overlay"></div>
+      <div class="lane-dance-visual-label"><b>THE CREW</b><span>ONE RHYTHM. ONE CREW.</span></div>
+    </div>
+  </div>
+  <div class="lane-dance-bottom"><span>YOUR STYLE. YOUR SCENE. YOUR MOMENT.</span><span>LANE VIDEO STUDIO</span></div>
+</section>
 <div id="myFilesModal" role="dialog" aria-modal="true" aria-label="My Files"><div class="my-files-dialog"><button type="button" class="my-files-close" onclick="closeMyFilesModal()">CLOSE ✕</button><div id="myFilesModalContent"></div></div></div><div id="laneReadyToast" role="status" aria-live="polite"><strong id="laneReadyTitle">Your creation is ready!</strong><p id="laneReadyMessage"></p><div class="toast-actions"><button type="button" class="primary-btn" id="laneReadyOpen">OPEN FILE</button><button type="button" class="secondary-btn" onclick="openMyFilesModal();dismissReadyToast()">MY FILES</button><button type="button" class="secondary-btn" onclick="dismissReadyToast()">CLOSE</button></div></div>
 <footer>
 <strong>LANE AI STUDIO</strong><br/>
