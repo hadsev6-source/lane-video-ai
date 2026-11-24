@@ -892,7 +892,10 @@ Deno.serve(async (req: Request) => {
 
     const owner = isOwnerUser(user.id);
     const ownerUsdCost = duration * (model === "gen4.5" ? 0.12 : 0.20);
-    const credits = owner ? ownerCreditsForUsd(ownerUsdCost) : VIDEO_PRICES[duration];
+    const musicVideoMode = body.musicVideoMode === true;
+    const credits = owner
+      ? ownerCreditsForUsd(ownerUsdCost)
+      : VIDEO_PRICES[duration] + (musicVideoMode ? LIP_SYNC_SURCHARGE : 0);
 
     // Create the job before charging credits.
     const { data: job, error: insertError } = await admin
