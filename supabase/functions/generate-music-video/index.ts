@@ -314,6 +314,7 @@ Deno.serve(async (req: Request) => {
       .from("video_generations")
       .update({
         runway_task_id: runwayData.id,
+        owner_provider_cost_usd: Number.isFinite(Number((runwayData as any)?.estimatedCost?.credits)) ? Number((runwayData as any).estimatedCost.credits) * 0.01 : null,
         status: "PENDING",
         updated_at: new Date().toISOString(),
       })
