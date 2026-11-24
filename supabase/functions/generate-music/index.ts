@@ -245,12 +245,7 @@ Deno.serve(async (req: Request) => {
         return response({ error: reason, refunded: true }, 502);
       }
 
-      if (owner) await recordOwnerApiCost(admin, {
-        userId: user.id, service: "music_generation", provider: "WaveSpeed",
-        model: providerModel, usd: ownerUsdCost, credits: creditsToCharge,
-        generationId: job.id, durationSeconds: requestedDuration,
-        metadata: { lyricsMode, durationSeconds: requestedDuration },
-      });
+
 
       const { error: updateError } = await admin.from("music_generation_jobs")
         .update({ request_id: String(requestId), status: "processing", updated_at: new Date().toISOString() })
@@ -290,7 +285,7 @@ Deno.serve(async (req: Request) => {
           admin.storage.from("user-songs").createSignedUrl(job.storage_path, 3600, { download: fileName }),
         ]);
         if (signedError || !signedFile?.signedUrl) return response({ error: "Audio is saved, but a playback link could not be created." }, 500);
-        return response({ success: true, status: "completed", audioUrl: signedFile.signedUrl, downloadUrl: downloadError ? null : downloadFile?.signedUrl || null, fileName, creditsUsed: MUSIC_CREDITS, durationSeconds: job.duration_seconds });
+        return response({ success: true, status: "completed", audioUrl: signedFile.signedUrl, downloadUrl: downloadError ? null : downloadFile?.signedUrl || null, fileName, creditsUsed: Number(job.credits_charged ?? MUSIC_CREDITS), durationSeconds: job.duration_seconds });
       }
 
       if (job.status === "failed") {
@@ -357,6 +352,17 @@ Deno.serve(async (req: Request) => {
           .select("id").maybeSingle();
 
         if (completeError || !completedJob) throw new Error("Audio was saved, but the job status could not be safely updated.");
+        if (isOwnerUser(user.id)) {
+          const billedDuration = Number(job.duration_seconds || 0);
+          const ownerUsdCost = billedDuration * 0.0002;
+          await recordOwnerApiCost(admin, {
+            userId: user.id, service: "music_generation", provider: "WaveSpeed",
+            model: job.provider_model || WAVESPEED_MODEL,
+            usd: ownerUsdCost, credits: Number(job.credits_charged || 0),
+            generationId: job.id, durationSeconds: billedDuration,
+            metadata: { lyricsMode: job.lyrics_mode, completed: true },
+          });
+        }
 
         const [{ data: signedFile, error: signedError }, { data: downloadFile, error: downloadError }] = await Promise.all([
           admin.storage.from("user-songs").createSignedUrl(storagePath, 3600),
@@ -368,7 +374,7 @@ Deno.serve(async (req: Request) => {
           audioUrl: signedError ? null : signedFile?.signedUrl || null,
           downloadUrl: downloadError ? null : downloadFile?.signedUrl || null,
           fileName,
-          creditsUsed: MUSIC_CREDITS,
+          creditsUsed: Number(job.credits_charged ?? MUSIC_CREDITS),
           durationSeconds: job.duration_seconds,
           lyrics: job.lyrics || "",
           tags: job.genre || "",
@@ -382,7 +388,7 @@ Deno.serve(async (req: Request) => {
         if (latestJob?.status === "completed") {
           const { data: signedFile, error: signedError } = await admin.storage.from("user-songs")
             .createSignedUrl(latestJob.storage_path || `${user.id}/AI_Music_${job.id}.wav`, 3600);
-          return response({ success: true, status: "completed", audioUrl: signedError ? null : signedFile?.signedUrl || null, fileName: latestJob.storage_path?.split("/").pop() || `AI_Music_${job.id}.wav`, creditsUsed: MUSIC_CREDITS, durationSeconds: job.duration_seconds, warning: "Audio was saved, but a later processing step reported an error." });
+          return response({ success: true, status: "completed", audioUrl: signedError ? null : signedFile?.signedUrl || null, fileName: latestJob.storage_path?.split("/").pop() || `AI_Music_${job.id}.wav`, creditsUsed: Number(job.credits_charged ?? MUSIC_CREDITS), durationSeconds: job.duration_seconds, warning: "Audio was saved, but a later processing step reported an error." });
         }
 
         const { data: refundSucceeded, error: refundError } = await admin.rpc("refund_music_credits", { p_job_id: job.id });
