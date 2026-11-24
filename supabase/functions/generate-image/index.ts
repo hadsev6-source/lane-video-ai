@@ -35,13 +35,13 @@ async function recordOwnerApiCost(admin: any, entry: {
   metadata?: Record<string, unknown>;
 }) {
   const rate = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_DEFAULT_USD_TO_EUR);
-  const { error } = await admin.from("owner_api_costs").insert({
+  const { error } = await admin.from("owner_api_costs").upsert({
     user_id: entry.userId, service: entry.service, provider: entry.provider,
     model: entry.model, amount_usd: entry.usd, usd_to_eur: rate,
     amount_eur: entry.usd * rate, credits_charged: entry.credits,
     generation_id: entry.generationId || null,
     duration_seconds: entry.durationSeconds ?? null, metadata: entry.metadata || {},
-  });
+  }, { onConflict: "user_id,service,generation_id", ignoreDuplicates: true });
   if (error) console.error("Could not record owner API cost:", error);
 }
 
