@@ -1365,6 +1365,9 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <div class="video-tool-panel" id="lipSyncPanel" hidden>
   <div class="video-tool-panel-title">LIP SYNC STUDIO</div>
   <p>Upload one photo of the face and an audio track up to 30 seconds. AI will animate the photo and synchronize the mouth movements to the audio.</p>
+  <label class="video-file-picker" for="lipSyncLyrics">LYRICS / TEXT TO BE SUNG</label>
+  <textarea id="lipSyncLyrics" rows="5" maxlength="2000" placeholder="Write the exact words you want the AI voice to sing here..."></textarea>
+  <div class="video-tool-note">Write the exact lyrics here. You can also upload an existing audio track below.</div>
   <label class="video-file-picker">CHOOSE PHOTO<input id="lipSyncImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="handleVideoToolFile('lipSyncImageFile','lipSyncImageFileName',15)"></label>
   <div class="video-file-name" id="lipSyncImageFileName" aria-live="polite">No photo selected.</div>
   <label class="video-file-picker">CHOOSE AUDIO TRACK<input id="lipSyncAudioFile" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/webm" onchange="handleVideoToolFile('lipSyncAudioFile','lipSyncAudioFileName',20); updateLipSyncDuration()"></label>
