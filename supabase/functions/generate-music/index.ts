@@ -46,6 +46,21 @@ function getProviderData(payload: any): any {
   return payload?.data && typeof payload.data === "object" ? payload.data : payload;
 }
 
+function extractAudioUrl(outputs: unknown): string | null {
+  if (!Array.isArray(outputs)) return null;
+  for (const item of outputs) {
+    if (typeof item === "string" && /^https?:\\/\\//i.test(item)) return item;
+    if (item && typeof item === "object") {
+      const record = item as Record<string, unknown>;
+      for (const key of ["url", "audio_url", "audioUrl", "file_url", "download_url"]) {
+        const value = record[key];
+        if (typeof value === "string" && /^https?:\\/\\//i.test(value)) return value;
+      }
+    }
+  }
+  return null;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return response({ error: "Method not allowed." }, 405);
@@ -252,7 +267,7 @@ Deno.serve(async (req: Request) => {
         return response({ success: true, status: "processing", jobId: job.id });
       }
 
-      const staleBefore = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const staleBefore = new Date(Date.now() - 60 * 1000).toISOString();
       const { data: claimedJob, error: claimError } = await admin.from("music_generation_jobs")
         .update({ status: "finalizing", updated_at: new Date().toISOString() })
         .eq("id", job.id).eq("user_id", user.id)
@@ -327,8 +342,11 @@ Deno.serve(async (req: Request) => {
 
         const { data: refundSucceeded, error: refundError } = await admin.rpc("refund_music_credits", { p_job_id: job.id });
         if (refundError) console.error("Music credit refund error:", refundError);
-        await admin.from("music_generation_jobs").update({ error_message: reason.slice(0, 1000), updated_at: new Date().toISOString() })
-          .eq("id", job.id).eq("user_id", user.id).eq("status", "failed");
+        await admin.from("music_generation_jobs").update({
+          status: "failed",
+          error_message: reason.slice(0, 1000),
+          updated_at: new Date().toISOString(),
+        }).eq("id", job.id).eq("user_id", user.id).eq("status", "finalizing");
         return response({ success: false, status: "failed", error: reason, refunded: !refundError && refundSucceeded === true }, 500);
       }
     }
