@@ -1650,8 +1650,58 @@ async function prepareVideo() {
   const output = document.getElementById("generalProjectOutput");
   const button = document.getElementById("generateVideoButton");
 
-  // Prevent duplicate starts from rapid clicks or multiple event bindings.
-  if (window.__laneVideoStartLock) return;
+  // Prevent duplicate starts, but recover safely after an earlier start request timed out.
+  if (window.__laneVideoStartLock) {
+    if (window.__laneVideoStartOutcomeUnknown) {
+      button.disabled = true;
+      button.textContent = "CHECKING STATUS...";
+      output.replaceChildren();
+      output.classList.remove("hidden");
+      output.textContent = "Checking whether the previous video request was accepted. This prevents duplicate charges.";
+
+      try {
+        const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { data: recentJobs, error: recoveryError } = await supabaseClient
+          .from("video_generations")
+          .select("id, status, created_at")
+          .eq("user_id", currentUser.id)
+          .gte("created_at", cutoff)
+          .order("created_at", { ascending: false })
+          .limit(30);
+
+        if (recoveryError) throw recoveryError;
+
+        const terminalStatuses = new Set(["SUCCEEDED", "FAILED", "CANCELED", "CANCELLED"]);
+        const activeJobs = (recentJobs || []).filter(job => !terminalStatuses.has(String(job.status || "").toUpperCase()));
+
+        if (activeJobs.length) {
+          output.textContent =
+            "A recent video request is still active (" + String(activeJobs[0].status || "PROCESSING") +
+            "). It has not been resubmitted, to avoid charging you twice. Open My Files and check again shortly.";
+          button.textContent = "CHECK MY FILES";
+          button.disabled = false;
+          button.onclick = (event) => openMyFilesModal(event);
+          return;
+        }
+
+        // No unfinished server-side job exists, so the timed-out lock is stale and safe to clear.
+        window.__laneVideoStartOutcomeUnknown = false;
+        window.__laneVideoStartLock = false;
+        button.disabled = false;
+        button.textContent = "GENERATE VIDEO";
+        button.onclick = () => prepareVideo();
+        output.textContent = "No unfinished video request was found. The generator is unlocked; press Generate Video again.";
+      } catch (recoveryError) {
+        console.error("Could not safely recover the video start lock:", recoveryError);
+        output.textContent =
+          "Could not verify the previous request yet. No new video was submitted and no additional credits were charged. Please use My Files to check existing videos, then try again.";
+        button.textContent = "CHECK MY FILES";
+        button.disabled = false;
+        button.onclick = (event) => openMyFilesModal(event);
+      }
+    }
+    return;
+  }
 
   if (!prompt) {
     alert("Please describe your video idea first.");
