@@ -1321,26 +1321,6 @@ input:focus,textarea:focus,select:focus{outline:1px solid #ffb02e!important;box-
 <option>Advertising &amp; Promos</option>
 </select>
 </div>
-<div class="checkbox-row music-video-toggle">
-  <input type="checkbox" id="enableMusicVideo" onchange="updateVideoCost()"/>
-  <label for="enableMusicVideo">Enable Music Video Mode <span class="hint">Add detailed music-video direction and performer settings (+100 credits).</span></label>
-</div>
-<div class="video-tool-panel hidden" id="musicVideoSettings">
-  <div class="video-tool-panel-title">MUSIC VIDEO SETTINGS</div>
-  <p>Set the musical direction and performers for your video. These choices are added to the video-generation prompt.</p>
-  <div class="form-grid">
-    <div class="field"><label for="videoMusicGenre">Music Genre</label><select id="videoMusicGenre">
-      <optgroup label="Hip-Hop"><option>Drill</option><option>Rap</option><option>Trap</option><option>Hip-Hop</option><option>R&amp;B</option></optgroup>
-      <optgroup label="Afro"><option>Afrobeats</option><option>Amapiano</option><option>Afro House</option><option>Afro Swing</option><option>Dancehall</option></optgroup>
-      <optgroup label="Other"><option>Pop</option><option>Dance</option><option>EDM</option><option>Rock</option><option>Bulgarian Pop-Folk</option><option>Custom genre</option></optgroup>
-    </select></div>
-    <div class="field"><label for="videoPerformerType">Performer Setup</label><select id="videoPerformerType"><option>Solo performer</option><option>Duet</option><option>Group / band</option><option>DJ with dancers</option><option>Rapper with a crew</option><option>No visible performers</option></select></div>
-    <div class="field"><label for="videoVocalGender">Voice / Performer Gender</label><select id="videoVocalGender"><option>Male</option><option>Female</option><option>Male and female</option><option>Mixed group</option><option>Instrumental / no vocals</option></select></div>
-    <div class="field"><label for="videoMusicMood">Music Mood</label><select id="videoMusicMood"><option>Dark and intense</option><option>Energetic and powerful</option><option>Romantic</option><option>Happy and uplifting</option><option>Emotional</option><option>Chill and atmospheric</option><option>Aggressive and raw</option></select></div>
-  </div>
-  <div class="field"><label for="videoMusicLyrics">Lyrics / Chorus (Optional)</label><textarea id="videoMusicLyrics" rows="3" maxlength="2000" placeholder="Enter the exact lyrics or chorus you want the performers to sing or rap..."></textarea></div>
-  <div class="video-tool-note">These settings guide the visuals and performance in the generated video. They do not independently create or attach a music track.</div>
-</div>
 <div class="field">
 <label for="prompt">Describe Your Video Idea</label>
 <textarea id="prompt" placeholder="Describe exactly what happens in your video. Include the scenes, characters, actions, camera movements, emotions and story..."></textarea>
@@ -1667,12 +1647,6 @@ async function prepareVideo() {
   const style = document.getElementById("style").value;
   const category = document.getElementById("category").value;
   const duration = document.getElementById("duration").value;
-  const musicVideoMode = !!document.getElementById("enableMusicVideo")?.checked;
-  const musicGenre = musicVideoMode ? (document.getElementById("videoMusicGenre")?.value || "") : "";
-  const performerType = musicVideoMode ? (document.getElementById("videoPerformerType")?.value || "") : "";
-  const vocalGender = musicVideoMode ? (document.getElementById("videoVocalGender")?.value || "") : "";
-  const musicMood = musicVideoMode ? (document.getElementById("videoMusicMood")?.value || "") : "";
-  const musicLyrics = musicVideoMode ? (document.getElementById("videoMusicLyrics")?.value.trim() || "") : "";
   const output = document.getElementById("generalProjectOutput");
   const button = document.getElementById("generateVideoButton");
 
@@ -1694,31 +1668,7 @@ async function prepareVideo() {
     return;
   }
 
-  const musicDirections = musicVideoMode
-    ? [
-        "Music video",
-        "Genre: " + musicGenre,
-        "Performers: " + performerType,
-        "Performer gender: " + vocalGender,
-        "Mood: " + musicMood,
-        musicLyrics ? "Lyrics/chorus: " + musicLyrics : ""
-      ].filter(Boolean).join("; ")
-    : "";
-  const finalPrompt = [
-    prompt,
-    "Category: " + category,
-    "Visual style: " + style,
-    musicDirections
-  ].filter(Boolean).join(". ");
-
-  if (finalPrompt.length > 1000) {
-    const message = "Your combined video description and music settings are " + finalPrompt.length +
-      " characters. Please shorten them to 1000 characters or fewer before generating.";
-    output.classList.remove("hidden");
-    output.textContent = message;
-    alert(message);
-    return;
-  }
+  const finalPrompt = prompt + ". Category: " + category + ". Visual style: " + style;
 
   laneAnalytics.track("generation_started", { service: "video", duration_seconds: durationSeconds, category, style });
   button.disabled = true;
@@ -1739,7 +1689,6 @@ async function prepareVideo() {
         body: {
           promptText: finalPrompt,
           duration: durationSeconds,
-          musicVideoMode,
           ratio: "854:480"
         }
       }
@@ -1903,20 +1852,13 @@ async function prepareVideo() {
   function updateVideoCost() {
     const durationSelect = document.getElementById("duration");
     const preview = document.getElementById("videoCostPreview");
-    const musicToggle = document.getElementById("enableMusicVideo");
-    const musicSettings = document.getElementById("musicVideoSettings");
     if (!durationSelect || !preview) return;
     const duration = durationSelect.value;
-    const baseCredits = videoCostForDuration(duration);
-    const musicMode = !!musicToggle?.checked;
-    if (musicSettings) musicSettings.classList.toggle("hidden", !musicMode);
-    const totalCredits = baseCredits === null ? null : baseCredits + (musicMode ? 100 : 0);
+    const credits = videoCostForDuration(duration);
     preview.hidden = false;
-    preview.innerHTML = totalCredits === null
+    preview.innerHTML = credits === null
       ? 'TOTAL GENERATION COST: <strong>Price not available for this duration.</strong>'
-      : 'VIDEO GENERATION: <strong>' + baseCredits.toLocaleString() + ' CREDITS</strong>' +
-        (musicMode ? ' + MUSIC VIDEO MODE: <strong>100 CREDITS</strong>' : '') +
-        ' · TOTAL: <strong>' + totalCredits.toLocaleString() + ' CREDITS</strong> · ' + duration + '.';
+      : 'TOTAL GENERATION COST: <strong>' + credits.toLocaleString() + ' CREDITS</strong> · Selected duration: ' + duration + '.';
   }
 
   const videoDurationSelect = document.getElementById("duration");
