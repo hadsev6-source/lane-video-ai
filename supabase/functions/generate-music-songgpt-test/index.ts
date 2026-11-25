@@ -35,6 +35,24 @@ async function refund(admin: any, jobId: string) {
   if (error) console.error("SongGPT refund RPC failed:", error);
   return !error && data === true;
 }
+async function recordOwnerApiCost(admin: any, jobId: string, credits: number, duration: number) {
+  const usdToEur = Number(Deno.env.get("OWNER_USD_TO_EUR") || OWNER_USD_EUR);
+  const amountUsd = 0.10;
+  const { error } = await admin.from("owner_api_costs").insert({
+    user_id: OWNER_ID,
+    service: "music_generation",
+    provider: "SongGPT",
+    model: "songgpt-v1",
+    amount_usd: amountUsd,
+    usd_to_eur: usdToEur,
+    amount_eur: amountUsd * usdToEur,
+    credits_charged: credits,
+    generation_id: jobId,
+    duration_seconds: duration,
+    metadata: { provider: "SongGPT", request_cost_usd: amountUsd }
+  });
+  if (error) console.error("SongGPT owner API cost logging failed:", error);
+}
 async function signTracks(admin: any, job: any, userId: string) {
   const { data: rows, error } = await admin.from("songgpt_music_job_tracks")
     .select("track_index,title,duration_seconds,storage_path")
@@ -139,6 +157,7 @@ Deno.serve(async (req: Request) => {
         console.error("Could not save SongGPT unique_id:", saveError);
         return out({ success: true, status: "processing", jobId: job.id, warning: "Task started; support recovery may be required." });
       }
+      if (user.id === OWNER_ID) await recordOwnerApiCost(admin, job.id, credits, duration);
       return out({ success: true, status: "processing", jobId: job.id, requestId: uniqueId, creditsUsed: credits, versionsExpected: 2 });
     }
 
@@ -179,10 +198,12 @@ Deno.serve(async (req: Request) => {
       const available = songs.filter((s: any) => typeof s.audio_url === "string" && /^https:\/\//i.test(s.audio_url)).slice(0, 3);
       if (!available.length) {
         await admin.from("music_generation_jobs").update({
-          status: "completed", error_message: String(task.error_message || "Task completed, but no audio URLs were available. Contact support; do not resubmit."),
+          status: "processing", error_message: "SongGPT reports completion, but playable audio URLs are not available yet. Poll again; do not resubmit.",
           updated_at: new Date().toISOString(),
         }).eq("id", job.id).eq("user_id", user.id);
-        return out({ success: true, status: "completed", tracks: [], warning: task.error_message || "No playable audio was returned.", creditsUsed: Number(job.credits_charged || CREDITS) });
+        return out({ success: true, status: "processing", jobId: job.id,
+          warning: "SongGPT reports completion, but no playable audio URL is available yet. Checking again is safe; do not generate again.",
+          creditsUsed: Number(job.credits_charged || CREDITS) }, 202);
       }
 
       try {
