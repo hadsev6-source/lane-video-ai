@@ -150,6 +150,7 @@ Deno.serve(async (req: Request) => {
         return out({ success: false, status: "failed", error: reason, refunded: didRefund }, 502);
       }
       const uniqueId = String(payload.data.unique_id);
+      if (user.id === OWNER_ID) await recordOwnerApiCost(admin, job.id, credits, duration);
       const { error: saveError } = await admin.from("music_generation_jobs").update({
         request_id: uniqueId, status: "processing", updated_at: new Date().toISOString(),
       }).eq("id", job.id).eq("user_id", user.id);
@@ -157,7 +158,6 @@ Deno.serve(async (req: Request) => {
         console.error("Could not save SongGPT unique_id:", saveError);
         return out({ success: true, status: "processing", jobId: job.id, warning: "Task started; support recovery may be required." });
       }
-      if (user.id === OWNER_ID) await recordOwnerApiCost(admin, job.id, credits, duration);
       return out({ success: true, status: "processing", jobId: job.id, requestId: uniqueId, creditsUsed: credits, versionsExpected: 2 });
     }
 
