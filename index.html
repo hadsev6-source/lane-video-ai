@@ -2353,7 +2353,7 @@ body>#myfiles,#myfiles{display:none}
     output.textContent = "Submitting your music request... 25 credits will be charged if the request is accepted.";
 
     try {
-      const { data: startData, error: startError } = await supabaseClient.functions.invoke("generate-music", {
+      const { data: startData, error: startError } = await supabaseClient.functions.invoke("generate-music-songgpt-test", {
         body: {
           action: "start",
           title,
@@ -2382,7 +2382,7 @@ body>#myfiles,#myfiles{display:none}
       let completed = false;
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         await new Promise(resolve => setTimeout(resolve, 5000));
-        const { data: statusData, error: statusError } = await supabaseClient.functions.invoke("generate-music", {
+        const { data: statusData, error: statusError } = await supabaseClient.functions.invoke("generate-music-songgpt-test", {
           body: { action: "status", jobId: startData.jobId }
         });
 
@@ -2416,6 +2416,30 @@ body>#myfiles,#myfiles{display:none}
           downloadLink.style.color = "#ff6673";
           output.appendChild(document.createElement("br"));
           output.appendChild(downloadLink);
+          if (Array.isArray(statusData.tracks) && statusData.tracks.length > 1) {
+            const second = statusData.tracks[1];
+            const heading = document.createElement("h3");
+            heading.textContent = "Version 2: " + (second.title || "Alternative version");
+            heading.style.marginTop = "22px";
+            output.appendChild(heading);
+            const secondPlayer = document.createElement("audio");
+            secondPlayer.controls = true;
+            secondPlayer.preload = "none";
+            secondPlayer.src = second.audioUrl;
+            secondPlayer.style.display = "block";
+            secondPlayer.style.width = "100%";
+            secondPlayer.style.marginTop = "10px";
+            output.appendChild(secondPlayer);
+            if (second.downloadUrl || second.audioUrl) {
+              const secondDownload = document.createElement("a");
+              secondDownload.href = second.downloadUrl || second.audioUrl;
+              secondDownload.textContent = "DOWNLOAD VERSION 2";
+              secondDownload.style.display = "inline-block";
+              secondDownload.style.marginTop = "12px";
+              secondDownload.style.color = "#ff6673";
+              output.appendChild(secondDownload);
+            }
+          }
           await refreshAuthState();
           completed = true;
           break;
