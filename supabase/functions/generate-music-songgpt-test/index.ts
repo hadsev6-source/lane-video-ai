@@ -205,8 +205,11 @@ Deno.serve(async (req: Request) => {
           }, { onConflict: "job_id,track_index" });
           if (rowError) throw rowError;
         }
+        const { data: firstTrack } = await admin.from("songgpt_music_job_tracks")
+          .select("storage_path").eq("job_id", job.id).eq("user_id", user.id)
+          .eq("track_index", 1).maybeSingle();
         await admin.from("music_generation_jobs").update({
-          status: "completed", storage_path: `${user.id}/LANE_Song_${job.id}_v1.${extension("audio/mpeg")}`,
+          status: "completed", storage_path: firstTrack?.storage_path || null,
           updated_at: new Date().toISOString(),
         }).eq("id", job.id).eq("user_id", user.id);
         const tracks = await signTracks(admin, job, user.id);
