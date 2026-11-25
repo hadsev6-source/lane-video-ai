@@ -44,10 +44,10 @@ The current generator uses the `music_generation_jobs` table, `debit_music_credi
 
 ## Cost model to validate before enabling paid production traffic
 
-At the published USD 0.10 per call, two returned versions cost USD 0.05 each if both are retained and delivered. If only one take is delivered, the effective cost of the delivered take is the full USD 0.10 call cost. Compare this against the existing LANE package revenue per 25 credits and include FX, VAT, Stripe, storage, retries and support costs before finalizing margin.
+At the published USD 0.10 per call, two returned versions cost USD 0.05 each. The 25 LANE credits are charged once for the pair. At the existing EUR 5 package (550 credits), 25 credits represent approximately EUR 0.227 in gross customer revenue before taxes/fees; using the planning FX rate 0.9168 EUR/USD, the SongGPT call costs approximately EUR 0.092, leaving approximately EUR 0.135 gross contribution per generation pair before VAT, Stripe, FX spread, storage, hosting, retries and support. This is a planning estimate, not a final margin guarantee.
 
 ## Current implementation status (2026-11-25)\n\n- Created branch `songgpt-integration-test` from the existing isolated test branch.\n- Confirmed the LANE frontend invokes `generate-music` with `start` and `status` actions and expects one `audioUrl`; the current Edge Function is WaveSpeed-specific.\n- Confirmed the current job pipeline debits credits through `debit_music_credits`, refunds through `refund_music_credits`, stores one output in `user-songs`, and returns signed playback/download URLs.\n- A direct provider swap is not safe yet: SongGPT publicly confirms `POST /v1/music/generate`, two tracks per call, and asynchronous processing, but its public page snapshot does not specify the JSON request, task ID field, status route/shape, or audio URLs. The current LANE UI also needs a deliberate two-track result display rather than silently dropping one result.\n- No SongGPT API request has been sent and no provider credits have been spent.
-- Product decision recorded: one LANE generation consumes 25 credits and presents one primary song; no automatic second generation. Since SongGPT's public API says generate returns two songs per $0.10 call, a single-output API parameter must be verified in the official docs. If none exists, the second take is an optional alternate from the same paid request, not a second paid job.\n\n## Required technical checks before implementation is enabled
+- Product decision recorded and confirmed by owner: one LANE generation consumes 25 credits once and delivers both SongGPT versions from the same $0.10 API call. Each version is not separately charged.\n\n## Required technical checks before implementation is enabled
 
 The public API landing page confirms the submission route but does not expose enough machine-readable detail in the page snapshot for us to safely guess:
 - exact request JSON fields and enum values for lyrics/instrumental/model options;
@@ -66,7 +66,7 @@ Obtain the official API reference/OpenAPI document or confirm these details from
 2. AI-written lyrics generation.
 3. User-supplied lyrics generation.
 4. Instrumental generation.
-5. Single-song customer experience: one primary output is shown and playable; optional second take is available only if returned in the same paid call, with no extra debit or provider call.
+5. Both returned tracks are downloaded, stored in the user's folder, signed and playable as two alternatives; one 25-credit debit total and one provider call.
 6. WAV/MP3 compatibility with `generate-music-video`.
 7. Provider timeout, rejection, moderation failure and terminal task failure.
 8. Exactly-once LANE credit refund on failure; no duplicate debit/refund under repeated status polling.
