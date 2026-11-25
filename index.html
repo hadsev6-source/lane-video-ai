@@ -2376,7 +2376,7 @@ body>#myfiles,#myfiles{display:none}
       }
 
       const creditsCharged = Number(startData.creditsUsed ?? 25);
-      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: 25\nStatus: Processing...";
+      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: " + creditsCharged + "\nStatus: Processing...";
       button.textContent = "GENERATING...";
 
       const maxAttempts = 120; // Up to 10 minutes at 5-second intervals.
