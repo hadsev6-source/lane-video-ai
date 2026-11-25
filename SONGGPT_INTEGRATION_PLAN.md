@@ -77,3 +77,29 @@ Obtain the official API reference/OpenAPI document or confirm these details from
 - Do not modify or deploy production `generate-music` until the test matrix passes and the owner explicitly approves the cutover.
 - Keep `WAVESPEED_API_KEY` and the existing WaveSpeed production function untouched as rollback.
 - Store the provider secret only as Supabase Edge Function secret `SONGGPT_API_KEY`.
+
+
+## Implementation added to the isolated test branch (2026-11-25)
+
+The supplied official OpenAPI 3.1.0 JSON/YAML documents were inspected. Confirmed API details:
+- Server base: `https://www.songgpt.ai/openapi/v1`
+- Generate: `POST /music/generate`; bearer key; success requires HTTP success and `code === 0`; save `data.unique_id` (and task_id for diagnostics).
+- Status: `POST /music/tasks/status` with `{ "unique_ids": ["..."] }`; poll every few seconds until `is_complete === true`.
+- Task states documented: pending, running, partial, succeeded, failed.
+- Audio URLs are `songs[].audio_url` and may remain null until the audio has been transferred to SongGPT storage. A succeeded task with unavailable track audio is not a reason to resubmit.
+- Simple mode accepts a prompt up to 3,000 characters; non-instrumental simple mode supports `n` from 1 to 3. Custom mode requires style and title; non-instrumental custom mode also requires lyrics/prompt. Custom duration is 10–360 seconds. Status queries are free.
+- SongGPT explicitly warns that this API release has no client idempotency-key protocol: after a timeout, query the existing task and do not automatically submit again.
+
+Files added/updated in this branch:
+- `supabase/migrations/202611250001_songgpt_music_job_tracks.sql`: isolated table for per-version metadata and storage paths.
+- `supabase/functions/generate-music-songgpt-test/index.ts`: separate test Edge Function; does not replace the existing WaveSpeed `generate-music` function. It charges once, submits one SongGPT task, polls by unique_id, downloads available song audio into the user's `user-songs` folder and signs the track URLs.
+- `index.html`: test branch UI points the music form at the separate test function and renders a second audio player when a second track is returned.
+- Existing production function remains untouched.
+
+Important remaining gates:
+- The new migration and Edge Function have NOT been applied/deployed to Supabase. The test branch is code-only at this point.
+- No SongGPT API request has been sent; no SongGPT balance has been spent.
+- The table migration must be applied to the test database before the test Edge Function can store track rows.
+- Need run static checks and test cases for simple, custom lyrics, instrumental, two returned tracks, partial/missing audio, provider failure, timeouts and refund idempotency.
+- The OpenAPI schema says `n` is only forwarded for non-instrumental simple generation; custom/instrumental branches do not use it. Verify the provider returns two versions in those modes during a controlled test before production.
+- Do not deploy to production or switch production traffic until tests pass and the owner explicitly approves.
