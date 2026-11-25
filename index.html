@@ -2350,7 +2350,7 @@ body>#myfiles,#myfiles{display:none}
     player.pause();
     player.removeAttribute("src");
     player.classList.add("hidden");
-    output.textContent = "Submitting your music request... 25 credits will be charged if the request is accepted.";
+    output.textContent = "Submitting your music request... credits will be charged if the request is accepted.";
 
     try {
       const { data: startData, error: startError } = await supabaseClient.functions.invoke("generate-music-songgpt-test", {
@@ -2375,6 +2375,7 @@ body>#myfiles,#myfiles{display:none}
         throw new Error(startData?.error || "The music generation request could not start.");
       }
 
+      const creditsCharged = Number(startData.creditsUsed ?? 25);
       output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: 25\nStatus: Processing...";
       button.textContent = "GENERATING...";
 
@@ -2393,7 +2394,7 @@ body>#myfiles,#myfiles{display:none}
         }
 
         if (statusData?.status === "failed" || statusData?.success === false) {
-          throw new Error((statusData?.error || "Music generation failed.") + (statusData?.refunded ? " Your 25 credits have been refunded." : ""));
+          throw new Error((statusData?.error || "Music generation failed.") + (statusData?.refunded ? " Your credits have been refunded." : ""));
         }
 
         if (statusData?.status === "completed") {
@@ -2403,9 +2404,8 @@ body>#myfiles,#myfiles{display:none}
           }
           player.src = statusData.audioUrl;
           player.classList.remove("hidden");
-          laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed || 25, file_name: statusData.fileName || null });
-          laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed || 25, file_name: statusData.fileName || null });
-          output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed || 25) + "\n\nUse the player below to listen. The song is also saved in My Files.";
+          laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed ?? creditsCharged, file_name: statusData.fileName || null });
+          output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed ?? creditsCharged) + "\n\nUse the player below to listen. The song is also saved in My Files.";
           const downloadLink = document.createElement("a");
           downloadLink.href = statusData.downloadUrl || statusData.audioUrl;
           downloadLink.target = "_self";
