@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
       } catch (e) {
         // Submission outcome is unknown: SongGPT has no idempotency key. Do not auto-refund or resubmit.
         await admin.from("music_generation_jobs").update({
-          status: "submission_unknown", error_message: "SongGPT submission outcome is unknown. Check provider task before retrying.",
+          status: "queued", error_message: "SongGPT submission outcome is unknown. Check provider task before retrying.",
           updated_at: new Date().toISOString(),
         }).eq("id", job.id).eq("user_id", user.id);
         return out({ success: false, status: "submission_unknown", jobId: job.id, error: "The provider connection timed out. Do not submit again; contact support to check the task." }, 202);
