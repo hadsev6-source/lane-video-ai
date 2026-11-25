@@ -32,10 +32,8 @@ The current generator uses the `music_generation_jobs` table, `debit_music_credi
 ## Proposed product behavior
 
 - Keep the current consumer price at 25 LANE credits per generation initially.
-- **One LANE generation action = one 25-credit debit = one primary song shown to the customer.** Never make a second SongGPT generate call to produce an alternate automatically.
-- First preference: if the official API supports requesting a single output, use that option and verify its billing.
-- Public API information currently says each generate call returns two songs for USD 0.10. If two outputs are unavoidable, download/store the second output only if it is included in the same call and does not create additional provider charges; show the primary song by default and offer the second as an optional alternate in the same generation result, without another LANE debit or provider call.
-- If retaining both outputs is not needed or creates additional storage/compatibility risk, keep only the selected primary output. Never silently present two separate paid generations.
+- **One LANE generation action = one 25-credit debit = both SongGPT versions delivered to the customer.** Both versions come from the same API call; never make a second generate call for the alternate.
+- The official public API page says every generate call returns two full song versions for USD 0.10. Store both outputs from that single call in the user's `user-songs` folder, provide signed playback/download URLs for both, and display them as Version 1 and Version 2 in the same generation result. Do not make a second API call and do not charge additional LANE credits for the second version.
 - Debit credits once per provider generation job, not once per returned take.
 - If the provider rejects the request before accepting it, refund LANE credits.
 - If the provider reports a terminal failed task, refund LANE credits exactly once.
@@ -47,7 +45,7 @@ The current generator uses the `music_generation_jobs` table, `debit_music_credi
 At the published USD 0.10 per call, two returned versions cost USD 0.05 each. The 25 LANE credits are charged once for the pair. At the existing EUR 5 package (550 credits), 25 credits represent approximately EUR 0.227 in gross customer revenue before taxes/fees; using the planning FX rate 0.9168 EUR/USD, the SongGPT call costs approximately EUR 0.092, leaving approximately EUR 0.135 gross contribution per generation pair before VAT, Stripe, FX spread, storage, hosting, retries and support. This is a planning estimate, not a final margin guarantee.
 
 ## Current implementation status (2026-11-25)\n\n- Created branch `songgpt-integration-test` from the existing isolated test branch.\n- Confirmed the LANE frontend invokes `generate-music` with `start` and `status` actions and expects one `audioUrl`; the current Edge Function is WaveSpeed-specific.\n- Confirmed the current job pipeline debits credits through `debit_music_credits`, refunds through `refund_music_credits`, stores one output in `user-songs`, and returns signed playback/download URLs.\n- A direct provider swap is not safe yet: SongGPT publicly confirms `POST /v1/music/generate`, two tracks per call, and asynchronous processing, but its public page snapshot does not specify the JSON request, task ID field, status route/shape, or audio URLs. The current LANE UI also needs a deliberate two-track result display rather than silently dropping one result.\n- No SongGPT API request has been sent and no provider credits have been spent.
-- Product decision recorded and confirmed by owner: one LANE generation consumes 25 credits once and delivers both SongGPT versions from the same $0.10 API call. Each version is not separately charged.\n\n## Required technical checks before implementation is enabled
+- Product decision recorded and confirmed by owner: one LANE generation consumes 25 credits once and delivers both SongGPT versions from the same $0.10 API call. Each version is not separately charged. Both versions are required, not an optional alternate.\n\n## Required technical checks before implementation is enabled
 
 The public API landing page confirms the submission route but does not expose enough machine-readable detail in the page snapshot for us to safely guess:
 - exact request JSON fields and enum values for lyrics/instrumental/model options;
