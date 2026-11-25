@@ -1,6 +1,6 @@
 # SongGPT API integration plan for LANE AI STUDIO
 
-Status: preparation only. This document does not change the production music generator.
+Status: isolated integration branch created (`songgpt-integration-test`). No production code or deployed function has been changed. Provider adapter implementation is intentionally blocked until the authenticated SongGPT API reference confirms request, polling, and audio-output schemas.
 
 ## Provider facts verified from SongGPT's public API page (checked 2026-11-25)
 
@@ -43,7 +43,7 @@ The current generator uses the `music_generation_jobs` table, `debit_music_credi
 
 At the published USD 0.10 per call, two returned versions cost USD 0.05 each if both are retained and delivered. If only one take is delivered, the effective cost of the delivered take is the full USD 0.10 call cost. Compare this against the existing LANE package revenue per 25 credits and include FX, VAT, Stripe, storage, retries and support costs before finalizing margin.
 
-## Required technical checks before implementation is enabled
+## Current implementation status (2026-11-25)\n\n- Created branch `songgpt-integration-test` from the existing isolated test branch.\n- Confirmed the LANE frontend invokes `generate-music` with `start` and `status` actions and expects one `audioUrl`; the current Edge Function is WaveSpeed-specific.\n- Confirmed the current job pipeline debits credits through `debit_music_credits`, refunds through `refund_music_credits`, stores one output in `user-songs`, and returns signed playback/download URLs.\n- A direct provider swap is not safe yet: SongGPT publicly confirms `POST /v1/music/generate`, two tracks per call, and asynchronous processing, but its public page snapshot does not specify the JSON request, task ID field, status route/shape, or audio URLs. The current LANE UI also needs a deliberate two-track result display rather than silently dropping one result.\n- No SongGPT API request has been sent and no provider credits have been spent.\n\n## Required technical checks before implementation is enabled
 
 The public API landing page confirms the submission route but does not expose enough machine-readable detail in the page snapshot for us to safely guess:
 - exact request JSON fields and enum values for lyrics/instrumental/model options;
