@@ -1467,7 +1467,7 @@ body>#myfiles,#myfiles{display:none}
 <a href="#pricing" onclick="closeLaneMenu()">CREDITS</a>
 <a href="#myfiles" onclick="openMyFilesModal(event)">MY FILES</a>
 <details class="notification-menu">
-<summary>🔔 NOTIFICATIONS</summary>
+<summary onclick="loadLaneNotifications()">🔔 NOTIFICATIONS</summary>
 <div class="notification-dropdown" id="laneNotifications">
 <strong>NOTIFICATIONS</strong>
 <p>No new notifications.</p>
@@ -2049,10 +2049,38 @@ body>#myfiles,#myfiles{display:none}
     node.classList.toggle("is-complete",!!complete);
   }
 
+
+  function openLaneSettings(){
+    if(!currentUser){alert("Please sign in first.");document.getElementById("support")?.scrollIntoView({behavior:"smooth"});return;}
+    const modal=document.getElementById("laneAccountModal"),heading=document.getElementById("laneAccountModalTitle"),body=document.getElementById("laneAccountModalBody");
+    heading.textContent="ACCOUNT SETTINGS";
+    const email=document.createElement("p");email.textContent="Signed in as: "+(currentUser.email||"");
+    const reset=document.createElement("button");reset.className="secondary-btn";reset.textContent="SEND PASSWORD RESET EMAIL";reset.onclick=async()=>{const {error}=await supabaseClient.auth.resetPasswordForEmail(currentUser.email,{redirectTo:SITE_URL});alert(error?"Could not send reset email: "+error.message:"Password reset email sent.");};
+    const signout=document.createElement("button");signout.className="danger-btn";signout.textContent="SIGN OUT";signout.onclick=async()=>{closeAccountHistory();await signOut();};
+    body.replaceChildren(email,reset,signout);modal.classList.add("open");
+  }
+  async function loadLaneNotifications(){
+    const panel=document.getElementById("laneNotifications");if(!panel)return;
+    if(!currentUser){panel.innerHTML="<strong>NOTIFICATIONS</strong><p>Sign in to view account activity.</p>";return;}
+    panel.innerHTML="<strong>NOTIFICATIONS</strong><p>Loading recent activity...</p>";
+    try{
+      const [music,video,credits]=await Promise.all([
+        supabaseClient.from("music_generation_jobs").select("status,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(3),
+        supabaseClient.from("video_generations").select("status,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(3),
+        supabaseClient.from("credit_transactions").select("amount,description,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(3)
+      ]);
+      const items=[...(music.data||[]).map(x=>({label:"Music generation: "+x.status,date:x.created_at})),...(video.data||[]).map(x=>({label:"Video generation: "+x.status,date:x.created_at})),...(credits.data||[]).map(x=>({label:(x.description||"Credit balance updated")+" ("+x.amount+" credits)",date:x.created_at}))].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
+      panel.replaceChildren();const h=document.createElement("strong");h.textContent="NOTIFICATIONS";panel.appendChild(h);
+      if(!items.length){const p=document.createElement("p");p.textContent="No recent account activity.";panel.appendChild(p);return;}
+      items.forEach(item=>{const p=document.createElement("p");p.textContent=item.label+" · "+new Date(item.date).toLocaleString();panel.appendChild(p);});
+    }catch(error){panel.innerHTML="<strong>NOTIFICATIONS</strong><p>Could not load recent activity.</p>";}
+  }
+
   function closeLaneMenu(){const menu=document.querySelector(".main-menu");if(menu)menu.open=false;}
   function openAccountSection(section){
     closeLaneMenu();
-    if(section==="overview"||section==="settings"){document.getElementById("support")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+    if(section==="overview"){document.getElementById("support")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+    if(section==="settings"){openLaneSettings();return;}
     if(section==="credits"||section==="buy"){document.getElementById(section==="buy"?"pricing":"credits")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
     if(section==="billing"||section==="usage"){openAccountHistory(section);return;}
   }
