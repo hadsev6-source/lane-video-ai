@@ -1261,6 +1261,15 @@ body>#myfiles,#myfiles{display:none}
 .lane-generation-progress .lane-progress-label{font-size:13px;font-weight:700;white-space:nowrap}
 @keyframes lane-progress-move{0%{transform:translateX(-120%)}100%{transform:translateX(300%)}}
 
+.dance-preview-overlay{display:none;position:fixed;inset:0;z-index:10060;background:#000e;overflow:auto;padding:20px 12px}
+.dance-preview-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.dance-preview-dialog{width:min(1050px,100%);margin:auto;background:#101114;color:#fff;border:1px solid #a84d16;border-radius:18px;padding:22px;box-shadow:0 20px 80px #000}
+.dance-preview-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.dance-preview-kicker{color:#ffad52;font-size:11px;font-weight:900;letter-spacing:.2em}.dance-preview-top h2{margin:5px 0;color:#ffad52;font-size:28px}.dance-preview-top p{margin:0;color:#bbb}
+.dance-preview-hero{margin:18px 0;border-radius:14px;min-height:210px;padding:28px;display:flex;align-items:center;background:linear-gradient(90deg,#08090bee,#08090b88),url('') center/cover,#26232a;border:1px solid #39343a}
+.dance-preview-hero>div{max-width:560px}.dance-preview-hero span{font-size:11px;letter-spacing:.16em;color:#ffbd75;font-weight:900}.dance-preview-hero h3{font-size:clamp(25px,4vw,40px);margin:9px 0}.dance-preview-hero p{color:#d0d0d0;line-height:1.6}
+.dance-preview-notice{padding:12px;border:1px solid #8a5b25;background:#24190e;color:#ffd59f;border-radius:9px;font-size:12px;font-weight:800;letter-spacing:.04em;margin-bottom:16px}
+.dance-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.dance-preview-card{padding:16px;border:1px solid #34363b;border-radius:12px;background:#17191e;display:flex;flex-direction:column;gap:8px;min-width:0}.dance-preview-card h3{font-size:13px;color:#ffb66a;margin:0 0 5px;letter-spacing:.07em}.dance-preview-card label{font-size:11px;color:#ddd;font-weight:800}.dance-preview-card input,.dance-preview-card select,.dance-preview-card textarea{box-sizing:border-box;width:100%;padding:11px;border-radius:8px;border:1px solid #4b4e55;background:#0e1014;color:#fff;font:inherit}.dance-preview-card textarea{min-height:75px;resize:vertical}.dance-preview-help{color:#aaa;font-size:12px;line-height:1.5;margin:4px 0}.dance-preview-footer{margin-top:16px;padding:16px;border:1px solid #444;border-radius:12px;background:#191919;display:flex;align-items:center;justify-content:space-between;gap:16px}.dance-preview-footer p{margin:6px 0;color:#ccc;font-size:13px}.dance-preview-footer small{color:#ffbd75}.dance-preview-footer button{padding:12px 18px;border:0;border-radius:8px;background:#ff9b32;color:#160c03;font-weight:900}
+@media(max-width:650px){.dance-preview-dialog{padding:14px}.dance-preview-grid{grid-template-columns:1fr}.dance-preview-hero{min-height:180px;padding:18px}.dance-preview-footer{align-items:flex-start;flex-direction:column}.dance-preview-top h2{font-size:22px}}
 #faceLabModal{display:none;position:fixed;inset:0;z-index:10050;background:#000e;overflow:auto;padding:24px 14px}
 #faceLabModal.open{display:flex;align-items:flex-start;justify-content:center}
 .face-lab-dialog{width:min(720px,100%);margin:auto;background:#101010;border:1px solid #a84d16;border-radius:16px;padding:22px;box-shadow:0 20px 80px #000}
@@ -1624,7 +1633,7 @@ body>#myfiles,#myfiles{display:none}
       <span class="lane-showcase-brand">LANE</span><h2>FACE LAB STUDIO</h2>
       <p>PUT YOUR FACE IN ANY PERFORMANCE</p>
       <div class="lane-showcase-features"><span>♧ <small>UPLOAD FACE</small></span><span>▣ <small>CHOOSE SCENE</small></span><span>☷ <small>SELECT STYLE</small></span><span>✧ <small>GENERATE</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button>
+      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button><button type="button" class="lane-showcase-cta" style="margin-top:9px;background:#252525;border:1px solid #ff9b32;color:#fff" onclick="openDanceStudioPreview()">PREVIEW NEW DANCE STUDIO <b>→</b></button>
     </div>
     <div class="lane-showcase-face-visual" role="img" aria-label="Hip-hop and Afrobeat performers in a cinematic music video"></div>
     <div class="lane-showcase-genres"><span>AFROBEAT</span><span>HIP-HOP</span><span>R&amp;B</span><span>AMAPIANO</span><span>RAP</span></div>
@@ -1992,6 +2001,23 @@ body>#myfiles,#myfiles{display:none}
   <button class="face-lab-action" id="faceLabStart" type="button" onclick="startFaceLab()">GENERATE FACE SWAP</button>
   <div class="face-lab-status" id="faceLabStatus" role="status" aria-live="polite"></div>
   <div class="face-lab-result" id="faceLabResult"><a id="faceLabDownload" href="#" target="_blank" rel="noopener">OPEN / DOWNLOAD RESULT</a></div>
+ </div>
+</div>
+
+<div id="danceStudioPreview" class="dance-preview-overlay" aria-hidden="true">
+ <div class="dance-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="dancePreviewTitle">
+  <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">AI DANCE STUDIO</h2><p>Create your own AI dance and music videos.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
+  <div class="dance-preview-hero"><div><span>YOUR IDEA. YOUR MUSIC. YOUR CHOREOGRAPHY.</span><h3>Bring every dance vision to life.</h3><p>Choose a location, build your cast, direct the choreography and match every move to your music.</p></div></div>
+  <div class="dance-preview-notice">STUDIO CONCEPT PREVIEW — These controls show the planned workflow. AI video generation is not connected to this preview yet.</div>
+  <div class="dance-preview-grid">
+   <section class="dance-preview-card"><h3>01 / SCENE & LOCATION</h3><label>Choose your setting</label><select><option>Beach / Seaside</option><option>Mountain</option><option>City Street</option><option>Night Club</option><option>Dance Studio</option><option>Urban Rooftop</option><option>Custom Location</option></select><label>Scene description</label><textarea placeholder="Describe the location, lighting, atmosphere and camera style..."></textarea></section>
+   <section class="dance-preview-card"><h3>02 / CHARACTERS</h3><label>Dance cast</label><select><option>Mixed Dance Group</option><option>Male Dancers</option><option>Female Dancers</option><option>Solo Performer</option></select><label>Number of dancers</label><select><option>6 dancers</option><option>1 dancer</option><option>2 dancers</option><option>3 dancers</option><option>4 dancers</option><option>5 dancers</option><option>8 dancers</option><option>10 dancers</option></select><label>Appearance & outfits</label><textarea placeholder="Describe the dancers, clothing, age range and visual style..."></textarea><label class="dance-preview-upload">Upload reference photo<input type="file" accept="image/*"></label></section>
+   <section class="dance-preview-card"><h3>03 / DANCE & CHOREOGRAPHY</h3><label>Dance style</label><select><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>Dancehall</option><option>Street Dance</option><option>Salsa</option><option>Contemporary</option><option>Custom Style</option></select><label>Choreography direction</label><textarea placeholder="Describe footwork, arm movements, formations, lead dancer, synchronization and transitions..."></textarea><label>Performance energy</label><select><option>High Energy</option><option>Relaxed & Smooth</option><option>Powerful</option><option>Playful</option><option>Elegant</option></select></section>
+   <section class="dance-preview-card"><h3>04 / MUSIC & AUDIO</h3><label>Music genre</label><select><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>R&amp;B</option><option>Dancehall</option><option>Custom</option></select><label>Tempo (BPM)</label><input type="number" min="40" max="220" value="115"><label>Upload your audio</label><input type="file" accept="audio/*"><label>Lyrics / text</label><textarea placeholder="Add lyrics or text for the video..."></textarea><label>Music prompt</label><textarea placeholder="Describe the sound, instruments, rhythm and mood..."></textarea></section>
+   <section class="dance-preview-card"><h3>05 / PHOTO & FACE OPTIONS</h3><label>Upload a photo (optional)</label><input type="file" accept="image/*"><label>Face replacement</label><select><option>No face replacement</option><option>Use uploaded photo for face replacement</option></select><p class="dance-preview-help">Use a photo as a visual reference, or optionally request a face replacement. Face replacement is not required.</p></section>
+   <section class="dance-preview-card"><h3>06 / VIDEO DIRECTION</h3><label>Your video prompt</label><textarea placeholder="Describe the complete music video: action, camera shots, mood, scene changes and story..."></textarea><label>Video duration</label><select><option>15 seconds</option><option>30 seconds</option><option>60 seconds</option></select><p class="dance-preview-help">Combine your scene, cast, choreography and music into one creative direction.</p></section>
+  </div>
+  <div class="dance-preview-footer"><div><strong>07 / GENERATION & LIBRARY</strong><p>Generation status · Video preview · My Videos · My Characters · My Audio · Download · Share</p><small>Planned social sharing: TikTok · Instagram · Facebook</small></div><button type="button" onclick="closeDanceStudioPreview()">GOT IT</button></div>
  </div>
 </div>
 
@@ -3776,6 +3802,14 @@ function closeStudioWorkspace() {
 }
 
 
+function openDanceStudioPreview(){
+ const m=document.getElementById("danceStudioPreview");if(!m)return;
+ m.classList.add("open");m.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+}
+function closeDanceStudioPreview(){
+ const m=document.getElementById("danceStudioPreview");if(!m)return;
+ m.classList.remove("open");m.setAttribute("aria-hidden","true");document.body.style.overflow="";
+}
 function openFaceSwapComingSoon(){
  const m=document.getElementById("faceLabModal");if(!m)return;
  if(!currentUser){alert("Please sign in first to use Face Lab.");document.getElementById("support")?.scrollIntoView({behavior:"smooth"});return;}
