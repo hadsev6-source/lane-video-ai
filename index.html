@@ -328,6 +328,14 @@
       flex-wrap: wrap;
     }
 
+
+    .lane-social-share{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:4px;padding:3px 6px;border:1px solid #493035;border-radius:8px;background:#100b0c}
+    .lane-social-share-label{font-size:11px;color:#ddd;white-space:nowrap}
+    .lane-social-icon{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;padding:5px;border:1px solid #514047;border-radius:6px;background:#21171a;color:#fff;cursor:pointer}
+    .lane-social-icon:hover{border-color:#ff4654;background:#3a151b}
+    .lane-social-icon:disabled{opacity:.5;cursor:wait}
+    .lane-social-icon svg{width:17px;height:17px;display:block}
+    .file-actions{align-items:center}
     .file-actions button {
       font-size: 12px;
       padding: 9px 12px;
@@ -2886,6 +2894,43 @@ if (currentUser) {
     }
   }
 
+  function createSocialShareControls(getMedia) {
+    const wrap = document.createElement("div");
+    wrap.className = "lane-social-share";
+    const label = document.createElement("span");
+    label.className = "lane-social-share-label";
+    label.textContent = "Сподели с:";
+    wrap.appendChild(label);
+
+    const destinations = [
+      { name: "Facebook", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3.1h-3.1V8c0-.9.3-1.5 1.6-1.5h1.7V3.7c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2H7.3V13h2.8v8z"/></svg>' },
+      { name: "Instagram", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.8" r="1.2" fill="currentColor"/></svg>' },
+      { name: "TikTok", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.1 1.5 3.4 3.4 3.6v3.1a8 8 0 0 1-3.4-.9v6.1a6 6 0 1 1-6-6c.4 0 .8 0 1.2.1v3.2a3 3 0 1 0 1.8 2.8V3z"/></svg>' },
+      { name: "WhatsApp", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a9.7 9.7 0 0 0-8.4 14.5L2.3 22l5.7-1.5A9.9 9.9 0 1 0 12 2zm0 17.8a8 8 0 0 1-4.1-1.1l-.3-.2-3.4.9.9-3.3-.2-.3A8 8 0 1 1 12 19.8zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8.9-.3.2-.5.1a6.5 6.5 0 0 1-1.9-1.2 7 7 0 0 1-1.3-1.6c-.1-.2 0-.3.1-.4l.4-.5.2-.4v-.4c-.1-.1-.5-1.3-.7-1.8-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3s-.8.8-.8 1.9.8 2.2.9 2.3a9 9 0 0 0 3.5 3.1c.5.2.9.4 1.2.5.5.2 1 .2 1.4.1.4-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1s-.2-.2-.4-.3z"/></svg>' }
+    ];
+    destinations.forEach(destination => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "lane-social-icon";
+      button.title = destination.name;
+      button.setAttribute("aria-label", "Сподели с " + destination.name);
+      button.innerHTML = destination.icon;
+      button.onclick = async () => {
+        wrap.querySelectorAll("button").forEach(item => item.disabled = true);
+        try {
+          const media = await getMedia();
+          await shareGeneratedMedia(media.url, media.name, media.type, media.title);
+        } catch (error) {
+          showFileMessage("Неуспешно споделяне: " + (error?.message || String(error)), true);
+        } finally {
+          wrap.querySelectorAll("button").forEach(item => item.disabled = false);
+        }
+      };
+      wrap.appendChild(button);
+    });
+    return wrap;
+  }
+
   // LOAD MY FILES
 
   async function loadMyFiles() {
@@ -3041,18 +3086,16 @@ if (currentUser) {
           file.name.toLowerCase().endsWith(".webp") ? "image/webp" : "image/jpeg"
       );
 
-      const shareButton = document.createElement("button");
-      shareButton.className = "secondary-btn";
-      shareButton.textContent = "SHARE";
-      shareButton.onclick = () => shareGeneratedMedia(
-        file.signedUrl,
-        file.name,
-        file.name.toLowerCase().endsWith(".png") ? "image/png" :
+      const shareControls = createSocialShareControls(async () => ({
+        url: file.signedUrl,
+        name: file.name,
+        type: file.name.toLowerCase().endsWith(".png") ? "image/png" :
           file.name.toLowerCase().endsWith(".webp") ? "image/webp" : "image/jpeg",
-        "LANE AI image"
-      );
+        title: "LANE AI image"
+      }));
 
-      actions.append(openButton, downloadButton, phoneButton, shareButton, deleteButton);
+      actions.append(openButton, downloadButton, phoneButton, deleteButton);
+      actions.appendChild(shareControls);
       row.append(preview, info, actions);
       list.appendChild(row);
     });
@@ -3208,25 +3251,18 @@ if (currentUser) {
         }
       };
 
-      const shareButton = document.createElement("button");
-      shareButton.className = "secondary-btn";
-      shareButton.textContent = "SHARE";
-      shareButton.onclick = async () => {
-        shareButton.disabled = true;
-        shareButton.textContent = "PREPARING...";
-        try {
-          const shareUrl = await getVideoDownloadUrl(video);
-          const fileName = "lane-video-" + String(video.id || Date.now()).slice(0, 12) + ".mp4";
-          await shareGeneratedMedia(shareUrl, fileName, "video/mp4", "LANE AI video");
-        } catch (error) {
-          showFileMessage("Could not share video: " + (error?.message || String(error)), true);
-        } finally {
-          shareButton.disabled = false;
-          shareButton.textContent = "SHARE";
-        }
-      };
+      const shareControls = createSocialShareControls(async () => {
+        const shareUrl = await getVideoDownloadUrl(video);
+        return {
+          url: shareUrl,
+          name: "lane-video-" + String(video.id || Date.now()).slice(0, 12) + ".mp4",
+          type: "video/mp4",
+          title: "LANE AI video"
+        };
+      });
 
-      actions.append(openButton, downloadButton, phoneButton, shareButton, deleteButton);
+      actions.append(openButton, downloadButton, phoneButton, deleteButton);
+      actions.appendChild(shareControls);
       details.appendChild(actions);
       row.append(preview, details);
       list.appendChild(row);
