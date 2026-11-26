@@ -1469,6 +1469,28 @@ body>#myfiles,#myfiles{display:none}
   header.site-header .credit-counter { right:104px !important; min-width:60px !important; }
   .lane-hero-wordmark { font-size:26px !important; }
 }
+/* Keep Google sign-in visible in the mobile header, not inside MENU */
+@media (max-width:760px) {
+  header.site-header { flex-wrap:wrap !important; row-gap:8px !important; }
+  header.site-header .visual-nav {
+    display:flex !important;
+    order:5 !important;
+    flex:1 0 100% !important;
+    width:100% !important;
+    justify-content:center !important;
+    margin:0 !important;
+    padding:0 0 2px !important;
+  }
+  header.site-header .visual-nav a { display:none !important; }
+  header.site-header .visual-nav .header-auth-btn {
+    display:inline-flex !important;
+    min-height:36px !important;
+    padding:7px 18px !important;
+    font-size:12px !important;
+    width:auto !important;
+  }
+  header.site-header .main-menu { order:4 !important; }
+}
 /* Mobile refinements: compact Buy Credits heading and expose Google sign-in in MENU */
 @media (max-width:600px) {
   #pricing { padding-top:4px !important; }
@@ -1504,7 +1526,7 @@ body>#myfiles,#myfiles{display:none}
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#pricing" onclick="closeLaneMenu()">CREDITS</a>
 <a href="#myfiles" onclick="openMyFilesModal(event)">MY FILES</a>
-<button id="mobileGoogleSignIn" class="header-auth-btn mobile-menu-auth" type="button" onclick="currentUser ? signOut() : googleSignIn()">Continue with Google</button>
+
 <details class="notification-menu">
 <summary onclick="loadLaneNotifications()">🔔 NOTIFICATIONS</summary>
 <div class="notification-dropdown" id="laneNotifications">
@@ -2846,11 +2868,6 @@ if (currentUser) {
     if (headerAuthButton) {
       headerAuthButton.textContent = currentUser ? "SIGN OUT" : "Continue with Google";
       headerAuthButton.setAttribute("aria-label", currentUser ? "Sign out of your account" : "Sign in with Google");
-    }
-    const mobileAuthButton = document.getElementById("mobileGoogleSignIn");
-    if (mobileAuthButton) {
-      mobileAuthButton.textContent = currentUser ? "SIGN OUT" : "Continue with Google";
-      mobileAuthButton.setAttribute("aria-label", currentUser ? "Sign out of your account" : "Sign in with Google");
     }
 
     if (currentUser) {
