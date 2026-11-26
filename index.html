@@ -3805,7 +3805,13 @@ function updateDancePrice(){
  if(el)el.textContent=d+" seconds · "+credits.toLocaleString()+" credits · Estimated provider cost: $"+(d*0.324).toFixed(2)+" (720p).";
 }
 document.getElementById("danceDuration")?.addEventListener("change",updateDancePrice);
-function updateDancePromptCounter(){\n const field=document.getElementById("dancePrompt"), counter=document.getElementById("dancePromptCounter");\n if(!field||!counter)return; counter.textContent=field.value.length.toLocaleString()+" / 1,000 characters";\n}\ndocument.getElementById("dancePrompt")?.addEventListener("input",updateDancePromptCounter);\nupdateDancePromptCounter();\nasync function startDanceStudioGeneration(){
+function updateDancePromptCounter(){
+ const field=document.getElementById("dancePrompt"), counter=document.getElementById("dancePromptCounter");
+ if(!field||!counter)return; counter.textContent=field.value.length.toLocaleString()+" / 1,000 characters";
+}
+document.getElementById("dancePrompt")?.addEventListener("input",updateDancePromptCounter);
+updateDancePromptCounter();
+async function startDanceStudioGeneration(){
  const button=document.getElementById("danceGenerateButton"), status=document.getElementById("danceStatus"), result=document.getElementById("danceResult");
  if(!currentUser){alert("Please sign in first.");return;}
  const prompt=document.getElementById("dancePrompt").value.trim();
