@@ -1798,6 +1798,29 @@ body>#myfiles,#myfiles{display:none}
 #myFilesList .file-row audio{margin-top:0!important}
 
 .lane-account-modal{display:none;position:fixed;inset:0;z-index:5000;background:#000d;padding:14px;align-items:center;justify-content:center}.lane-account-modal.open{display:flex}.lane-account-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0b0b0b;border:1px solid #ff9d19;border-radius:14px;padding:18px;color:#fff}.lane-account-dialog>button{float:right}.lane-account-dialog h2{margin:8px 0 18px}.lane-account-history{display:grid;gap:8px}.lane-account-history-row{display:grid;gap:4px;padding:12px;border:1px solid #60401e;border-radius:8px;background:#17120c}.lane-account-history-row span,.lane-account-history-row small{color:#c8c0b7}
+
+
+/* 2026-11 navigation and compact hero refinement */
+#support.section { display:none !important; }
+.site-header { gap:12px; padding:10px 5%; }
+.visual-nav { gap:clamp(10px,1.7vw,24px); }
+.header-auth-btn {
+  display:inline-flex;align-items:center;justify-content:center;min-height:38px;
+  padding:8px 14px;border:1px solid #d5d5d5;border-radius:6px;
+  background:#fff !important;color:#202124 !important;border:1px solid #d5d5d5 !important;
+  font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;box-shadow:0 1px 2px #0004 !important;
+}
+.header-auth-btn:hover { background:#f1f3f4 !important; }
+.header-auth-btn:focus-visible { outline:2px solid #4285f4;outline-offset:3px; }
+.lane-cinematic-hero { min-height:270px !important;padding-top:24px !important;padding-bottom:26px !important; }
+.lane-hero-actions { display:none !important; }
+@media(max-width:760px) {
+  .site-header { gap:8px;padding:9px 4%; }
+  .visual-nav { gap:10px;flex-wrap:wrap; }
+  .visual-nav a { font-size:13px;padding:6px 1px; }
+  .header-auth-btn { min-height:34px;padding:6px 9px;font-size:11px; }
+  .lane-cinematic-hero { min-height:220px !important;padding:20px 5% !important; }
+}
 </style>
 <details class="studio-accordion ivideo-accordion">
   <summary class="studio-strip-hidden">LANE VIDEO STUDIO</summary>
@@ -3918,26 +3941,3 @@ async function startFaceLab(){
 
 </body>
 </html>
-
-
-/* 2026-11 navigation and compact hero refinement */
-#support.section { display:none !important; }
-.site-header { gap:12px; padding:10px 5%; }
-.visual-nav { gap:clamp(10px,1.7vw,24px); }
-.header-auth-btn {
-  display:inline-flex;align-items:center;justify-content:center;min-height:38px;
-  padding:8px 14px;border:1px solid #d5d5d5;border-radius:6px;
-  background:#fff !important;color:#202124 !important;border:1px solid #d5d5d5 !important;
-  font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;box-shadow:0 1px 2px #0004 !important;
-}
-.header-auth-btn:hover { background:#f1f3f4 !important; }
-.header-auth-btn:focus-visible { outline:2px solid #4285f4;outline-offset:3px; }
-.lane-cinematic-hero { min-height:270px !important;padding-top:24px !important;padding-bottom:26px !important; }
-.lane-hero-actions { display:none !important; }
-@media(max-width:760px) {
-  .site-header { gap:8px;padding:9px 4%; }
-  .visual-nav { gap:10px;flex-wrap:wrap; }
-  .visual-nav a { font-size:13px;padding:6px 1px; }
-  .header-auth-btn { min-height:34px;padding:6px 9px;font-size:11px; }
-  .lane-cinematic-hero { min-height:220px !important;padding:20px 5% !important; }
-}
