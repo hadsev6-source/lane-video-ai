@@ -3815,7 +3815,8 @@ async function startDanceStudioGeneration(){
  const button=document.getElementById("danceGenerateButton"), status=document.getElementById("danceStatus"), result=document.getElementById("danceResult");
  if(!currentUser){alert("Please sign in first.");return;}
  const prompt=document.getElementById("dancePrompt").value.trim();
- if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}\n if(prompt.length>1000){alert("Your video prompt must not exceed 1,000 characters.");return;}
+ if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}
+ if(prompt.length>1000){alert("Your video prompt must not exceed 1,000 characters.");return;}
  const image=document.getElementById("danceReferenceImage").files[0], audio=document.getElementById("danceMusicFile").files[0];
  if(image&&image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
