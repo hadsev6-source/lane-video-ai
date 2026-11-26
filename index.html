@@ -1260,6 +1260,25 @@ body>#myfiles,#myfiles{display:none}
 .lane-generation-progress.is-complete .lane-progress-check{display:inline}
 .lane-generation-progress .lane-progress-label{font-size:13px;font-weight:700;white-space:nowrap}
 @keyframes lane-progress-move{0%{transform:translateX(-120%)}100%{transform:translateX(300%)}}
+
+#faceLabModal{display:none;position:fixed;inset:0;z-index:10050;background:#000e;overflow:auto;padding:24px 14px}
+#faceLabModal.open{display:flex;align-items:flex-start;justify-content:center}
+.face-lab-dialog{width:min(720px,100%);margin:auto;background:#101010;border:1px solid #a84d16;border-radius:16px;padding:22px;box-shadow:0 20px 80px #000}
+.face-lab-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.face-lab-head h2{margin:0;color:#ff9b32;font-size:24px;font-weight:950}
+.face-lab-close{background:#222;color:#fff;border:1px solid #555;border-radius:8px;padding:9px 12px}
+.face-lab-intro{color:#bbb;line-height:1.6;font-size:14px}
+.face-lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.face-lab-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.face-lab-field label{font-size:12px;color:#ffbd75;font-weight:800;letter-spacing:.06em}
+.face-lab-field input,.face-lab-field select{width:100%;padding:12px;background:#1d1d1d;border:1px solid #555;border-radius:8px;color:#fff}
+.face-lab-cost{background:#21160d;border:1px solid #87501e;border-radius:9px;padding:13px;color:#eee;font-size:14px;line-height:1.6}
+.face-lab-action{width:100%;padding:14px;border:0;border-radius:9px;background:linear-gradient(100deg,#ffb13b,#e66b08);color:#160c03;font-weight:950;letter-spacing:.04em}
+.face-lab-status{margin-top:14px;color:#eee;line-height:1.6;overflow-wrap:anywhere}
+.face-lab-result{display:none;margin-top:14px}
+.face-lab-result a{color:#ffb35b;font-weight:800}
+@media(max-width:600px){.face-lab-dialog{padding:16px}.face-lab-grid{grid-template-columns:1fr}}
+
 </style>
 
 <style>
@@ -1958,6 +1977,24 @@ body>#myfiles,#myfiles{display:none}
 <div id="myFilesModal" role="dialog" aria-modal="true" aria-label="My Files"><div class="my-files-dialog"><button type="button" class="my-files-close" onclick="closeMyFilesModal()">CLOSE ✕</button><div id="myFilesModalContent"></div></div></div><div id="laneReadyToast" role="status" aria-live="polite"><strong id="laneReadyTitle">Your creation is ready!</strong><p id="laneReadyMessage"></p><div class="toast-actions"><button type="button" class="primary-btn" id="laneReadyOpen">OPEN FILE</button><button type="button" class="secondary-btn" onclick="openMyFilesModal();dismissReadyToast()">MY FILES</button><button type="button" class="secondary-btn" onclick="dismissReadyToast()">CLOSE</button></div></div>
 
 <div id="laneAccountModal" class="lane-account-modal" role="dialog" aria-modal="true" aria-labelledby="laneAccountModalTitle" onclick="if(event.target===this)closeAccountHistory()"><div class="lane-account-dialog"><button type="button" class="secondary-btn" onclick="closeAccountHistory()">CLOSE ✕</button><h2 id="laneAccountModalTitle">ACCOUNT</h2><div id="laneAccountModalBody">Loading...</div></div></div>
+
+<div id="faceLabModal" aria-hidden="true">
+ <div class="face-lab-dialog" role="dialog" aria-modal="true" aria-labelledby="faceLabTitle">
+  <div class="face-lab-head"><h2 id="faceLabTitle">LANE FACE LAB STUDIO</h2><button class="face-lab-close" type="button" onclick="closeFaceLab()">CLOSE ✕</button></div>
+  <p class="face-lab-intro">Качи MP4 performance видео и снимка на лицето. Face Lab ще замени избраното лице във видеото. Поддържа клипове от 3 до 30 секунди. Само видео обработка — без аудио генериране.</p>
+  <div class="face-lab-grid">
+   <div class="face-lab-field"><label for="faceLabVideo">PERFORMANCE VIDEO (MP4, до 100 MB)</label><input id="faceLabVideo" type="file" accept="video/mp4,.mp4" onchange="updateFaceLabEstimate()"></div>
+   <div class="face-lab-field"><label for="faceLabPhoto">FACE PHOTO (JPG / PNG / WEBP)</label><input id="faceLabPhoto" type="file" accept="image/jpeg,image/png,image/webp"></div>
+   <div class="face-lab-field"><label for="faceLabIndex">TARGET FACE</label><select id="faceLabIndex"><option value="0">Largest / Main face</option><option value="1">Face 2</option><option value="2">Face 3</option><option value="3">Face 4</option><option value="4">Face 5</option></select></div>
+   <div class="face-lab-field"><label for="faceLabGender">TARGET GENDER</label><select id="faceLabGender"><option value="all">Any</option><option value="male">Male</option><option value="female">Female</option></select></div>
+  </div>
+  <div class="face-lab-cost" id="faceLabEstimate">Цена: качи MP4 видео, за да изчислим кредита. Ценообразуване: 50% за теб от крайната продажна цена.</div>
+  <button class="face-lab-action" id="faceLabStart" type="button" onclick="startFaceLab()">GENERATE FACE SWAP</button>
+  <div class="face-lab-status" id="faceLabStatus" role="status" aria-live="polite"></div>
+  <div class="face-lab-result" id="faceLabResult"><a id="faceLabDownload" href="#" target="_blank" rel="noopener">OPEN / DOWNLOAD RESULT</a></div>
+ </div>
+</div>
+
 <footer>
 <strong>LANE AI STUDIO</strong><br/>
   CREATE ANYTHING YOU CAN IMAGINE.<br/>
@@ -3738,7 +3775,56 @@ function closeStudioWorkspace() {
   document.body.style.overflow = "";
 }
 
-function openFaceSwapComingSoon(){showLaneReadyToast("LANE FACE LAB STUDIO","This is the new performance studio. The interface is ready; face upload, scene library and video generation will be connected in the next development phase.",null);}
+
+function openFaceSwapComingSoon(){
+ const m=document.getElementById("faceLabModal");if(!m)return;
+ if(!currentUser){alert("Please sign in first to use Face Lab.");document.getElementById("support")?.scrollIntoView({behavior:"smooth"});return;}
+ m.classList.add("open");m.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+}
+function closeFaceLab(){const m=document.getElementById("faceLabModal");m.classList.remove("open");m.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+function updateFaceLabEstimate(){
+ const f=document.getElementById("faceLabVideo").files?.[0],box=document.getElementById("faceLabEstimate");
+ if(!f){box.textContent="Цена: качи MP4 видео, за да изчислим кредита.";return;}
+ const url=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{
+  URL.revokeObjectURL(url);const d=Math.ceil(v.duration);if(!Number.isFinite(d)||d<3||d>30){box.textContent="Видеото трябва да е между 3 и 30 секунди.";return;}
+  const c=Math.ceil(d*0.01*2*0.9168*100);box.textContent="Продължителност: "+d+" сек. · Цена: "+c+" кредита · Ориентировъчна цена: $"+(d*0.02).toFixed(2)+". От крайната продажна цена 50% са за теб.";
+ };v.onerror=()=>{URL.revokeObjectURL(url);box.textContent="Не успяхме да прочетем продължителността на видеото.";};v.src=url;
+}
+async function startFaceLab(){
+ const video=document.getElementById("faceLabVideo").files?.[0],face=document.getElementById("faceLabPhoto").files?.[0];
+ const status=document.getElementById("faceLabStatus"),btn=document.getElementById("faceLabStart"),result=document.getElementById("faceLabResult");
+ result.style.display="none";
+ if(!currentUser){status.textContent="Моля, влез в профила си.";return;}
+ if(!video||!face){status.textContent="Моля, избери MP4 видео и снимка на лицето.";return;}
+ if(video.size>100*1024*1024||face.size>10*1024*1024){status.textContent="Максимум: 100 MB за видео и 10 MB за снимка.";return;}
+ btn.disabled=true;btn.textContent="UPLOADING & STARTING…";status.textContent="Качваме файловете и стартираме Face Swap…";
+ try{
+  const {data:{session}}=await supabaseClient.auth.getSession();if(!session)throw new Error("Сесията е изтекла. Влез отново.");
+  const form=new FormData();form.append("video",video);form.append("face_image",face);
+  form.append("target_index",document.getElementById("faceLabIndex").value);form.append("target_gender",document.getElementById("faceLabGender").value);
+  const {data,error}=await supabaseClient.functions.invoke("face-swap-video",{body:form});
+  if(error)throw error;if(data?.error)throw new Error(data.error);
+  const id=data.job_id;if(!id)throw new Error("Не получихме ID на задачата.");
+  status.textContent="Face Swap се обработва. Таксувани са "+data.credits_charged+" кредита. Ще проверяваме статуса автоматично.";
+  btn.textContent="PROCESSING…";
+  const poll=async()=>{
+   try{
+    const {data:d,error:e}=await supabaseClient.functions.invoke("face-swap-video",{body:{action:"status",job_id:id}});
+    if(e)throw e;if(d?.status==="completed"&&d.output_url){
+      status.textContent="Готово! Твоето видео е обработено.";
+      const a=document.getElementById("faceLabDownload");a.href=d.output_url;result.style.display="block";btn.disabled=false;btn.textContent="GENERATE FACE SWAP";return true;
+    }
+    if(["failed","cancelled","timeout"].includes(d?.status)){
+      status.textContent=d.error||"Обработката не успя. Кредитите са възстановени.";btn.disabled=false;btn.textContent="TRY AGAIN";return true;
+    }
+    status.textContent="Обработваме видеото…";return false;
+   }catch(e){status.textContent="Проверка на статуса: "+(e.message||"грешка");return false;}
+  };
+  let done=false;for(let i=0;i<90&&!done;i++){await new Promise(r=>setTimeout(r,7000));done=await poll();}
+  if(!done){status.textContent="Задачата продължава. Затвори прозореца, ако желаеш — можеш да провериш отново по-късно.";btn.disabled=false;btn.textContent="STARTED — CHECK STATUS";}
+ }catch(e){status.textContent=e.message||"Възникна грешка.";btn.disabled=false;btn.textContent="TRY AGAIN";}
+}
+
 </script>
 
 
