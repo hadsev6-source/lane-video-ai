@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>LANE AI STUDIO — Create Image, Video & Song</title>
+<title>LANE AI STUDIO — Face Lab, Video, Image & Music</title>
 <meta content="Create images, videos and songs with LANE AI STUDIO." name="description"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="LANE AI STUDIO"/>
@@ -1556,9 +1556,10 @@ body>#myfiles,#myfiles{display:none}
     <div class="lane-hero-kicker"><span></span> CREATE <b>·</b> EDIT <b>·</b> GENERATE <span></span></div>
     <h1 class="lane-hero-tagline">Create Stunning Videos with <span>AI</span></h1>
     <div class="lane-hero-actions">
-      <a class="lane-hero-action" href="#imageStudio" onclick="openStudioSection('imageStudio')"><span class="lane-action-icon" aria-hidden="true">▧</span> CREATE IMAGE</a>
-      <a class="lane-hero-action" href="#studio" onclick="openStudioSection('studio')"><span class="lane-action-icon" aria-hidden="true">▣</span> VIDEO</a>
-      <a class="lane-hero-action" href="#musicGenerator" onclick="openStudioSection('musicGenerator')"><span class="lane-action-icon" aria-hidden="true">♫</span> SONG</a>
+      <a class="lane-hero-action" href="#laneDanceStudio" onclick="openFaceSwapComingSoon();return false;"><span class="lane-action-icon" aria-hidden="true">◎</span> FACE LAB</a>
+      <a class="lane-hero-action" href="#studio" onclick="openStudioSection('studio');return false;"><span class="lane-action-icon" aria-hidden="true">▣</span> VIDEO</a>
+      <a class="lane-hero-action" href="#imageStudio" onclick="openStudioSection('imageStudio');return false;"><span class="lane-action-icon" aria-hidden="true">▧</span> IMAGE</a>
+      <a class="lane-hero-action" href="#musicGenerator" onclick="openStudioSection('musicGenerator');return false;"><span class="lane-action-icon" aria-hidden="true">♫</span> MUSIC</a>
     </div>
 
   </div>
@@ -1594,6 +1595,18 @@ body>#myfiles,#myfiles{display:none}
 </section>
 
 <section class="lane-studio-showcase" id="laneDanceStudio" aria-label="LANE creative studios">
+  <article class="lane-showcase-card lane-showcase-face">
+    <div class="lane-showcase-icon lane-face-icon" aria-hidden="true">◎</div>
+    <div class="lane-showcase-copy">
+      <span class="lane-showcase-brand">LANE</span><h2>FACE LAB STUDIO</h2>
+      <p>PUT YOUR FACE IN ANY PERFORMANCE</p>
+      <div class="lane-showcase-features"><span>♧ <small>UPLOAD FACE</small></span><span>▣ <small>CHOOSE SCENE</small></span><span>☷ <small>SELECT STYLE</small></span><span>✧ <small>GENERATE</small></span></div>
+      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button><button type="button" class="lane-showcase-cta" style="margin-top:9px;background:#252525;border:1px solid #ff9b32;color:#fff" onclick="openDanceStudioPreview()">PREVIEW NEW DANCE STUDIO <b>→</b></button>
+    </div>
+    <div class="lane-showcase-face-visual" role="img" aria-label="Hip-hop and Afrobeat performers in a cinematic music video"></div>
+    <div class="lane-showcase-genres"><span>AFROBEAT</span><span>HIP-HOP</span><span>R&amp;B</span><span>AMAPIANO</span><span>RAP</span></div>
+  </article>
+
   <article class="lane-showcase-card lane-showcase-video">
     <div class="lane-showcase-icon" aria-hidden="true">▣</div>
     <div class="lane-showcase-copy">
@@ -1625,18 +1638,6 @@ body>#myfiles,#myfiles{display:none}
       <button type="button" class="lane-showcase-cta" onclick="openStudioSection('musicGenerator')">CREATE MUSIC <b>→</b></button>
     </div>
     <div class="lane-showcase-equalizer" aria-hidden="true"><div class="lane-eq-bars"><i style="--h:29%;--d:0s"></i><i style="--h:66%;--d:0.11s"></i><i style="--h:27%;--d:0.22s"></i><i style="--h:64%;--d:0.33s"></i><i style="--h:25%;--d:0.44s"></i><i style="--h:62%;--d:0.55s"></i><i style="--h:23%;--d:0.66s"></i><i style="--h:60%;--d:0s"></i><i style="--h:21%;--d:0.11s"></i><i style="--h:58%;--d:0.22s"></i><i style="--h:19%;--d:0.33s"></i><i style="--h:56%;--d:0.44s"></i><i style="--h:93%;--d:0.55s"></i><i style="--h:54%;--d:0.66s"></i><i style="--h:91%;--d:0s"></i><i style="--h:52%;--d:0.11s"></i><i style="--h:89%;--d:0.22s"></i><i style="--h:50%;--d:0.33s"></i><i style="--h:87%;--d:0.44s"></i><i style="--h:48%;--d:0.55s"></i><i style="--h:85%;--d:0.66s"></i><i style="--h:46%;--d:0s"></i><i style="--h:83%;--d:0.11s"></i><i style="--h:44%;--d:0.22s"></i><i style="--h:81%;--d:0.33s"></i><i style="--h:42%;--d:0.44s"></i><i style="--h:79%;--d:0.55s"></i><i style="--h:40%;--d:0.66s"></i><i style="--h:77%;--d:0s"></i><i style="--h:38%;--d:0.11s"></i><i style="--h:75%;--d:0.22s"></i><i style="--h:36%;--d:0.33s"></i><i style="--h:73%;--d:0.44s"></i><i style="--h:34%;--d:0.55s"></i></div><div class="lane-eq-wave"></div><div class="lane-eq-headphones">◖<span>♫</span>◗</div></div>
-  </article>
-
-  <article class="lane-showcase-card lane-showcase-face">
-    <div class="lane-showcase-icon lane-face-icon" aria-hidden="true">◎</div>
-    <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>FACE LAB STUDIO</h2>
-      <p>PUT YOUR FACE IN ANY PERFORMANCE</p>
-      <div class="lane-showcase-features"><span>♧ <small>UPLOAD FACE</small></span><span>▣ <small>CHOOSE SCENE</small></span><span>☷ <small>SELECT STYLE</small></span><span>✧ <small>GENERATE</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button><button type="button" class="lane-showcase-cta" style="margin-top:9px;background:#252525;border:1px solid #ff9b32;color:#fff" onclick="openDanceStudioPreview()">PREVIEW NEW DANCE STUDIO <b>→</b></button>
-    </div>
-    <div class="lane-showcase-face-visual" role="img" aria-label="Hip-hop and Afrobeat performers in a cinematic music video"></div>
-    <div class="lane-showcase-genres"><span>AFROBEAT</span><span>HIP-HOP</span><span>R&amp;B</span><span>AMAPIANO</span><span>RAP</span></div>
   </article>
 </section>
 
