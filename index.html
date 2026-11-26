@@ -1469,6 +1469,15 @@ body>#myfiles,#myfiles{display:none}
   header.site-header .credit-counter { right:104px !important; min-width:60px !important; }
   .lane-hero-wordmark { font-size:26px !important; }
 }
+/* Mobile refinements: compact Buy Credits heading and expose Google sign-in in MENU */
+@media (max-width:600px) {
+  #pricing { padding-top:4px !important; }
+  #pricing > .section-title { font-size:27px !important; line-height:1.1 !important; margin:0 0 10px !important; }
+  #pricing > .section-description { font-size:16px !important; line-height:1.4 !important; margin-bottom:12px !important; }
+  #pricing > .notice { padding:12px 14px !important; margin:10px 0 14px !important; font-size:14px !important; }
+  #pricing > h3 { font-size:19px !important; margin-top:12px !important; }
+  .mobile-menu-auth { display:block !important; width:100%; margin:5px 0; text-align:center; }
+}
 </style>
 <script>
 (function(){
@@ -1495,6 +1504,7 @@ body>#myfiles,#myfiles{display:none}
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#pricing" onclick="closeLaneMenu()">CREDITS</a>
 <a href="#myfiles" onclick="openMyFilesModal(event)">MY FILES</a>
+<button id="mobileGoogleSignIn" class="header-auth-btn mobile-menu-auth" type="button" onclick="currentUser ? signOut() : googleSignIn()">Continue with Google</button>
 <details class="notification-menu">
 <summary onclick="loadLaneNotifications()">🔔 NOTIFICATIONS</summary>
 <div class="notification-dropdown" id="laneNotifications">
@@ -2837,6 +2847,11 @@ if (currentUser) {
       headerAuthButton.textContent = currentUser ? "SIGN OUT" : "Continue with Google";
       headerAuthButton.setAttribute("aria-label", currentUser ? "Sign out of your account" : "Sign in with Google");
     }
+    const mobileAuthButton = document.getElementById("mobileGoogleSignIn");
+    if (mobileAuthButton) {
+      mobileAuthButton.textContent = currentUser ? "SIGN OUT" : "Continue with Google";
+      mobileAuthButton.setAttribute("aria-label", currentUser ? "Sign out of your account" : "Sign in with Google");
+    }
 
     if (currentUser) {
       signedIn.classList.remove("hidden");
@@ -3586,10 +3601,15 @@ if (currentUser) {
     }
 
     updateLibraryCounts();
-    // Always return to the complete gallery after refreshing so saved images
-    // cannot remain hidden by a previously selected category filter.
-    activeLibraryFilter = "all";
-    filterMyFiles("all");
+    // Preserve the selected folder after loading or refreshing the library.
+    filterMyFiles(activeLibraryFilter);
+    document.querySelectorAll(".my-files-folder").forEach(item => {
+      const match = (item.getAttribute("onclick") || "").match(/selectLibraryFolder\('([^']+)'/);
+      item.classList.toggle("active", !!match && match[1] === activeLibraryFilter);
+    });
+    const folderTitle = { audio: "Music", image: "Photos", video: "Videos" }[activeLibraryFilter];
+    const folderHeading = document.querySelector("#myFilesModal .library-section-heading h3");
+    if (folderHeading && folderTitle) folderHeading.textContent = folderTitle;
   }
 
   function updateLibraryCounts() {
