@@ -1981,14 +1981,14 @@ body>#myfiles,#myfiles{display:none}
 <div id="faceLabModal" aria-hidden="true">
  <div class="face-lab-dialog" role="dialog" aria-modal="true" aria-labelledby="faceLabTitle">
   <div class="face-lab-head"><h2 id="faceLabTitle">LANE FACE LAB STUDIO</h2><button class="face-lab-close" type="button" onclick="closeFaceLab()">CLOSE ✕</button></div>
-  <p class="face-lab-intro">Качи MP4 performance видео и снимка на лицето. Face Lab ще замени избраното лице във видеото. Поддържа клипове от 3 до 30 секунди. Само видео обработка — без аудио генериране.</p>
+  <p class="face-lab-intro">Upload an MP4 performance video and a face photo. Face Lab will replace the selected face in the video. Supports clips from 3 to 30 seconds. Video processing only — no audio generation.</p>
   <div class="face-lab-grid">
-   <div class="face-lab-field"><label for="faceLabVideo">PERFORMANCE VIDEO (MP4, до 100 MB)</label><input id="faceLabVideo" type="file" accept="video/mp4,.mp4" onchange="updateFaceLabEstimate()"></div>
+   <div class="face-lab-field"><label for="faceLabVideo">PERFORMANCE VIDEO (MP4, up to 100 MB)</label><input id="faceLabVideo" type="file" accept="video/mp4,.mp4" onchange="updateFaceLabEstimate()"></div>
    <div class="face-lab-field"><label for="faceLabPhoto">FACE PHOTO (JPG / PNG / WEBP)</label><input id="faceLabPhoto" type="file" accept="image/jpeg,image/png,image/webp"></div>
    <div class="face-lab-field"><label for="faceLabIndex">TARGET FACE</label><select id="faceLabIndex"><option value="0">Largest / Main face</option><option value="1">Face 2</option><option value="2">Face 3</option><option value="3">Face 4</option><option value="4">Face 5</option></select></div>
    <div class="face-lab-field"><label for="faceLabGender">TARGET GENDER</label><select id="faceLabGender"><option value="all">Any</option><option value="male">Male</option><option value="female">Female</option></select></div>
   </div>
-  <div class="face-lab-cost" id="faceLabEstimate">Цена: качи MP4 видео, за да изчислим кредита. Ценообразуване: 50% за теб от крайната продажна цена.</div>
+  <div class="face-lab-cost" id="faceLabEstimate">Price: Upload an MP4 video to calculate the required credits. Ценообразуване: 50% за теб от крайната продажна цена.</div>
   <button class="face-lab-action" id="faceLabStart" type="button" onclick="startFaceLab()">GENERATE FACE SWAP</button>
   <div class="face-lab-status" id="faceLabStatus" role="status" aria-live="polite"></div>
   <div class="face-lab-result" id="faceLabResult"><a id="faceLabDownload" href="#" target="_blank" rel="noopener">OPEN / DOWNLOAD RESULT</a></div>
@@ -3784,20 +3784,20 @@ function openFaceSwapComingSoon(){
 function closeFaceLab(){const m=document.getElementById("faceLabModal");m.classList.remove("open");m.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 function updateFaceLabEstimate(){
  const f=document.getElementById("faceLabVideo").files?.[0],box=document.getElementById("faceLabEstimate");
- if(!f){box.textContent="Цена: качи MP4 видео, за да изчислим кредита.";return;}
+ if(!f){box.textContent="Price: Upload an MP4 video to calculate the required credits.";return;}
  const url=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{
-  URL.revokeObjectURL(url);const d=Math.ceil(v.duration);if(!Number.isFinite(d)||d<3||d>30){box.textContent="Видеото трябва да е между 3 и 30 секунди.";return;}
-  const c=Math.ceil(d*0.01*2*0.9168*100);box.textContent="Продължителност: "+d+" сек. · Цена: "+c+" кредита · Ориентировъчна цена: $"+(d*0.02).toFixed(2)+". От крайната продажна цена 50% са за теб.";
- };v.onerror=()=>{URL.revokeObjectURL(url);box.textContent="Не успяхме да прочетем продължителността на видеото.";};v.src=url;
+  URL.revokeObjectURL(url);const d=Math.ceil(v.duration);if(!Number.isFinite(d)||d<3||d>30){box.textContent="Video must be between 3 and 30 seconds.";return;}
+  const c=Math.ceil(d*0.01*2*0.9168*100);box.textContent="Duration: "+d+" sec · Cost: "+c+" credits · Estimated price: $"+(d*0.02).toFixed(2)+". Your share: 50% of the final sale price.";
+ };v.onerror=()=>{URL.revokeObjectURL(url);box.textContent="Could not read the video duration.";};v.src=url;
 }
 async function startFaceLab(){
  const video=document.getElementById("faceLabVideo").files?.[0],face=document.getElementById("faceLabPhoto").files?.[0];
  const status=document.getElementById("faceLabStatus"),btn=document.getElementById("faceLabStart"),result=document.getElementById("faceLabResult");
  result.style.display="none";
  if(!currentUser){status.textContent="Моля, влез в профила си.";return;}
- if(!video||!face){status.textContent="Моля, избери MP4 видео и снимка на лицето.";return;}
- if(video.size>100*1024*1024||face.size>10*1024*1024){status.textContent="Максимум: 100 MB за видео и 10 MB за снимка.";return;}
- btn.disabled=true;btn.textContent="UPLOADING & STARTING…";status.textContent="Качваме файловете и стартираме Face Swap…";
+ if(!video||!face){status.textContent="Please select an MP4 video and a face photo.";return;}
+ if(video.size>100*1024*1024||face.size>10*1024*1024){status.textContent="Maximum file size: 100 MB for video and 10 MB for photo.";return;}
+ btn.disabled=true;btn.textContent="UPLOADING & STARTING…";status.textContent="Uploading files and starting Face Swap…";
  try{
   const {data:{session}}=await supabaseClient.auth.getSession();if(!session)throw new Error("Сесията е изтекла. Влез отново.");
   const form=new FormData();form.append("video",video);form.append("face_image",face);
@@ -3805,19 +3805,19 @@ async function startFaceLab(){
   const {data,error}=await supabaseClient.functions.invoke("face-swap-video",{body:form});
   if(error)throw error;if(data?.error)throw new Error(data.error);
   const id=data.job_id;if(!id)throw new Error("Не получихме ID на задачата.");
-  status.textContent="Face Swap се обработва. Таксувани са "+data.credits_charged+" кредита. Ще проверяваме статуса автоматично.";
+  status.textContent="Face Swap is processing. "+data.credits_charged+" credits have been charged. Status will be checked automatically.";
   btn.textContent="PROCESSING…";
   const poll=async()=>{
    try{
     const {data:d,error:e}=await supabaseClient.functions.invoke("face-swap-video",{body:{action:"status",job_id:id}});
     if(e)throw e;if(d?.status==="completed"&&d.output_url){
-      status.textContent="Готово! Твоето видео е обработено.";
+      status.textContent="Completed! Your video has been processed.";
       const a=document.getElementById("faceLabDownload");a.href=d.output_url;result.style.display="block";btn.disabled=false;btn.textContent="GENERATE FACE SWAP";return true;
     }
     if(["failed","cancelled","timeout"].includes(d?.status)){
-      status.textContent=d.error||"Обработката не успя. Кредитите са възстановени.";btn.disabled=false;btn.textContent="TRY AGAIN";return true;
+      status.textContent=d.error||"Processing failed. Your credits have been refunded.";btn.disabled=false;btn.textContent="TRY AGAIN";return true;
     }
-    status.textContent="Обработваме видеото…";return false;
+    status.textContent="Processing your video…";return false;
    }catch(e){status.textContent="Проверка на статуса: "+(e.message||"грешка");return false;}
   };
   let done=false;for(let i=0;i<90&&!done;i++){await new Promise(r=>setTimeout(r,7000));done=await poll();}
