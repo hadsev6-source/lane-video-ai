@@ -1821,6 +1821,26 @@ body>#myfiles,#myfiles{display:none}
   .header-auth-btn { min-height:34px;padding:6px 9px;font-size:11px; }
   .lane-cinematic-hero { min-height:220px !important;padding:20px 5% !important; }
 }
+
+/* Mobile only: blend the Face Lab photo across the full card instead of leaving a black right panel. */
+@media (max-width:560px) {
+  .lane-showcase-face { position:relative; isolation:isolate; overflow:hidden; }
+  .lane-showcase-face .lane-showcase-face-visual {
+    left:0 !important; right:0 !important; top:0 !important; bottom:0 !important;
+    width:100% !important; height:100% !important; opacity:1 !important;
+    z-index:0 !important; pointer-events:none;
+    background-image:
+      linear-gradient(90deg,rgba(5,5,5,.98) 0%,rgba(5,5,5,.88) 30%,rgba(5,5,5,.42) 62%,rgba(5,5,5,.12) 100%),
+      linear-gradient(0deg,rgba(5,5,5,.48),transparent 55%),
+      url('https://images.unsplash.com/photo-1524369013147-0f6b3a3c6f4d?auto=format&fit=crop&w=1600&q=90') !important;
+    background-position:center,center,center 48% !important;
+    background-size:cover !important;
+  }
+  .lane-showcase-face .lane-showcase-icon,
+  .lane-showcase-face .lane-showcase-copy,
+  .lane-showcase-face .lane-showcase-genres { position:relative; z-index:2; }
+}
+
 </style>
 <details class="studio-accordion ivideo-accordion">
   <summary class="studio-strip-hidden">LANE VIDEO STUDIO</summary>
