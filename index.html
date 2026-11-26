@@ -1491,6 +1491,40 @@ body>#myfiles,#myfiles{display:none}
   }
   header.site-header .main-menu { order:4 !important; }
 }
+/* Final mobile layout: hide Buy Credits heading and anchor credit balance left */
+@media (max-width:760px) {
+  #pricing { padding-top:0 !important; }
+  #pricing > .section-title { display:none !important; }
+  #pricing > .section-description { margin-top:0 !important; }
+  header.site-header { padding-bottom:9px !important; }
+  header.site-header .credit-counter {
+    position:absolute !important;
+    top:68px !important;
+    left:12px !important;
+    right:auto !important;
+    transform:none !important;
+    z-index:35 !important;
+    min-width:66px !important;
+    min-height:36px !important;
+    padding:5px 9px !important;
+    font-size:13px !important;
+  }
+  header.site-header .visual-nav {
+    justify-content:flex-end !important;
+    padding-left:88px !important;
+    padding-right:4px !important;
+  }
+  header.site-header .visual-nav .header-auth-btn {
+    min-height:36px !important;
+    padding:7px 13px !important;
+    font-size:12px !important;
+  }
+}
+@media (max-width:380px) {
+  header.site-header .credit-counter { left:8px !important; min-width:62px !important; }
+  header.site-header .visual-nav { padding-left:78px !important; }
+  header.site-header .visual-nav .header-auth-btn { padding:6px 9px !important; font-size:11px !important; }
+}
 /* Mobile refinements: compact Buy Credits heading and expose Google sign-in in MENU */
 @media (max-width:600px) {
   #pricing { padding-top:4px !important; }
