@@ -1441,37 +1441,25 @@ body>#myfiles,#myfiles{display:none}
 <nav aria-label="Main navigation" class="visual-nav"><a href="#home">Home</a><a href="#musicGenerator">Create</a><a href="#pricing">Credits</a><a href="#categories">Gallery</a><a href="#support">Support</a></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
-<a href="#categories">Categories</a>
-<a href="#studio">AI Video</a>
-<a href="#imageStudio">AI Images</a>
-<a href="#musicGenerator">AI Music</a>
-<a href="#pricing">Credits</a>
-<a href="#myfiles" onclick="openMyFilesModal(event)">My Files</a>
+<a href="#pricing" onclick="closeLaneMenu()">CREDITS</a>
+<a href="#myfiles" onclick="openMyFilesModal(event)">MY FILES</a>
 <details class="notification-menu">
 <summary>🔔 NOTIFICATIONS</summary>
-<div class="notification-dropdown">
-<strong>Notifications</strong>
-<p>Song upload updates will appear here.</p>
-<p>Video processing and completed project updates will appear here.</p>
-<p>Credit and account alerts will appear here.</p>
-<span class="mini-note">Live notifications are visual placeholders until a notification service is connected.</span>
+<div class="notification-dropdown" id="laneNotifications">
+<strong>NOTIFICATIONS</strong>
+<p>No new notifications.</p>
 </div>
 </details>
-<div class="credit-counter" title="Your credit balance">
-<span>🪙</span>
-<span id="headerCreditBalance">0</span>
-</div>
 <details class="account-menu">
 <summary>MY ACCOUNT ▾</summary>
 <div class="account-dropdown">
-<a href="#account">Account Overview</a>
-
-<a href="#credits">My Credits &amp; Limits</a>
-<a href="#credits">Buy More Credits</a>
-<a href="#billing">Billing &amp; Payments</a>
-<a href="#usage">Usage History</a>
-<a href="#myfiles">My Files</a>
-<a href="#account">Settings</a>
+<a href="#support" onclick="openAccountSection('overview')">Account Overview</a>
+<a href="#pricing" onclick="openAccountSection('credits')">My Credits &amp; Limits</a>
+<a href="#pricing" onclick="openAccountSection('buy')">Buy More Credits</a>
+<a href="#billing" onclick="openAccountSection('billing')">Billing &amp; Payments</a>
+<a href="#usage" onclick="openAccountSection('usage')">Usage History</a>
+<a href="#myfiles" onclick="openMyFilesModal(event)">My Files</a>
+<a href="#support" onclick="openAccountSection('settings')">Settings</a>
 </div>
 </details>
 </nav>
@@ -1750,6 +1738,18 @@ body>#myfiles,#myfiles{display:none}
 @media(max-width:600px){.price-grid{grid-template-columns:repeat(6,minmax(112px,1fr));gap:7px;overflow-x:auto;padding:2px 2px 10px;-webkit-overflow-scrolling:touch}.price-card{padding:7px 6px}.price-card .price{font-size:17px}
 }
 
+
+/* LANE account menu cleanup and clean media library labels */
+.main-menu-dropdown{gap:7px!important}
+.main-menu-dropdown>a,.main-menu-dropdown>details>summary{font-weight:700}
+.account-dropdown a{display:block}
+#myFilesList .file-name{display:none!important}
+#myFilesList .file-row{gap:12px}
+#myFilesList .file-row>img{flex:0 0 92px}
+#myFilesList .file-row>video{max-width:100%}
+#myFilesList .file-row audio{margin-top:0!important}
+
+.lane-account-modal{display:none;position:fixed;inset:0;z-index:5000;background:#000d;padding:14px;align-items:center;justify-content:center}.lane-account-modal.open{display:flex}.lane-account-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0b0b0b;border:1px solid #ff9d19;border-radius:14px;padding:18px;color:#fff}.lane-account-dialog>button{float:right}.lane-account-dialog h2{margin:8px 0 18px}.lane-account-history{display:grid;gap:8px}.lane-account-history-row{display:grid;gap:4px;padding:12px;border:1px solid #60401e;border-radius:8px;background:#17120c}.lane-account-history-row span,.lane-account-history-row small{color:#c8c0b7}
 </style>
 <details class="studio-accordion ivideo-accordion">
   <summary class="studio-strip-hidden">LANE VIDEO STUDIO</summary>
@@ -1932,6 +1932,8 @@ body>#myfiles,#myfiles{display:none}
 
 
 <div id="myFilesModal" role="dialog" aria-modal="true" aria-label="My Files"><div class="my-files-dialog"><button type="button" class="my-files-close" onclick="closeMyFilesModal()">CLOSE ✕</button><div id="myFilesModalContent"></div></div></div><div id="laneReadyToast" role="status" aria-live="polite"><strong id="laneReadyTitle">Your creation is ready!</strong><p id="laneReadyMessage"></p><div class="toast-actions"><button type="button" class="primary-btn" id="laneReadyOpen">OPEN FILE</button><button type="button" class="secondary-btn" onclick="openMyFilesModal();dismissReadyToast()">MY FILES</button><button type="button" class="secondary-btn" onclick="dismissReadyToast()">CLOSE</button></div></div>
+
+<div id="laneAccountModal" class="lane-account-modal" role="dialog" aria-modal="true" aria-labelledby="laneAccountModalTitle" onclick="if(event.target===this)closeAccountHistory()"><div class="lane-account-dialog"><button type="button" class="secondary-btn" onclick="closeAccountHistory()">CLOSE ✕</button><h2 id="laneAccountModalTitle">ACCOUNT</h2><div id="laneAccountModalBody">Loading...</div></div></div>
 <footer>
 <strong>LANE AI STUDIO</strong><br/>
   CREATE ANYTHING YOU CAN IMAGINE.<br/>
@@ -2014,7 +2016,52 @@ body>#myfiles,#myfiles{display:none}
   let currentAudioUrl = null;
   let deletingFile = false;
 
-  // CATEGORY SELECTION
+
+  function closeLaneMenu(){const menu=document.querySelector(".main-menu");if(menu)menu.open=false;}
+  function openAccountSection(section){
+    closeLaneMenu();
+    if(section==="overview"||section==="settings"){document.getElementById("support")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+    if(section==="credits"||section==="buy"){document.getElementById(section==="buy"?"pricing":"credits")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+    if(section==="billing"||section==="usage"){openAccountHistory(section);return;}
+  }
+  async function openAccountHistory(kind){
+    if(!currentUser){alert("Please sign in first.");document.getElementById("support")?.scrollIntoView({behavior:"smooth"});return;}
+    const title=kind==="billing"?"BILLING & PAYMENTS":"USAGE HISTORY";
+    const modal=document.getElementById("laneAccountModal");
+    const heading=document.getElementById("laneAccountModalTitle");
+    const body=document.getElementById("laneAccountModalBody");
+    if(!modal||!heading||!body)return;
+    heading.textContent=title;body.textContent="Loading...";modal.classList.add("open");
+    try{
+      let rows=[],error=null;
+      if(kind==="billing"){
+        const result=await supabaseClient.from("credit_transactions").select("amount,bucket,description,created_at,stripe_session_id").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(100);
+        rows=result.data||[];error=result.error;
+      }else{
+        const [music,video]=await Promise.all([
+          supabaseClient.from("music_generation_jobs").select("status,title,genre,credits_charged,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50),
+          supabaseClient.from("video_generations").select("status,duration,model,credits_charged,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50)
+        ]);
+        if(music.error)error=music.error;else if(video.error)error=video.error;
+        rows=[...(music.data||[]).map(x=>({...x,kind:"Music"})),...(video.data||[]).map(x=>({...x,kind:"Video"}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+      }
+      if(error)throw error;
+      if(!rows.length){body.textContent=kind==="billing"?"No payment or credit transactions found yet.":"No generation history found yet.";return;}
+      const table=document.createElement("div");table.className="lane-account-history";
+      rows.forEach(item=>{
+        const row=document.createElement("div");row.className="lane-account-history-row";
+        const main=document.createElement("strong");
+        const detail=document.createElement("span");
+        const date=document.createElement("small");
+        if(kind==="billing"){main.textContent=item.description||"Credit transaction";detail.textContent=(item.amount>0?"+":"")+item.amount+" credits · "+(item.bucket||"");}
+        else{main.textContent=(item.kind||"Generation")+" · "+(item.status||"");detail.textContent=(item.kind==="Video"?(item.duration||"")+" sec":(item.title||item.genre||"Music"))+" · "+(item.credits_charged||0)+" credits";}
+        date.textContent=new Date(item.created_at).toLocaleString();row.append(main,detail,date);table.appendChild(row);
+      });body.replaceChildren(table);
+    }catch(error){body.textContent="Could not load this information: "+(error.message||String(error));}
+  }
+  function closeAccountHistory(){document.getElementById("laneAccountModal")?.classList.remove("open");}
+
+    // CATEGORY SELECTION
 
   function chooseCategory(category) {
     const categorySelect = document.getElementById("videoCategory");
