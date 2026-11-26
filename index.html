@@ -2304,7 +2304,6 @@ body>#myfiles,#myfiles{display:none}
         }
         if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
           setNewVideoStatus("DONE", "Your video is ready.");
-          setLaneGenerationProgress(result,"DONE",true);
           if (result) {
             const video = document.createElement("video");
             video.controls = true;
@@ -2318,6 +2317,7 @@ body>#myfiles,#myfiles{display:none}
             download.style.display = "inline-flex";
             download.style.marginTop = "12px";
             result.replaceChildren(video, download);
+            setLaneGenerationProgress(result,"DONE",true);
           }
           if (typeof loadMyFiles === "function") loadMyFiles();
           break;
