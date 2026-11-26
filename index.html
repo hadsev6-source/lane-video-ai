@@ -1249,6 +1249,16 @@ body>#myfiles,#myfiles{display:none}
 .studio-accordion[open] > .panel,
 .ivideo-accordion[open] > .video-builder { display:block; }
 
+
+/* Unified live generation indicator */
+.lane-generation-progress{display:flex;align-items:center;gap:10px;margin:12px 0;padding:12px;border:1px solid #315b3a;border-radius:10px;background:#07130b;color:#eaffee}
+.lane-generation-progress .lane-progress-track{height:8px;flex:1;overflow:hidden;border-radius:99px;background:#203326}
+.lane-generation-progress .lane-progress-fill{height:100%;width:36%;border-radius:99px;background:#22c55e;box-shadow:0 0 12px #22c55e;animation:lane-progress-move 1.35s ease-in-out infinite}
+.lane-generation-progress.is-complete .lane-progress-fill{width:100%;animation:none}
+.lane-generation-progress .lane-progress-check{display:none;color:#22c55e;font-size:20px;font-weight:900}
+.lane-generation-progress.is-complete .lane-progress-check{display:inline}
+.lane-generation-progress .lane-progress-label{font-size:13px;font-weight:700;white-space:nowrap}
+@keyframes lane-progress-move{0%{transform:translateX(-120%)}100%{transform:translateX(300%)}}
 </style>
 
 <style>
@@ -2030,6 +2040,15 @@ body>#myfiles,#myfiles{display:none}
   let deletingFile = false;
 
 
+
+  function setLaneGenerationProgress(container,label,complete=false){
+    if(!container)return;
+    let node=container.querySelector(":scope > .lane-generation-progress");
+    if(!node){node=document.createElement("div");node.className="lane-generation-progress";node.innerHTML='<span class="lane-progress-label"></span><span class="lane-progress-track"><span class="lane-progress-fill"></span></span><span class="lane-progress-check" aria-label="Complete">✓</span>';container.prepend(node);}
+    node.querySelector(".lane-progress-label").textContent=complete?"DONE":(label||"PROCESSING");
+    node.classList.toggle("is-complete",!!complete);
+  }
+
   function closeLaneMenu(){const menu=document.querySelector(".main-menu");if(menu)menu.open=false;}
   function openAccountSection(section){
     closeLaneMenu();
@@ -2230,7 +2249,8 @@ body>#myfiles,#myfiles{display:none}
     button.disabled = true;
     button.textContent = "STARTING VIDEO...";
     if (result) result.replaceChildren();
-    setNewVideoStatus("SUBMITTING REQUEST", "Connecting securely to LANE video generation...");
+    setNewVideoStatus("GENERATING", "Please wait while your video is created.");
+    setLaneGenerationProgress(result,"GENERATING");
     try {
       const { data, error } = await supabaseClient.functions.invoke("generate-video", {
         body: { promptText: finalPrompt, duration, ratio }
@@ -2239,7 +2259,8 @@ body>#myfiles,#myfiles{display:none}
         throw new Error(data?.error || error?.message || "The video request could not be started.");
       }
       const modelLabel = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
-      setNewVideoStatus("GENERATING · " + modelLabel, "Your " + duration + "-second video is processing. This panel will update automatically. Generation ID: " + data.generationId);
+      setNewVideoStatus("GENERATING", "Your video is being created.");
+      setLaneGenerationProgress(result,"GENERATING");
       button.textContent = "VIDEO GENERATING...";
       let checks = 0;
       while (checks < 180) {
@@ -2254,7 +2275,8 @@ body>#myfiles,#myfiles{display:none}
           continue;
         }
         if (statusData.status === "SUCCEEDED" && statusData.videoUrl) {
-          setNewVideoStatus("VIDEO READY", "Your video has been generated and saved to My Files.");
+          setNewVideoStatus("DONE", "Your video is ready.");
+          setLaneGenerationProgress(result,"DONE",true);
           if (result) {
             const video = document.createElement("video");
             video.controls = true;
@@ -2275,7 +2297,7 @@ body>#myfiles,#myfiles{display:none}
         if (statusData.status === "FAILED" || statusData.status === "CANCELED" || statusData.status === "CANCELLED") {
           throw new Error((statusData.error || "The provider could not complete this video.") + (statusData.refunded ? " Credits have been refunded." : ""));
         }
-        setNewVideoStatus("GENERATING · " + modelLabel, "Status: " + (statusData.status || "PROCESSING") + " · Check " + checks + " of 180");
+        setNewVideoStatus("GENERATING", "Your video is still being created.");
       }
       if (checks >= 180) setNewVideoStatus("STILL PROCESSING", "The provider is taking longer than usual. Check My Files shortly before submitting another request.");
     } catch (error) {
@@ -2327,7 +2349,8 @@ body>#myfiles,#myfiles{display:none}
 
     button.disabled = true;
     button.textContent = "GENERATING...";
-    output.textContent = "Generating your image. Please keep this page open...";
+    output.textContent = "";
+    setLaneGenerationProgress(output,"GENERATING");
     output.classList.remove("hidden");
     gallery.innerHTML = "";
     try {
@@ -2343,7 +2366,8 @@ body>#myfiles,#myfiles{display:none}
       if (!response.ok || !result.success) throw new Error(result.error || "Image generation failed.");
       laneAnalytics.track("generation_completed", { service: "image", count: result.images.length, credits: result.creditsUsed });
       laneAnalytics.track("generation_completed", { service: "image", count: result.images.length, credits: result.creditsUsed });
-      output.textContent = "Success! " + result.images.length + " image(s) generated. " + result.creditsUsed + " credits used.";
+      output.textContent = "";
+      setLaneGenerationProgress(output,"DONE",true);
       result.images.forEach((item, index) => {
         const card = document.createElement("div");
         card.className = "generated-image-card";
@@ -2363,7 +2387,7 @@ body>#myfiles,#myfiles{display:none}
       showLaneReadyToast("Your image is ready!", "Your image was generated successfully and is available in My Files.", result.images?.[0]?.url);
     } catch (error) {
       laneAnalytics.track("generation_failed", { service: "image", error: String(error?.message || error).slice(0, 300) });
-      output.textContent = "Generation failed: " + (error.message || "Please try again.");
+      output.textContent = "Generation failed. " + (error.message || "Please try again.");
     } finally {
       button.disabled = false;
       button.textContent = "GENERATE IMAGE";
@@ -2418,7 +2442,8 @@ body>#myfiles,#myfiles{display:none}
     player.pause();
     player.removeAttribute("src");
     player.classList.add("hidden");
-    output.textContent = "Submitting your music request... credits will be charged if the request is accepted.";
+    output.textContent = "";
+    setLaneGenerationProgress(output,"GENERATING");
 
     try {
       const { data: startData, error: startError } = await supabaseClient.functions.invoke("generate-music-songgpt", {
@@ -2444,7 +2469,8 @@ body>#myfiles,#myfiles{display:none}
       }
 
       const creditsCharged = Number(startData.creditsUsed ?? 25);
-      output.textContent = "Your song is being generated. Please keep this page open.\n\nTask: " + startData.jobId + "\nDuration: " + (durationSeconds / 60) + " minute(s)\nCredits charged: " + creditsCharged + "\nStatus: Processing...";
+      output.textContent = "";
+      setLaneGenerationProgress(output,"GENERATING");
       button.textContent = "GENERATING...";
 
       const maxAttempts = 120; // Up to 10 minutes at 5-second intervals.
@@ -2467,13 +2493,14 @@ body>#myfiles,#myfiles{display:none}
 
         if (statusData?.status === "completed") {
           if (!statusData.audioUrl) {
-            output.textContent = "Your song has been saved. Preparing the playback link...";
+            output.textContent = "";
             continue;
           }
           player.src = statusData.audioUrl;
           player.classList.remove("hidden");
           laneAnalytics.track("generation_completed", { service: "music", credits: statusData.creditsUsed ?? creditsCharged, file_name: statusData.fileName || null });
-          output.textContent = "Your song is ready!\n\nFile: " + (statusData.fileName || "AI generated song") + "\nCredits used: " + (statusData.creditsUsed ?? creditsCharged) + "\n\nUse the player below to listen. The song is also saved in My Files.";
+          output.textContent = "";
+          setLaneGenerationProgress(output,"DONE",true);
           const downloadLink = document.createElement("a");
           downloadLink.href = statusData.downloadUrl || statusData.audioUrl;
           downloadLink.target = "_self";
@@ -2513,7 +2540,8 @@ body>#myfiles,#myfiles{display:none}
           break;
         }
 
-        output.textContent = "Your song is still processing...\n\nTask: " + startData.jobId + "\nStatus: " + (statusData?.status || "processing") + "\nPlease wait; this page will check automatically.";
+        output.textContent = "";
+        setLaneGenerationProgress(output,"GENERATING");
       }
 
       if (!completed) {
@@ -3412,7 +3440,7 @@ if (currentUser) {
       deleteButton.onclick = () => deleteSong(file.name);
 
       actions.append(downloadButton, phoneButton, deleteButton);
-      details.append(name, player, actions);
+      details.append(player, actions);
       row.appendChild(details);
       list.appendChild(row);
     });
