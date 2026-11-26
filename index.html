@@ -2899,7 +2899,7 @@ if (currentUser) {
     wrap.className = "lane-social-share";
     const label = document.createElement("span");
     label.className = "lane-social-share-label";
-    label.textContent = "Сподели с:";
+    label.textContent = "Share with:";
     wrap.appendChild(label);
 
     const destinations = [
@@ -2913,7 +2913,7 @@ if (currentUser) {
       button.type = "button";
       button.className = "lane-social-icon";
       button.title = destination.name;
-      button.setAttribute("aria-label", "Сподели с " + destination.name);
+      button.setAttribute("aria-label", "Share with " + destination.name);
       button.innerHTML = destination.icon;
       button.onclick = async () => {
         wrap.querySelectorAll("button").forEach(item => item.disabled = true);
@@ -2921,7 +2921,7 @@ if (currentUser) {
           const media = await getMedia();
           await shareGeneratedMedia(media.url, media.name, media.type, media.title);
         } catch (error) {
-          showFileMessage("Неуспешно споделяне: " + (error?.message || String(error)), true);
+          showFileMessage("Sharing failed: " + (error?.message || String(error)), true);
         } finally {
           wrap.querySelectorAll("button").forEach(item => item.disabled = false);
         }
