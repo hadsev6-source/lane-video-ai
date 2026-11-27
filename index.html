@@ -2119,7 +2119,7 @@ body>#myfiles,#myfiles{display:none}
    <section class="dance-preview-card"><h3>03 / DANCE & CHOREOGRAPHY</h3><label>Dance style</label><select id="danceStyle"><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>Dancehall</option><option>Street Dance</option><option>Salsa</option><option>Contemporary</option><option>Custom Style</option></select><label>Choreography direction</label><textarea id="danceChoreo" placeholder="Describe footwork, arm movements, formations, synchronization, lead dancer and transitions..."></textarea><label>Performance energy</label><select id="danceEnergy"><option>High Energy</option><option>Relaxed & Smooth</option><option>Powerful</option><option>Playful</option><option>Elegant</option></select></section>
    <section class="dance-preview-card"><h3>04 / MUSIC & AUDIO</h3><label>Music genre</label><select id="danceGenre"><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>R&amp;B</option><option>Dancehall</option><option>Custom</option></select><label>Tempo (BPM)</label><input id="danceBpm" type="number" min="40" max="220" value="115"><label>Upload music reference (max 30 MB; reference audio is limited by provider)</label><input id="danceMusicFile" type="file" accept="audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/x-m4a"><label>Lyrics / text</label><textarea id="danceLyrics" placeholder="Add lyrics or text direction..."></textarea><label>Music prompt</label><textarea id="danceMusicPrompt" placeholder="Describe rhythm, instruments and mood..."></textarea></section>
    <section class="dance-preview-card"><h3>05 / VIDEO DIRECTION</h3><label>Complete creative prompt</label><textarea id="dancePrompt" maxlength="1000" placeholder="Describe the full music video, actions, camera shots, mood, story and transitions..." required></textarea><div class="dance-preview-help" id="dancePromptCounter" aria-live="polite">0 / 1,000 characters</div><label>Video duration</label><select id="danceDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select><label>Format</label><select id="danceRatio"><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option></select></section>
-   <section class="dance-preview-card"><h3>06 / PRICE & GENERATION</h3><div class="dance-preview-help" id="dancePrice">15 seconds · 372 credits · Estimated provider cost: $3.24 (720p).</div><p class="dance-preview-help">Seedance 2.0 · 720p. 5 seconds: 128 credits ($1.08) · 10 seconds: 202 credits ($2.16) · 15 seconds: 372 credits ($3.24). Reference image/audio uploads are included; reference video is not supported in this beta.</p><button class="video-tool-action" id="danceGenerateButton" type="button" onclick="startDanceStudioGeneration()">GENERATE DANCE VIDEO</button><p id="danceStatus" role="status" aria-live="polite" class="dance-preview-help"></p><div id="danceResult"></div></section>
+   <section class="dance-preview-card"><h3>06 / PRICE & GENERATION</h3><div class="dance-preview-help" id="dancePrice">15 seconds · 372 credits · Estimated provider cost: $3.24 (720p).</div><p class="dance-preview-help">Seedance 2.0 · 720p. 5 seconds: 128 credits ($1.08) · 10 seconds: 247 credits ($2.16) · 15 seconds: 372 credits ($3.24). Reference image/audio uploads are included; reference video is not supported in this beta.</p><button class="video-tool-action" id="danceGenerateButton" type="button" onclick="startDanceStudioGeneration()">GENERATE DANCE VIDEO</button><p id="danceStatus" role="status" aria-live="polite" class="dance-preview-help"></p><div id="danceResult"></div></section>
   </div>
  </div>
 </div>
@@ -3918,7 +3918,7 @@ function closeStudioWorkspace() {
 
 
 function updateDancePrice(){
- const d=Number(document.getElementById("danceDuration")?.value||15), el=document.getElementById("dancePrice"), credits=({5:128,10:202,15:372})[d]||0;
+ const d=Number(document.getElementById("danceDuration")?.value||15), el=document.getElementById("dancePrice"), credits=({5:128,10:247,15:372})[d]||0;
  if(el)el.textContent=d+" seconds · "+credits.toLocaleString()+" credits · Estimated provider cost: $"+(d*0.216).toFixed(2)+" (720p).";
 }
 document.getElementById("danceDuration")?.addEventListener("change",updateDancePrice);
@@ -3937,7 +3937,7 @@ async function startDanceStudioGeneration(){
  const image=document.getElementById("danceReferenceImage").files[0], audio=document.getElementById("danceMusicFile").files[0];
  if(image&&image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
- const duration=Number(document.getElementById("danceDuration").value), credits=({5:128,10:202,15:372})[duration]||0;
+ const duration=Number(document.getElementById("danceDuration").value), credits=({5:128,10:247,15:372})[duration]||0;
  if(!credits){alert("Please select a supported video duration.");return;}
  if(!confirm("Generate a "+duration+"-second Dance Studio video for "+credits+" credits?"))return;
  button.disabled=true;button.textContent="UPLOADING & STARTING...";status.textContent="Uploading references and submitting your video...";
