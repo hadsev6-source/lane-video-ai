@@ -1289,6 +1289,17 @@ body>#myfiles,#myfiles{display:none}
 .face-lab-result a{color:#ffb35b;font-weight:800}
 @media(max-width:600px){.face-lab-dialog{padding:16px}.face-lab-grid{grid-template-columns:1fr}}
 
+
+/* Dance Studio — five clear creation choices on the homepage, replacing the old Face Lab hero. */
+.dance-home-mode-grid{width:min(1700px,96%);margin:18px auto 28px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.dance-home-mode{min-width:0;min-height:225px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;padding:18px 15px;border:1px solid #ff9b32;border-radius:16px;background:radial-gradient(ellipse at 50% 5%,#69370f88,transparent 55%),linear-gradient(145deg,#1a1209,#080808 72%);color:#fff;text-align:left;cursor:pointer;box-shadow:0 8px 26px #0009,0 0 14px #e88c2620;transition:transform .18s,border-color .18s,box-shadow .18s}
+.dance-home-mode:hover{transform:translateY(-3px);border-color:#ffd080;box-shadow:0 10px 28px #e88c2640}
+.dance-home-mode-icon{width:100%;height:78px;display:flex;align-items:center;justify-content:center;color:#ff9b32;font-size:49px;text-shadow:0 0 20px #ff941c88}
+.dance-home-mode strong{font-size:clamp(13px,1.15vw,17px);font-weight:900;line-height:1.2}
+.dance-home-mode>span:not(.dance-home-mode-icon){font-size:12px;line-height:1.45;color:#d6c3a9;min-height:50px}
+.dance-home-mode em{margin-top:auto;color:#ffb45d;font-size:10px;font-style:normal;font-weight:900;letter-spacing:.06em}
+@media(max-width:900px){.dance-home-mode-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.dance-home-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px auto 22px}.dance-home-mode{min-height:205px;padding:13px 11px;gap:8px}.dance-home-mode-icon{height:65px;font-size:42px}.dance-home-mode strong{font-size:13px}.dance-home-mode>span:not(.dance-home-mode-icon){font-size:11px;min-height:46px}.dance-home-mode em{font-size:9px}}
 </style>
 
 <style>
@@ -1657,17 +1668,13 @@ body>#myfiles,#myfiles{display:none}
 </section>
 
 <section class="lane-studio-showcase" id="laneDanceStudio" aria-label="LANE creative studios">
-  <article class="lane-showcase-card lane-showcase-face">
-    <div class="lane-showcase-icon lane-face-icon" aria-hidden="true">◎</div>
-    <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>FACE LAB STUDIO</h2>
-      <p>PUT YOUR FACE IN ANY PERFORMANCE</p>
-      <div class="lane-showcase-features"><span>♧ <small>UPLOAD FACE</small></span><span>▣ <small>CHOOSE SCENE</small></span><span>☷ <small>SELECT STYLE</small></span><span>✧ <small>GENERATE</small></span></div>
-      <button type="button" class="lane-showcase-cta" onclick="openFaceSwapComingSoon()">START FACE SWAP <b>→</b></button><button type="button" class="lane-showcase-cta" style="margin-top:9px;background:#252525;border:1px solid #ff9b32;color:#fff" onclick="openDanceStudioPreview()">PREVIEW NEW DANCE STUDIO <b>→</b></button>
-    </div>
-    <div class="lane-showcase-face-visual" role="img" aria-label="Hip-hop and Afrobeat performers in a cinematic music video"></div>
-    <div class="lane-showcase-genres"><span>AFROBEAT</span><span>HIP-HOP</span><span>R&amp;B</span><span>AMAPIANO</span><span>RAP</span></div>
-  </article>
+  <div class="dance-home-mode-grid" aria-label="Choose what you want to create">
+    <button type="button" class="dance-home-mode" onclick="openFaceSwapComingSoon()"><span class="dance-home-mode-icon">◎</span><strong>FACE SWAP</strong><span>Постави избрано лице във видео</span><em>START FACE SWAP →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('podcast')"><span class="dance-home-mode-icon">🎙</span><strong>AI PODCAST</strong><span>Създай разговор, реплики и подкаст сцена</span><em>CREATE PODCAST →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('musicVideo')"><span class="dance-home-mode-icon">♫</span><strong>AI MUSIC VIDEO</strong><span>Създай песен с вокали и видео към нея</span><em>CREATE MUSIC VIDEO →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceMusic')"><span class="dance-home-mode-icon">♬</span><strong>DANCE TO MY MUSIC</strong><span>Качи собствен MP3 и създай танцово видео</span><em>USE MY MP3 →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceVideo')"><span class="dance-home-mode-icon">✦</span><strong>AI DANCE VIDEO</strong><span>Опиши танцьорите и хореографията</span><em>CREATE DANCE VIDEO →</em></button>
+  </div>
 
   <article class="lane-showcase-card lane-showcase-video">
     <div class="lane-showcase-icon" aria-hidden="true">▣</div>
@@ -4085,6 +4092,11 @@ async function startDanceStudioGeneration(){
   if(!finished){status.textContent="The task is still processing. Reopen the studio and contact support with generation ID: "+data.generationId;button.textContent="TASK STILL PROCESSING";}
  }catch(e){status.textContent=e.message||"An error occurred.";button.textContent="TRY AGAIN";}
  finally{button.disabled=false;}
+}
+function openDanceModeFromHome(mode){
+ const modal=document.getElementById("danceStudioPreview");
+ if(modal){modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+ openDanceMode(mode);
 }
 function openDanceMode(mode){
  const dialog=document.querySelector("#danceStudioPreview .dance-preview-dialog");
