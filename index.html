@@ -3392,72 +3392,85 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
     if (messageElement) messageElement.textContent = message;
   }
 
-  async function refreshAuthState() {
-    // Read the persisted local session first; Google PKCE already exchanges the code on callback.
-    const { data, error } = await supabaseClient.auth.getSession();
+  // Prevent an older asynchronous session read from overwriting a newer auth event.
+  let authRenderRevision = 0;
 
-    if (error) {
-      console.error("Could not restore the saved authentication session:", error);
+  async function refreshAuthState(sessionOverride) {
+    const revision = ++authRenderRevision;
+    let session = sessionOverride;
+
+    // Auth events provide the authoritative session directly. Only initial/manual refreshes
+    // read storage, avoiding a stale getSession() result racing with Google's SIGNED_IN event.
+    if (arguments.length === 0) {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) {
+        console.error("Could not restore the saved authentication session:", error);
+        showAuthMessage("Could not restore your sign-in session. Please try Google sign-in again.");
+      }
+      session = data?.session || null;
     }
 
-    currentUser = data?.session?.user || null;
+    if (revision !== authRenderRevision) return;
+    currentUser = session?.user || null;
+
     if (typeof updateLanePricingMode === "function") updateLanePricingMode();
     if (typeof updateDancePrice === "function") updateDancePrice();
-const headerCreditBalance = document.getElementById("headerCreditBalance");
-const headerCreditBalanceTop = document.getElementById("headerCreditBalanceTop");
-if (currentUser) {
-  const { data: wallet, error: walletError } = await supabaseClient
-    .from("credit_wallets")
-    .select("subscription_credits, purchased_credits")
-    .eq("user_id", currentUser.id)
-    .maybeSingle();
 
-  if (walletError) console.error(walletError);
-
-  const totalCredits = wallet
-    ? Number(wallet.subscription_credits || 0) +
-      Number(wallet.purchased_credits || 0)
-    : 0;
-
-  if (headerCreditBalance) {
-    headerCreditBalance.textContent = totalCredits;
-  }
-  if (headerCreditBalanceTop) {
-  headerCreditBalanceTop.textContent = totalCredits;
-}
-} else {
-  if (headerCreditBalance) {
-    headerCreditBalance.textContent = "0";
-  }
-}
+    const headerCreditBalance = document.getElementById("headerCreditBalance");
+    const headerCreditBalanceTop = document.getElementById("headerCreditBalanceTop");
     const signedIn = document.getElementById("signedIn");
     const signedOut = document.getElementById("signedOut");
-
+    const userEmail = document.getElementById("userEmail");
+    const myFilesList = document.getElementById("myFilesList");
     const headerAuthButton = document.getElementById("headerGoogleSignIn");
+
     if (headerAuthButton) {
       headerAuthButton.textContent = currentUser ? "SIGN OUT" : "Continue with Google";
       headerAuthButton.setAttribute("aria-label", currentUser ? "Sign out of your account" : "Sign in with Google");
     }
 
     if (currentUser) {
-      signedIn.classList.remove("hidden");
-      signedOut.classList.add("hidden");
+      if (signedIn) signedIn.classList.remove("hidden");
+      if (signedOut) signedOut.classList.add("hidden");
+      if (userEmail) userEmail.textContent = currentUser.email || "";
+      showAuthMessage("Signed in successfully.");
 
-      document.getElementById("userEmail").textContent =
-        currentUser.email || "";
+      const userId = currentUser.id;
+      const { data: wallet, error: walletError } = await supabaseClient
+        .from("credit_wallets")
+        .select("subscription_credits, purchased_credits")
+        .eq("user_id", userId)
+        .maybeSingle();
 
-      await loadMyFiles();
+      if (revision !== authRenderRevision || currentUser?.id !== userId) return;
+      if (walletError) console.error("Could not load the credit wallet:", walletError);
+
+      const totalCredits = wallet
+        ? Number(wallet.subscription_credits || 0) + Number(wallet.purchased_credits || 0)
+        : 0;
+      if (headerCreditBalance) headerCreditBalance.textContent = totalCredits;
+      if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = totalCredits;
+
+      try {
+        await loadMyFiles();
+      } catch (filesError) {
+        console.error("Signed in, but the file library could not be loaded:", filesError);
+      }
     } else {
-      signedIn.classList.add("hidden");
-      signedOut.classList.remove("hidden");
+      if (headerCreditBalance) headerCreditBalance.textContent = "0";
+      if (headerCreditBalanceTop) headerCreditBalanceTop.textContent = "0";
+      if (signedIn) signedIn.classList.add("hidden");
+      if (signedOut) signedOut.classList.remove("hidden");
+      if (userEmail) userEmail.textContent = "";
 
       currentFiles = [];
       currentVideoFiles = [];
       currentImageFiles = [];
       updateLibraryCounts();
 
-      document.getElementById("myFilesList").innerHTML =
-        '<p class="hint">Please sign in to see your personal files.</p>';
+      if (myFilesList) {
+        myFilesList.innerHTML = '<p class="hint">Please sign in to see your personal files.</p>';
+      }
     }
   }
 
@@ -3480,6 +3493,7 @@ if (currentUser) {
         }
       }, 0);
     }
+
     if (
       event === "INITIAL_SESSION" ||
       event === "SIGNED_IN" ||
@@ -3487,9 +3501,8 @@ if (currentUser) {
       event === "TOKEN_REFRESHED" ||
       event === "USER_UPDATED"
     ) {
-      setTimeout(() => {
-        refreshAuthState();
-      }, 0);
+      // Defer Supabase queries until after its auth callback/lock has completed.
+      setTimeout(() => refreshAuthState(session), 0);
     }
   });
 
