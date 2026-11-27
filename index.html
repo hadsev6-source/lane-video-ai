@@ -2209,7 +2209,24 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
         <label class="video-builder-label" for="videoNegativePrompt">AVOID IN THE VIDEO (OPTIONAL)</label>
         <input id="videoNegativePrompt" maxlength="400" placeholder="e.g. blurry image, distorted hands, text, watermark"/>
       </div>
-      <div class="video-builder-cost">Estimated generation cost <strong id="videoEstimatedCost">192 credits</strong></div>
+      <div class="video-builder-cost">
+        <div style="font-weight:700;margin-bottom:8px">VIDEO STUDIO · OWNER PRICING</div>
+        <div style="font-size:13px;color:#ccc;margin-bottom:10px">WaveSpeed · Wan 3.0 · 480p · цена на доставчика без LANE надценка</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left">
+            <thead><tr style="color:#aaa;border-bottom:1px solid #633039"><th style="padding:8px 6px">Duration</th><th style="padding:8px 6px">WaveSpeed USD</th><th style="padding:8px 6px">Owner credits</th></tr></thead>
+            <tbody>
+              <tr><td style="padding:8px 6px">5 sec</td><td style="padding:8px 6px">$0.35</td><td style="padding:8px 6px">45</td></tr>
+              <tr><td style="padding:8px 6px">10 sec</td><td style="padding:8px 6px">$0.70</td><td style="padding:8px 6px">90</td></tr>
+              <tr><td style="padding:8px 6px">15 sec</td><td style="padding:8px 6px">$1.05</td><td style="padding:8px 6px">135</td></tr>
+              <tr><td style="padding:8px 6px">20 sec</td><td style="padding:8px 6px">$1.40</td><td style="padding:8px 6px">180</td></tr>
+              <tr><td style="padding:8px 6px">30 sec</td><td style="padding:8px 6px">$2.10</td><td style="padding:8px 6px">270</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px">Selected duration: <strong id="videoEstimatedCost">45 credits · $0.35</strong></div>
+        <div style="font-size:11px;color:#aaa;margin-top:5px">USD amounts are WaveSpeed published estimates. Credits are the owner-account equivalent at the current configured conversion rate. No LANE markup.</div>
+      </div>
       <button class="primary-btn video-builder-placeholder" id="newVideoGenerateButton" type="button" onclick="startNewVideoGeneration()">✦ &nbsp; GENERATE VIDEO</button>
       <div class="video-builder-note">Your selected duration determines the model automatically. Credits are charged by the server only when a job is created.</div>
     </div>
@@ -2826,12 +2843,14 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   // server-side provider credentials, credit wallet and saved video library.
   let newVideoStartInProgress = false;
   let newVideoPollTimer = null;
-  const newVideoPrices = { "5": 192, "10": 303, "15": 557, "20": 743, "30": 1114 };
+  const newVideoPrices = { "5": 0.35, "10": 0.70, "15": 1.05, "20": 1.40, "30": 2.10 };
   const newVideoDuration = document.getElementById("videoDuration");
   const newVideoCost = document.getElementById("videoEstimatedCost");
   function updateNewVideoCost() {
     if (!newVideoDuration || !newVideoCost) return;
-    newVideoCost.textContent = (newVideoPrices[newVideoDuration.value] || 0).toLocaleString() + " credits";
+    const usd = newVideoPrices[newVideoDuration.value] || 0;
+    const credits = laneOwnerCredits(usd, "ceil");
+    newVideoCost.textContent = credits.toLocaleString() + " credits · $" + usd.toFixed(2);
   }
   if (newVideoDuration) {
     newVideoDuration.addEventListener("change", updateNewVideoCost);
