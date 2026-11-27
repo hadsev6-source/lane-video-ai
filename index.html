@@ -4600,7 +4600,17 @@ async function trimDanceAudioRange(file,startSeconds,endSeconds){
 }
 async function startMyDanceMusicGeneration(){
  const button=document.getElementById("myDanceGenerateButton"),status=document.getElementById("myDanceStatus"),result=document.getElementById("myDanceResult");
- if(getMyDanceDuration()===30){status.textContent="30-second Dance to My Music is configured in the studio. The shared long-duration server connection will be added next; no generation has started and no credits have been charged.";return;}
+ if(getMyDanceDuration()===30){
+  if(!currentUser){alert("Please sign in to continue.");return;}
+  const audioFile=document.getElementById("myDanceMusicFile").files?.[0],prompt=document.getElementById("myDancePrompt").value.trim(),images=Array.from(document.getElementById("myDanceImages").files||[]);
+  if(!audioFile){alert("Please upload an MP3 file.");return;}if(prompt.length<10||prompt.length>1000){alert("Please enter a dance description from 10 to 1,000 characters.");return;}
+  if(audioFile.size>128*1024*1024||!(/\.mp3$/i.test(audioFile.name)||["audio/mpeg","audio/mp3"].includes(audioFile.type))){alert("Please choose an MP3 under 128 MB.");return;}
+  if(images.length>3||images.some(x=>x.size>10*1024*1024||!["image/jpeg","image/png","image/webp"].includes(x.type))){alert("Upload up to 3 JPG, PNG or WEBP reference images, maximum 10 MB each.");return;}
+  button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
+  try{const selection=window.myDanceAudioSelection;if(!selection||!myDanceDecodedAudio||myDanceDecodedAudio.duration<30||Math.abs(selection.end-selection.start-30)>.05)throw new Error("Select a full 30-second segment in the audio waveform first.");const clip=await trimDanceAudioRange(audioFile,selection.start,selection.start+30);await startOmnVideoFlow({mode:"dance-to-music",prompt,duration:30,ratio:"16:9",audioFile:clip,images,status,result,button});}
+  catch(e){status.textContent=e.message||"Could not start OmnAPI generation.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE VIDEO · 30 SECONDS";}
+  return;
+ }
  if(!currentUser){alert("Please sign in to continue.");return;}
  const audioFile=document.getElementById("myDanceMusicFile").files?.[0];
  const prompt=document.getElementById("myDancePrompt").value.trim();
@@ -4664,7 +4674,18 @@ async function startMyDanceMusicGeneration(){
 
 async function startDanceStudioGeneration(){
  const button=document.getElementById("danceGenerateButton"), status=document.getElementById("danceStatus"), result=document.getElementById("danceResult");
- if(Number(document.getElementById("danceDuration")?.value)===30){status.textContent="30-second Dance Choreography is configured in the studio. The shared long-duration server connection will be added next; no generation has started and no credits have been charged.";return;}
+ if(Number(document.getElementById("danceDuration")?.value)===30){
+  if(!currentUser){alert("Please sign in first.");return;}
+  const prompt=document.getElementById("dancePrompt").value.trim(),image=window.laneDancerReferencePhoto||null;let audio=document.getElementById("danceMusicFile").files[0];
+  if(prompt.length<10||prompt.length>1000){alert("Enter a choreography prompt from 10 to 1,000 characters.");return;}
+  if(!image||!["image/jpeg","image/png","image/webp"].includes(image.type)||image.size>10*1024*1024){alert("Please select a valid dancer reference photo under 10 MB.");return;}
+  if(!audio){alert("Please upload your MP3 music file.");return;}if(audio.size>128*1024*1024||!(audio.type==="audio/mpeg"||audio.type==="audio/mp3"||/\.mp3$/i.test(audio.name))){alert("Please upload a valid MP3 under 128 MB.");return;}
+  const style=document.getElementById("danceStyleChoice")?.value||"";if(!style){alert("Please choose a dance style.");return;}
+  button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
+  try{audio=await trimDanceAudioReference(audio,30);const brief="Create a 30-second dance choreography music video. Main dancer must be the person in the performer reference photo; preserve their identity and appearance. Dance style: "+style+". Choreography: "+prompt+". Synchronize the full-body movements precisely to the uploaded music. Use clear full-body framing and professional cinematic camera work.";await startOmnVideoFlow({mode:"choreography",prompt:brief,duration:30,ratio:document.getElementById("danceRatio").value,audioFile:audio,images:[image],status,result,button});}
+  catch(e){status.textContent=e.message||"Could not start OmnAPI choreography.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE CHOREOGRAPHY";}
+  return;
+ }
  if(!currentUser){alert("Please sign in first.");return;}
  const prompt=document.getElementById("dancePrompt").value.trim();
  if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}
@@ -4742,17 +4763,53 @@ async function populateDanceMusicVideoSongs(){
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
 }
+async function startOmnVideoFlow(options){
+ const status=options.status,result=options.result,button=options.button;
+ const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
+ if(!token)throw new Error("Your session has expired. Please sign in again.");
+ const form=new FormData();
+ for(const [k,v] of Object.entries({mode:options.mode,prompt:options.prompt,duration:String(options.duration),ratio:options.ratio||"16:9",resolution:"480p",songPath:options.songPath||""}))if(v!==""&&v!=null)form.append(k,String(v));
+ if(options.audioFile)form.append("musicFile",options.audioFile);
+ (options.images||[]).forEach((file,i)=>form.append(options.mode==="choreography"?"referenceImage":"referenceImage"+i,file));
+ status.textContent="Checking the exact OmnAPI price. No credits are charged at this stage...";
+ const quoteResponse=await fetch(SUPABASE_URL+"/functions/v1/omn-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
+ const quoteText=await quoteResponse.text();let quote={};try{quote=JSON.parse(quoteText);}catch{quote={error:quoteText.slice(0,400)};}
+ if(!quoteResponse.ok||!quote.success)throw new Error(quote.error||"Could not calculate the generation price.");
+ const priceLine=quote.owner?"Owner account · no LANE customer credits will be charged. Provider estimate: "+quote.providerCredits+" OmnAPI credits.":quote.credits.toLocaleString()+" LANE credits (includes 30% LANE markup).";
+ const expiry=new Date(quote.expiresAt).toLocaleTimeString();
+ if(!confirm("OMN MUSIC VIDEO PRICE\n\nDuration: "+quote.billableSeconds+" seconds\nResolution: "+quote.resolution+"\nProvider cost: "+quote.providerCredits+" OmnAPI credits\n"+priceLine+"\n\nQuote expires at "+expiry+".\n\nStart the paid generation now?")){status.textContent="Quote ready. Generation cancelled; no credits were charged.";return;}
+ status.textContent="Purchase confirmed. Submitting the video to OmnAPI...";
+ const buyResponse=await fetch(SUPABASE_URL+"/functions/v1/omn-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"purchase",generationId:quote.generationId})});
+ const buyText=await buyResponse.text();let purchase={};try{purchase=JSON.parse(buyText);}catch{purchase={error:buyText.slice(0,400)};}
+ if(!buyResponse.ok||!purchase.success)throw new Error(purchase.error||"OmnAPI could not start the generation.");
+ status.textContent="OmnAPI is generating your video. "+(purchase.creditsUsed?("Charged: "+purchase.creditsUsed+" LANE credits. "):"");
+ button.textContent="VIDEO GENERATING...";
+ let finished=false;
+ for(let i=0;i<180;i++){
+  await new Promise(r=>setTimeout(r,15000));
+  const poll=await fetch(SUPABASE_URL+"/functions/v1/omn-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",generationId:quote.generationId})});
+  const pollText=await poll.text();let p={};try{p=JSON.parse(pollText);}catch{p={error:pollText.slice(0,400)};}
+  if(!poll.ok)throw new Error(p.error||"Could not check OmnAPI generation status.");
+  if(p.status==="SUCCEEDED"&&p.videoUrl){
+   const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=p.videoUrl;video.style.cssText="width:100%;max-width:100%;margin-top:12px;border-radius:12px";
+   const link=document.createElement("a");link.href=p.videoUrl;link.download="LANE-AI-Omn-Music-Video.mp4";link.rel="noopener";link.textContent="⬇ DOWNLOAD VIDEO";link.style.display="block";link.style.marginTop="10px";
+   result.replaceChildren(video,link);status.textContent="Completed! Your Omn music video is saved in your LANE library.";button.textContent="GENERATE ANOTHER VIDEO";finished=true;break;
+  }
+  if(p.status==="FAILED")throw new Error(p.error||"OmnAPI generation failed. Any confirmed provider refund will be reflected in your LANE credits.");
+  status.textContent="OmnAPI status: "+(p.stage||"processing")+" · "+(p.progress||0)+"%";
+ }
+ if(!finished){status.textContent="Your video is still processing on OmnAPI. You can safely check again later; do not submit a duplicate generation.";button.textContent="CHECK AGAIN";button.disabled=false;return;}
+ button.disabled=false;
+}
 async function startFullLengthMusicVideoGeneration(){
- const status=document.getElementById("danceMvStatus");
- const fileName=document.getElementById("danceMvSong")?.value||"";
- const prompt=document.getElementById("danceMvVisual")?.value.trim()||"";
- const duration=Number(document.getElementById("danceMvDuration")?.value||60);
- if(!currentUser){alert("Please sign in first.");return;}
- if(!fileName){alert("Please select a song from your saved music library.");return;}
- if(prompt.length<10){alert("Please describe your music video in at least 10 characters.");return;}
- if(prompt.length>1000){alert("Your video description must not exceed 1,000 characters.");return;}
- if(![60,120,180,240].includes(duration)){alert("Please select a full-length duration from 1 to 4 minutes.");return;}
- if(status)status.textContent="Your "+(duration/60)+"-minute music video is configured in LANE AI MUSIC VIDEO STUDIO. The long-form provider connection will be added next. No generation has started and no credits have been charged.";
+ const status=document.getElementById("danceMvStatus"),button=document.getElementById("danceMvGenerateButton"),result=document.getElementById("danceMvResult");
+ const fileName=document.getElementById("danceMvSong")?.value||"",prompt=document.getElementById("danceMvVisual")?.value.trim()||"",duration=Number(document.getElementById("danceMvDuration")?.value||60);
+ if(!currentUser){alert("Please sign in first.");return;}if(!fileName){alert("Please select a song from your saved music library.");return;}
+ if(prompt.length<10||prompt.length>1000){alert("Please describe your music video in 10 to 1,000 characters.");return;}
+ if(![60,120,180,240].includes(duration)){alert("Please select a duration from 1 to 4 minutes.");return;}
+ button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
+ try{await startOmnVideoFlow({mode:"music",prompt,duration,ratio:document.getElementById("danceMvRatio")?.value==="landscape"?"16:9":"9:16",songPath:currentUser.id+"/"+fileName,status,result,button});}
+ catch(e){status.textContent=e.message||"OmnAPI generation failed.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE MUSIC VIDEO";}
 }
 async function startDanceMusicVideoGeneration(){
  const requestedDuration=Number(document.getElementById("danceMvDuration")?.value||15);
