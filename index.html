@@ -4762,7 +4762,7 @@ async function startDanceStudioGeneration(){
   }catch(error){alert(error.message||"Could not process the music reference.");return;}
  }
  const owner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7";
- const providerUsd=duration*0.216, customerCredits=({5:181,10:361,15:541})[duration]||0;
+ const providerUsd=duration*0.216, customerCredits=laneCustomerCredits(providerUsd);
  const credits=owner?Math.max(1,Math.round(providerUsd*0.9168*140)):customerCredits;
  if(!credits){alert("Please select a supported video duration.");return;}
  if(!confirm("Generate a "+duration+"-second Dance Studio video for "+credits+" credits?"+(owner?" (provider cost: $"+providerUsd.toFixed(2)+")":"")))return;
