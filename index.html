@@ -4475,13 +4475,13 @@ function updateNewVideoCost(){
 }
 function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15),owner=isLaneOwnerAccount(),el=document.getElementById("dancePrice");
- const rows=laneBuildPriceRows([10,15,30],.216);
- lanePriceBreakdown(el,rows,owner,"DANCE STUDIO · SEEDANCE 2.0 · 720p");
+ const rows=laneBuildPriceRows([10,15],.10);rows.push(...laneBuildPriceRows([30],.03,null,"round"));
+ lanePriceBreakdown(el,rows,owner,"DANCE STUDIO · SEEDANCE 2.0 FAST · 480p");
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
  if(typeof updateDanceMvPrice==="function")updateDanceMvPrice();
  if(typeof updateMyDancePrice==="function")updateMyDancePrice();
 }
-document.getElementById("danceDuration")?.addEventListener("change",()=>{updateDancePrice();const d=Number(document.getElementById("danceDuration").value);laneShowSelectedPrice(d,d<=15?d*.216:d*.03,"DANCE CHOREOGRAPHY");});
+document.getElementById("danceDuration")?.addEventListener("change",()=>{updateDancePrice();const d=Number(document.getElementById("danceDuration").value);laneShowSelectedPrice(d,d<=15?d*.10:d*.03,"DANCE CHOREOGRAPHY");});
 function updateDancePromptCounter(){
  const field=document.getElementById("dancePrompt"), counter=document.getElementById("dancePromptCounter");
  if(!field||!counter)return; counter.textContent=field.value.length.toLocaleString()+" / 1,000 characters";
