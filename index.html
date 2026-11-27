@@ -2116,6 +2116,7 @@ body>#myfiles,#myfiles{display:none}
   <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">AI DANCE STUDIO</h2><p>Create dance videos with your direction, reference image and music.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
   <div class="dance-preview-notice">LIVE BETA · Seedance 2.5 · 720p · 15 or 30 seconds. Music uploads are used as audio references; exact beat-by-beat choreography is not guaranteed.</div>
   <style id="dance-mode-picker-styles">
+#danceStudioPreview .dance-preview-dialog:not(.show-legacy-generator):not(.mode-active) .dance-preview-grid{display:none}
 #danceStudioPreview .dance-mode-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0 24px}
 #danceStudioPreview .dance-mode-card{display:flex;flex-direction:column;overflow:hidden;text-align:left;padding:0;border:1px solid #a66a25;border-radius:15px;background:linear-gradient(145deg,#1a1209,#080808 72%);color:#fff;cursor:pointer;min-width:0;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
 #danceStudioPreview .dance-mode-card:hover{transform:translateY(-3px);border-color:#ffad42;box-shadow:0 8px 24px #e88c2630}
