@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="Create AI images, cinematic videos and original music in one creative studio."/>
 <meta name="twitter:image" content="https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/lane-ai-studio-facebook-square.jpg"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
 <style>
     :root {
       --red: #e50914;
@@ -3943,21 +3944,26 @@ updateDancePromptCounter();
 async function trimDanceAudioReference(file,maxSeconds=15){
  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
  if(!AudioContextClass)throw new Error("Your browser cannot process audio trimming. Please use a recent Chrome browser.");
+ if(!window.lamejs?.Mp3Encoder)throw new Error("The MP3 encoder could not load. Refresh the page and try again.");
  const context=new AudioContextClass();
  try{
   const decoded=await context.decodeAudioData(await file.arrayBuffer());
   if(!Number.isFinite(decoded.duration)||decoded.duration<=0)throw new Error("Could not read this audio file. Please use a valid MP3 or WAV.");
   const seconds=Math.min(decoded.duration,maxSeconds),sampleCount=Math.floor(seconds*decoded.sampleRate),channels=Math.min(decoded.numberOfChannels,2);
-  const bytesPerSample=2,dataSize=sampleCount*channels*bytesPerSample,buffer=new ArrayBuffer(44+dataSize),view=new DataView(buffer);
-  const writeText=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i));};
-  writeText(0,"RIFF");view.setUint32(4,36+dataSize,true);writeText(8,"WAVE");writeText(12,"fmt ");view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,decoded.sampleRate,true);view.setUint32(28,decoded.sampleRate*channels*bytesPerSample,true);view.setUint16(32,channels*bytesPerSample,true);view.setUint16(34,16,true);writeText(36,"data");view.setUint32(40,dataSize,true);
-  let offset=44;
-  for(let i=0;i<sampleCount;i++)for(let c=0;c<channels;c++){
-   const sample=Math.max(-1,Math.min(1,decoded.getChannelData(c)[i]));
-   view.setInt16(offset,sample<0?sample*0x8000:sample*0x7fff,true);offset+=2;
+  const encoder=new window.lamejs.Mp3Encoder(channels,decoded.sampleRate,128),chunks=[],frameSize=1152;
+  const left=new Int16Array(sampleCount),right=channels===2?new Int16Array(sampleCount):null;
+  const leftData=decoded.getChannelData(0),rightData=channels===2?decoded.getChannelData(1):null;
+  for(let i=0;i<sampleCount;i++){
+   const l=Math.max(-1,Math.min(1,leftData[i]));left[i]=l<0?l*0x8000:l*0x7fff;
+   if(right){const v=Math.max(-1,Math.min(1,rightData[i]));right[i]=v<0?v*0x8000:v*0x7fff;}
   }
+  for(let i=0;i<sampleCount;i+=frameSize){
+   const mp3buf=right?encoder.encodeBuffer(left.subarray(i,i+frameSize),right.subarray(i,i+frameSize)):encoder.encodeBuffer(left.subarray(i,i+frameSize));
+   if(mp3buf.length)chunks.push(new Uint8Array(mp3buf));
+  }
+  const tail=encoder.flush();if(tail.length)chunks.push(new Uint8Array(tail));
   const base=file.name.replace(/\\.[^.]+$/,"")||"music-reference";
-  return new File([buffer],base+"-15s.wav",{type:"audio/wav",lastModified:Date.now()});
+  return new File(chunks,base+"-15s.mp3",{type:"audio/mpeg",lastModified:Date.now()});
  }finally{await context.close().catch(()=>{});}
 }
 async function startDanceStudioGeneration(){
@@ -3979,9 +3985,9 @@ async function startDanceStudioGeneration(){
    URL.revokeObjectURL(audioUrl);
    if(!Number.isFinite(audioDuration)||audioDuration<=0)throw new Error("Could not read this audio file. Please use a valid MP3 or WAV.");
    if(audioDuration>15){
-    status.textContent="Trimming music reference to the first 15 seconds...";
+    status.textContent="Converting music reference to MP3 and trimming to 15 seconds...";
     audio=await trimDanceAudioReference(audio,15);
-    status.textContent="Music reference trimmed to 15 seconds. Preparing your video...";
+    status.textContent="Music reference prepared as MP3 (maximum 15 seconds). Preparing your video...";
    }
   }catch(error){alert(error.message||"Could not process the music reference.");return;}
  }
