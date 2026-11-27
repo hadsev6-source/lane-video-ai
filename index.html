@@ -3474,9 +3474,11 @@ if (currentUser) {
       }, 0);
     }
     if (
+      event === "INITIAL_SESSION" ||
       event === "SIGNED_IN" ||
       event === "SIGNED_OUT" ||
-      event === "TOKEN_REFRESHED"
+      event === "TOKEN_REFRESHED" ||
+      event === "USER_UPDATED"
     ) {
       setTimeout(() => {
         refreshAuthState();
