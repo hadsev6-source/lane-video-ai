@@ -3393,13 +3393,14 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   }
 
   async function refreshAuthState() {
-    const { data, error } = await supabaseClient.auth.getUser();
+    // Read the persisted local session first; Google PKCE already exchanges the code on callback.
+    const { data, error } = await supabaseClient.auth.getSession();
 
     if (error) {
-      console.error(error);
+      console.error("Could not restore the saved authentication session:", error);
     }
 
-    currentUser = data?.user || null;
+    currentUser = data?.session?.user || null;
     if (typeof updateLanePricingMode === "function") updateLanePricingMode();
     if (typeof updateDancePrice === "function") updateDancePrice();
 const headerCreditBalance = document.getElementById("headerCreditBalance");
