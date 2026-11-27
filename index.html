@@ -3353,7 +3353,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
       const { data, error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin + "/"
+          redirectTo: SITE_URL
         }
       });
       if (error) throw error;
