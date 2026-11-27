@@ -4793,8 +4793,8 @@ async function startWaveSpeedVideoFlow(options){
  const quoteResponse=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
  const quoteText=await quoteResponse.text();let quote={};try{quote=JSON.parse(quoteText)}catch{quote={error:quoteText.slice(0,400)}}
  if(!quoteResponse.ok||!quote.success)throw new Error(quote.error||"Could not calculate the WaveSpeed price.");
- const priceLine=quote.owner?"OWNER API COST: $"+quote.providerUsd.toFixed(2)+" · "+quote.credits.toLocaleString()+" credits (no markup)":quote.credits.toLocaleString()+" credits";
- const usdLine=quote.owner?"Provider API price: $"+quote.providerUsd.toFixed(2):"";
+ const priceLine=quote.owner?"OWNER API PRICE: $"+quote.providerCostUsd.toFixed(2)+" · "+quote.credits.toLocaleString()+" credits":quote.credits.toLocaleString()+" credits";
+ const usdLine=quote.owner?"Provider API price: $"+quote.providerCostUsd.toFixed(2):"";
  if(!confirm("WAVESPEED MUSIC VIDEO\n\nDuration: "+quote.duration+" seconds\nResolution: 480p\n"+usdLine+"\n"+priceLine+"\n\nStart the paid video generation?")){status.textContent="Quote ready. Generation cancelled; no credits were charged.";return;}
  status.textContent="Confirmed. Submitting your video to WaveSpeed...";
  const buyResponse=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"purchase",generationId:quote.generationId})});
