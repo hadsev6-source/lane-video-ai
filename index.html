@@ -4342,14 +4342,16 @@ async function startMyDanceMusicGeneration(){
   form.append("musicFile",audio);
   images.forEach((file,index)=>form.append("referenceImage"+index,file));
   const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
-  const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"Video generation could not be started.");
+  const responseText=await response.text();let data={};try{data=JSON.parse(responseText);}catch{data={error:responseText.slice(0,500)||"The generation service returned an unreadable response."};}
+  if(!response.ok||!data.success)throw new Error(data.error||"Video generation could not be started.");
   status.textContent="Seedance 2.0 is generating your video. Credits used: "+data.creditsUsed+".";
   button.textContent="PROCESSING...";
-  let finished=false;
+  let finished=false,keepDisabled=false;
   for(let i=0;i<180;i++){
    await new Promise(resolve=>setTimeout(resolve,10000));
    const poll=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",generationId:data.generationId})});
-   const p=await poll.json();
+   const pollText=await poll.text();let p={};try{p=JSON.parse(pollText);}catch{p={error:pollText.slice(0,500)||"Could not read generation status."};}
+   if(!poll.ok)throw new Error(p.error||"Could not check generation status (HTTP "+poll.status+").");
    if(p.status==="SUCCEEDED"&&p.videoUrl){
     const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=p.videoUrl;video.style.cssText="width:100%;max-width:100%;margin-top:12px;border-radius:12px";
     const download=document.createElement("a");download.href=p.videoUrl;download.download="LANE-AI-Dance-Video.mp4";download.rel="noopener";download.textContent="⬇ DOWNLOAD VIDEO";download.className="dance-audio-preview-btn";download.style.display="block";download.style.textAlign="center";download.style.textDecoration="none";download.style.marginTop="12px";
@@ -4361,9 +4363,9 @@ async function startMyDanceMusicGeneration(){
    if(p.status==="FAILED"||p.error)throw new Error(p.error||"Video generation failed.");
    status.textContent="Processing video... Check "+(i+1)+"/180.";
   }
-  if(!finished){status.textContent="Still processing. Reference: "+data.generationId;button.textContent="PROCESSING...";}
+  if(!finished){status.textContent="Still processing. Reference: "+data.generationId+". Check your generation history before starting another video.";button.textContent="PROCESSING...";keepDisabled=true;}
  }catch(error){status.textContent=error.message||"An error occurred.";button.textContent="TRY AGAIN";}
- finally{button.disabled=false;}
+ finally{button.disabled=keepDisabled;}
 }
 
 async function startDanceStudioGeneration(){
