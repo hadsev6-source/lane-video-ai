@@ -2425,11 +2425,6 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
 </section>
 <div class="dance-preview-grid choreo-only-grid">
    <section class="dance-preview-card choreo-card">
-    <h3>01 / DANCER REFERENCE</h3>
-    <p class="dance-preview-help">Upload one photo. The person in the photo will be the dancer in your choreography.</p>
-    <label class="dance-preview-upload">Upload dancer photo (JPG, PNG, WEBP · max 10 MB)<input id="danceReferenceImage" type="file" accept="image/jpeg,image/png,image/webp" required></label>
-   </section>
-   <section class="dance-preview-card choreo-card">
     <h3>02 / YOUR MUSIC</h3>
     <p class="dance-preview-help">Upload the MP3 track you want the choreography to follow. The dance will be synchronized to this audio.</p>
     <label for="danceMusicFile">Your music file (MP3 · max 30 MB)</label>
@@ -4531,11 +4526,9 @@ async function startDanceStudioGeneration(){
  const prompt=document.getElementById("dancePrompt").value.trim();
  if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}
  if(prompt.length>1000){alert("Your video prompt must not exceed 1,000 characters.");return;}
- const image=document.getElementById("danceReferenceImage").files[0];
+ const image=null;
  let audio=document.getElementById("danceMusicFile").files[0];
- if(!image){alert("Please upload a dancer photo.");return;}
  if(!audio){alert("Please upload your MP3 music file.");return;}
- if(image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
  if(audio&&!(audio.type==="audio/mpeg"||audio.type==="audio/mp3"||/\.mp3$/i.test(audio.name))){alert("Only MP3 files are supported. Please choose an .mp3 file.");return;}
  if(audio){
