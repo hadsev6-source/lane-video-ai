@@ -2515,6 +2515,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   <div><label for="danceMvDuration">VIDEO DURATION</label><select id="danceMvDuration"><optgroup label="SHORT CLIPS"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></optgroup><optgroup label="FULL-LENGTH VIDEO"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option></optgroup></select></div>
   <div><label for="danceMvRatio">VIDEO FORMAT</label><select id="danceMvRatio"><option value="portrait">9:16 Portrait</option><option value="landscape">16:9 Landscape</option></select></div>
  </div>
+ <div class="dance-preview-help" id="danceMvPrice" aria-live="polite"></div>
  <div class="dance-mode-status" id="danceMvStatus">Choose a saved song and describe your video. The selected song will be converted to the required audio format automatically.</div>
  <button class="video-tool-action" type="button" id="danceMvGenerateButton" onclick="startDanceMusicVideoGeneration()">GENERATE MUSIC VIDEO</button>
  <div id="danceMvResult"></div>
@@ -4427,6 +4428,10 @@ function updateLanePricingMode(){
 }
 function laneOwnerCredits(usd,rounding="round"){const eur=Number(usd)*0.9168*140;return Math.max(1,rounding==="ceil"?Math.ceil(eur):Math.round(eur));}
 function laneOwnerProviderLabel(usd,credits,detail){return "OWNER · "+detail+" · Provider API cost: $"+Number(usd).toFixed(3)+" · "+credits.toLocaleString()+" credits";}
+function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.30));}
+function updateDanceMvPrice(){const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;const owner=isLaneOwnerAccount();if(d>30){el.textContent=owner?"OWNER · WaveSpeed API quote shown before generation · no LANE markup":"Credit price shown before generation";return;}const usd=d*0.20,credits=owner?laneOwnerCredits(usd,"ceil"):laneCustomerCredits(usd);el.textContent=owner?laneOwnerProviderLabel(usd,credits,"Runway · "+d+" sec"):credits.toLocaleString()+" credits";}
+document.getElementById("danceMvDuration")?.addEventListener("change",updateDanceMvPrice);
+updateDanceMvPrice();
 function updateImagePrice(){
  const el=document.getElementById("imageCostPreview");if(!el)return;
  const owner=isLaneOwnerAccount(),credits=owner?laneOwnerCredits(0.014):15;
@@ -4446,8 +4451,8 @@ function updateNewVideoCost(){
 function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15), owner=isLaneOwnerAccount();
  const providerUsd=d*0.216, providerEur=providerUsd*0.9168, ownerCredits=laneOwnerCredits(providerUsd);
- const customerCredits=({5:181,10:361,15:541})[d]||0;
- const text=d===30?(owner?"30 sec · WaveSpeed quote shown before generation":"30 sec · Price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+d+" sec") : customerCredits.toLocaleString()+" credits";
+ const customerCredits=d===30?0:laneCustomerCredits(providerUsd);
+ const text=d===30?(owner?"OWNER · WaveSpeed API quote shown before generation":"Credit price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+d+" sec") : customerCredits.toLocaleString()+" credits";
  for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
 }
@@ -4498,8 +4503,8 @@ let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePr
 function getMyDanceDuration(){return Number(document.getElementById("myDanceDuration")?.value||15);}
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
- const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd),customerCredits=({10:361,15:541})[duration];
- el.textContent=duration===30?(owner?"30 sec · WaveSpeed quote shown before generation":"30 sec · Price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+duration+" sec"):customerCredits.toLocaleString()+" credits";
+ const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd,"ceil"),customerCredits=laneCustomerCredits(providerUsd);
+ el.textContent=duration===30?(owner?"OWNER · WaveSpeed API quote shown before generation":"Credit price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+duration+" sec"):customerCredits.toLocaleString()+" credits";
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
  if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
@@ -4652,7 +4657,7 @@ async function startMyDanceMusicGeneration(){
   if(myDanceDecodedAudio.duration<duration||Math.abs((selection.end-selection.start)-duration)>.05)throw new Error("Please select a full "+duration+"-second segment from your MP3.");
   const audio=await trimDanceAudioRange(audioFile,selection.start,selection.start+duration);
   if(!audio.size)throw new Error("The selected audio segment could not be processed.");
-  const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=duration*0.216,ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:({10:361,15:541})[duration];
+  const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=duration*0.216,ownerCredits=Math.max(1,Math.ceil(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:laneCustomerCredits(providerUsd);
   if(!confirm("Generate a "+duration+"-second video for "+chargeCredits+" credits?"+(isOwner?" (estimated provider cost)":"")))return;
   button.disabled=true;button.textContent="UPLOADING AND STARTING...";status.textContent="Uploading your audio and reference images...";
   result.replaceChildren();
