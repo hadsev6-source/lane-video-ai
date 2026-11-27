@@ -4427,7 +4427,7 @@ function updateLanePricingMode(){
   :"CUSTOMER PRICING · Signed in as a customer. Standard customer credit prices apply.";
 }
 function laneOwnerCredits(usd,rounding="round"){const eur=Number(usd)*0.9168*140;return Math.max(1,rounding==="ceil"?Math.ceil(eur):Math.round(eur));}
-function laneFormatUsd(value){return "$"+Number(value).toFixed(2).replace(/\\.?0+$/,"");}
+function laneFormatUsd(value){return "$"+Number(value).toFixed(2);}
 function laneOwnerProviderLabel(usd,credits,detail){return "OWNER · "+detail+" · Estimated cost: "+laneFormatUsd(usd)+" · "+credits.toLocaleString()+" credits";}
 function lanePriceBreakdown(el,rows,owner,heading){
  if(!el)return;
