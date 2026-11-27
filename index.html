@@ -2477,6 +2477,23 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
  .dance-home-mode strong{margin-top:10px}
  .dance-home-mode em{margin-bottom:11px}
 }
+
+/* OmnAPI full-song preview — isolated from the existing Runway controls */
+#danceStudioPreview .omn-full-song-card{margin:18px 0;padding:17px;border:1px solid #9a652e;border-radius:14px;background:linear-gradient(145deg,#211609,#0b0907 76%);box-shadow:inset 0 1px #ffffff0b}
+#danceStudioPreview .omn-full-song-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#danceStudioPreview .omn-kicker{display:block;color:#ffb35f;font-size:10px;font-weight:900;letter-spacing:.15em}
+#danceStudioPreview .omn-full-song-head h4{margin:5px 0 0;color:#fff;font-size:18px;letter-spacing:.02em}
+#danceStudioPreview .omn-resolution{padding:6px 10px;border:1px solid #a66a25;border-radius:99px;color:#ffd29b;font-size:11px;font-weight:800}
+#danceStudioPreview .omn-full-song-card>p{font-size:12px;color:#c9bba8;line-height:1.55}
+#danceStudioPreview .omn-song-facts,#danceStudioPreview .omn-price-preview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+#danceStudioPreview .omn-song-facts>div,#danceStudioPreview .omn-price-preview>div{display:grid;gap:6px;padding:12px;border:1px solid #5a432b;border-radius:9px;background:#090806}
+#danceStudioPreview .omn-song-facts span,#danceStudioPreview .omn-price-preview span{color:#bba88f;font-size:9px;font-weight:800;letter-spacing:.08em}
+#danceStudioPreview .omn-song-facts strong{color:#fff;font-size:15px}
+#danceStudioPreview .omn-price-preview strong{color:#ffbd70;font-size:19px}
+#danceStudioPreview .omn-price-note{margin:10px 0!important;font-size:11px!important}
+#danceStudioPreview .omn-preview-button{width:100%;padding:13px;border:1px solid #79552f;border-radius:9px;background:#302214;color:#d4c0a5;font-size:11px;font-weight:900;letter-spacing:.06em;cursor:not-allowed;opacity:.88}
+#danceStudioPreview .omn-preview-foot{margin-top:9px;color:#a9957d;font-size:10px;line-height:1.5}
+@media(max-width:480px){#danceStudioPreview .omn-song-facts,#danceStudioPreview .omn-price-preview{grid-template-columns:1fr}}
 </style>
 <div class="dance-mode-picker" aria-label="Choose a Dance Studio creation mode">
  
@@ -2498,6 +2515,15 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   <div><label for="danceMvDuration">VIDEO DURATION</label><select id="danceMvDuration"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div>
   <div><label for="danceMvRatio">VIDEO FORMAT</label><select id="danceMvRatio"><option value="portrait">9:16 Portrait</option><option value="landscape">16:9 Landscape</option></select></div>
  </div>
+ <section class="omn-full-song-card" aria-labelledby="omnFullSongTitle">
+  <div class="omn-full-song-head"><div><span class="omn-kicker">NEW · FULL TRACK</span><h4 id="omnFullSongTitle">FULL SONG MUSIC VIDEO</h4></div><span class="omn-resolution">480p</span></div>
+  <p>Generate one complete music video from the selected song in your LANE library. The song length is detected automatically — up to 4 minutes.</p>
+  <div class="omn-song-facts"><div><span>DETECTED TRACK LENGTH</span><strong id="omnSongLength">Select a song above</strong></div><div><span>MAXIMUM LENGTH</span><strong>04:00</strong></div></div>
+  <div class="omn-price-preview" aria-live="polite"><div><span>OMN API COST · ESTIMATE</span><strong id="omnApiCost">—</strong></div><div><span>LANE PRICE · +30%</span><strong id="omnCustomerPrice">—</strong></div></div>
+  <p class="omn-price-note" id="omnPriceNote">Select a saved MP3 to calculate an estimate. Final price will use OmnAPI’s live quote; published package rate shown excludes checkout fees.</p>
+  <button type="button" class="omn-preview-button" disabled>FULL SONG GENERATION · API KEY NOT CONNECTED</button>
+  <div class="omn-preview-foot">Preview only — generation is not active yet. Your existing 10–30 second Runway options remain unchanged.</div>
+ </section>
  <div class="dance-mode-status" id="danceMvStatus">Choose a saved song and describe your video. The selected song will be converted to the required audio format automatically.</div>
  <button class="video-tool-action" type="button" id="danceMvGenerateButton" onclick="startDanceMusicVideoGeneration()">GENERATE MUSIC VIDEO</button>
  <div id="danceMvResult"></div>
@@ -4738,7 +4764,34 @@ async function populateDanceMusicVideoSongs(){
   if(!songs.length){select.add(new Option("No saved MP3 songs found — create a song in AI Music Studio first",""));return;}
   select.add(new Option("Select a saved song",""));
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
+  select.onchange=updateOmnFullSongEstimate;
+  updateOmnFullSongEstimate();
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
+}
+async function updateOmnFullSongEstimate(){
+ const length=document.getElementById("omnSongLength"),apiCost=document.getElementById("omnApiCost"),customerPrice=document.getElementById("omnCustomerPrice"),note=document.getElementById("omnPriceNote"),select=document.getElementById("danceMvSong");
+ if(!length||!apiCost||!customerPrice||!note||!select)return;
+ const fileName=select.value;
+ if(!fileName){length.textContent="Select a song above";apiCost.textContent="—";customerPrice.textContent="—";note.textContent="Select a saved MP3 to calculate an estimate. Final price will use OmnAPI’s live quote; published package rate shown excludes checkout fees.";return;}
+ length.textContent="Reading track…";apiCost.textContent="—";customerPrice.textContent="—";note.textContent="Reading the selected MP3 duration securely from your music library.";
+ try{
+  const {data,error}=await supabaseClient.storage.from("user-songs").createSignedUrl(currentUser.id+"/"+fileName,300);
+  if(error||!data?.signedUrl)throw new Error(error?.message||"Could not read the selected song.");
+  const audio=new Audio();audio.preload="metadata";audio.src=data.signedUrl;
+  const seconds=await new Promise((resolve,reject)=>{audio.onloadedmetadata=()=>resolve(audio.duration);audio.onerror=()=>reject(new Error("Could not read this MP3’s duration."));});
+  if(!Number.isFinite(seconds)||seconds<=0)throw new Error("The song duration could not be detected.");
+  const billableSeconds=Math.ceil(seconds),minutes=Math.floor(billableSeconds/60),remaining=billableSeconds%60;
+  length.textContent=String(minutes).padStart(2,"0")+":"+String(remaining).padStart(2,"0")+" · "+billableSeconds+" sec";
+  if(seconds>240){apiCost.textContent="Not eligible";customerPrice.textContent="—";note.textContent="This track is longer than the 4-minute LANE limit. Choose a shorter song.";return;}
+  if(seconds<10){apiCost.textContent="Too short";customerPrice.textContent="—";note.textContent="Omn Music Video requires at least 10 seconds of audio.";return;}
+  const omnCredits=billableSeconds*9;
+  const estimatedCost=omnCredits*0.0025;
+  const lanePrice=estimatedCost*1.30;
+  const money=value=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(value);
+  apiCost.textContent=money(estimatedCost)+" · "+omnCredits.toLocaleString()+" Omn credits";
+  customerPrice.textContent=money(lanePrice);
+  note.textContent="Estimate uses Omn 480p at 9 credits/sec and the published Pro package base rate ($0.0025/credit), plus 30% for LANE. Checkout fees are excluded; the final customer price must use the live Omn quote and actual credit-package cost.";
+ }catch(error){length.textContent="Could not read duration";apiCost.textContent="—";customerPrice.textContent="—";note.textContent=error.message||"Could not calculate the estimate.";}
 }
 async function startDanceMusicVideoGeneration(){
  const button=document.getElementById("danceMvGenerateButton"),status=document.getElementById("danceMvStatus"),result=document.getElementById("danceMvResult");
