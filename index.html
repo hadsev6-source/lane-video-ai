@@ -4506,25 +4506,6 @@ async function populateDanceMusicVideoSongs(){
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
 }
-function encodeMusicVideoWav(audioBuffer,seconds){
- const sampleRate=44100,channels=2,length=Math.floor(seconds*sampleRate),bytesPerSample=2;
- const offline=new OfflineAudioContext(channels,length,sampleRate);
- const source=offline.createBufferSource(),buffer=offline.createBuffer(channels,length,sampleRate);
- for(let ch=0;ch<channels;ch++){
-  const input=audioBuffer.getChannelData(Math.min(ch,audioBuffer.numberOfChannels-1));
-  const output=buffer.getChannelData(ch);
-  for(let i=0;i<length;i++){const pos=i*audioBuffer.sampleRate/sampleRate,lo=Math.floor(pos),hi=Math.min(input.length-1,lo+1),mix=pos-lo;output[i]=(input[lo]||0)*(1-mix)+(input[hi]||0)*mix;}
- }
- source.buffer=buffer;source.connect(offline.destination);source.start(0);
- return offline.startRendering().then(rendered=>{
-  const dataLength=length*channels*bytesPerSample,view=new DataView(new ArrayBuffer(44+dataLength));
-  const write=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};
-  write(0,"RIFF");view.setUint32(4,36+dataLength,true);write(8,"WAVE");write(12,"fmt ");view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*channels*bytesPerSample,true);view.setUint16(32,channels*bytesPerSample,true);view.setUint16(34,16,true);write(36,"data");view.setUint32(40,dataLength,true);
-  let offset=44;
-  for(let i=0;i<length;i++)for(let ch=0;ch<channels;ch++){const sample=Math.max(-1,Math.min(1,rendered.getChannelData(ch)[i]));view.setInt16(offset,sample<0?sample*32768:sample*32767,true);offset+=2;}
-  return new Blob([view],{type:"audio/wav"});
- });
-}
 async function startDanceMusicVideoGeneration(){
  const button=document.getElementById("danceMvGenerateButton"),status=document.getElementById("danceMvStatus"),result=document.getElementById("danceMvResult");
  if(!currentUser){alert("Please sign in first.");return;}
@@ -4543,11 +4524,11 @@ async function startDanceMusicVideoGeneration(){
   const AudioClass=window.AudioContext||window.webkitAudioContext;if(!AudioClass)throw new Error("Audio conversion is not supported in this browser.");
   const context=new AudioClass();let decoded;try{decoded=await context.decodeAudioData(await sourceBlob.arrayBuffer());}finally{await context.close().catch(()=>{});}
   if(decoded.duration<duration)throw new Error("The selected song is shorter than "+duration+" seconds. Please choose a longer track.");
-  status.textContent="Converting the selected song to WAV...";
-  const wav=await encodeMusicVideoWav(decoded,duration);
-  if(wav.size>15*1024*1024)throw new Error("The converted audio excerpt is too large. Please choose a shorter or lower-size source track.");
-  uploadedPath=currentUser.id+"/.lane_mv_clip_"+crypto.randomUUID()+".wav";
-  const {error:uploadError}=await supabaseClient.storage.from("user-songs").upload(uploadedPath,wav,{contentType:"audio/wav",upsert:false});
+  status.textContent="Preparing the MP3 audio excerpt...";
+  const mp3=await trimDanceAudioReference(new File([sourceBlob],fileName,{type:sourceBlob.type||"audio/mpeg"}),duration);
+  if(mp3.size>15*1024*1024)throw new Error("The MP3 excerpt is too large. Please choose a shorter or smaller source track.");
+  uploadedPath=currentUser.id+"/.lane_mv_clip_"+crypto.randomUUID()+".mp3";
+  const {error:uploadError}=await supabaseClient.storage.from("user-songs").upload(uploadedPath,mp3,{contentType:"audio/mpeg",upsert:false});
   if(uploadError)throw new Error("Could not prepare the song for video generation: "+uploadError.message);
   status.textContent="Starting your music video...";
   const {data,error}=await supabaseClient.functions.invoke("generate-music-video",{body:{promptText:prompt,duration,songPath:uploadedPath,ratio,lipSync:false}});
