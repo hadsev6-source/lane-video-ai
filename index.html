@@ -2256,14 +2256,19 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
 <button type="button" class="dance-mode-back" onclick="backToDanceModes()">← BACK TO CREATION MODES</button>
 
 <section class="dance-mode-workspace" id="danceMusicVideoWorkspace">
- <h3>AI MUSIC VIDEO · WORKSPACE PREVIEW</h3>
- <p>Подготви идея за песента, вокалите и визуалната история. Връзката между SongGPT и видео генерацията ще се добави отделно.</p>
- <div class="dance-mode-fields"><div><label for="danceMvGenre">Музикален стил</label><select id="danceMvGenre"><option>Afrobeats</option><option>Pop</option><option>Dance / EDM</option><option>Hip-Hop</option><option>R&amp;B</option><option>Custom</option></select></div><div><label for="danceMvVocal">Вокали</label><select id="danceMvVocal"><option>Женски вокал</option><option>Мъжки вокал</option><option>Дует</option><option>Инструментал</option></select></div></div>
- <label for="danceMvLyrics">Текст на песента / тема</label><textarea id="danceMvLyrics" placeholder="Напиши текста, припева или идеята за песента..."></textarea>
- <label for="danceMvVisual">Описание на музикалното видео</label><textarea id="danceMvVisual" placeholder="Опиши изпълнителя, сцената, движението, камерата и атмосферата..."></textarea>
- <div class="dance-mode-fields"><div><label for="danceMvDuration">Видео дължина</label><select id="danceMvDuration"><option>5 секунди</option><option>10 секунди</option><option selected>15 секунди</option></select></div><div><label for="danceMvRatio">Формат</label><select id="danceMvRatio"><option>9:16 Portrait</option><option>16:9 Landscape</option></select></div></div>
- <div class="dance-mode-status">Интерфейсна визуализация. Не стартира платена генерация и не променя тарифите на iMusic Studio.</div>
- <button class="video-tool-action" type="button" disabled>GENERATION CONNECTION PENDING</button>
+ <h3>AI MUSIC VIDEO STUDIO</h3>
+ <p>Select a song already saved in your LANE music library, describe the visual story, and generate a music video synced to that track.</p>
+ <label for="danceMvSong">YOUR SONG</label>
+ <select id="danceMvSong"><option value="">Loading your saved songs...</option></select>
+ <label for="danceMvVisual">VIDEO DESCRIPTION</label>
+ <textarea id="danceMvVisual" maxlength="1000" placeholder="Describe the artist, location, story, camera movement, atmosphere and visual style..."></textarea>
+ <div class="dance-mode-fields">
+  <div><label for="danceMvDuration">VIDEO DURATION</label><select id="danceMvDuration"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div>
+  <div><label for="danceMvRatio">VIDEO FORMAT</label><select id="danceMvRatio"><option value="portrait">9:16 Portrait</option><option value="landscape">16:9 Landscape</option></select></div>
+ </div>
+ <div class="dance-mode-status" id="danceMvStatus">Choose a saved song and describe your video. The selected song will be converted to the required audio format automatically.</div>
+ <button class="video-tool-action" type="button" id="danceMvGenerateButton" onclick="startDanceMusicVideoGeneration()">GENERATE MUSIC VIDEO</button>
+ <div id="danceMvResult"></div>
 </section>
 <section class="dance-mode-workspace" id="danceToMyMusicWorkspace">
  <h3>DANCE TO MY MUSIC</h3>
@@ -4487,6 +4492,86 @@ async function startDanceStudioGeneration(){
  }catch(e){status.textContent=e.message||"An error occurred.";button.textContent="TRY AGAIN";}
  finally{button.disabled=false;}
 }
+async function populateDanceMusicVideoSongs(){
+ const select=document.getElementById("danceMvSong");if(!select)return;
+ if(!currentUser){select.innerHTML='<option value="">Please sign in first</option>';return;}
+ select.innerHTML='<option value="">Loading saved songs...</option>';
+ try{
+  const {data,error}=await supabaseClient.storage.from("user-songs").list(currentUser.id,{limit:100,sortBy:{column:"created_at",order:"desc"}});
+  if(error)throw error;
+  const songs=(data||[]).filter(file=>file.name&&!file.name.startsWith(".lane_mv_clip_")&&/\.(mp3|wav|m4a|ogg)$/i.test(file.name));
+  select.replaceChildren();
+  if(!songs.length){select.add(new Option("No saved songs found — create a song in AI Music Studio first",""));return;}
+  select.add(new Option("Select a saved song",""));
+  songs.forEach(file=>select.add(new Option(file.name,file.name)));
+ }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
+}
+function encodeMusicVideoWav(audioBuffer,seconds){
+ const sampleRate=44100,channels=2,length=Math.floor(seconds*sampleRate),bytesPerSample=2;
+ const offline=new OfflineAudioContext(channels,length,sampleRate);
+ const source=offline.createBufferSource(),buffer=offline.createBuffer(channels,length,sampleRate);
+ for(let ch=0;ch<channels;ch++){
+  const input=audioBuffer.getChannelData(Math.min(ch,audioBuffer.numberOfChannels-1));
+  const output=buffer.getChannelData(ch);
+  for(let i=0;i<length;i++){const pos=i*audioBuffer.sampleRate/sampleRate,lo=Math.floor(pos),hi=Math.min(input.length-1,lo+1),mix=pos-lo;output[i]=(input[lo]||0)*(1-mix)+(input[hi]||0)*mix;}
+ }
+ source.buffer=buffer;source.connect(offline.destination);source.start(0);
+ return offline.startRendering().then(rendered=>{
+  const dataLength=length*channels*bytesPerSample,view=new DataView(new ArrayBuffer(44+dataLength));
+  const write=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};
+  write(0,"RIFF");view.setUint32(4,36+dataLength,true);write(8,"WAVE");write(12,"fmt ");view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*channels*bytesPerSample,true);view.setUint16(32,channels*bytesPerSample,true);view.setUint16(34,16,true);write(36,"data");view.setUint32(40,dataLength,true);
+  let offset=44;
+  for(let i=0;i<length;i++)for(let ch=0;ch<channels;ch++){const sample=Math.max(-1,Math.min(1,rendered.getChannelData(ch)[i]));view.setInt16(offset,sample<0?sample*32768:sample*32767,true);offset+=2;}
+  return new Blob([view],{type:"audio/wav"});
+ });
+}
+async function startDanceMusicVideoGeneration(){
+ const button=document.getElementById("danceMvGenerateButton"),status=document.getElementById("danceMvStatus"),result=document.getElementById("danceMvResult");
+ if(!currentUser){alert("Please sign in first.");return;}
+ const fileName=document.getElementById("danceMvSong")?.value||"",prompt=document.getElementById("danceMvVisual")?.value.trim()||"",duration=Number(document.getElementById("danceMvDuration")?.value||15),ratio=document.getElementById("danceMvRatio")?.value||"portrait";
+ if(!fileName){alert("Please select a song from your saved music library.");return;}
+ if(prompt.length<10){alert("Please describe your music video in at least 10 characters.");return;}
+ if(prompt.length>1000){alert("Your video description must not exceed 1,000 characters.");return;}
+ button.disabled=true;button.textContent="PREPARING SONG...";result.replaceChildren();status.textContent="Preparing your selected song for video generation...";
+ let uploadedPath=null;
+ try{
+  const path=currentUser.id+"/"+fileName;
+  const {data:signed,error:signedError}=await supabaseClient.storage.from("user-songs").createSignedUrl(path,600);
+  if(signedError||!signed?.signedUrl)throw new Error(signedError?.message||"Could not access the selected song.");
+  const response=await fetch(signed.signedUrl);if(!response.ok)throw new Error("Could not download the selected song from your library.");
+  const sourceBlob=await response.blob();if(!sourceBlob.size)throw new Error("The selected song is empty.");
+  const AudioClass=window.AudioContext||window.webkitAudioContext;if(!AudioClass)throw new Error("Audio conversion is not supported in this browser.");
+  const context=new AudioClass();let decoded;try{decoded=await context.decodeAudioData(await sourceBlob.arrayBuffer());}finally{await context.close().catch(()=>{});}
+  if(decoded.duration<duration)throw new Error("The selected song is shorter than "+duration+" seconds. Please choose a longer track.");
+  status.textContent="Converting the selected song to WAV...";
+  const wav=await encodeMusicVideoWav(decoded,duration);
+  if(wav.size>15*1024*1024)throw new Error("The converted audio excerpt is too large. Please choose a shorter or lower-size source track.");
+  uploadedPath=currentUser.id+"/.lane_mv_clip_"+crypto.randomUUID()+".wav";
+  const {error:uploadError}=await supabaseClient.storage.from("user-songs").upload(uploadedPath,wav,{contentType:"audio/wav",upsert:false});
+  if(uploadError)throw new Error("Could not prepare the song for video generation: "+uploadError.message);
+  status.textContent="Starting your music video...";
+  const {data,error}=await supabaseClient.functions.invoke("generate-music-video",{body:{promptText:prompt,duration,songPath:uploadedPath,ratio,lipSync:false}});
+  if(error||!data?.success||!data?.taskId)throw new Error(data?.error||error?.message||"The music video request could not be started.");
+  status.textContent="Your music video is being generated...";
+  button.textContent="GENERATING VIDEO...";
+  let finished=false;
+  for(let i=0;i<180;i++){
+   await new Promise(resolve=>setTimeout(resolve,10000));
+   const check=await supabaseClient.functions.invoke("check-video-status",{body:{taskId:data.taskId}});
+   const d=check.data;
+   if(check.error||!d||d.error){status.textContent="Video accepted. Rechecking generation status...";continue;}
+   if(d.status==="SUCCEEDED"&&d.output){
+    const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=d.output;video.style.width="100%";video.style.marginTop="12px";
+    const link=document.createElement("a");link.href=d.output;link.target="_blank";link.rel="noopener";link.download="lane-ai-music-video.mp4";link.className="primary-btn";link.textContent="DOWNLOAD MUSIC VIDEO";link.style.display="inline-flex";link.style.marginTop="10px";
+    result.replaceChildren(video,link);status.textContent="Your music video is ready.";finished=true;if(typeof loadMyFiles==="function")await loadMyFiles();break;
+   }
+   if(d.status==="FAILED"||d.status==="CANCELLED"){throw new Error((d.failure||d.error||"Music video generation failed.")+(d.refunded?" Credits were refunded.":""));}
+   status.textContent="Your music video is still processing...";
+  }
+  if(!finished)status.textContent="The video is still processing. Check My Files before starting another request. Task: "+data.taskId;
+ }catch(error){status.textContent=error.message||"Music video generation failed.";}
+ finally{button.disabled=false;button.textContent="GENERATE MUSIC VIDEO";if(uploadedPath){supabaseClient.storage.from("user-songs").remove([uploadedPath]).catch(()=>{});}}
+}
 function openDanceModeFromHome(mode){
  const modal=document.getElementById("danceStudioPreview");
  if(modal){modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
@@ -4514,8 +4599,9 @@ function openDanceMode(mode){
  dialog.classList.add("mode-active");
  const workspace=document.getElementById(mode==="podcast"?"dancePodcastWorkspace":"danceMusicVideoWorkspace");
  if(workspace)workspace.style.display="block";
+ if(mode==="musicVideo")populateDanceMusicVideoSongs();
  const title=document.getElementById("dancePreviewTitle");
- if(title)title.textContent=mode==="podcast"?"AI PODCAST":"AI MUSIC VIDEO";
+ if(title)title.textContent=mode==="podcast"?"AI PODCAST":"AI MUSIC VIDEO STUDIO";
 }
 function backToDanceModes(){
  const dialog=document.querySelector("#danceStudioPreview .dance-preview-dialog");
