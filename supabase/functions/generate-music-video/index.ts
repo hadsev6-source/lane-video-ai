@@ -151,7 +151,7 @@ Deno.serve(async (req: Request) => {
 
     if (
       !songPath.startsWith(requiredPrefix) ||
-      !songPath.endsWith(".wav") ||
+      !songPath.endsWith(".mp3") ||
       songPath.includes("..")
     ) {
       return respond({ error: "Invalid song excerpt." }, 400);
@@ -169,8 +169,8 @@ Deno.serve(async (req: Request) => {
       return respond({ error: "Audio file must be under 15 MB." }, 400);
     }
 
-    if (!["audio/wav", "audio/wave", "audio/x-wav"].includes(audioFile.type)) {
-      return respond({ error: "The song excerpt must be a WAV file." }, 400);
+    if (!["audio/mpeg", "audio/mp3"].includes(audioFile.type)) {
+      return respond({ error: "The song excerpt must be an MP3 file." }, 400);
     }
 
     const { data: signedAudio, error: signedError } =
