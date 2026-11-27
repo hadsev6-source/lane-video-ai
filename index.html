@@ -2095,9 +2095,10 @@ body>#myfiles,#myfiles{display:none}
 <div id="faceLabModal" aria-hidden="true">
  <div class="face-lab-dialog" role="dialog" aria-modal="true" aria-labelledby="faceLabTitle">
   <div class="face-lab-head"><h2 id="faceLabTitle">LANE FACE LAB STUDIO</h2><button class="face-lab-close" type="button" onclick="closeFaceLab()">CLOSE ✕</button></div>
-  <p class="face-lab-intro">Upload an MP4 performance video and a face photo. Face Lab will replace the selected face in the video. Supports clips from 3 to 30 seconds. Video processing only — no audio generation.</p>
+  <p class="face-lab-intro">Choose 5, 10, 15 or 30 seconds, then upload an MP4 clip with exactly that duration and a face photo. Face Lab will replace the selected face. Video processing only — no audio generation.</p>
   <div class="face-lab-grid">
    <div class="face-lab-field"><label for="faceLabVideo">PERFORMANCE VIDEO (MP4, up to 100 MB)</label><input id="faceLabVideo" type="file" accept="video/mp4,.mp4" onchange="updateFaceLabEstimate()"></div>
+   <div class="face-lab-field"><label for="faceLabDuration">VIDEO DURATION</label><select id="faceLabDuration" onchange="updateFaceLabEstimate()"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15">15 seconds</option><option value="30">30 seconds</option></select></div>
    <div class="face-lab-field"><label for="faceLabPhoto">FACE PHOTO (JPG / PNG / WEBP)</label><input id="faceLabPhoto" type="file" accept="image/jpeg,image/png,image/webp"></div>
    <div class="face-lab-field"><label for="faceLabIndex">TARGET FACE</label><select id="faceLabIndex"><option value="0">Largest / Main face</option><option value="1">Face 2</option><option value="2">Face 3</option><option value="3">Face 4</option><option value="4">Face 5</option></select></div>
    <div class="face-lab-field"><label for="faceLabGender">TARGET GENDER</label><select id="faceLabGender"><option value="all">Any</option><option value="male">Male</option><option value="female">Female</option></select></div>
@@ -3987,9 +3988,9 @@ function closeFaceLab(){const m=document.getElementById("faceLabModal");m.classL
 function updateFaceLabEstimate(){
  const f=document.getElementById("faceLabVideo").files?.[0],box=document.getElementById("faceLabEstimate");
  if(!f){box.textContent="Price: Upload an MP4 video to calculate the required credits.";return;}
- const url=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{
-  URL.revokeObjectURL(url);const d=Math.ceil(v.duration);if(!Number.isFinite(d)||d<3||d>30){box.textContent="Video must be between 3 and 30 seconds.";return;}
-  const c=Math.ceil(d*0.01*2*0.9168*100);box.textContent="Duration: "+d+" sec · Cost: "+c+" credits · Estimated price: $"+(d*0.02).toFixed(2)+". Your share: 50% of the final sale price.";
+ const selected=Number(document.getElementById("faceLabDuration").value),url=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{
+  URL.revokeObjectURL(url);const d=Math.ceil(v.duration);if(!Number.isFinite(d)||![5,10,15,30].includes(selected)||d!==selected){box.textContent="For the "+selected+" second option, upload a video whose duration rounds up to exactly "+selected+" seconds.";return;}
+  const c=Math.ceil(selected*0.01*2*0.9168*100);box.textContent="Duration: "+selected+" sec · Cost: "+c+" credits · Estimated price: $"+(selected*0.02).toFixed(2)+". Your share: 50% of the final sale price.";
  };v.onerror=()=>{URL.revokeObjectURL(url);box.textContent="Could not read the video duration.";};v.src=url;
 }
 async function startFaceLab(){
@@ -4002,7 +4003,7 @@ async function startFaceLab(){
  btn.disabled=true;btn.textContent="UPLOADING & STARTING…";status.textContent="Uploading files and starting Face Swap…";
  try{
   const {data:{session}}=await supabaseClient.auth.getSession();if(!session)throw new Error("Your session has expired. Please sign in again.");
-  const form=new FormData();form.append("video",video);form.append("face_image",face);
+  const form=new FormData();form.append("video",video);form.append("face_image",face);form.append("duration_seconds",document.getElementById("faceLabDuration").value);
   form.append("target_index",document.getElementById("faceLabIndex").value);form.append("target_gender",document.getElementById("faceLabGender").value);
   const {data,error}=await supabaseClient.functions.invoke("face-swap-video",{body:form});
   if(error)throw error;if(data?.error)throw new Error(data.error);
