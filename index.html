@@ -1559,7 +1559,7 @@ body>#myfiles,#myfiles{display:none}
 <span id="headerCreditBalanceTop">0</span>
 </div>
 
-<nav aria-label="Main navigation" class="visual-nav"><a href="#pricing">Credit</a><button id="headerGoogleSignIn" class="header-auth-btn" type="button" onclick="currentUser ? signOut() : googleSignIn()">Continue with Google</button></nav><details class="main-menu">
+<nav aria-label="Main navigation" class="visual-nav"><a href="#pricing">Credit</a><button id="headerGoogleSignIn" class="header-auth-btn" type="button" onclick="currentUser ? signOut() : googleSignIn()" aria-label="Sign in with Google"><svg aria-hidden="true" viewBox="0 0 48 48" width="18" height="18" style="flex:0 0 18px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.06 13.22l7.98 6.19C12.93 12.93 18.01 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.42 37.96 46.98 31.9 46.98 24.55z"/><path fill="#FBBC05" d="M10.04 28.59A14.4 14.4 0 0 1 9.27 24c0-1.59.27-3.13.77-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.58 10.78l7.46-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.14 1.45-4.88 2.3-8.18 2.3-5.99 0-11.07-4.22-12.96-9.91l-7.98 6.19C6.51 43.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
 <nav aria-label="Main navigation" class="main-menu-dropdown">
 <a href="#pricing" onclick="closeLaneMenu()">CREDITS</a>
@@ -1854,6 +1854,12 @@ body>#myfiles,#myfiles{display:none}
 
 .lane-account-modal{display:none;position:fixed;inset:0;z-index:5000;background:#000d;padding:14px;align-items:center;justify-content:center}.lane-account-modal.open{display:flex}.lane-account-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0b0b0b;border:1px solid #ff9d19;border-radius:14px;padding:18px;color:#fff}.lane-account-dialog>button{float:right}.lane-account-dialog h2{margin:8px 0 18px}.lane-account-history{display:grid;gap:8px}.lane-account-history-row{display:grid;gap:4px;padding:12px;border:1px solid #60401e;border-radius:8px;background:#17120c}.lane-account-history-row span,.lane-account-history-row small{color:#c8c0b7}
 
+
+/* Keep the Google sign-in action clearly visible on every homepage layout. */
+header.site-header nav.visual-nav { display:flex !important; visibility:visible !important; opacity:1 !important; }
+header.site-header #headerGoogleSignIn { display:inline-flex !important; visibility:visible !important; opacity:1 !important; align-items:center !important; justify-content:center !important; gap:9px !important; min-height:40px !important; padding:8px 15px !important; background:#fff !important; color:#202124 !important; border:1px solid #d5d5d5 !important; border-radius:6px !important; font-size:13px !important; font-weight:700 !important; white-space:nowrap !important; }
+header.site-header #headerGoogleSignIn svg { display:block !important; width:18px !important; height:18px !important; }
+@media(max-width:760px) { header.site-header #headerGoogleSignIn { min-height:38px !important; padding:7px 12px !important; } }
 
 /* 2026-11 navigation and compact hero refinement */
 #support.section { display:none !important; }
