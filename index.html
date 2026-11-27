@@ -2192,8 +2192,8 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
 
 <div id="danceStudioPreview" class="dance-preview-overlay" aria-hidden="true">
  <div class="dance-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="dancePreviewTitle">
-  <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">AI DANCE STUDIO</h2><p>Create dance videos with your direction, reference image and music.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
-  <div class="dance-preview-notice">LIVE BETA · Seedance 2.0 · 720p · до 15 секунди. Качи MP3, избери танцьори и опиши хореографията.</div>
+  <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">DANCE CHOREOGRAPHY STUDIO</h2><p>Turn one dancer photo and your MP3 into a custom, beat-synced choreography.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
+  <div class="dance-preview-notice">DANCE CHOREOGRAPHY STUDIO · SEEDANCE 2.0 · 720P · UPLOAD ONE DANCER PHOTO, ADD YOUR MP3 AND DESCRIBE THE MOVES.</div>
   <style id="dance-mode-picker-styles">
 #danceStudioPreview .dance-preview-dialog:not(.show-legacy-generator):not(.mode-active) .dance-preview-grid{display:none}
 #danceStudioPreview .dance-mode-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0 24px}
@@ -4616,7 +4616,7 @@ function openDanceMode(mode){
  if(mode==="danceVideo"){
   dialog.classList.add("show-legacy-generator");
   const title=document.getElementById("dancePreviewTitle");
-  if(title)title.textContent="AI DANCE VIDEO";
+  if(title)title.textContent="DANCE CHOREOGRAPHY STUDIO";
   return;
  }
  dialog.classList.add("mode-active");
@@ -4631,7 +4631,7 @@ function backToDanceModes(){
  dialog.classList.remove("mode-active","show-legacy-generator");
  document.querySelectorAll("#danceStudioPreview .dance-mode-workspace").forEach(el=>el.style.display="none");
  const title=document.getElementById("dancePreviewTitle");
- if(title)title.textContent="AI DANCE STUDIO";
+ if(title)title.textContent="DANCE CHOREOGRAPHY STUDIO";
 }
 function openDanceStudioPreview(){
  const m=document.getElementById("danceStudioPreview");if(!m)return;
