@@ -4450,7 +4450,7 @@ function laneShowSelectedPrice(duration,providerUsd,title){
 function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.30));}
 function updateDanceMvPrice(){
  const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;
- const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20],.20,x=>x*.20);
+ const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20],.03,null,"round");
  rows.push(...laneBuildPriceRows([30,40,50,60,120,180,240],.03,null,"round"));
  lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  const selected=rows.find(r=>r.seconds===d);
