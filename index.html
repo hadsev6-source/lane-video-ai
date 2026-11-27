@@ -2102,7 +2102,7 @@ body>#myfiles,#myfiles{display:none}
 <div id="danceStudioPreview" class="dance-preview-overlay" aria-hidden="true">
  <div class="dance-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="dancePreviewTitle">
   <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">AI DANCE STUDIO</h2><p>Create dance videos with your direction, reference image and music.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
-  <div class="dance-preview-notice">LIVE BETA · Seedance 2.5 · 720p · 15 or 30 seconds. Music uploads are used as audio references; exact beat-by-beat choreography is not guaranteed.</div>
+  <div class="dance-preview-notice">LIVE BETA · Seedance 2.0 · 720p · до 15 секунди. Качи MP3, избери танцьори и опиши хореографията.</div>
   <style id="dance-mode-picker-styles">
 #danceStudioPreview .dance-preview-dialog:not(.show-legacy-generator):not(.mode-active) .dance-preview-grid{display:none}
 #danceStudioPreview .dance-mode-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0 24px}
@@ -2280,6 +2280,24 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
  <div class="dance-mode-fields"><div><label for="danceMvDuration">Видео дължина</label><select id="danceMvDuration"><option>5 секунди</option><option>10 секунди</option><option selected>15 секунди</option></select></div><div><label for="danceMvRatio">Формат</label><select id="danceMvRatio"><option>9:16 Portrait</option><option>16:9 Landscape</option></select></div></div>
  <div class="dance-mode-status">Интерфейсна визуализация. Не стартира платена генерация и не променя тарифите на iMusic Studio.</div>
  <button class="video-tool-action" type="button" disabled>GENERATION CONNECTION PENDING</button>
+</section>
+<section class="dance-mode-workspace" id="danceToMyMusicWorkspace">
+ <h3>DANCE TO MY MUSIC</h3>
+ <p>Качи своя MP3, избери броя танцьори и добави снимки, ако искаш да запазиш тяхната визия.</p>
+ <label for="myDanceMusicFile">ТВОЯТ MP3 ФАЙЛ · ЗАДЪЛЖИТЕЛНО</label>
+ <input id="myDanceMusicFile" type="file" accept=".mp3,audio/mpeg" required>
+ <label for="myDanceCount">БРОЙ ТАНЦЬОРИ</label>
+ <select id="myDanceCount"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>8</option><option>10</option></select>
+ <label for="myDanceImages">РЕФЕРЕНТНИ СНИМКИ · ПО ЖЕЛАНИЕ · ДО 3</label>
+ <input id="myDanceImages" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+ <p class="dance-preview-help">Качи до 3 снимки на танцьорите, които искаш да присъстват във видеото. JPG, PNG или WEBP · до 10 MB на снимка.</p>
+ <label for="myDancePrompt">ОПИСАНИЕ НА ТАНЦА И СЦЕНАТА</label>
+ <textarea id="myDancePrompt" maxlength="1000" placeholder="Опиши движенията, стила на танца, сцената, облеклото, настроението и движенията на камерата..." required></textarea>
+ <div class="dance-preview-help" id="myDancePromptCounter" aria-live="polite">0 / 1 000 символа</div>
+ <div class="dance-preview-help" id="myDancePrice">15 секунди · 541 кредита</div>
+ <button class="video-tool-action" id="myDanceGenerateButton" type="button" onclick="startMyDanceMusicGeneration()">ГЕНЕРИРАЙ ВИДЕО · 15 СЕКУНДИ</button>
+ <p id="myDanceStatus" role="status" aria-live="polite" class="dance-preview-help"></p>
+ <div id="myDanceResult"></div>
 </section>
 <div class="dance-preview-grid">
    <section class="dance-preview-card"><h3>01 / SCENE & LOCATION</h3><label>Choose your setting</label><select id="danceLocation"><option>Beach / Seaside</option><option>Mountain</option><option>City Street</option><option>Night Club</option><option>Dance Studio</option><option>Urban Rooftop</option><option>Custom Location</option></select><label>Scene description</label><textarea id="danceScene" placeholder="Describe the location, lighting, atmosphere and camera style..."></textarea></section>
@@ -4132,6 +4150,66 @@ async function trimDanceAudioReference(file,maxSeconds=15){
   return new File(chunks,base+"-15s.mp3",{type:"audio/mpeg",lastModified:Date.now()});
  }finally{await context.close().catch(()=>{});}
 }
+function updateMyDancePromptCounter(){
+ const field=document.getElementById("myDancePrompt"),counter=document.getElementById("myDancePromptCounter");
+ if(field&&counter)counter.textContent=field.value.length.toLocaleString()+" / 1 000 символа";
+}
+document.getElementById("myDancePrompt")?.addEventListener("input",updateMyDancePromptCounter);
+updateMyDancePromptCounter();
+
+async function startMyDanceMusicGeneration(){
+ const button=document.getElementById("myDanceGenerateButton"),status=document.getElementById("myDanceStatus"),result=document.getElementById("myDanceResult");
+ if(!currentUser){alert("Моля, влез в профила си.");return;}
+ const audioFile=document.getElementById("myDanceMusicFile").files?.[0];
+ const prompt=document.getElementById("myDancePrompt").value.trim();
+ const images=Array.from(document.getElementById("myDanceImages").files||[]);
+ const dancers=document.getElementById("myDanceCount").value;
+ if(!audioFile){alert("Качи MP3 файл, за да продължиш.");return;}
+ if(prompt.length<10){alert("Опиши танца и сцената с поне 10 символа.");return;}
+ if(prompt.length>1000){alert("Описанието не може да надвишава 1 000 символа.");return;}
+ if(images.length>3){alert("Можеш да качиш максимум 3 референтни снимки.");return;}
+ if(audioFile.size>30*1024*1024){alert("MP3 файлът не може да надвишава 30 MB.");return;}
+ if(!(audioFile.type==="audio/mpeg"||audioFile.type==="audio/mp3"||/\.mp3$/i.test(audioFile.name))){alert("Поддържат се само MP3 файлове.");return;}
+ for(const image of images){if(image.size>10*1024*1024){alert("Всяка референтна снимка трябва да е до 10 MB.");return;}}
+ try{
+  const signature=new Uint8Array(await audioFile.slice(0,3).arrayBuffer());
+  const isMp3=(signature[0]===0x49&&signature[1]===0x44&&signature[2]===0x33)||(signature[0]===0xff&&(signature[1]&0xe0)===0xe0);
+  if(!isMp3)throw new Error("Файлът не изглежда като валиден MP3.");
+  status.textContent="Подготвям MP3 файла...";
+  const audio=await trimDanceAudioReference(audioFile,14.8);
+  if(!audio.size)throw new Error("MP3 файлът не може да бъде обработен.");
+  if(!confirm("Да генерирам ли 15-секундно видео за 541 кредита?"))return;
+  button.disabled=true;button.textContent="КАЧВАНЕ И СТАРТИРАНЕ...";status.textContent="Качвам MP3 файла и референтните снимки...";
+  result.replaceChildren();
+  const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
+  if(!token)throw new Error("Сесията е изтекла. Влез отново в профила си.");
+  const form=new FormData();
+  form.append("simpleMode","1");form.append("prompt",prompt);form.append("videoDirection",prompt);
+  form.append("duration","15");form.append("ratio","16:9");form.append("dancers",String(dancers));
+  form.append("musicFile",audio);
+  images.forEach((file,index)=>form.append("referenceImage"+index,file));
+  const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
+  const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"Генерирането не можа да започне.");
+  status.textContent="Seedance 2.0 генерира видеото. Използвани кредити: "+data.creditsUsed+".";
+  button.textContent="ВИДЕОТО СЕ ГЕНЕРИРА...";
+  let finished=false;
+  for(let i=0;i<180;i++){
+   await new Promise(resolve=>setTimeout(resolve,10000));
+   const poll=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",generationId:data.generationId})});
+   const p=await poll.json();
+   if(p.status==="SUCCEEDED"&&p.videoUrl){
+    const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=p.videoUrl;video.style.cssText="width:100%;max-width:100%;margin-top:12px;border-radius:12px";
+    const link=document.createElement("a");link.href=p.videoUrl;link.target="_blank";link.rel="noopener";link.textContent="ОТВОРИ / ИЗТЕГЛИ ВИДЕОТО";link.style.display="block";link.style.marginTop="10px";
+    result.append(video,link);status.textContent="Готово! Видеото е създадено.";button.textContent="ГЕНЕРИРАЙ ОЩЕ ЕДНО ВИДЕО";finished=true;break;
+   }
+   if(p.status==="FAILED"||p.error)throw new Error(p.error||"Генерирането не успя.");
+   status.textContent="Генериране на видеото... Проверка "+(i+1)+"/180.";
+  }
+  if(!finished){status.textContent="Задачата още се обработва. ID: "+data.generationId;button.textContent="ЗАДАЧАТА СЕ ОБРАБОТВА";}
+ }catch(error){status.textContent=error.message||"Възникна грешка.";button.textContent="ОПИТАЙ ОТНОВО";}
+ finally{button.disabled=false;}
+}
+
 async function startDanceStudioGeneration(){
  const button=document.getElementById("danceGenerateButton"), status=document.getElementById("danceStatus"), result=document.getElementById("danceResult");
  if(!currentUser){alert("Please sign in first.");return;}
@@ -4211,15 +4289,18 @@ function openDanceMode(mode){
   openFaceSwapComingSoon();
   return;
  }
- if(mode==="danceVideo"||mode==="danceMusic"){
+ if(mode==="danceMusic"){
+  dialog.classList.add("mode-active");
+  const title=document.getElementById("dancePreviewTitle");
+  if(title)title.textContent="DANCE TO MY MUSIC";
+  const workspace=document.getElementById("danceToMyMusicWorkspace");
+  if(workspace)workspace.style.display="block";
+  return;
+ }
+ if(mode==="danceVideo"){
   dialog.classList.add("show-legacy-generator");
   const title=document.getElementById("dancePreviewTitle");
-  if(title)title.textContent=mode==="danceMusic"?"DANCE TO MY MUSIC":"AI DANCE VIDEO";
-  if(mode==="danceMusic"){
-   const checkbox=document.getElementById("danceUseMusicReference");
-   if(checkbox&&!checkbox.checked){checkbox.checked=true;checkbox.dispatchEvent(new Event("change",{bubbles:true}));}
-   document.getElementById("danceMusicFile")?.scrollIntoView({block:"center",behavior:"smooth"});
-  }
+  if(title)title.textContent="AI DANCE VIDEO";
   return;
  }
  dialog.classList.add("mode-active");
