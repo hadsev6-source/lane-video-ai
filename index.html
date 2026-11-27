@@ -4457,7 +4457,7 @@ function updateDanceMvPrice(){
  if(selected)el.dataset.selectedPrice=owner?moneySafe(selected.usd)+" / "+selected.ownerCredits+" credits":selected.customerCredits+" credits";
 }
 function moneySafe(value){return laneFormatUsd(value);}
-document.getElementById("danceMvDuration")?.addEventListener("change",()=>{updateDanceMvPrice();const d=Number(document.getElementById("danceMvDuration").value),usd=d<=20?d*.20:d*.03;laneShowSelectedPrice(d,usd,"AI MUSIC VIDEO STUDIO");});
+document.getElementById("danceMvDuration")?.addEventListener("change",()=>{updateDanceMvPrice();const d=Number(document.getElementById("danceMvDuration").value),usd=d*.03;laneShowSelectedPrice(d,usd,"AI MUSIC VIDEO STUDIO");});
 updateDanceMvPrice();
 function updateImagePrice(){
  const el=document.getElementById("imageCostPreview");if(!el)return;
@@ -4945,7 +4945,7 @@ async function startDanceMusicVideoGeneration(){
   let finished=false;
   for(let i=0;i<180;i++){
    await new Promise(resolve=>setTimeout(resolve,10000));
-   const check=await supabaseClient.functions.invoke("check-video-status",{body:{taskId:data.taskId}});
+   const check=await supabaseClient.functions.invoke("generate-music-video",{body:{action:"status",generationId:data.generationId}});
    const d=check.data;
    if(check.error||!d||d.error){status.textContent="Video accepted. Rechecking generation status...";continue;}
    if(d.status==="SUCCEEDED"&&d.output){
