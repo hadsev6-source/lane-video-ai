@@ -4476,7 +4476,7 @@ function updateNewVideoCost(){
 function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15),owner=isLaneOwnerAccount(),el=document.getElementById("dancePrice");
  const rows=laneBuildPriceRows([10,15],.10);rows.push(...laneBuildPriceRows([30],.03,null,"round"));
- lanePriceBreakdown(el,rows,owner,"DANCE STUDIO · SEEDANCE 2.0 FAST · 480p");
+ el.innerHTML='<div style="font-weight:700;margin-bottom:7px">DANCE STUDIO · SEEDANCE 2.0 FAST · 480p</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px">' + rows.map(r=>'<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #553038;padding:5px 0"><span>'+laneDurationLabel(r.seconds)+'</span><strong style="text-align:right">'+moneySafe(r.usd)+' provider est. · '+(owner?r.ownerCredits:r.customerCredits).toLocaleString()+' credits</strong></div>').join('')+'</div><div class="mini-note" style="margin-top:7px">'+(owner?'Owner: estimated provider cost and equivalent LANE credits.':'Estimated provider cost shown in USD; customer credits include the 30% LANE markup.')+'</div>';
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
  if(typeof updateDanceMvPrice==="function")updateDanceMvPrice();
  if(typeof updateMyDancePrice==="function")updateMyDancePrice();
