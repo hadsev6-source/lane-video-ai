@@ -3531,6 +3531,33 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
     }
   });
 
+  // Recover a saved Google session if the OAuth redirect completes before the page
+  // finishes registering its auth listener (common on mobile browsers).
+  async function recoverSavedAuthSession() {
+    try {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) {
+        console.warn("Google session recovery check failed:", error);
+        return;
+      }
+      // A null read must never overwrite a newer SIGNED_IN event.
+      if (data?.session?.user) {
+        await refreshAuthState(data.session);
+      }
+    } catch (error) {
+      console.warn("Google session recovery check failed:", error);
+    }
+  }
+
+  // Supabase may finish processing the OAuth callback just after the first page
+  // render. Retry only positive session recovery; never turn a signed-in user out.
+  [400, 1200, 2800].forEach(delay => setTimeout(recoverSavedAuthSession, delay));
+  window.addEventListener("pageshow", recoverSavedAuthSession);
+  window.addEventListener("focus", recoverSavedAuthSession);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") recoverSavedAuthSession();
+  });
+
   // FILE MESSAGES
 
   function showFileMessage(message, isError = false) {
