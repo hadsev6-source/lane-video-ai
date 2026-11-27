@@ -3927,12 +3927,6 @@ function updateDancePrice(){
   ? d+" seconds · "+ownerCredits.toLocaleString()+" credits · Your provider cost: "+providerEur.toFixed(2)+" €"
   : d+" seconds · "+customerCredits.toLocaleString()+" credits · Price you pay: "+customerCredits.toLocaleString()+" credits.";
 }
-document.getElementById("danceDuration")?.value||15), el=document.getElementById("dancePrice");
- const owner=currentUser?.id==="dce2d514-964d-49be-b83d-45e6721b49a7";
- const customerCredits=({5:181,10:361,15:541})[d]||0, providerUsd=d*0.216, providerEur=providerUsd*0.9168;
- const ownerCredits=Math.max(1,Math.round(providerEur*140));
- if(el)el.textContent=d+" seconds · "+(owner?ownerCredits:customerCredits).toLocaleString()+" credits · "+(owner?"Your provider cost: ":"Provider cost: ")+providerEur.toFixed(2)+" € ("+providerUsd.toFixed(2)+" USD).";
-}
 document.getElementById("danceDuration")?.addEventListener("change",updateDancePrice);
 function updateDancePromptCounter(){
  const field=document.getElementById("dancePrompt"), counter=document.getElementById("dancePromptCounter");
