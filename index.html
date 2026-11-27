@@ -4780,7 +4780,7 @@ async function populateDanceMusicVideoSongs(){
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
 }
-async async function startWaveSpeedVideoFlow(options){
+async function startWaveSpeedVideoFlow(options){
  const status=options.status,result=options.result,button=options.button;
  const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
  if(!token)throw new Error("Your session has expired. Please sign in again.");
