@@ -4503,9 +4503,9 @@ async function populateDanceMusicVideoSongs(){
  try{
   const {data,error}=await supabaseClient.storage.from("user-songs").list(currentUser.id,{limit:100,sortBy:{column:"created_at",order:"desc"}});
   if(error)throw error;
-  const songs=(data||[]).filter(file=>file.name&&!file.name.startsWith(".lane_mv_clip_")&&/\.(mp3|wav|m4a|ogg)$/i.test(file.name));
+  const songs=(data||[]).filter(file=>file.name&&!file.name.startsWith(".lane_mv_clip_")&&/\.mp3$/i.test(file.name));
   select.replaceChildren();
-  if(!songs.length){select.add(new Option("No saved songs found — create a song in AI Music Studio first",""));return;}
+  if(!songs.length){select.add(new Option("No saved MP3 songs found — create a song in AI Music Studio first",""));return;}
   select.add(new Option("Select a saved song",""));
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
