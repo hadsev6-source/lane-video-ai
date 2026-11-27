@@ -15,7 +15,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/lane-ai-studio-facebook-square.jpg"/>
 <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/lane-ai-studio-facebook-square.jpg"/>
 <meta property="og:image:type" content="image/jpeg"/>
-<meta property="og:image:alt" content="LANE AI STUDIO — Video Studio, AI Image Studio, AI Music Studio and Face Swap Studio"/>
+<meta property="og:image:alt" content="LANE AI STUDIO — Video Studio, AI Image Studio and AI Music Studio"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="LANE AI STUDIO — Create Images, Videos &amp; Music"/>
 <meta name="twitter:description" content="Create AI images, cinematic videos and original music in one creative studio."/>
@@ -1271,97 +1271,7 @@ body>#myfiles,#myfiles{display:none}
 .dance-preview-notice{padding:12px;border:1px solid #8a5b25;background:#24190e;color:#ffd59f;border-radius:9px;font-size:12px;font-weight:800;letter-spacing:.04em;margin-bottom:16px}
 .dance-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.dance-preview-card{padding:16px;border:1px solid #34363b;border-radius:12px;background:#17191e;display:flex;flex-direction:column;gap:8px;min-width:0}.dance-preview-card h3{font-size:13px;color:#ffb66a;margin:0 0 5px;letter-spacing:.07em}.dance-preview-card label{font-size:11px;color:#ddd;font-weight:800}.dance-preview-card input,.dance-preview-card select,.dance-preview-card textarea{box-sizing:border-box;width:100%;padding:11px;border-radius:8px;border:1px solid #4b4e55;background:#0e1014;color:#fff;font:inherit}.dance-preview-card textarea{min-height:75px;resize:vertical}.dance-preview-help{color:#aaa;font-size:12px;line-height:1.5;margin:4px 0}.dance-preview-footer{margin-top:16px;padding:16px;border:1px solid #444;border-radius:12px;background:#191919;display:flex;align-items:center;justify-content:space-between;gap:16px}.dance-preview-footer p{margin:6px 0;color:#ccc;font-size:13px}.dance-preview-footer small{color:#ffbd75}.dance-preview-footer button{padding:12px 18px;border:0;border-radius:8px;background:#ff9b32;color:#160c03;font-weight:900}
 @media(max-width:650px){.dance-preview-dialog{padding:14px}.dance-preview-grid{grid-template-columns:1fr}.dance-preview-hero{min-height:180px;padding:18px}.dance-preview-footer{align-items:flex-start;flex-direction:column}.dance-preview-top h2{font-size:22px}}
-#faceLabModal{display:none;position:fixed;inset:0;z-index:10050;background:#000e;overflow:auto;padding:24px 14px}
-#faceLabModal.open{display:flex;align-items:flex-start;justify-content:center}
-.face-lab-dialog{width:min(720px,100%);margin:auto;background:#101010;border:1px solid #a84d16;border-radius:16px;padding:22px;box-shadow:0 20px 80px #000}
-.face-lab-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
-.face-lab-head h2{margin:0;color:#ff9b32;font-size:24px;font-weight:950}
-.face-lab-close{background:#222;color:#fff;border:1px solid #555;border-radius:8px;padding:9px 12px}
-.face-lab-intro{color:#bbb;line-height:1.6;font-size:14px}
-.face-lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
-.face-lab-field{display:flex;flex-direction:column;gap:8px;min-width:0}
-.face-lab-field label{font-size:12px;color:#ffbd75;font-weight:800;letter-spacing:.06em}
-.face-lab-field input,.face-lab-field select{width:100%;padding:12px;background:#1d1d1d;border:1px solid #555;border-radius:8px;color:#fff}
-.face-lab-cost{background:#21160d;border:1px solid #87501e;border-radius:9px;padding:13px;color:#eee;font-size:14px;line-height:1.6}
-.face-lab-action{width:100%;padding:14px;border:0;border-radius:9px;background:linear-gradient(100deg,#ffb13b,#e66b08);color:#160c03;font-weight:950;letter-spacing:.04em}
-.face-lab-status{margin-top:14px;color:#eee;line-height:1.6;overflow-wrap:anywhere}
-.face-lab-result{display:none;margin-top:14px}
-.face-lab-result a{color:#ffb35b;font-weight:800}
-@media(max-width:600px){.face-lab-dialog{padding:16px}.face-lab-grid{grid-template-columns:1fr}}
 
-
-/* Dance Studio — five clear creation choices on the homepage, replacing the old Face Lab hero. */
-/* Full-bleed Dance to My Music feature card */
-.dance-home-mode.dance-home-mode-featured{position:relative;isolation:isolate;grid-column:span 2;min-height:360px;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:10px;padding:clamp(22px,3vw,38px);border:1px solid #51434a;border-radius:18px;background:#090909;color:#fff;box-shadow:0 14px 36px #000b;text-align:left}
-.dance-home-mode.dance-home-mode-featured:hover{transform:translateY(-3px);border-color:#fff;box-shadow:0 18px 42px #000c}
-.dance-home-mode-featured .dance-home-mode-image{position:absolute;inset:0;z-index:-2;width:100%;height:100%;min-height:100%;object-fit:cover;object-position:center 42%;display:block}
-.dance-home-mode-featured:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.03) 18%,rgba(0,0,0,.16) 42%,rgba(0,0,0,.88) 100%)}
-.dance-home-mode-featured strong{font-size:clamp(22px,3vw,38px);font-weight:950;line-height:1.05;letter-spacing:.035em;text-shadow:0 2px 18px #000}
-.dance-home-mode-featured>span:not(.dance-home-mode-icon){min-height:0;color:#f1eeee;font-size:14px;line-height:1.45;text-shadow:0 2px 12px #000}
-.dance-home-mode-featured em{display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:7px;padding:0 22px;border:1px solid rgba(255,255,255,.8);border-radius:7px;background:rgba(10,10,10,.64);color:#fff;font-size:12px;font-weight:900;letter-spacing:.08em}
-@media(max-width:900px){.dance-home-mode.dance-home-mode-featured{grid-column:span 2;min-height:330px}}
-@media(max-width:600px){.dance-home-mode.dance-home-mode-featured{grid-column:1/-1;min-height:360px;padding:22px 20px;border-radius:14px}.dance-home-mode-featured .dance-home-mode-image{object-position:center 40%}.dance-home-mode-featured strong{font-size:clamp(25px,8vw,34px)}.dance-home-mode-featured em{min-height:48px;font-size:12px}}
-
-.dance-home-mode-grid{width:min(1700px,96%);margin:18px auto 28px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.dance-home-mode{min-width:0;min-height:225px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;padding:18px 15px;border:1px solid #ff9b32;border-radius:16px;background:radial-gradient(ellipse at 50% 5%,#69370f88,transparent 55%),linear-gradient(145deg,#1a1209,#080808 72%);color:#fff;text-align:left;cursor:pointer;box-shadow:0 8px 26px #0009,0 0 14px #e88c2620;transition:transform .18s,border-color .18s,box-shadow .18s}
-.dance-home-mode:hover{transform:translateY(-3px);border-color:#ffd080;box-shadow:0 10px 28px #e88c2640}
-.dance-home-mode-icon{width:100%;height:78px;display:flex;align-items:center;justify-content:center;color:#ff9b32;font-size:49px;text-shadow:0 0 20px #ff941c88}
-.dance-home-mode strong{font-size:clamp(13px,1.15vw,17px);font-weight:900;line-height:1.2}
-.dance-home-mode>span:not(.dance-home-mode-icon){font-size:12px;line-height:1.45;color:#d6c3a9;min-height:50px}
-.dance-home-mode em{margin-top:auto;color:#ffb45d;font-size:10px;font-style:normal;font-weight:900;letter-spacing:.06em}
-@media(max-width:900px){.dance-home-mode-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:600px){.dance-home-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px auto 22px}.dance-home-mode{min-height:205px;padding:13px 11px;gap:8px}.dance-home-mode-icon{height:65px;font-size:42px}.dance-home-mode strong{font-size:13px}.dance-home-mode>span:not(.dance-home-mode-icon){font-size:11px;min-height:46px}.dance-home-mode em{font-size:9px}}
-\n.dance-clip-control{margin:16px 0;padding:16px;border:1px solid #8d6ab4;border-radius:12px;background:#171020}.dance-clip-control>label{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;margin-bottom:12px;color:#f2eaff}.dance-clip-control input[type=range]{width:100%;height:42px;padding:0;accent-color:#c58aff;cursor:ew-resize;touch-action:pan-y}.dance-clip-readout{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#bca9d3}.dance-clip-readout span{display:grid;gap:5px}.dance-clip-readout strong{font-size:17px;color:#fff;font-variant-numeric:tabular-nums}.dance-wave-handle{display:none!important}.dance-wave-selection{background:rgba(175,105,255,.22)!important;border-left:2px solid #d6aaff!important;border-right:2px solid #d6aaff!important}.dance-wave-playhead{position:absolute;z-index:4;top:0;bottom:0;left:0;width:2px;background:#fff;box-shadow:0 0 7px #fff;pointer-events:none;display:none}.dance-wave-playhead:before{content:"";position:absolute;top:0;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff}#danceStudioPreview .dance-waveform-wrap{height:150px!important;cursor:crosshair}#danceStudioPreview .dance-wave-help{line-height:1.5;margin-top:8px}.dance-time-ruler{display:flex;justify-content:space-between;color:#bca9d3;font-size:10px;font-variant-numeric:tabular-nums;padding:5px 2px 0}</style>
-
-<style>
-/* Credit packages: always three cards per row, including mobile */
-#pricing .price-grid {
-  display:grid !important;
-  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-  gap:14px !important;
-  width:min(100%,1080px) !important;
-  margin:22px auto 0 !important;
-}
-#pricing .price-card {
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  gap:10px !important;
-  min-width:0 !important;
-  min-height:190px !important;
-  padding:18px 14px !important;
-  border:1px solid #555b63 !important;
-  border-top:3px solid #f20d20 !important;
-  border-radius:10px !important;
-  background:linear-gradient(145deg,#17191e,#09090b 72%) !important;
-  box-shadow:0 5px 18px #0008 !important;
-  text-align:center !important;
-}
-#pricing .price-card.featured {
-  border-color:#f20d20 !important;
-  background:linear-gradient(145deg,#260b10,#101014 72%) !important;
-}
-#pricing .price-card h3 { margin:0 !important; font-size:19px !important; }
-#pricing .price-card .price { margin:0 !important; font-size:29px !important; white-space:nowrap !important; }
-#pricing .price-card strong { color:#c9cbd0 !important; font-size:13px !important; line-height:1.4 !important; overflow-wrap:anywhere !important; }
-#pricing .price-card .buy-credit-btn {
-  width:100% !important; max-width:190px !important; margin:0 !important;
-  padding:11px 8px !important; border-radius:6px !important;
-  font-size:12px !important; font-weight:900 !important; white-space:normal !important;
-}
-@media(max-width:650px) {
-  #pricing .price-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; }
-  #pricing .price-card { min-height:150px !important; padding:11px 6px !important; gap:7px !important; }
-  #pricing .price-card h3 { font-size:clamp(11px,3.2vw,15px) !important; }
-  #pricing .price-card .price { font-size:clamp(17px,5vw,23px) !important; }
-  #pricing .price-card strong { font-size:clamp(9px,2.5vw,11px) !important; line-height:1.3 !important; }
-  #pricing .price-card .buy-credit-btn { padding:8px 3px !important; font-size:clamp(8px,2.4vw,10px) !important; }
-}
-@media(max-width:360px) {
-  #pricing .price-grid { gap:5px !important; }
-  #pricing .price-card { padding:9px 4px !important; min-height:142px !important; }
-}
 </style>
 
 
@@ -1703,7 +1613,7 @@ body>#myfiles,#myfiles{display:none}
     <div class="lane-showcase-copy">
       <span class="lane-showcase-brand">LANE</span><h2>VIDEO STUDIO</h2>
       <p>CREATE · EDIT · DANCE · PERFORM</p>
-      <div class="lane-showcase-features"><span>▣ <small>AI VIDEO</small></span><span>♟ <small>DANCE VIDEOS</small></span><span>◎ <small>FACE REPLACE</small></span><span>HD <small>CINEMATIC</small></span></div>
+      <div class="lane-showcase-features"><span>▣ <small>AI VIDEO</small></span><span>♟ <small>DANCE VIDEOS</small></span><span>HD <small>CINEMATIC</small></span></div>
       <button type="button" class="lane-showcase-cta" onclick="openStudioSection('studio')">CREATE VIDEO <b>→</b></button>
     </div>
     <div class="lane-showcase-visual lane-showcase-dancers" role="img" aria-label="Cinematic dance crew performance"></div>
@@ -2171,24 +2081,6 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
 <div id="myFilesModal" role="dialog" aria-modal="true" aria-label="My Files"><div class="my-files-dialog"><button type="button" class="my-files-close" onclick="closeMyFilesModal()">CLOSE ✕</button><div id="myFilesModalContent"></div></div></div><div id="laneReadyToast" role="status" aria-live="polite"><strong id="laneReadyTitle">Your creation is ready!</strong><p id="laneReadyMessage"></p><div class="toast-actions"><button type="button" class="primary-btn" id="laneReadyOpen">OPEN FILE</button><button type="button" class="secondary-btn" onclick="openMyFilesModal();dismissReadyToast()">MY FILES</button><button type="button" class="secondary-btn" onclick="dismissReadyToast()">CLOSE</button></div></div>
 
 <div id="laneAccountModal" class="lane-account-modal" role="dialog" aria-modal="true" aria-labelledby="laneAccountModalTitle" onclick="if(event.target===this)closeAccountHistory()"><div class="lane-account-dialog"><button type="button" class="secondary-btn" onclick="closeAccountHistory()">CLOSE ✕</button><h2 id="laneAccountModalTitle">ACCOUNT</h2><div id="laneAccountModalBody">Loading...</div></div></div>
-
-<div id="faceLabModal" aria-hidden="true">
- <div class="face-lab-dialog" role="dialog" aria-modal="true" aria-labelledby="faceLabTitle">
-  <div class="face-lab-head"><h2 id="faceLabTitle">LANE FACE LAB STUDIO</h2><button class="face-lab-close" type="button" onclick="closeFaceLab()">CLOSE ✕</button></div>
-  <p class="face-lab-intro">Choose 5, 10, 15 or 30 seconds, then upload an MP4 clip with exactly that duration and a face photo. Face Lab will replace the selected face. Video processing only — no audio generation.</p>
-  <div class="face-lab-grid">
-   <div class="face-lab-field"><label for="faceLabVideo">PERFORMANCE VIDEO (MP4, up to 100 MB)</label><input id="faceLabVideo" type="file" accept="video/mp4,.mp4" onchange="updateFaceLabEstimate()"></div>
-   <div class="face-lab-field"><label for="faceLabDuration">VIDEO DURATION</label><select id="faceLabDuration" onchange="updateFaceLabEstimate()"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15">15 seconds</option><option value="30">30 seconds</option></select></div>
-   <div class="face-lab-field"><label for="faceLabPhoto">FACE PHOTO (JPG / PNG / WEBP)</label><input id="faceLabPhoto" type="file" accept="image/jpeg,image/png,image/webp"></div>
-   <div class="face-lab-field"><label for="faceLabIndex">TARGET FACE</label><select id="faceLabIndex"><option value="0">Largest / Main face</option><option value="1">Face 2</option><option value="2">Face 3</option><option value="3">Face 4</option><option value="4">Face 5</option></select></div>
-   <div class="face-lab-field"><label for="faceLabGender">TARGET GENDER</label><select id="faceLabGender"><option value="all">Any</option><option value="male">Male</option><option value="female">Female</option></select></div>
-  </div>
-  <div class="face-lab-cost" id="faceLabEstimate">Price: Upload an MP4 video to calculate the required credits. Revenue share: 50% of the final sale price goes to you.</div>
-  <button class="face-lab-action" id="faceLabStart" type="button" onclick="startFaceLab()">GENERATE FACE SWAP</button>
-  <div class="face-lab-status" id="faceLabStatus" role="status" aria-live="polite"></div>
-  <div class="face-lab-result" id="faceLabResult"><a id="faceLabDownload" href="#" target="_blank" rel="noopener">OPEN / DOWNLOAD RESULT</a></div>
- </div>
-</div>
 
 <div id="danceStudioPreview" class="dance-preview-overlay" aria-hidden="true">
  <div class="dance-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="dancePreviewTitle">
@@ -4622,11 +4514,6 @@ function openDanceMode(mode){
  if(!dialog)return;
  dialog.classList.remove("mode-active","show-legacy-generator");
  document.querySelectorAll("#danceStudioPreview .dance-mode-workspace").forEach(el=>el.style.display="none");
- if(mode==="faceSwap"){
-  closeDanceStudioPreview();
-  openFaceSwapComingSoon();
-  return;
- }
  if(mode==="danceMusic"){
   dialog.classList.add("mode-active");
   const title=document.getElementById("dancePreviewTitle");
@@ -4664,55 +4551,6 @@ function closeDanceStudioPreview(){
  const m=document.getElementById("danceStudioPreview");if(!m)return;
  m.classList.remove("open");m.setAttribute("aria-hidden","true");document.body.style.overflow="";
 }
-function openFaceSwapComingSoon(){
- const m=document.getElementById("faceLabModal");if(!m)return;
- if(!currentUser){alert("Please sign in first to use Face Lab.");document.getElementById("support")?.scrollIntoView({behavior:"smooth"});return;}
- m.classList.add("open");m.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
-}
-function closeFaceLab(){const m=document.getElementById("faceLabModal");m.classList.remove("open");m.setAttribute("aria-hidden","true");document.body.style.overflow="";}
-function updateFaceLabEstimate(){
- const f=document.getElementById("faceLabVideo").files?.[0],box=document.getElementById("faceLabEstimate");
- if(!f){box.textContent="Price: Upload an MP4 video to calculate the required credits.";return;}
- const selected=Number(document.getElementById("faceLabDuration").value),url=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{
-  URL.revokeObjectURL(url);const d=Math.ceil(v.duration);if(!Number.isFinite(d)||![5,10,15,30].includes(selected)||d!==selected){box.textContent="For the "+selected+" second option, upload a video whose duration rounds up to exactly "+selected+" seconds.";return;}
-  const owner=isLaneOwnerAccount(),usd=selected*0.01,ownerCredits=laneOwnerCredits(usd),customerCredits=Math.ceil(selected*0.01*2*0.9168*100),c=owner?ownerCredits:customerCredits;box.textContent=owner?"Duration: "+selected+" sec · Your owner price: "+c+" credits · Estimated provider cost: €"+(usd*0.9168).toFixed(2):"Duration: "+selected+" sec · Customer price: "+c+" credits.";
- };v.onerror=()=>{URL.revokeObjectURL(url);box.textContent="Could not read the video duration.";};v.src=url;
-}
-async function startFaceLab(){
- const video=document.getElementById("faceLabVideo").files?.[0],face=document.getElementById("faceLabPhoto").files?.[0];
- const status=document.getElementById("faceLabStatus"),btn=document.getElementById("faceLabStart"),result=document.getElementById("faceLabResult");
- result.style.display="none";
- if(!currentUser){status.textContent="Please sign in to your account.";return;}
- if(!video||!face){status.textContent="Please select an MP4 video and a face photo.";return;}
- if(video.size>100*1024*1024||face.size>10*1024*1024){status.textContent="Maximum file size: 100 MB for video and 10 MB for photo.";return;}
- btn.disabled=true;btn.textContent="UPLOADING & STARTING…";status.textContent="Uploading files and starting Face Swap…";
- try{
-  const {data:{session}}=await supabaseClient.auth.getSession();if(!session)throw new Error("Your session has expired. Please sign in again.");
-  const form=new FormData();form.append("video",video);form.append("face_image",face);form.append("duration_seconds",document.getElementById("faceLabDuration").value);
-  form.append("target_index",document.getElementById("faceLabIndex").value);form.append("target_gender",document.getElementById("faceLabGender").value);
-  const {data,error}=await supabaseClient.functions.invoke("face-swap-video",{body:form});
-  if(error)throw error;if(data?.error)throw new Error(data.error);
-  const id=data.job_id;if(!id)throw new Error("The job ID was not returned.");
-  status.textContent="Face Swap is processing. "+data.credits_charged+" credits have been charged. Status will be checked automatically.";
-  btn.textContent="PROCESSING…";
-  const poll=async()=>{
-   try{
-    const {data:d,error:e}=await supabaseClient.functions.invoke("face-swap-video",{body:{action:"status",job_id:id}});
-    if(e)throw e;if(d?.status==="completed"&&d.output_url){
-      status.textContent="Completed! Your video has been processed.";
-      const a=document.getElementById("faceLabDownload");a.href=d.output_url;result.style.display="block";btn.disabled=false;btn.textContent="GENERATE FACE SWAP";return true;
-    }
-    if(["failed","cancelled","timeout"].includes(d?.status)){
-      status.textContent=d.error||"Processing failed. Your credits have been refunded.";btn.disabled=false;btn.textContent="TRY AGAIN";return true;
-    }
-    status.textContent="Processing your video…";return false;
-   }catch(e){status.textContent="Checking status: "+(e.message||"error");return false;}
-  };
-  let done=false;for(let i=0;i<90&&!done;i++){await new Promise(r=>setTimeout(r,7000));done=await poll();}
-  if(!done){status.textContent="The task is still processing. You may close this window and check again later.";btn.disabled=false;btn.textContent="STARTED — CHECK STATUS";}
- }catch(e){status.textContent=e.message||"An error occurred.";btn.disabled=false;btn.textContent="TRY AGAIN";}
-}
-
 </script>
 
 
