@@ -3984,11 +3984,16 @@ async function startDanceStudioGeneration(){
    const audioDuration=await new Promise((resolve,reject)=>{probe.onloadedmetadata=()=>resolve(probe.duration);probe.onerror=()=>reject(new Error("Could not read this audio file. Please use a valid MP3 or WAV."));probe.src=audioUrl;});
    URL.revokeObjectURL(audioUrl);
    if(!Number.isFinite(audioDuration)||audioDuration<=0)throw new Error("Could not read this audio file. Please use a valid MP3 or WAV.");
-   status.textContent=audioDuration>15
-    ?"Converting music reference to MP3 and trimming to 15 seconds..."
-    :"Converting music reference to MP3...";
-   audio=await trimDanceAudioReference(audio,15);
-   status.textContent="Music reference prepared as MP3 (maximum 15 seconds). Preparing your video...";
+   const isMp3=audio.type==="audio/mpeg"||audio.type==="audio/mp3"||/\\.mp3$/i.test(audio.name);
+   if(isMp3&&audioDuration<=15){
+    status.textContent="MP3 reference ready. Preparing your video...";
+   }else{
+    status.textContent=audioDuration>15
+     ?"Converting and trimming music reference to 15 seconds..."
+     :"Converting WAV music reference to MP3...";
+    audio=await trimDanceAudioReference(audio,15);
+    status.textContent="Music reference prepared as MP3 (maximum 15 seconds). Preparing your video...";
+   }
   }catch(error){alert(error.message||"Could not process the music reference.");return;}
  }
  const duration=Number(document.getElementById("danceDuration").value);
