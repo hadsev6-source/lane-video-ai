@@ -1196,7 +1196,7 @@ body>#myfiles,#myfiles{display:none}
 .lane-studio-showcase{width:min(1700px,96%);margin:18px auto 28px;display:grid;gap:10px}
 .lane-showcase-card{--accent:#ff941c;position:relative;isolation:isolate;min-height:212px;display:grid;grid-template-columns:150px minmax(390px,.95fr) minmax(300px,1.05fr);align-items:center;overflow:hidden;border:1px solid var(--accent);border-radius:15px;background:#050505;box-shadow:0 8px 30px #0009}
 .lane-showcase-card:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 18% 50%,#ff8c1c1c,transparent 38%),linear-gradient(90deg,#050505 0%,#050505 42%,#050505aa 65%,#05050544)}
-.lane-showcase-video{--accent:#ff8f18}.lane-showcase-image{--accent:#ff9b27}.lane-showcase-music{--accent:#ff9b19}.lane-showcase-face{--accent:#ff941c}
+.lane-showcase-video{--accent:#ff8f18}.lane-showcase-image{--accent:#ff9b27}.lane-showcase-music{--accent:#ff9b19}
 .lane-showcase-icon{display:flex;align-items:center;justify-content:center;margin:auto;width:100px;height:100px;border:2px solid var(--accent);border-radius:20px;color:var(--accent);font-size:65px;line-height:1;text-shadow:0 0 18px var(--accent);box-shadow:0 0 22px #ff8c1c55,inset 0 0 20px #ff8c1c22;transform:rotate(-5deg)}
 .lane-showcase-copy{position:relative;z-index:2;padding:17px 8px 17px 0;min-width:0}
 .lane-showcase-brand{display:block;color:#fff;font-size:clamp(25px,3vw,38px);font-weight:950;font-style:italic;line-height:.95;letter-spacing:-.05em}
@@ -1208,7 +1208,7 @@ body>#myfiles,#myfiles{display:none}
 .lane-showcase-cta{display:inline-flex;align-items:center;gap:18px;padding:10px 19px;border:1px solid #ffbd61;border-radius:24px;background:linear-gradient(100deg,#ffae2b,#f06b06);color:#160c03;font-size:12px;font-weight:950;box-shadow:0 0 18px #ff8c1c55;cursor:pointer;transition:transform .18s,box-shadow .18s}
 .lane-showcase-cta:hover{transform:translateY(-2px);box-shadow:0 0 26px #ff8c1c99}
 .lane-showcase-cta b{font-size:18px;line-height:10px}
-.lane-showcase-visual,.lane-showcase-equalizer,.lane-showcase-face-visual{position:absolute;z-index:-1;right:0;top:0;bottom:0;width:53%;overflow:hidden}
+.lane-showcase-visual,.lane-showcase-equalizer,
 .lane-showcase-dancers{background:radial-gradient(ellipse at 75% 10%,#ff5b1c66,transparent 35%),linear-gradient(90deg,#050505 0%,#05050500 38%),linear-gradient(0deg,#05050544,#05050500),url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1800&q=90') center 38%/cover no-repeat}
 .lane-showcase-portrait{background:radial-gradient(ellipse at 82% 18%,#fff0c866,transparent 27%),radial-gradient(ellipse at 85% 80%,#d8e4f066,transparent 32%),linear-gradient(90deg,#050505 0%,#05050500 42%),linear-gradient(115deg,#ffbd3b22,#d9e2ef22 55%),url('https://i.pinimg.com/736x/b2/dc/0d/b2dc0de409e7f901890971ae390efe91.jpg') center 35%/cover no-repeat}
 .lane-showcase-equalizer{width:57%;background:radial-gradient(ellipse at 56% 76%,#ff790044,transparent 55%),linear-gradient(90deg,#05050500,#050505 100%)}
@@ -1218,13 +1218,13 @@ body>#myfiles,#myfiles{display:none}
 .lane-eq-wave{position:absolute;left:0;right:0;bottom:22%;height:38%;border-top:2px solid #ff9b27;filter:drop-shadow(0 0 8px #ff7800);border-radius:50%;transform:rotate(-5deg) scaleX(1.2)}
 .lane-eq-headphones{position:absolute;right:4%;top:10%;font-size:100px;color:#ff9a1d;text-shadow:0 0 20px #ff7300;opacity:.85}
 .lane-eq-headphones span{font-size:35px;vertical-align:middle}
-.lane-showcase-face-visual{width:55%;background:radial-gradient(ellipse at 65% 10%,#f05bff66,transparent 34%),linear-gradient(90deg,#050505 0%,#05050500 35%),linear-gradient(0deg,#05050555,#05050500),url('https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/WhatsApp%20Image%202026-11-22%20at%2020.01.19.jpeg') center 48%/cover no-repeat}
+
 .lane-showcase-genres{position:absolute;z-index:2;right:15px;top:14px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:52%}
 .lane-showcase-genres span{padding:6px 10px;border:1px solid #ff941c;border-radius:20px;background:#090909d9;color:#fff;font-size:9px;font-weight:900}
-.lane-showcase-face .lane-showcase-copy{padding-top:38px}
-.lane-face-icon{border-radius:50%;font-size:70px}
-@media(max-width:850px){.lane-showcase-card{grid-template-columns:105px minmax(0,1fr);min-height:205px}.lane-showcase-icon{width:72px;height:72px;font-size:48px}.lane-showcase-visual,.lane-showcase-equalizer,.lane-showcase-face-visual{width:48%;opacity:.45}.lane-showcase-copy{padding-right:12px}.lane-showcase-copy h2{font-size:clamp(23px,4vw,32px)}.lane-showcase-genres{max-width:45%;top:8px;right:8px}.lane-showcase-genres span{font-size:8px;padding:4px 7px}}
-@media(max-width:560px){.lane-studio-showcase{width:94%;gap:9px;margin:18px auto 24px}.lane-showcase-card{grid-template-columns:68px minmax(0,1fr);min-height:184px;border-radius:11px}.lane-showcase-icon{width:48px;height:48px;border-radius:12px;font-size:32px}.lane-showcase-copy{padding:14px 8px 14px 0}.lane-showcase-brand{font-size:23px}.lane-showcase-copy h2{font-size:clamp(20px,6vw,27px)}.lane-showcase-copy>p{font-size:8px;letter-spacing:.12em;margin-bottom:10px}.lane-showcase-features{gap:8px;font-size:16px;margin-bottom:10px;flex-wrap:wrap}.lane-showcase-features small{font-size:7px}.lane-showcase-cta{padding:8px 12px;font-size:10px;gap:10px}.lane-showcase-visual,.lane-showcase-equalizer,.lane-showcase-face-visual{width:45%;opacity:.28}.lane-showcase-genres{position:relative;grid-column:2;grid-row:1;justify-content:flex-start;max-width:none;margin:5px 8px 0 0;right:auto;top:auto;z-index:3}.lane-showcase-genres span{font-size:7px;padding:3px 6px}.lane-showcase-face .lane-showcase-copy{padding-top:8px}.lane-showcase-face{min-height:210px}}
+
+
+@media(max-width:850px){.lane-showcase-card{grid-template-columns:105px minmax(0,1fr);min-height:205px}.lane-showcase-icon{width:72px;height:72px;font-size:48px}.lane-showcase-visual,.lane-showcase-equalizer,.lane-showcase-copy{padding-right:12px}.lane-showcase-copy h2{font-size:clamp(23px,4vw,32px)}.lane-showcase-genres{max-width:45%;top:8px;right:8px}.lane-showcase-genres span{font-size:8px;padding:4px 7px}}
+@media(max-width:560px){.lane-studio-showcase{width:94%;gap:9px;margin:18px auto 24px}.lane-showcase-card{grid-template-columns:68px minmax(0,1fr);min-height:184px;border-radius:11px}.lane-showcase-icon{width:48px;height:48px;border-radius:12px;font-size:32px}.lane-showcase-copy{padding:14px 8px 14px 0}.lane-showcase-brand{font-size:23px}.lane-showcase-copy h2{font-size:clamp(20px,6vw,27px)}.lane-showcase-copy>p{font-size:8px;letter-spacing:.12em;margin-bottom:10px}.lane-showcase-features{gap:8px;font-size:16px;margin-bottom:10px;flex-wrap:wrap}.lane-showcase-features small{font-size:7px}.lane-showcase-cta{padding:8px 12px;font-size:10px;gap:10px}.lane-showcase-visual,.lane-showcase-equalizer,.lane-showcase-genres{position:relative;grid-column:2;grid-row:1;justify-content:flex-start;max-width:none;margin:5px 8px 0 0;right:auto;top:auto;z-index:3}.lane-showcase-genres span{font-size:7px;padding:3px 6px}}
 
 /* Cinematic treatments for the four horizontal studio banners */
 .lane-showcase-dancers{background-image:linear-gradient(90deg,#050505 0%,#05050500 43%),linear-gradient(0deg,#05050566,transparent 48%),url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1800&q=90');background-position:center,center,center 38%;background-size:cover}
@@ -1239,10 +1239,10 @@ body>#myfiles,#myfiles{display:none}
 .lane-eq-orbit{position:absolute;left:18%;top:9%;width:66%;height:82%;border:1px solid #ffae3d66;border-radius:50%;transform:rotate(-17deg);box-shadow:0 0 35px #ff8a1622,inset 0 0 30px #ff8a161c}
 .lane-eq-wave{height:42%;bottom:26%;border-top:3px solid #ffe08a;filter:drop-shadow(0 0 12px #ff7800)}
 .lane-eq-headphones{right:8%;top:7%;font-size:76px;text-shadow:0 0 12px #ff8a16,0 0 35px #ff4b00}
-.lane-showcase-face-visual{background-image:linear-gradient(90deg,#050505 0%,#05050500 48%),linear-gradient(0deg,#05050577,transparent 55%),url('https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/WhatsApp%20Image%202026-11-22%20at%2020.01.19.jpeg');background-position:center,center,center 48%;background-size:cover}
-.lane-face-lights{position:absolute;inset:0;background:radial-gradient(ellipse at 72% 18%,#ff8b1c88,transparent 25%),radial-gradient(ellipse at 90% 75%,#b829ff66,transparent 35%);mix-blend-mode:screen}
+
+
 .lane-showcase-card{min-height:228px}
-@media(max-width:560px){.lane-showcase-card{min-height:194px}.lane-showcase-face{min-height:210px}}
+@media(max-width:560px){.lane-showcase-card{min-height:194px}}
 
 
 /* Keep the connected generator workspaces available while removing only their duplicate title strips. */
