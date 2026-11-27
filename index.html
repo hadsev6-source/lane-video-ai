@@ -4429,7 +4429,7 @@ function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15), owner=isLaneOwnerAccount();
  const providerUsd=d*0.216, providerEur=providerUsd*0.9168, ownerCredits=laneOwnerCredits(providerUsd);
  const customerCredits=({5:181,10:361,15:541})[d]||0;
- const text=d===30?"30 seconds · long-duration server connection pending":owner?d+" seconds · "+ownerCredits.toLocaleString()+" credits · Estimated provider cost: €"+providerEur.toFixed(2)+" (owner rate)":d+" seconds · "+customerCredits.toLocaleString()+" credits · Customer price";
+ const text=d===30?"30 seconds · Omn Music Video · exact quote before generation + 30% LANE markup":owner?d+" seconds · "+ownerCredits.toLocaleString()+" credits · Estimated provider cost: €"+providerEur.toFixed(2)+" (owner rate)":d+" seconds · "+customerCredits.toLocaleString()+" credits · Customer price";
  for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
 }
@@ -4481,7 +4481,7 @@ function getMyDanceDuration(){return Number(document.getElementById("myDanceDura
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
  const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd),customerCredits=({10:361,15:541})[duration];
- el.textContent=duration===30?"30 seconds · long-duration server connection pending":owner?duration+" seconds · "+ownerCredits.toLocaleString()+" credits · estimated provider cost: €"+(providerUsd*0.9168).toFixed(2)+" (owner rate)":duration+" seconds · "+customerCredits.toLocaleString()+" credits · customer price";
+ el.textContent=duration===30?"30 seconds · Omn Music Video · exact quote before generation + 30% LANE markup":owner?duration+" seconds · "+ownerCredits.toLocaleString()+" credits · estimated provider cost: €"+(providerUsd*0.9168).toFixed(2)+" (owner rate)":duration+" seconds · "+customerCredits.toLocaleString()+" credits · customer price";
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
  if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
