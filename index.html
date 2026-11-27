@@ -4743,9 +4743,21 @@ async function populateDanceMusicVideoSongs(){
 
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
 }
+async function startFullLengthMusicVideoGeneration(){
+ const status=document.getElementById("danceMvStatus");
+ const fileName=document.getElementById("danceMvSong")?.value||"";
+ const prompt=document.getElementById("danceMvVisual")?.value.trim()||"";
+ const duration=Number(document.getElementById("danceMvDuration")?.value||60);
+ if(!currentUser){alert("Please sign in first.");return;}
+ if(!fileName){alert("Please select a song from your saved music library.");return;}
+ if(prompt.length<10){alert("Please describe your music video in at least 10 characters.");return;}
+ if(prompt.length>1000){alert("Your video description must not exceed 1,000 characters.");return;}
+ if(![60,120,180,240].includes(duration)){alert("Please select a full-length duration from 1 to 4 minutes.");return;}
+ if(status)status.textContent="Your "+(duration/60)+"-minute music video is configured in LANE AI MUSIC VIDEO STUDIO. The long-form provider connection will be added next. No generation has started and no credits have been charged.";
+}
 async function startDanceMusicVideoGeneration(){
  const requestedDuration=Number(document.getElementById("danceMvDuration")?.value||15);
- if(requestedDuration>30){const status=document.getElementById("danceMvStatus");if(status)status.textContent="Full-length video (1–4 minutes) will use the dedicated provider. This preview is not connected for generation yet; your 10–30 second Runway options remain available.";return;}
+ if(requestedDuration>30)return startFullLengthMusicVideoGeneration();
  const button=document.getElementById("danceMvGenerateButton"),status=document.getElementById("danceMvStatus"),result=document.getElementById("danceMvResult");
  if(!currentUser){alert("Please sign in first.");return;}
  const fileName=document.getElementById("danceMvSong")?.value||"",prompt=document.getElementById("danceMvVisual")?.value.trim()||"",duration=Number(document.getElementById("danceMvDuration")?.value||15),ratio=document.getElementById("danceMvRatio")?.value||"portrait";
