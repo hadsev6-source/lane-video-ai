@@ -2506,7 +2506,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
  <h3>DANCE TO MY MUSIC</h3>
  <p>Upload your MP3, choose the dancers, and select the exact music segment for your video.</p>
  <label for="myDanceDuration">VIDEO DURATION</label>
- <select id="myDanceDuration"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select>
+ <select id="myDanceDuration"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="30">30 seconds</option></select>
  <label for="myDanceMusicFile">UPLOAD MP3 FILE · REQUIRED</label>
  <input id="myDanceMusicFile" type="file" accept=".mp3,audio/mpeg" required>
  <div id="myDanceAudioEditor" class="dance-audio-editor" hidden>
@@ -2582,7 +2582,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
    <section class="dance-preview-card choreo-card">
     <h3>05 / VIDEO SETTINGS</h3>
     <label for="danceDuration">Video duration</label>
-    <select id="danceDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select>
+    <select id="danceDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="30">30 seconds</option></select>
     <label for="danceRatio">Video format</label>
     <select id="danceRatio"><option value="9:16">Portrait 9:16</option><option value="16:9">Landscape 16:9</option></select>
    </section>
@@ -4429,7 +4429,7 @@ function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15), owner=isLaneOwnerAccount();
  const providerUsd=d*0.216, providerEur=providerUsd*0.9168, ownerCredits=laneOwnerCredits(providerUsd);
  const customerCredits=({5:181,10:361,15:541})[d]||0;
- const text=owner?d+" seconds · "+ownerCredits.toLocaleString()+" credits · Estimated provider cost: €"+providerEur.toFixed(2)+" (owner rate)":d+" seconds · "+customerCredits.toLocaleString()+" credits · Customer price";
+ const text=d===30?"30 seconds · long-duration server connection pending":owner?d+" seconds · "+ownerCredits.toLocaleString()+" credits · Estimated provider cost: €"+providerEur.toFixed(2)+" (owner rate)":d+" seconds · "+customerCredits.toLocaleString()+" credits · Customer price";
  for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
 }
@@ -4481,7 +4481,7 @@ function getMyDanceDuration(){return Number(document.getElementById("myDanceDura
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
  const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd),customerCredits=({10:361,15:541})[duration];
- el.textContent=owner?duration+" seconds · "+ownerCredits.toLocaleString()+" credits · estimated provider cost: €"+(providerUsd*0.9168).toFixed(2)+" (owner rate)":duration+" seconds · "+customerCredits.toLocaleString()+" credits · customer price";
+ el.textContent=duration===30?"30 seconds · long-duration server connection pending":owner?duration+" seconds · "+ownerCredits.toLocaleString()+" credits · estimated provider cost: €"+(providerUsd*0.9168).toFixed(2)+" (owner rate)":duration+" seconds · "+customerCredits.toLocaleString()+" credits · customer price";
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
  if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
@@ -4600,6 +4600,7 @@ async function trimDanceAudioRange(file,startSeconds,endSeconds){
 }
 async function startMyDanceMusicGeneration(){
  const button=document.getElementById("myDanceGenerateButton"),status=document.getElementById("myDanceStatus"),result=document.getElementById("myDanceResult");
+ if(getMyDanceDuration()===30){status.textContent="30-second Dance to My Music is configured in the studio. The shared long-duration server connection will be added next; no generation has started and no credits have been charged.";return;}
  if(!currentUser){alert("Please sign in to continue.");return;}
  const audioFile=document.getElementById("myDanceMusicFile").files?.[0];
  const prompt=document.getElementById("myDancePrompt").value.trim();
@@ -4663,6 +4664,7 @@ async function startMyDanceMusicGeneration(){
 
 async function startDanceStudioGeneration(){
  const button=document.getElementById("danceGenerateButton"), status=document.getElementById("danceStatus"), result=document.getElementById("danceResult");
+ if(Number(document.getElementById("danceDuration")?.value)===30){status.textContent="30-second Dance Choreography is configured in the studio. The shared long-duration server connection will be added next; no generation has started and no credits have been charged.";return;}
  if(!currentUser){alert("Please sign in first.");return;}
  const prompt=document.getElementById("dancePrompt").value.trim();
  if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}
