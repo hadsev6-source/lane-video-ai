@@ -1650,8 +1650,8 @@ body>#myfiles,#myfiles{display:none}
 
 <section class="lane-studio-showcase" id="laneDanceStudio" aria-label="LANE creative studios">
   <div class="dance-home-mode-grid" aria-label="Choose what you want to create">
-    <button type="button" class="dance-home-mode" onclick="openFaceSwapComingSoon()"><img class="dance-home-mode-image" src="https://hivory.io/_next/image?q=75&url=%2Fcase-studies%2Fwhoyou%2Fcase-study.png&w=1920" alt="Face scan and face transformation preview" loading="lazy"><strong>FACE SWAP</strong><span>Постави избрано лице във видео</span><em>START FACE SWAP →</em></button>
-    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('podcast')"><img class="dance-home-mode-image" src="https://dakar-podcast.studio/assets/client-6-O10orP-4.jpg" alt="Two podcast hosts recording a conversation" loading="lazy"><strong>AI PODCAST</strong><span>Създай разговор, реплики и подкаст сцена</span><em>CREATE PODCAST →</em></button>
+    
+    
     <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('musicVideo')"><img class="dance-home-mode-image" src="https://is1-ssl.mzstatic.com/image/thumb/Video211/v4/c6/c6/a4/c6c6a462-3197-3ac5-5473-7f36e18a0097/3617399370354_1_01.jpg/1920x1080mv.jpg" alt="Singer performing in a recording studio" loading="lazy"><strong>AI MUSIC VIDEO</strong><span>Създай песен с вокали и видео към нея</span><em>CREATE MUSIC VIDEO →</em></button>
     <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceMusic')"><img class="dance-home-mode-image" src="https://static.wixstatic.com/media/4e2636_58eb6ba1ac054bad97d8e2fd4c269484~mv2.jpg/v1/fill/w_816%2Ch_539%2Cal_c%2Cq_85%2Cusm_0.66_1.00_0.01%2Cenc_auto/4e2636_58eb6ba1ac054bad97d8e2fd4c269484~mv2.jpg" alt="Afrobeats dancers moving to their own music" loading="lazy"><strong>DANCE TO MY MUSIC</strong><span>Качи собствен MP3 и създай танцово видео</span><em>USE MY MP3 →</em></button>
     <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceVideo')"><img class="dance-home-mode-image" src="https://image.atsw.de/atsw/production/2024-07/bigfm-hiphop-web-clean-1600x1600.jpg?crop=1600%2C1200%2C0%2C301&rect=0%2C301%2C1600%2C1200" alt="Hip-hop dancers performing choreography" loading="lazy"><strong>AI DANCE VIDEO</strong><span>Опиши танцьорите и хореографията</span><em>CREATE DANCE VIDEO →</em></button>
@@ -2263,23 +2263,14 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
 }
 </style>
 <div class="dance-mode-picker" aria-label="Choose a Dance Studio creation mode">
- <button class="dance-mode-card" type="button" onclick="openDanceMode('faceSwap')"><span class="dance-mode-art" aria-hidden="true">◎</span><span class="dance-mode-copy"><strong>Face Swap</strong><span>Постави избрано лице върху танцьор във видео.</span><em>Отвори Face Swap →</em></span></button>
- <button class="dance-mode-card" type="button" onclick="openDanceMode('podcast')"><span class="dance-mode-art" aria-hidden="true">🎙</span><span class="dance-mode-copy"><strong>AI Podcast</strong><span>Създай участници, разговор, реплики и подкаст сцена.</span><em>Отвори подкаст →</em></span></button>
+ 
+ 
  <button class="dance-mode-card" type="button" onclick="openDanceMode('musicVideo')"><span class="dance-mode-art" aria-hidden="true">♫</span><span class="dance-mode-copy"><strong>AI Music Video</strong><span>Планирай песен с вокали и видео към нея.</span><em>Отвори музикално видео →</em></span></button>
  <button class="dance-mode-card" type="button" onclick="openDanceMode('danceMusic')"><span class="dance-mode-art" aria-hidden="true">♬</span><span class="dance-mode-copy"><strong>Dance to My Music</strong><span>Качи собствен MP3 и създай танцово видео по него.</span><em>Използвай MP3 →</em></span></button>
  <button class="dance-mode-card" type="button" onclick="openDanceMode('danceVideo')"><span class="dance-mode-art" aria-hidden="true">✦</span><span class="dance-mode-copy"><strong>AI Dance Video</strong><span>Опиши танцьорите, хореографията и сцената.</span><em>Създай танцово видео →</em></span></button>
 </div>
 <button type="button" class="dance-mode-back" onclick="backToDanceModes()">← BACK TO CREATION MODES</button>
-<section class="dance-mode-workspace" id="dancePodcastWorkspace">
- <h3>AI PODCAST · WORKSPACE PREVIEW</h3>
- <p>Опиши сцената и диалога. Това е интерфейсна подготовка; генерирането на говор и синхронизацията още не са свързани.</p>
- <div class="dance-mode-fields"><div><label for="dancePodcastCast">Участници</label><select id="dancePodcastCast"><option>Двама участници</option><option>Един водещ</option><option>Трима участници</option></select></div><div><label for="dancePodcastLength">Продължителност</label><select id="dancePodcastLength"><option>5 секунди</option><option>10 секунди</option><option selected>15 секунди</option></select></div></div>
- <label for="dancePodcastScene">Сцена и обстановка</label><textarea id="dancePodcastScene" placeholder="Например: модерен подкаст, двама души седят срещу микрофони..."></textarea>
- <label for="dancePodcastDialogue">Точен текст на разговора</label><textarea id="dancePodcastDialogue" placeholder="Участник 1: ...&#10;Участник 2: ..."></textarea>
- <div class="dance-mode-fields"><div><label for="dancePodcastVoice1">Глас на участник 1</label><select id="dancePodcastVoice1"><option>Мъжки</option><option>Женски</option></select></div><div><label for="dancePodcastVoice2">Глас на участник 2</label><select id="dancePodcastVoice2"><option>Женски</option><option>Мъжки</option></select></div></div>
- <div class="dance-mode-status">Интерфейсна визуализация. Не стартира платена генерация и не променя старите настройки.</div>
- <button class="video-tool-action" type="button" disabled>GENERATION CONNECTION PENDING</button>
-</section>
+
 <section class="dance-mode-workspace" id="danceMusicVideoWorkspace">
  <h3>AI MUSIC VIDEO · WORKSPACE PREVIEW</h3>
  <p>Подготви идея за песента, вокалите и визуалната история. Връзката между SongGPT и видео генерацията ще се добави отделно.</p>
