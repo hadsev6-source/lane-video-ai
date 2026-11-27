@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>LANE AI VIDEO STUDIO — Face Lab, Video, Image & Music</title>
+<title>LANE AI VIDEO STUDIO — Video, Image & Music</title>
 <meta content="Create images, videos and songs with LANE AI STUDIO." name="description"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="LANE AI STUDIO"/>
@@ -1878,24 +1878,7 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
   .lane-cinematic-hero { min-height:220px !important;padding:20px 5% !important; }
 }
 
-/* Mobile only: blend the Face Lab photo across the full card instead of leaving a black right panel. */
-@media (max-width:560px) {
-  .lane-showcase-face { position:relative; isolation:isolate; overflow:hidden; }
-  .lane-showcase-face .lane-showcase-face-visual {
-    left:0 !important; right:0 !important; top:0 !important; bottom:0 !important;
-    width:100% !important; height:100% !important; opacity:1 !important;
-    z-index:0 !important; pointer-events:none;
-    background-image:
-      linear-gradient(90deg,rgba(5,5,5,.98) 0%,rgba(5,5,5,.88) 30%,rgba(5,5,5,.42) 62%,rgba(5,5,5,.12) 100%),
-      linear-gradient(0deg,rgba(5,5,5,.48),transparent 55%),
-      url('https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/WhatsApp%20Image%202026-11-22%20at%2020.01.19.jpeg') !important;
-    background-position:center,center,center 48% !important;
-    background-size:cover !important;
-  }
-  .lane-showcase-face .lane-showcase-icon,
-  .lane-showcase-face .lane-showcase-copy,
-  .lane-showcase-face .lane-showcase-genres { position:relative; z-index:2; }
-}
+
 
 </style>
 <details class="studio-accordion ivideo-accordion">
@@ -2084,7 +2067,7 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
 
 <div id="danceStudioPreview" class="dance-preview-overlay" aria-hidden="true">
  <div class="dance-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="dancePreviewTitle">
-  <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">DANCE CHOREOGRAPHY STUDIO</h2><p>Turn one dancer photo and your MP3 into a custom, beat-synced choreography.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
+  <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">DANCE CHOREOGRAPHY STUDIO</h2><p>Turn one dancer photo and your MP3 into a custom, beat-synced choreography.</p></div><button type="button" class="dance-preview-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
   <div class="dance-preview-notice">DANCE CHOREOGRAPHY STUDIO · SEEDANCE 2.0 · 720P · UPLOAD ONE DANCER PHOTO, ADD YOUR MP3 AND DESCRIBE THE MOVES.</div>
   <style id="dance-mode-picker-styles">
 #danceStudioPreview .dance-preview-dialog:not(.show-legacy-generator):not(.mode-active) .dance-preview-grid{display:none}
@@ -4211,7 +4194,7 @@ function updateDancePrice(){
  const customerCredits=({5:181,10:361,15:541})[d]||0;
  const text=owner?d+" seconds · "+ownerCredits.toLocaleString()+" credits · Estimated provider cost: €"+providerEur.toFixed(2)+" (owner rate)":d+" seconds · "+customerCredits.toLocaleString()+" credits · Customer price";
  for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
- updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();updateFaceLabEstimate();
+ updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
 }
 document.getElementById("danceDuration")?.addEventListener("change",updateDancePrice);
 function updateDancePromptCounter(){
