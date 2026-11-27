@@ -4444,21 +4444,21 @@ function laneBuildPriceRows(durations,rate,providerForDuration,ownerRounding="ce
 }
 function laneShowSelectedPrice(duration,providerUsd,title){
  if(!currentUser)return;
- const owner=isLaneOwnerAccount(),credits=owner?laneOwnerCredits(providerUsd,duration>=60?"round":"ceil"):laneCustomerCredits(providerUsd);
+ const owner=isLaneOwnerAccount(),credits=owner?laneOwnerCredits(providerUsd,duration>=30?"round":"ceil"):laneCustomerCredits(providerUsd);
  const lines=owner?("Estimated cost: "+laneFormatUsd(providerUsd)+"\nYour credit equivalent: "+credits.toLocaleString()+" credits"):("Price: "+credits.toLocaleString()+" LANE credits");
  alert(title+"\n\nSelected duration: "+laneDurationLabel(duration)+"\n"+lines+"\n\nThis is the estimated price before generation. No credits have been charged.");
 }
 function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.30));}
 function updateDanceMvPrice(){
  const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;
- const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20,30,40,50],.20,x=>x<=30?x*.20:x*.03);
- rows.push(...laneBuildPriceRows([60,120,180,240],.03,null,"round"));
+ const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20],.20,x=>x*.20);
+ rows.push(...laneBuildPriceRows([30,40,50,60,120,180,240],.03,null,"round"));
  lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  const selected=rows.find(r=>r.seconds===d);
  if(selected)el.dataset.selectedPrice=owner?moneySafe(selected.usd)+" / "+selected.ownerCredits+" credits":selected.customerCredits+" credits";
 }
 function moneySafe(value){return laneFormatUsd(value);}
-document.getElementById("danceMvDuration")?.addEventListener("change",()=>{updateDanceMvPrice();const d=Number(document.getElementById("danceMvDuration").value),usd=d<=30?d*.20:d*.03;laneShowSelectedPrice(d,usd,"AI MUSIC VIDEO STUDIO");});
+document.getElementById("danceMvDuration")?.addEventListener("change",()=>{updateDanceMvPrice();const d=Number(document.getElementById("danceMvDuration").value),usd=d<=20?d*.20:d*.03;laneShowSelectedPrice(d,usd,"AI MUSIC VIDEO STUDIO");});
 updateDanceMvPrice();
 function updateImagePrice(){
  const el=document.getElementById("imageCostPreview");if(!el)return;
@@ -4531,7 +4531,7 @@ let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePr
 function getMyDanceDuration(){return Number(document.getElementById("myDanceDuration")?.value||15);}
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
- const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15],.216);rows.push(...laneBuildPriceRows([30,40,50],.03));
+ const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15],.216);rows.push(...laneBuildPriceRows([30,40,50],.03,null,"round"));
  lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
