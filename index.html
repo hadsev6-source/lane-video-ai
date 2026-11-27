@@ -2605,7 +2605,15 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
    </section>
    <section class="dance-preview-card choreo-card">
     <h3>06 / GENERATION</h3>
-    <div class="dance-preview-help" id="dancePrice">15 seconds · 541 credits</div>
+    <div class="dance-preview-help" id="dancePrice" aria-live="polite">
+      <div style="font-weight:900;color:#ffb66a;margin:8px 0">DANCE STUDIO · SEEDANCE 2.0 FAST · 480p</div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px">
+       <div style="padding:9px 0;border-bottom:1px solid #65452f"><strong>10 seconds</strong><br><span style="color:#fff">$1.00 supplier · 167 credits</span></div>
+       <div style="padding:9px 0;border-bottom:1px solid #65452f"><strong>15 seconds</strong><br><span style="color:#fff">$1.50 supplier · 251 credits</span></div>
+       <div style="padding:9px 0;border-bottom:1px solid #65452f"><strong>30 seconds</strong><br><span style="color:#fff">$0.90 supplier · 151 credits</span></div>
+      </div>
+      <div style="margin-top:8px;color:#bbb">Estimated WaveSpeed provider cost and customer LANE credits (includes 30% markup).</div>
+     </div>
     <p class="dance-preview-help">Seedance 2.0 Fast · 480p for 10–15 seconds. Your uploaded photo defines the dancer; your MP3 defines the music and rhythm.</p>
     <button class="video-tool-action" id="danceGenerateButton" type="button" onclick="startDanceStudioGeneration()">GENERATE CHOREOGRAPHY</button>
     <p id="danceStatus" role="status" aria-live="polite" class="dance-preview-help"></p><div id="danceResult"></div>
