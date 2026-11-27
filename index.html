@@ -1653,6 +1653,84 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
  #laneDanceStudio .dance-home-mode em{grid-column:2!important;grid-row:3!important;justify-self:start!important;align-self:end!important;margin:0 10px 11px!important;padding:8px 9px!important;font-size:9px!important;line-height:1.2!important;max-width:calc(100% - 20px)!important}
 }
 </style>
+
+<style id="lane-matching-studio-card-layout">
+/* Match the three main studio panels to the same image-first card system above. */
+#laneDanceStudio>.lane-showcase-card{
+ display:grid!important;
+ grid-template-columns:minmax(0,46%) minmax(0,1fr)!important;
+ grid-template-rows:1fr!important;
+ align-items:stretch!important;
+ min-height:clamp(190px,22vw,270px)!important;
+ width:100%!important;
+ overflow:hidden!important;
+ border:1px solid #d18b2d!important;
+ border-radius:15px!important;
+ background:#090909!important;
+ box-shadow:0 8px 26px #0009!important;
+}
+#laneDanceStudio>.lane-showcase-card>.lane-showcase-icon{display:none!important}
+#laneDanceStudio>.lane-showcase-card>.lane-showcase-visual,
+#laneDanceStudio>.lane-showcase-card>.lane-showcase-equalizer{
+ grid-column:1!important;grid-row:1!important;
+ position:relative!important;inset:auto!important;
+ display:block!important;width:100%!important;height:100%!important;
+ min-height:190px!important;margin:0!important;
+ background-size:cover!important;background-position:center!important;
+ border:0!important;border-right:1px solid #79501f!important;
+}
+#laneDanceStudio>.lane-showcase-card>.lane-showcase-copy{
+ grid-column:2!important;grid-row:1!important;
+ display:flex!important;flex-direction:column!important;
+ justify-content:center!important;align-items:flex-start!important;
+ min-width:0!important;padding:clamp(14px,2.2vw,26px)!important;
+ background:linear-gradient(145deg,#17120b,#080808 78%)!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-copy h2{
+ margin:0 0 8px!important;font-size:clamp(19px,2.2vw,30px)!important;
+ line-height:1.12!important;overflow-wrap:anywhere!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-copy p{
+ margin:0 0 14px!important;color:#ded6c9!important;
+ font-size:clamp(11px,1.1vw,14px)!important;line-height:1.45!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-features{
+ display:flex!important;flex-wrap:wrap!important;gap:8px 12px!important;
+ margin:0 0 16px!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-features span{
+ color:#f5a12b!important;font-size:15px!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-features small{
+ color:#eee!important;font-size:10px!important;font-weight:750!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-cta{
+ display:inline-flex!important;align-items:center!important;gap:10px!important;
+ margin:0!important;padding:10px 15px!important;
+ border:1px solid #ffc45b!important;border-radius:8px!important;
+ background:linear-gradient(110deg,#ffb52e,#e87508)!important;
+ color:#160d04!important;font-size:12px!important;font-weight:900!important;
+ line-height:1.2!important;box-shadow:0 3px 14px #f28a1833!important;
+}
+#laneDanceStudio>.lane-showcase-card .lane-showcase-cta b{font-size:18px!important}
+#laneDanceStudio>.lane-showcase-card.lane-showcase-music>.lane-showcase-equalizer{
+ overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;
+}
+@media(max-width:600px){
+ #laneDanceStudio>.lane-showcase-card{
+  grid-template-columns:minmax(0,46%) minmax(0,1fr)!important;
+  min-height:184px!important;
+ }
+ #laneDanceStudio>.lane-showcase-card>.lane-showcase-visual,
+ #laneDanceStudio>.lane-showcase-card>.lane-showcase-equalizer{min-height:184px!important}
+ #laneDanceStudio>.lane-showcase-card>.lane-showcase-copy{padding:12px!important}
+ #laneDanceStudio>.lane-showcase-card .lane-showcase-copy h2{font-size:clamp(14px,4vw,18px)!important}
+ #laneDanceStudio>.lane-showcase-card .lane-showcase-copy p{font-size:11px!important;margin-bottom:8px!important}
+ #laneDanceStudio>.lane-showcase-card .lane-showcase-features{gap:5px 8px!important;margin-bottom:9px!important}
+ #laneDanceStudio>.lane-showcase-card .lane-showcase-features small{font-size:9px!important}
+ #laneDanceStudio>.lane-showcase-card .lane-showcase-cta{padding:7px 9px!important;font-size:9px!important}
+}
+</style>
 </head>
 <body>
 <header class="site-header">
