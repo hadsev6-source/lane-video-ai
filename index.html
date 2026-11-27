@@ -3940,6 +3940,26 @@ if(danceUseMusicReference&&danceMusicFile){
  danceUseMusicReference.addEventListener("change",()=>{danceMusicFile.disabled=!danceUseMusicReference.checked;if(!danceUseMusicReference.checked)danceMusicFile.value="";});
 }
 updateDancePromptCounter();
+async function trimDanceAudioReference(file,maxSeconds=15){
+ const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+ if(!AudioContextClass)throw new Error("Your browser cannot process audio trimming. Please use a recent Chrome browser.");
+ const context=new AudioContextClass();
+ try{
+  const decoded=await context.decodeAudioData(await file.arrayBuffer());
+  if(!Number.isFinite(decoded.duration)||decoded.duration<=0)throw new Error("Could not read this audio file. Please use a valid MP3 or WAV.");
+  const seconds=Math.min(decoded.duration,maxSeconds),sampleCount=Math.floor(seconds*decoded.sampleRate),channels=Math.min(decoded.numberOfChannels,2);
+  const bytesPerSample=2,dataSize=sampleCount*channels*bytesPerSample,buffer=new ArrayBuffer(44+dataSize),view=new DataView(buffer);
+  const writeText=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i));};
+  writeText(0,"RIFF");view.setUint32(4,36+dataSize,true);writeText(8,"WAVE");writeText(12,"fmt ");view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,decoded.sampleRate,true);view.setUint32(28,decoded.sampleRate*channels*bytesPerSample,true);view.setUint16(32,channels*bytesPerSample,true);view.setUint16(34,16,true);writeText(36,"data");view.setUint32(40,dataSize,true);
+  let offset=44;
+  for(let i=0;i<sampleCount;i++)for(let c=0;c<channels;c++){
+   const sample=Math.max(-1,Math.min(1,decoded.getChannelData(c)[i]));
+   view.setInt16(offset,sample<0?sample*0x8000:sample*0x7fff,true);offset+=2;
+  }
+  const base=file.name.replace(/\\.[^.]+$/,"")||"music-reference";
+  return new File([buffer],base+"-15s.wav",{type:"audio/wav",lastModified:Date.now()});
+ }finally{await context.close().catch(()=>{});}
+}
 async function startDanceStudioGeneration(){
  const button=document.getElementById("danceGenerateButton"), status=document.getElementById("danceStatus"), result=document.getElementById("danceResult");
  if(!currentUser){alert("Please sign in first.");return;}
@@ -3948,15 +3968,22 @@ async function startDanceStudioGeneration(){
  if(prompt.length>1000){alert("Your video prompt must not exceed 1,000 characters.");return;}
  const image=document.getElementById("danceReferenceImage").files[0];
  const useAudioReference=document.getElementById("danceUseMusicReference").checked;
- const audio=useAudioReference?document.getElementById("danceMusicFile").files[0]:null;
+ let audio=useAudioReference?document.getElementById("danceMusicFile").files[0]:null;
  if(useAudioReference&&!audio){alert("Choose an MP3 or WAV file, or turn off the music-reference checkbox.");return;}
  if(image&&image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
  if(audio){
-  const audioUrl=URL.createObjectURL(audio);
-  const audioDuration=await new Promise((resolve,reject)=>{const probe=new Audio();probe.onloadedmetadata=()=>resolve(probe.duration);probe.onerror=()=>reject(new Error("Could not read this audio file. Please use a valid MP3 or WAV."));probe.src=audioUrl;});
-  URL.revokeObjectURL(audioUrl);
-  if(!Number.isFinite(audioDuration)||audioDuration>15){alert("The music reference must be 15 seconds or shorter. Please trim your MP3/WAV and try again.");return;}
+  try{
+   const audioUrl=URL.createObjectURL(audio),probe=new Audio();
+   const audioDuration=await new Promise((resolve,reject)=>{probe.onloadedmetadata=()=>resolve(probe.duration);probe.onerror=()=>reject(new Error("Could not read this audio file. Please use a valid MP3 or WAV."));probe.src=audioUrl;});
+   URL.revokeObjectURL(audioUrl);
+   if(!Number.isFinite(audioDuration)||audioDuration<=0)throw new Error("Could not read this audio file. Please use a valid MP3 or WAV.");
+   if(audioDuration>15){
+    status.textContent="Trimming music reference to the first 15 seconds...";
+    audio=await trimDanceAudioReference(audio,15);
+    status.textContent="Music reference trimmed to 15 seconds. Preparing your video...";
+   }
+  }catch(error){alert(error.message||"Could not process the music reference.");return;}
  }
  const duration=Number(document.getElementById("danceDuration").value);
  const owner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7";
