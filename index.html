@@ -2869,6 +2869,7 @@ body>#myfiles,#myfiles{display:none}
     }
 
     currentUser = data?.user || null;
+    if (typeof updateDancePrice === "function") updateDancePrice();
 const headerCreditBalance = document.getElementById("headerCreditBalance");
 const headerCreditBalanceTop = document.getElementById("headerCreditBalanceTop");
 if (currentUser) {
