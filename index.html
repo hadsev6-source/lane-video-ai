@@ -1765,7 +1765,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   <article class="lane-showcase-card lane-showcase-video">
     <div class="lane-showcase-icon" aria-hidden="true">▣</div>
     <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>VIDEO STUDIO</h2>
+      <h2>VIDEO STUDIO</h2>
       <p>CREATE · EDIT · DANCE · PERFORM</p>
       <div class="lane-showcase-features"><span>▣ <small>AI VIDEO</small></span><span>♟ <small>DANCE VIDEOS</small></span><span>HD <small>CINEMATIC</small></span></div>
       <button type="button" class="lane-showcase-cta" onclick="openStudioSection('studio')">CREATE VIDEO <b>→</b></button>
@@ -1776,7 +1776,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   <article class="lane-showcase-card lane-showcase-image">
     <div class="lane-showcase-icon" aria-hidden="true">▧</div>
     <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>AI IMAGE STUDIO</h2>
+      <h2>IMAGE STUDIO</h2>
       <p>GENERATE · EDIT · ENHANCE · STYLE</p>
       <div class="lane-showcase-features"><span>▧ <small>AI IMAGES</small></span><span>✎ <small>IMAGE EDIT</small></span><span>◇ <small>STYLE & EFFECTS</small></span><span>HD <small>HIGH QUALITY</small></span></div>
       <button type="button" class="lane-showcase-cta" onclick="openStudioSection('imageStudio')">CREATE IMAGE <b>→</b></button>
@@ -1787,7 +1787,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   <article class="lane-showcase-card lane-showcase-music">
     <div class="lane-showcase-icon lane-music-headphones" aria-hidden="true">♫</div>
     <div class="lane-showcase-copy">
-      <span class="lane-showcase-brand">LANE</span><h2>AI MUSIC STUDIO</h2>
+      <h2>MUSIC STUDIO</h2>
       <p>GENERATE · REMIX · BEATS · VOCALS</p>
       <div class="lane-showcase-features"><span>♫ <small>AI MUSIC</small></span><span>≋ <small>BEATS</small></span><span>♩ <small>VOCALS</small></span><span>☷ <small>MIX & MASTER</small></span></div>
       <button type="button" class="lane-showcase-cta" onclick="openStudioSection('musicGenerator')">CREATE MUSIC <b>→</b></button>
@@ -2036,10 +2036,10 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
 
 </style>
 <details class="studio-accordion ivideo-accordion">
-  <summary class="studio-strip-hidden">LANE VIDEO STUDIO</summary>
+  <summary class="studio-strip-hidden">VIDEO STUDIO</summary>
   <div class="video-builder">
   <header class="video-builder-head">
-    <div class="video-builder-kicker">LANE VIDEO STUDIO</div>
+    <div class="video-builder-kicker">VIDEO STUDIO</div>
     <h2>Create your next video</h2>
     <p>A fresh video creation workspace. Describe the scene, choose your visual direction and format, then prepare your generation.</p>
   </header>
@@ -4306,7 +4306,7 @@ function openStudioSection(sectionId) {
     const accordion = section.querySelector("details.studio-accordion");
     if (accordion) accordion.open = true;
   });
-  const titles = {studio:"LANE VIDEO STUDIO", imageStudio:"LANE AI IMAGE STUDIO", musicGenerator:"LANE AI MUSIC STUDIO"};
+  const titles = {studio:"VIDEO STUDIO", imageStudio:"IMAGE STUDIO", musicGenerator:"MUSIC STUDIO"};
   const title = document.getElementById("studioWorkspaceTitle");
   if (title) title.textContent = titles[sectionId] || "LANE STUDIO";
   modal.classList.add("is-open");
