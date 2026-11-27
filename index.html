@@ -3978,22 +3978,20 @@ async function startDanceStudioGeneration(){
  if(useAudioReference&&!audio){alert("Choose an MP3 file, or turn off the music-reference checkbox.");return;}
  if(image&&image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
+ if(audio&&!(audio.type==="audio/mpeg"||audio.type==="audio/mp3"||/\\.mp3$/i.test(audio.name))){alert("Only MP3 files are supported. Please choose an .mp3 file.");return;}
  if(audio){
   try{
    const audioUrl=URL.createObjectURL(audio),probe=new Audio();
-   const audioDuration=await new Promise((resolve,reject)=>{probe.onloadedmetadata=()=>resolve(probe.duration);probe.onerror=()=>reject(new Error("Could not read this audio file. Please use a valid MP3 or WAV."));probe.src=audioUrl;});
+   const audioDuration=await new Promise((resolve,reject)=>{probe.onloadedmetadata=()=>resolve(probe.duration);probe.onerror=()=>reject(new Error("Could not read this audio file. Please use a valid MP3 file."));probe.src=audioUrl;});
    URL.revokeObjectURL(audioUrl);
    if(!Number.isFinite(audioDuration)||audioDuration<=0)throw new Error("Could not read this audio file. Please use a valid MP3 or WAV.");
-   const isMp3=true;
-   if(isMp3&&audioDuration<=15){
-    status.textContent="MP3 reference ready. Preparing your video...";
+   if(audioDuration>15){
+    status.textContent="Trimming MP3 music reference to 15 seconds...";
+    audio=await trimDanceAudioReference(audio,15);
    }else{
-    status.textContent=audioDuration>15
-     ?"Converting and trimming music reference to 15 seconds..."
-      :"Preparing MP3 music reference...";
-    audio=audioDuration>15?await trimDanceAudioReference(audio,15):new File([audio],audio.name,{type:"audio/mpeg",lastModified:Date.now()});
-    status.textContent="MP3 music reference ready (maximum 15 seconds). Preparing your video...";
+    audio=new File([audio],audio.name,{type:"audio/mpeg",lastModified:Date.now()});
    }
+   status.textContent="MP3 music reference ready (maximum 15 seconds). Preparing your video...";
   }catch(error){alert(error.message||"Could not process the music reference.");return;}
  }
  const duration=Number(document.getElementById("danceDuration").value);
