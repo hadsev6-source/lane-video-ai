@@ -1650,11 +1650,11 @@ body>#myfiles,#myfiles{display:none}
 
 <section class="lane-studio-showcase" id="laneDanceStudio" aria-label="LANE creative studios">
   <div class="dance-home-mode-grid" aria-label="Choose what you want to create">
-    <button type="button" class="dance-home-mode" onclick="openFaceSwapComingSoon()"><span class="dance-home-mode-icon">◎</span><strong>FACE SWAP</strong><span>Постави избрано лице във видео</span><em>START FACE SWAP →</em></button>
-    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('podcast')"><span class="dance-home-mode-icon">🎙</span><strong>AI PODCAST</strong><span>Създай разговор, реплики и подкаст сцена</span><em>CREATE PODCAST →</em></button>
-    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('musicVideo')"><span class="dance-home-mode-icon">♫</span><strong>AI MUSIC VIDEO</strong><span>Създай песен с вокали и видео към нея</span><em>CREATE MUSIC VIDEO →</em></button>
-    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceMusic')"><span class="dance-home-mode-icon">♬</span><strong>DANCE TO MY MUSIC</strong><span>Качи собствен MP3 и създай танцово видео</span><em>USE MY MP3 →</em></button>
-    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceVideo')"><span class="dance-home-mode-icon">✦</span><strong>AI DANCE VIDEO</strong><span>Опиши танцьорите и хореографията</span><em>CREATE DANCE VIDEO →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openFaceSwapComingSoon()"><img class="dance-home-mode-image" src="https://hivory.io/_next/image?q=75&url=%2Fcase-studies%2Fwhoyou%2Fcase-study.png&w=1920" alt="Face scan and face transformation preview" loading="lazy"><strong>FACE SWAP</strong><span>Постави избрано лице във видео</span><em>START FACE SWAP →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('podcast')"><img class="dance-home-mode-image" src="https://dakar-podcast.studio/assets/client-6-O10orP-4.jpg" alt="Two podcast hosts recording a conversation" loading="lazy"><strong>AI PODCAST</strong><span>Създай разговор, реплики и подкаст сцена</span><em>CREATE PODCAST →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('musicVideo')"><img class="dance-home-mode-image" src="https://is1-ssl.mzstatic.com/image/thumb/Video211/v4/c6/c6/a4/c6c6a462-3197-3ac5-5473-7f36e18a0097/3617399370354_1_01.jpg/1920x1080mv.jpg" alt="Singer performing in a recording studio" loading="lazy"><strong>AI MUSIC VIDEO</strong><span>Създай песен с вокали и видео към нея</span><em>CREATE MUSIC VIDEO →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceMusic')"><img class="dance-home-mode-image" src="https://static.wixstatic.com/media/4e2636_58eb6ba1ac054bad97d8e2fd4c269484~mv2.jpg/v1/fill/w_816%2Ch_539%2Cal_c%2Cq_85%2Cusm_0.66_1.00_0.01%2Cenc_auto/4e2636_58eb6ba1ac054bad97d8e2fd4c269484~mv2.jpg" alt="Afrobeats dancers moving to their own music" loading="lazy"><strong>DANCE TO MY MUSIC</strong><span>Качи собствен MP3 и създай танцово видео</span><em>USE MY MP3 →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceVideo')"><img class="dance-home-mode-image" src="https://image.atsw.de/atsw/production/2024-07/bigfm-hiphop-web-clean-1600x1600.jpg?crop=1600%2C1200%2C0%2C301&rect=0%2C301%2C1600%2C1200" alt="Hip-hop dancers performing choreography" loading="lazy"><strong>AI DANCE VIDEO</strong><span>Опиши танцьорите и хореографията</span><em>CREATE DANCE VIDEO →</em></button>
   </div>
 
   <article class="lane-showcase-card lane-showcase-video">
@@ -2242,6 +2242,24 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
  header.site-header{column-gap:6px!important;padding-left:10px!important;padding-right:10px!important}
  header.site-header>.logo:before{font-size:16px!important}
  header.site-header>.main-menu>summary{min-width:104px!important;padding:7px 9px!important;font-size:14px!important}
+}
+
+/* Real photographic previews for the five Dance Studio creation cards */
+.dance-home-mode{overflow:hidden;padding:0!important;gap:0!important}
+.dance-home-mode-image{display:block;width:100%;height:clamp(118px,15vw,190px);object-fit:cover;object-position:center 35%;border-bottom:1px solid #a85f12;filter:saturate(1.05) contrast(1.04)}
+.dance-home-mode:nth-child(1) .dance-home-mode-image{object-position:center 30%}
+.dance-home-mode:nth-child(2) .dance-home-mode-image{object-position:center 42%}
+.dance-home-mode:nth-child(3) .dance-home-mode-image{object-position:center 28%}
+.dance-home-mode:nth-child(4) .dance-home-mode-image{object-position:center 38%}
+.dance-home-mode:nth-child(5) .dance-home-mode-image{object-position:center 35%}
+.dance-home-mode strong,.dance-home-mode>span:not(.dance-home-mode-icon),.dance-home-mode em{margin-left:14px;margin-right:14px}
+.dance-home-mode strong{margin-top:12px}
+.dance-home-mode em{margin-bottom:14px}
+@media(max-width:600px){
+ .dance-home-mode-image{height:clamp(100px,31vw,145px)}
+ .dance-home-mode strong,.dance-home-mode>span:not(.dance-home-mode-icon),.dance-home-mode em{margin-left:10px;margin-right:10px}
+ .dance-home-mode strong{margin-top:10px}
+ .dance-home-mode em{margin-bottom:11px}
 }
 </style>
 <div class="dance-mode-picker" aria-label="Choose a Dance Studio creation mode">
