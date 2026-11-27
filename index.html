@@ -2120,6 +2120,24 @@ body>#myfiles,#myfiles{display:none}
 #danceStudioPreview .dance-mode-workspace textarea,#danceStudioPreview .dance-mode-workspace input,#danceStudioPreview .dance-mode-workspace select{width:100%;padding:11px;background:#080808;color:#fff;border:1px solid #5a432b;border-radius:8px}
 #danceStudioPreview .dance-mode-workspace textarea{min-height:90px}
 #danceStudioPreview .dance-mode-workspace .dance-mode-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#danceStudioPreview .dance-audio-editor{margin:14px 0 18px;padding:15px;border:1px solid #8056ba;border-radius:13px;background:linear-gradient(145deg,#171126,#090812)}
+#danceStudioPreview .dance-audio-editor-head,.dance-audio-times{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#eee}
+#danceStudioPreview .dance-audio-editor-head strong{font-size:12px;letter-spacing:.12em;color:#d7b7ff}
+#danceStudioPreview .dance-audio-editor-head span,.dance-wave-help{font-size:12px;color:#b8adc9}
+#danceStudioPreview .dance-waveform-wrap{position:relative;height:118px;margin-top:12px;overflow:hidden;border:1px solid #4b3c67;border-radius:9px;background:#0a0911;touch-action:pan-y}
+#danceStudioPreview #myDanceWaveform{display:block;width:100%;height:100%}
+#danceStudioPreview .dance-wave-selection{position:absolute;top:0;bottom:0;left:0;width:0;background:#a855f733;border-left:2px solid #d9a7ff;border-right:2px solid #d9a7ff;pointer-events:none}
+#danceStudioPreview .dance-wave-handle{position:absolute;top:0;bottom:0;width:18px;margin:0;padding:0;border:0;background:transparent;cursor:ew-resize;touch-action:none;z-index:2}
+#danceStudioPreview .dance-wave-handle:after{content:"";position:absolute;left:7px;top:0;bottom:0;width:4px;border-radius:5px;background:#e5b8ff;box-shadow:0 0 12px #bd68ff}
+#danceStudioPreview .dance-wave-handle:before{content:"";position:absolute;left:2px;top:calc(50% - 8px);width:14px;height:16px;border-radius:5px;background:#e5b8ff;box-shadow:0 0 12px #bd68ff}
+#danceStudioPreview .dance-wave-help{margin:8px 0 10px}
+#danceStudioPreview .dance-audio-times{font-size:11px;font-variant-numeric:tabular-nums}
+#danceStudioPreview .dance-audio-times strong{color:#dcb7ff;font-size:12px;text-align:center}
+#danceStudioPreview .dance-audio-preview-btn{display:block;width:100%;margin-top:12px;padding:11px;border:1px solid #9a61d4;border-radius:9px;background:#25163a;color:#fff;font-weight:800;cursor:pointer}
+#danceStudioPreview #myDanceAudioPreview{display:block;width:100%;height:34px;margin-top:9px;accent-color:#a855f7}
+#danceStudioPreview .dance-audio-editor[hidden]{display:none!important}
+@media(max-width:480px){#danceStudioPreview .dance-audio-editor{padding:10px}#danceStudioPreview .dance-audio-times{font-size:10px}#danceStudioPreview .dance-audio-times strong{font-size:10px}}
+
 #danceStudioPreview .dance-mode-status{padding:12px;border:1px solid #76501f;border-radius:9px;background:#1b140a;color:#e9c99e;font-size:12px;line-height:1.5}
 #danceStudioPreview .dance-mode-back{display:none;margin:0 0 12px;border:1px solid #9a672c;border-radius:30px;padding:9px 14px;background:#1b1309;color:#ffd29a;font-weight:800;cursor:pointer}
 #danceStudioPreview .dance-preview-dialog.mode-active .dance-mode-picker{display:none}
@@ -2283,19 +2301,32 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
 </section>
 <section class="dance-mode-workspace" id="danceToMyMusicWorkspace">
  <h3>DANCE TO MY MUSIC</h3>
- <p>Качи своя MP3, избери броя танцьори и добави снимки, ако искаш да запазиш тяхната визия.</p>
- <label for="myDanceMusicFile">ТВОЯТ MP3 ФАЙЛ · ЗАДЪЛЖИТЕЛНО</label>
+ <p>Upload your MP3, choose the dancers, and select the exact music segment for your video.</p>
+ <label for="myDanceMusicFile">UPLOAD MP3 FILE · REQUIRED</label>
  <input id="myDanceMusicFile" type="file" accept=".mp3,audio/mpeg" required>
- <label for="myDanceCount">БРОЙ ТАНЦЬОРИ</label>
+ <div id="myDanceAudioEditor" class="dance-audio-editor" hidden>
+  <div class="dance-audio-editor-head"><strong>YOUR AUDIO</strong><span id="myDanceAudioDuration">Loading audio...</span></div>
+  <div class="dance-waveform-wrap" id="myDanceWaveformWrap">
+   <canvas id="myDanceWaveform" aria-label="Audio waveform"></canvas>
+   <div class="dance-wave-selection" id="myDanceWaveSelection"></div>
+   <button type="button" class="dance-wave-handle dance-wave-handle-start" id="myDanceStartHandle" aria-label="Drag to set clip start"></button>
+   <button type="button" class="dance-wave-handle dance-wave-handle-end" id="myDanceEndHandle" aria-label="Drag to set clip end"></button>
+  </div>
+  <div class="dance-wave-help">Drag either handle to choose exactly which part of your track to use.</div>
+  <div class="dance-audio-times"><span id="myDanceStartTime">00:00.0</span><strong id="myDanceSelectionLength">Selected clip · 14.8 sec</strong><span id="myDanceEndTime">00:14.8</span></div>
+  <button type="button" class="dance-audio-preview-btn" id="myDancePreviewSelection">▶ Preview Selection</button>
+  <audio id="myDanceAudioPreview" controls preload="metadata"></audio>
+ </div>
+ <label for="myDanceCount">NUMBER OF DANCERS</label>
  <select id="myDanceCount"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>8</option><option>10</option></select>
- <label for="myDanceImages">РЕФЕРЕНТНИ СНИМКИ · ПО ЖЕЛАНИЕ · ДО 3</label>
+ <label for="myDanceImages">REFERENCE IMAGES · OPTIONAL · UP TO 3</label>
  <input id="myDanceImages" type="file" accept="image/jpeg,image/png,image/webp" multiple>
- <p class="dance-preview-help">Качи до 3 снимки на танцьорите, които искаш да присъстват във видеото. JPG, PNG или WEBP · до 10 MB на снимка.</p>
- <label for="myDancePrompt">ОПИСАНИЕ НА ТАНЦА И СЦЕНАТА</label>
- <textarea id="myDancePrompt" maxlength="1000" placeholder="Опиши движенията, стила на танца, сцената, облеклото, настроението и движенията на камерата..." required></textarea>
- <div class="dance-preview-help" id="myDancePromptCounter" aria-live="polite">0 / 1 000 символа</div>
- <div class="dance-preview-help" id="myDancePrice">15 секунди · 541 кредита</div>
- <button class="video-tool-action" id="myDanceGenerateButton" type="button" onclick="startMyDanceMusicGeneration()">ГЕНЕРИРАЙ ВИДЕО · 15 СЕКУНДИ</button>
+ <p class="dance-preview-help">Upload up to 3 dancer reference images. JPG, PNG or WEBP · up to 10 MB per image.</p>
+ <label for="myDancePrompt">DANCE AND SCENE DESCRIPTION</label>
+ <textarea id="myDancePrompt" maxlength="1000" placeholder="Describe the dance moves, style, location, outfits, mood, and camera movement..." required></textarea>
+ <div class="dance-preview-help" id="myDancePromptCounter" aria-live="polite">0 / 1,000 characters</div>
+ <div class="dance-preview-help" id="myDancePrice">15 seconds · 541 credits</div>
+ <button class="video-tool-action" id="myDanceGenerateButton" type="button" onclick="startMyDanceMusicGeneration()">GENERATE VIDEO · 15 SECONDS</button>
  <p id="myDanceStatus" role="status" aria-live="polite" class="dance-preview-help"></p>
  <div id="myDanceResult"></div>
 </section>
@@ -4152,53 +4183,134 @@ async function trimDanceAudioReference(file,maxSeconds=15){
 }
 function updateMyDancePromptCounter(){
  const field=document.getElementById("myDancePrompt"),counter=document.getElementById("myDancePromptCounter");
- if(field&&counter)counter.textContent=field.value.length.toLocaleString()+" / 1 000 символа";
+ if(field&&counter)counter.textContent=field.value.length.toLocaleString()+" / 1,000 characters";
 }
 document.getElementById("myDancePrompt")?.addEventListener("input",updateMyDancePromptCounter);
 updateMyDancePromptCounter();
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice");if(!el)return;
  const owner=currentUser?.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerEur=15*0.216*0.9168,ownerCredits=Math.max(1,Math.round(providerEur*140));
- el.textContent=owner?"15 секунди · "+ownerCredits.toLocaleString()+" кредита · твоята себестойност":"15 секунди · 541 кредита";
+ el.textContent=owner?"15 seconds · "+ownerCredits.toLocaleString()+" credits · estimated cost":"15 seconds · 541 credits";
 }
 updateMyDancePrice();
 
+let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null;
+window.myDanceAudioSelection={start:0,end:14.8};
+function formatDanceTime(seconds){const value=Math.max(0,Number(seconds)||0),minutes=Math.floor(value/60),rest=(value-minutes*60).toFixed(1).padStart(4,"0");return String(minutes).padStart(2,"0")+":"+rest;}
+function drawMyDanceWaveform(){
+ const canvas=document.getElementById("myDanceWaveform"),wrap=document.getElementById("myDanceWaveformWrap");
+ if(!canvas||!wrap||!myDanceDecodedAudio)return;
+ const rect=wrap.getBoundingClientRect(),ratio=window.devicePixelRatio||1,width=Math.max(1,Math.floor(rect.width*ratio)),height=Math.max(1,Math.floor(rect.height*ratio));
+ canvas.width=width;canvas.height=height;
+ const ctx=canvas.getContext("2d");ctx.clearRect(0,0,width,height);
+ const data=myDanceDecodedAudio.getChannelData(0),step=Math.max(1,Math.floor(data.length/width)),middle=height/2;
+ for(let x=0;x<width;x++){let peak=0;const from=x*step,to=Math.min(data.length,from+step);for(let i=from;i<to;i++)peak=Math.max(peak,Math.abs(data[i]));const bar=Math.max(2,peak*height*.88);ctx.fillStyle="#9a82b8";ctx.fillRect(x,middle-bar/2,Math.max(1,ratio),bar);}
+ updateMyDanceWaveSelection();
+}
+function updateMyDanceWaveSelection(){
+ const duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection||{start:0,end:Math.min(14.8,duration)},left=duration?selection.start/duration*100:0,right=duration?selection.end/duration*100:0;
+ const region=document.getElementById("myDanceWaveSelection"),startHandle=document.getElementById("myDanceStartHandle"),endHandle=document.getElementById("myDanceEndHandle");
+ if(region){region.style.left=left+"%";region.style.width=Math.max(0,right-left)+"%";}
+ if(startHandle)startHandle.style.left="calc("+left+"% - 9px)";
+ if(endHandle)endHandle.style.left="calc("+right+"% - 9px)";
+ const startLabel=document.getElementById("myDanceStartTime"),endLabel=document.getElementById("myDanceEndTime"),lengthLabel=document.getElementById("myDanceSelectionLength");
+ if(startLabel)startLabel.textContent=formatDanceTime(selection.start);
+ if(endLabel)endLabel.textContent=formatDanceTime(selection.end);
+ if(lengthLabel)lengthLabel.textContent="Selected clip · "+(selection.end-selection.start).toFixed(1)+" sec";
+}
+function setMyDanceSelectionFromPointer(event){
+ const wrap=document.getElementById("myDanceWaveformWrap"),duration=myDanceDecodedAudio?.duration||0;if(!wrap||!duration)return;
+ const rect=wrap.getBoundingClientRect(),position=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))*duration,maxLength=Math.min(14.8,duration),selection=window.myDanceAudioSelection;
+ if(myDanceDragMode==="start")selection.start=Math.max(0,Math.min(position,selection.end-.1));
+ if(myDanceDragMode==="end")selection.end=Math.min(duration,Math.max(position,selection.start+.1));
+ if(selection.end-selection.start>maxLength){if(myDanceDragMode==="start")selection.start=selection.end-maxLength;else selection.end=selection.start+maxLength;}
+ updateMyDanceWaveSelection();
+}
+function setupMyDanceAudioEditor(){
+ const input=document.getElementById("myDanceMusicFile"),editor=document.getElementById("myDanceAudioEditor"),audio=document.getElementById("myDanceAudioPreview"),preview=document.getElementById("myDancePreviewSelection");
+ if(!input||input.dataset.editorReady)return;input.dataset.editorReady="1";
+ input.addEventListener("change",async()=>{
+  const file=input.files?.[0];if(!file)return;
+  editor.hidden=false;document.getElementById("myDanceAudioDuration").textContent="Reading audio...";
+  if(myDanceAudioUrl)URL.revokeObjectURL(myDanceAudioUrl);myDanceAudioUrl=URL.createObjectURL(file);audio.src=myDanceAudioUrl;
+  try{
+   const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(!AudioContextClass)throw new Error("Audio preview is not supported in this browser.");
+   const context=new AudioContextClass();try{myDanceDecodedAudio=await context.decodeAudioData(await file.arrayBuffer());}finally{await context.close().catch(()=>{});}
+   const duration=myDanceDecodedAudio.duration;if(!Number.isFinite(duration)||duration<=0)throw new Error("Could not read this audio file.");
+   const end=Math.min(14.8,duration);window.myDanceAudioSelection={start:0,end};
+   document.getElementById("myDanceAudioDuration").textContent="Track length · "+formatDanceTime(duration);
+   drawMyDanceWaveform();
+  }catch(error){myDanceDecodedAudio=null;window.myDanceAudioSelection=null;document.getElementById("myDanceAudioDuration").textContent=error.message;throw error;}
+ });
+ ["myDanceStartHandle","myDanceEndHandle"].forEach((id,index)=>{const handle=document.getElementById(id);handle?.addEventListener("pointerdown",event=>{event.preventDefault();myDanceDragMode=index===0?"start":"end";handle.setPointerCapture?.(event.pointerId);});});
+ document.addEventListener("pointermove",event=>{if(myDanceDragMode)setMyDanceSelectionFromPointer(event);});
+ document.addEventListener("pointerup",()=>{myDanceDragMode=null;});
+ preview?.addEventListener("click",async()=>{
+  if(!myDanceDecodedAudio||!window.myDanceAudioSelection)return;
+  const selection=window.myDanceAudioSelection;audio.currentTime=selection.start;
+  try{await audio.play();}catch(error){document.getElementById("myDanceAudioDuration").textContent="Tap the audio player to start playback.";return;}
+  const stopAt=()=>{if(audio.currentTime>=selection.end){audio.pause();audio.removeEventListener("timeupdate",stopAt);}};
+  audio.addEventListener("timeupdate",stopAt);
+ });
+ audio?.addEventListener("ended",()=>{});
+ window.addEventListener("resize",drawMyDanceWaveform);
+}
+setupMyDanceAudioEditor();
+async function trimDanceAudioRange(file,startSeconds,endSeconds){
+ const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(!AudioContextClass)throw new Error("Your browser cannot process audio. Please use a recent Chrome browser.");
+ if(!window.lamejs?.Mp3Encoder)throw new Error("The MP3 encoder could not load. Refresh the page and try again.");
+ const context=new AudioContextClass();
+ try{
+  const decoded=await context.decodeAudioData(await file.arrayBuffer());
+  const start=Math.max(0,Math.min(Number(startSeconds)||0,decoded.duration)),end=Math.max(start,Math.min(Number(endSeconds)||decoded.duration,decoded.duration));
+  if(end-start<.1)throw new Error("Please select a valid audio segment.");
+  const startSample=Math.floor(start*decoded.sampleRate),sampleCount=Math.floor((end-start)*decoded.sampleRate),channels=Math.min(decoded.numberOfChannels,2);
+  const encoder=new window.lamejs.Mp3Encoder(channels,decoded.sampleRate,128),chunks=[],frameSize=1152,left=new Int16Array(sampleCount),right=channels===2?new Int16Array(sampleCount):null;
+  const leftData=decoded.getChannelData(0),rightData=channels===2?decoded.getChannelData(1):null;
+  for(let i=0;i<sampleCount;i++){const l=Math.max(-1,Math.min(1,leftData[startSample+i]));left[i]=l<0?l*0x8000:l*0x7fff;if(right){const v=Math.max(-1,Math.min(1,rightData[startSample+i]));right[i]=v<0?v*0x8000:v*0x7fff;}}
+  for(let i=0;i<sampleCount;i+=frameSize){const chunk=right?encoder.encodeBuffer(left.subarray(i,i+frameSize),right.subarray(i,i+frameSize)):encoder.encodeBuffer(left.subarray(i,i+frameSize));if(chunk.length)chunks.push(new Uint8Array(chunk));}
+  const tail=encoder.flush();if(tail.length)chunks.push(new Uint8Array(tail));
+  return new File(chunks,"LANE-AI-Music-Clip.mp3",{type:"audio/mpeg",lastModified:Date.now()});
+ }finally{await context.close().catch(()=>{});}
+}
 async function startMyDanceMusicGeneration(){
  const button=document.getElementById("myDanceGenerateButton"),status=document.getElementById("myDanceStatus"),result=document.getElementById("myDanceResult");
- if(!currentUser){alert("Моля, влез в профила си.");return;}
+ if(!currentUser){alert("Please sign in to continue.");return;}
  const audioFile=document.getElementById("myDanceMusicFile").files?.[0];
  const prompt=document.getElementById("myDancePrompt").value.trim();
  const images=Array.from(document.getElementById("myDanceImages").files||[]);
  const dancers=document.getElementById("myDanceCount").value;
- if(!audioFile){alert("Качи MP3 файл, за да продължиш.");return;}
- if(prompt.length<10){alert("Опиши танца и сцената с поне 10 символа.");return;}
- if(prompt.length>1000){alert("Описанието не може да надвишава 1 000 символа.");return;}
- if(images.length>3){alert("Можеш да качиш максимум 3 референтни снимки.");return;}
- if(audioFile.size>30*1024*1024){alert("MP3 файлът не може да надвишава 30 MB.");return;}
- if(!(audioFile.type==="audio/mpeg"||audioFile.type==="audio/mp3"||/\.mp3$/i.test(audioFile.name))){alert("Поддържат се само MP3 файлове.");return;}
- for(const image of images){if(image.size>10*1024*1024){alert("Всяка референтна снимка трябва да е до 10 MB.");return;}}
+ if(!audioFile){alert("Please upload an MP3 file to continue.");return;}
+ if(prompt.length<10){alert("Please describe the dance and scene using at least 10 characters.");return;}
+ if(prompt.length>1000){alert("Your description must not exceed 1,000 characters.");return;}
+ if(images.length>3){alert("You can upload up to 3 reference images.");return;}
+ if(audioFile.size>30*1024*1024){alert("The MP3 file must not exceed 30 MB.");return;}
+ if(!(audioFile.type==="audio/mpeg"||audioFile.type==="audio/mp3"||/\.mp3$/i.test(audioFile.name))){alert("Only MP3 files are supported.");return;}
+ for(const image of images){if(image.size>10*1024*1024){alert("Each reference image must be 10 MB or smaller.");return;}}
  try{
   const signature=new Uint8Array(await audioFile.slice(0,3).arrayBuffer());
   const isMp3=(signature[0]===0x49&&signature[1]===0x44&&signature[2]===0x33)||(signature[0]===0xff&&(signature[1]&0xe0)===0xe0);
-  if(!isMp3)throw new Error("Файлът не изглежда като валиден MP3.");
-  status.textContent="Подготвям MP3 файла...";
-  const audio=await trimDanceAudioReference(audioFile,14.8);
-  if(!audio.size)throw new Error("MP3 файлът не може да бъде обработен.");
+  if(!isMp3)throw new Error("This file does not appear to be a valid MP3.");
+  status.textContent="Preparing your selected audio segment...";
+  const selection=window.myDanceAudioSelection;
+  if(!selection||!myDanceDecodedAudio)throw new Error("Upload an MP3 and choose the audio segment first.");
+  const audio=await trimDanceAudioRange(audioFile,selection.start,selection.end);
+  if(!audio.size)throw new Error("The selected audio segment could not be processed.");
   const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=15*0.216,ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:541;
-  if(!confirm("Да генерирам ли 15-секундно видео за "+chargeCredits+" кредита?"+(isOwner?" (ориентировъчна себестойност на доставчика)":"")))return;
-  button.disabled=true;button.textContent="КАЧВАНЕ И СТАРТИРАНЕ...";status.textContent="Качвам MP3 файла и референтните снимки...";
+  if(!confirm("Generate a 15-second video for "+chargeCredits+" credits?"+(isOwner?" (estimated provider cost)":"")))return;
+  button.disabled=true;button.textContent="UPLOADING AND STARTING...";status.textContent="Uploading your audio and reference images...";
   result.replaceChildren();
   const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
-  if(!token)throw new Error("Сесията е изтекла. Влез отново в профила си.");
+  if(!token)throw new Error("Your session has expired. Please sign in again.");
   const form=new FormData();
   form.append("simpleMode","1");form.append("prompt",prompt);form.append("videoDirection",prompt);
   form.append("duration","15");form.append("ratio","16:9");form.append("dancers",String(dancers));
   form.append("musicFile",audio);
   images.forEach((file,index)=>form.append("referenceImage"+index,file));
   const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
-  const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"Генерирането не можа да започне.");
-  status.textContent="Seedance 2.0 генерира видеото. Използвани кредити: "+data.creditsUsed+".";
-  button.textContent="ВИДЕОТО СЕ ГЕНЕРИРА...";
+  const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"Video generation could not be started.");
+  status.textContent="Seedance 2.0 is generating your video. Credits used: "+data.creditsUsed+".";
+  button.textContent="PROCESSING...";
   let finished=false;
   for(let i=0;i<180;i++){
    await new Promise(resolve=>setTimeout(resolve,10000));
@@ -4206,14 +4318,17 @@ async function startMyDanceMusicGeneration(){
    const p=await poll.json();
    if(p.status==="SUCCEEDED"&&p.videoUrl){
     const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=p.videoUrl;video.style.cssText="width:100%;max-width:100%;margin-top:12px;border-radius:12px";
-    const link=document.createElement("a");link.href=p.videoUrl;link.target="_blank";link.rel="noopener";link.textContent="ОТВОРИ / ИЗТЕГЛИ ВИДЕОТО";link.style.display="block";link.style.marginTop="10px";
-    result.append(video,link);status.textContent="Готово! Видеото е създадено.";button.textContent="ГЕНЕРИРАЙ ОЩЕ ЕДНО ВИДЕО";finished=true;break;
+    const download=document.createElement("a");download.href=p.videoUrl;download.download="LANE-AI-Dance-Video.mp4";download.rel="noopener";download.textContent="⬇ DOWNLOAD VIDEO";download.className="dance-audio-preview-btn";download.style.display="block";download.style.textAlign="center";download.style.textDecoration="none";download.style.marginTop="12px";
+    const share=document.createElement("div");share.hidden=true;share.style.cssText="display:none;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid #4b3c67";
+    share.innerHTML='<strong style="width:100%;color:#e8d7ff;font-size:12px">SHARE YOUR VIDEO</strong><a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(p.videoUrl)+'" class="dance-audio-preview-btn" style="width:auto;flex:1;text-align:center;text-decoration:none">Facebook</a><a target="_blank" rel="noopener" href="https://www.tiktok.com/upload" class="dance-audio-preview-btn" style="width:auto;flex:1;text-align:center;text-decoration:none">TikTok</a><a target="_blank" rel="noopener" href="https://www.instagram.com/" class="dance-audio-preview-btn" style="width:auto;flex:1;text-align:center;text-decoration:none">Instagram</a><a target="_blank" rel="noopener" href="https://www.youtube.com/upload" class="dance-audio-preview-btn" style="width:auto;flex:1;text-align:center;text-decoration:none">YouTube</a>';
+    download.addEventListener("click",()=>{share.hidden=false;share.style.display="flex";});
+    result.append(video,download,share);status.textContent="✓ Completed — your video is ready.";button.textContent="GENERATE ANOTHER VIDEO";finished=true;break;
    }
-   if(p.status==="FAILED"||p.error)throw new Error(p.error||"Генерирането не успя.");
-   status.textContent="Генериране на видеото... Проверка "+(i+1)+"/180.";
+   if(p.status==="FAILED"||p.error)throw new Error(p.error||"Video generation failed.");
+   status.textContent="Processing video... Check "+(i+1)+"/180.";
   }
-  if(!finished){status.textContent="Задачата още се обработва. ID: "+data.generationId;button.textContent="ЗАДАЧАТА СЕ ОБРАБОТВА";}
- }catch(error){status.textContent=error.message||"Възникна грешка.";button.textContent="ОПИТАЙ ОТНОВО";}
+  if(!finished){status.textContent="Still processing. Reference: "+data.generationId;button.textContent="PROCESSING...";}
+ }catch(error){status.textContent=error.message||"An error occurred.";button.textContent="TRY AGAIN";}
  finally{button.disabled=false;}
 }
 
