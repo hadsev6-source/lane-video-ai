@@ -210,6 +210,7 @@ Deno.serve(async (req: Request) => {
           creditsUsed: Number(job.credits_charged || CREDITS) }, 202);
       }
 
+      const uploadedPaths: string[] = [];
       try {
         for (let i = 0; i < available.length; i++) {
           const song = available[i];
@@ -227,6 +228,7 @@ Deno.serve(async (req: Request) => {
           const path = `${user.id}/${name}`;
           const { error: uploadError } = await admin.storage.from("user-songs").upload(path, blob, { contentType: "audio/mpeg", cacheControl: "3600", upsert: true });
           if (uploadError) throw uploadError;
+          uploadedPaths.push(path);
           const { error: rowError } = await admin.from("songgpt_music_job_tracks").upsert({
             job_id: job.id, user_id: user.id, track_index: i + 1,
             provider_song_id: Number.isFinite(Number(song.id)) ? Number(song.id) : null,
@@ -249,8 +251,18 @@ Deno.serve(async (req: Request) => {
           warning: available.length < 2 ? "SongGPT returned fewer than two playable versions." : undefined });
       } catch (e) {
         console.error("SongGPT audio storage error:", e);
-        // Provider task succeeded; never resubmit. Keep job processing for a safe support retry.
-        return out({ success: true, status: "processing", jobId: job.id, warning: "The task completed, but saving its audio needs a retry by support. Do not generate again." }, 202);
+        const message = e instanceof Error ? e.message : "Could not save SongGPT audio.";
+        if (message.includes("not a valid MP3")) {
+          if (uploadedPaths.length) await admin.storage.from("user-songs").remove(uploadedPaths);
+          await admin.from("songgpt_music_job_tracks").delete().eq("job_id", job.id).eq("user_id", user.id);
+          const didRefund = await refund(admin, job.id);
+          await admin.from("music_generation_jobs").update({
+            status: "failed", error_message: message.slice(0, 1000), updated_at: new Date().toISOString(),
+          }).eq("id", job.id).eq("user_id", user.id).neq("status", "completed");
+          return out({ success: false, status: "failed", error: message, refunded: didRefund }, 502);
+        }
+        // Provider task succeeded; never resubmit. Keep transient storage failures in processing for support retry.
+        return out({ success: true, status: "processing", jobId: job.id, warning: "The task completed, but saving its MP3 needs a retry by support. Do not generate again." }, 202);
       }
     }
     return out({ error: "Unknown action. Use start or status." }, 400);
