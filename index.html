@@ -3725,8 +3725,9 @@ if (currentUser) {
         escapeHTML(error.message) + '</p>';
       currentFiles = [];
     } else {
+      // LANE's music library is MP3-only. Ignore legacy or unsupported audio formats.
       currentFiles = (data || []).filter(file =>
-        file.name && !file.name.startsWith(".lane_mv_clip_")
+        file.name && !file.name.startsWith(".lane_mv_clip_") && /\.mp3$/i.test(file.name)
       );
     }
 
@@ -4104,10 +4105,7 @@ if (currentUser) {
           showFileMessage("Could not prepare audio file: " + (signedError?.message || "No download link."), true);
           return;
         }
-        const extension = file.name.split(".").pop().toLowerCase();
-        const audioType = extension === "mp3" ? "audio/mpeg" :
-          extension === "wav" ? "audio/wav" :
-          extension === "m4a" ? "audio/mp4" : "audio/" + extension;
+        // Only MP3 files are listed and downloadable in the LANE music library.
         // Audio should download directly to the device, not open Android's share sheet.
         const downloadLink = document.createElement("a");
         downloadLink.href = signed.signedUrl;
