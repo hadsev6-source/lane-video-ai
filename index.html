@@ -1547,25 +1547,17 @@ body>#myfiles,#myfiles{display:none}
   .mobile-menu-auth { display:block !important; width:100%; margin:5px 0; text-align:center; }
 }
 </style>
-<script>
-(function(){
-  function placeMobileCredits(){
-    if(!window.matchMedia || !window.matchMedia('(max-width:600px)').matches) return;
-    var badge=document.querySelector('body > .credit-counter');
-    var header=document.querySelector('header.site-header');
-    if(badge && header && !header.contains(badge)) header.appendChild(badge);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',placeMobileCredits);
-  else placeMobileCredits();
-  window.addEventListener('resize',placeMobileCredits);
-})();
-</script>
+
 
 </head>
 <body>
 <header class="site-header">
 <div class="logo">LANE <span>AI STUDIO</span></div>
 <span class="lane-croissant" aria-label="Croissant">🥐</span>
+<div class="credit-counter" title="Your credit balance">
+<span>🪙</span>
+<span id="headerCreditBalanceTop">0</span>
+</div>
 
 <nav aria-label="Main navigation" class="visual-nav"><a href="#pricing">Credit</a><button id="headerGoogleSignIn" class="header-auth-btn" type="button" onclick="currentUser ? signOut() : googleSignIn()">Continue with Google</button></nav><details class="main-menu">
 <summary aria-label="Open navigation menu"><span class="menu-icon">☰</span> MENU</summary>
@@ -1624,19 +1616,8 @@ body>#myfiles,#myfiles{display:none}
 </div>
 </section>
 
-<div class="credit-counter" title="Your credit balance">
-<span>🪙</span>
-<span id="headerCreditBalanceTop">0</span>
-</div>
-<section class="hero hero-clickable lane-cinematic-hero" id="home" aria-label="LANE AI STUDIO — choose what to create">
-  <div class="lane-hero-content">
-    <div class="lane-hero-wordmark" aria-label="LANE AI VIDEO STUDIO">LANE AI <span>VIDEO STUDIO</span></div>
-    <div class="lane-hero-kicker"><span></span> CREATE <b>·</b> EDIT <b>·</b> GENERATE <span></span></div>
-    <h1 class="lane-hero-tagline">Create Stunning Videos with <span>AI</span></h1>
- 
 
-  </div>
-</section>
+
 <section class="lane-promo" aria-label="LANE AI STUDIO brand and social sharing">
   <div class="lane-share">
     <h3>SHARE WITH</h3>
@@ -2149,6 +2130,42 @@ body>#myfiles,#myfiles{display:none}
 #danceStudioPreview .dance-preview-dialog.show-legacy-generator .dance-preview-grid{display:grid}
 @media(max-width:760px){#danceStudioPreview .dance-mode-picker{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#danceStudioPreview .dance-mode-art{height:92px;font-size:42px}#danceStudioPreview .dance-mode-copy{padding:10px}#danceStudioPreview .dance-mode-copy strong{font-size:14px}#danceStudioPreview .dance-mode-copy span{font-size:11px}}
 @media(max-width:420px){#danceStudioPreview .dance-mode-fields{grid-template-columns:1fr}}
+
+/* Mobile-first space optimization requested: remove hero, compact credits, keep balance beside crown. */
+header.site-header{display:flex;align-items:center;gap:8px}
+header.site-header>.credit-counter{position:static!important;inset:auto!important;transform:none!important;z-index:auto!important;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;min-width:0!important;min-height:34px!important;padding:5px 9px!important;margin:0 4px!important;border:1px solid #ff9d19;border-radius:11px;font-size:13px!important;line-height:1}
+header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!important}
+#pricing{padding-top:6px!important}
+#pricing>.section-title{margin-bottom:8px!important}
+@media(max-width:600px){
+ header.site-header{padding:8px 3%!important;gap:5px!important;flex-wrap:nowrap!important}
+ header.site-header>.logo{font-size:12px!important;flex:0 1 auto!important;min-width:0!important}
+ header.site-header>.lane-croissant{font-size:20px!important;margin:0 2px!important}
+ header.site-header>.credit-counter{min-height:30px!important;padding:4px 7px!important;margin:0 1px!important;font-size:11px!important;border-radius:9px}
+ header.site-header>.main-menu{margin-left:auto!important;flex:0 0 auto!important}
+ #pricing{padding:3px 3% 18px!important}
+ #pricing>.section-title{font-size:21px!important;line-height:1.1!important;margin:0 0 5px!important}
+ #pricing>.section-description{font-size:12px!important;line-height:1.3!important;margin:0 0 7px!important}
+ #pricing>.notice{padding:8px 10px!important;margin:6px 0 9px!important;font-size:11px!important;line-height:1.35!important}
+ #pricing>h3{font-size:16px!important;margin:7px 0 5px!important}
+ #pricing .price-grid{gap:5px!important;margin-top:8px!important;padding:0 1px 5px!important}
+ #pricing .price-card{min-height:120px!important;padding:7px 4px!important;gap:4px!important;border-radius:7px!important}
+ #pricing .price-card h3{font-size:11px!important;line-height:1.1!important}
+ #pricing .price-card .price{font-size:17px!important;margin:1px 0!important}
+ #pricing .price-card strong{font-size:8px!important;line-height:1.2!important}
+ #pricing .price-card .buy-credit-btn{padding:6px 2px!important;font-size:8px!important;min-height:0!important;line-height:1.1!important}
+ .lane-promo{padding-top:10px!important;padding-bottom:10px!important}
+ .lane-promo .lane-share h3{font-size:17px!important;margin:0 0 10px!important}
+ .lane-promo .share-buttons{gap:9px!important}
+ .lane-promo .share-buttons .share-btn{width:46px!important;height:46px!important}
+}
+@media(max-width:380px){
+ header.site-header>.logo{font-size:11px!important}
+ header.site-header>.lane-croissant{font-size:18px!important}
+ header.site-header>.credit-counter{font-size:10px!important;padding:4px 5px!important}
+ #pricing .price-card{min-height:112px!important}
+ #pricing .price-card strong{font-size:7px!important}
+}
 </style>
 <div class="dance-mode-picker" aria-label="Choose a Dance Studio creation mode">
  <button class="dance-mode-card" type="button" onclick="openDanceMode('faceSwap')"><span class="dance-mode-art" aria-hidden="true">◎</span><span class="dance-mode-copy"><strong>Face Swap</strong><span>Постави избрано лице върху танцьор във видео.</span><em>Отвори Face Swap →</em></span></button>
