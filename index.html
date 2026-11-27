@@ -2423,13 +2423,47 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
  <p id="myDanceStatus" role="status" aria-live="polite" class="dance-preview-help"></p>
  <div id="myDanceResult"></div>
 </section>
-<div class="dance-preview-grid">
-   <section class="dance-preview-card"><h3>01 / SCENE & LOCATION</h3><label>Choose your setting</label><select id="danceLocation"><option>Beach / Seaside</option><option>Mountain</option><option>City Street</option><option>Night Club</option><option>Dance Studio</option><option>Urban Rooftop</option><option>Custom Location</option></select><label>Scene description</label><textarea id="danceScene" placeholder="Describe the location, lighting, atmosphere and camera style..."></textarea></section>
-   <section class="dance-preview-card"><h3>02 / CHARACTERS</h3><label>Dance cast</label><select id="danceCast"><option>Mixed Dance Group</option><option>Male Dancers</option><option>Female Dancers</option><option>Solo Performer</option></select><label>Number of dancers</label><select id="danceCount"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>8</option><option>10</option></select><label>Appearance & outfits</label><textarea id="danceOutfits" placeholder="Describe dancers, clothing and visual style..."></textarea><label class="dance-preview-upload">Upload reference photo (JPG, PNG, WEBP · max 10 MB)<input id="danceReferenceImage" type="file" accept="image/jpeg,image/png,image/webp"></label></section>
-   <section class="dance-preview-card"><h3>03 / DANCE & CHOREOGRAPHY</h3><label>Dance style</label><select id="danceStyle"><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>Dancehall</option><option>Street Dance</option><option>Salsa</option><option>Contemporary</option><option>Custom Style</option></select><label>Choreography direction</label><textarea id="danceChoreo" placeholder="Describe footwork, arm movements, formations, synchronization, lead dancer and transitions..."></textarea><label>Performance energy</label><select id="danceEnergy"><option>High Energy</option><option>Relaxed & Smooth</option><option>Powerful</option><option>Playful</option><option>Elegant</option></select></section>
-   <section class="dance-preview-card"><h3>04 / MUSIC & AUDIO</h3><label>Music genre</label><select id="danceGenre"><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>R&amp;B</option><option>Dancehall</option><option>Custom</option></select><label>Tempo (BPM)</label><input id="danceBpm" type="number" min="40" max="220" value="115"><label class="checkbox-row" style="margin:10px 0"><input id="danceUseMusicReference" type="checkbox" style="width:auto"> <span>Use uploaded MP3 as music reference (optional)</span></label><label for="danceMusicFile">Music reference file (optional · MP3 only · automatically trims to first 14.8 seconds)</label><input id="danceMusicFile" type="file" accept=".mp3,audio/mpeg" disabled><p class="dance-preview-help">Enable the checkbox to attach your own music. Leave it unchecked to let Seedance generate audio.</p><label>Lyrics / text</label><textarea id="danceLyrics" placeholder="Add lyrics or text direction..."></textarea><label>Music prompt</label><textarea id="danceMusicPrompt" placeholder="Describe rhythm, instruments and mood..."></textarea></section>
-   <section class="dance-preview-card"><h3>05 / VIDEO DIRECTION</h3><label>Complete creative prompt</label><textarea id="dancePrompt" maxlength="1000" placeholder="Describe the full music video, actions, camera shots, mood, story and transitions..." required></textarea><div class="dance-preview-help" id="dancePromptCounter" aria-live="polite">0 / 1,000 characters</div><label>Video duration</label><select id="danceDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select><label>Format</label><select id="danceRatio"><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option></select></section>
-   <section class="dance-preview-card"><h3>06 / PRICE & GENERATION</h3><div class="dance-preview-help" id="dancePrice">15 seconds · 541 credits · Price you pay: 541 credits.</div><p class="dance-preview-help">Seedance 2.0 · 720p. Choose 5, 10 or 15 seconds to see the exact credit price before generating. 30-second generation is not available. Reference image/audio uploads are included; reference video is not supported in this beta.</p><button class="video-tool-action" id="danceGenerateButton" type="button" onclick="startDanceStudioGeneration()">GENERATE DANCE VIDEO</button><p id="danceStatus" role="status" aria-live="polite" class="dance-preview-help"></p><div id="danceResult"></div></section>
+<div class="dance-preview-grid choreo-only-grid">
+   <section class="dance-preview-card choreo-card">
+    <h3>01 / DANCER REFERENCE</h3>
+    <p class="dance-preview-help">Upload one photo. The person in the photo will be the dancer in your choreography.</p>
+    <label class="dance-preview-upload">Upload dancer photo (JPG, PNG, WEBP · max 10 MB)<input id="danceReferenceImage" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+   </section>
+   <section class="dance-preview-card choreo-card">
+    <h3>02 / YOUR MUSIC</h3>
+    <p class="dance-preview-help">Upload the MP3 track you want the choreography to follow. The dance will be synchronized to this audio.</p>
+    <label for="danceMusicFile">Your music file (MP3 · max 30 MB)</label>
+    <input id="danceMusicFile" type="file" accept=".mp3,audio/mpeg" required>
+    <input id="danceUseMusicReference" type="checkbox" checked hidden>
+   </section>
+   <section class="dance-preview-card choreo-card choreo-prompt-card">
+    <h3>03 / CHOREOGRAPHY PROMPT</h3>
+    <label for="dancePrompt">Describe exactly how the person should dance</label>
+    <textarea id="dancePrompt" maxlength="1000" placeholder="Example: A woman performs a sensual R&B choreography in a stylish nightclub. Smooth body waves, controlled hip movements, expressive arm patterns, precise steps on the beat, a slow turn and a confident final pose. Keep her face and appearance consistent with the uploaded photo." required></textarea>
+    <div class="dance-preview-help" id="dancePromptCounter" aria-live="polite">0 / 1,000 characters</div>
+    <p class="dance-preview-help">Include the dance style, location, mood, body movements, footwork, rhythm, transitions and ending pose.</p>
+   </section>
+   <section class="dance-preview-card choreo-card">
+    <h3>04 / VIDEO SETTINGS</h3>
+    <label for="danceDuration">Video duration</label>
+    <select id="danceDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select>
+    <label for="danceRatio">Video format</label>
+    <select id="danceRatio"><option value="9:16">Portrait 9:16</option><option value="16:9">Landscape 16:9</option></select>
+   </section>
+   <section class="dance-preview-card choreo-card">
+    <h3>05 / GENERATION</h3>
+    <div class="dance-preview-help" id="dancePrice">15 seconds · 541 credits · Customer price</div>
+    <p class="dance-preview-help">Seedance 2.0 · 720p. Your uploaded photo defines the dancer; your MP3 defines the music and rhythm.</p>
+    <button class="video-tool-action" id="danceGenerateButton" type="button" onclick="startDanceStudioGeneration()">GENERATE CHOREOGRAPHY</button>
+    <p id="danceStatus" role="status" aria-live="polite" class="dance-preview-help"></p><div id="danceResult"></div>
+   </section>
+   <div hidden>
+    <select id="danceLocation"><option>Custom Location</option></select><select id="danceCast"><option>Solo Performer</option></select><select id="danceCount"><option>1</option></select>
+    <textarea id="danceOutfits"></textarea><select id="danceStyle"><option>Custom Style</option></select><textarea id="danceChoreo"></textarea>
+    <select id="danceEnergy"><option>Custom</option></select><select id="danceGenre"><option>Custom</option></select>
+    <input id="danceBpm" value="115"><textarea id="danceLyrics"></textarea><textarea id="danceMusicPrompt"></textarea><textarea id="danceScene"></textarea>
+   </div>
+  </div>
   </div>
  </div>
 </div>
@@ -4498,10 +4532,10 @@ async function startDanceStudioGeneration(){
  if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}
  if(prompt.length>1000){alert("Your video prompt must not exceed 1,000 characters.");return;}
  const image=document.getElementById("danceReferenceImage").files[0];
- const useAudioReference=document.getElementById("danceUseMusicReference").checked;
- let audio=useAudioReference?document.getElementById("danceMusicFile").files[0]:null;
- if(useAudioReference&&!audio){alert("Choose an MP3 file, or turn off the music-reference checkbox.");return;}
- if(image&&image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
+ let audio=document.getElementById("danceMusicFile").files[0];
+ if(!image){alert("Please upload a dancer photo.");return;}
+ if(!audio){alert("Please upload your MP3 music file.");return;}
+ if(image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
  if(audio&&!(audio.type==="audio/mpeg"||audio.type==="audio/mp3"||/\.mp3$/i.test(audio.name))){alert("Only MP3 files are supported. Please choose an .mp3 file.");return;}
  if(audio){
@@ -4531,7 +4565,8 @@ async function startDanceStudioGeneration(){
   const {data:sessionData}=await supabaseClient.auth.getSession(), token=sessionData?.session?.access_token;
   if(!token)throw new Error("Your session has expired. Please sign in again.");
   const form=new FormData();
-  const vals={prompt,duration,ratio:document.getElementById("danceRatio").value,location:document.getElementById("danceLocation").value,cast:document.getElementById("danceCast").value,dancers:document.getElementById("danceCount").value,outfits:document.getElementById("danceOutfits").value,danceStyle:document.getElementById("danceStyle").value,choreography:document.getElementById("danceChoreo").value,energy:document.getElementById("danceEnergy").value,genre:document.getElementById("danceGenre").value,bpm:document.getElementById("danceBpm").value,lyrics:document.getElementById("danceLyrics").value,musicPrompt:document.getElementById("danceMusicPrompt").value,videoDirection:prompt};
+  const choreographyPrompt="Use the person in the uploaded reference photo as the only dancer. Preserve their identity, face, hairstyle, clothing appearance and body proportions. Create a full-body dance performance precisely synchronized to the uploaded MP3. Choreography direction: "+prompt;
+  const vals={prompt:choreographyPrompt,duration,ratio:document.getElementById("danceRatio").value,location:"As described in the choreography prompt",cast:"Solo Performer",dancers:"1",outfits:"Preserve the appearance in the uploaded reference photo",danceStyle:"As described in the choreography prompt",choreography:prompt,energy:"As described in the choreography prompt",genre:"Match the uploaded MP3",bpm:"Match the uploaded MP3",lyrics:"",musicPrompt:"Use the uploaded MP3 as the exact music reference and synchronize every movement to its rhythm.",videoDirection:choreographyPrompt};
   Object.entries(vals).forEach(([k,v])=>form.append(k,String(v)));
   if(image)form.append("referenceImage",image);if(audio)form.append("musicFile",audio);
   const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
