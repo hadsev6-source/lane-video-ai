@@ -4861,9 +4861,22 @@ async function startFullLengthMusicVideoGeneration(){
  if(!currentUser){alert("Please sign in first.");return;}if(!fileName){alert("Please select a song from your saved music library.");return;}
  if(prompt.length<10||prompt.length>1000){alert("Please describe your music video in 10 to 1,000 characters.");return;}
  if(![60,120,180,240].includes(duration)){alert("Please select a duration from 1 to 4 minutes.");return;}
- button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
- try{await startWaveSpeedVideoFlow({mode:"music",prompt,duration,ratio:document.getElementById("danceMvRatio")?.value==="landscape"?"16:9":"9:16",songPath:currentUser.id+"/"+fileName,status,result,button});}
- catch(e){status.textContent=e.message||"OmnAPI generation failed.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE MUSIC VIDEO";}
+ button.disabled=true;button.textContent="PREPARING AUDIO...";result.replaceChildren();
+ try{
+  const path=currentUser.id+"/"+fileName;
+  const {data:signed,error:signedError}=await supabaseClient.storage.from("user-songs").createSignedUrl(path,600);
+  if(signedError||!signed?.signedUrl)throw new Error(signedError?.message||"Could not access the selected song.");
+  const source=await fetch(signed.signedUrl);if(!source.ok)throw new Error("Could not download the selected song.");
+  const blob=await source.blob();if(!blob.size)throw new Error("The selected song is empty.");
+  const audioFile=new File([blob],fileName,{type:blob.type||"audio/mpeg"});
+  const AudioClass=window.AudioContext||window.webkitAudioContext;if(!AudioClass)throw new Error("Audio conversion is not supported in this browser.");
+  const context=new AudioClass();let decoded;try{decoded=await context.decodeAudioData(await blob.arrayBuffer());}finally{await context.close().catch(()=>{});}
+  if(decoded.duration<duration)throw new Error("The selected song is shorter than "+duration+" seconds.");
+  const exactClip=await trimDanceAudioReference(audioFile,duration);
+  if(!exactClip.size)throw new Error("Could not prepare the exact audio segment.");
+  await startWaveSpeedVideoFlow({mode:"music",prompt,duration,ratio:document.getElementById("danceMvRatio")?.value==="landscape"?"16:9":"9:16",audioFile:exactClip,status,result,button});
+ }catch(e){status.textContent=e.message||"WaveSpeed generation failed.";}
+ finally{button.disabled=false;if(button.textContent==="PREPARING AUDIO...")button.textContent="GENERATE MUSIC VIDEO";}
 }
 async function startDanceMusicVideoGeneration(){
  const requestedDuration=Number(document.getElementById("danceMvDuration")?.value||15);
