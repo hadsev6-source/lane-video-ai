@@ -4266,6 +4266,7 @@ function updateMyDancePromptCounter(){
 }
 document.getElementById("myDancePrompt")?.addEventListener("input",updateMyDancePromptCounter);
 updateMyDancePromptCounter();
+let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePreviewStopHandler=null;
 function getMyDanceDuration(){return Number(document.getElementById("myDanceDuration")?.value||15);}
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
@@ -4278,7 +4279,6 @@ function updateMyDancePrice(){
 document.getElementById("myDanceDuration")?.addEventListener("change",updateMyDancePrice);
 updateMyDancePrice();
 
-let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePreviewStopHandler=null;
 window.myDanceAudioSelection={start:0,end:14.8};
 function formatDanceTime(seconds){const value=Math.max(0,Number(seconds)||0),minutes=Math.floor(value/60),rest=(value-minutes*60).toFixed(1).padStart(4,"0");return String(minutes).padStart(2,"0")+":"+rest;}
 function drawMyDanceWaveform(){
