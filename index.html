@@ -1754,6 +1754,31 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
  #laneDanceStudio>.lane-showcase-card .lane-showcase-cta{padding:7px 9px!important;font-size:9px!important}
 }
 </style>
+
+<style>
+/* Compact Google sign-in button on mobile without changing auth behavior. */
+@media (max-width:760px) {
+  header.site-header #headerGoogleSignIn {
+    width:174px !important;
+    max-width:174px !important;
+    min-width:0 !important;
+    min-height:54px !important;
+    height:54px !important;
+    padding:7px 10px !important;
+    gap:7px !important;
+    font-size:13px !important;
+    line-height:1.15 !important;
+    white-space:normal !important;
+    text-align:center !important;
+  }
+  header.site-header #headerGoogleSignIn svg {
+    width:17px !important;
+    height:17px !important;
+    flex:0 0 17px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header class="site-header">
