@@ -1989,9 +1989,9 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
 <textarea id="imagePrompt" placeholder="Describe the subject, environment, composition, lighting, camera angle, mood and details..."></textarea>
 </div>
 <div class="field">
-<label for="imageReference">Upload Reference Image (Optional)</label>
+<label for="imageReference">Upload Reference Image (Optional · reusable in Dance Choreography Studio)</label>
 <input accept="image/jpeg,image/png,image/webp" id="imageReference" type="file"/>
-<span class="upload-drop-note">Upload a JPG, PNG or WEBP photo to use as a visual reference or for image editing. Maximum 10 MB.</span>
+<span class="upload-drop-note">Upload a JPG, PNG or WEBP photo to use as a visual reference or for image editing. The same selected photo will also be available in Dance Choreography Studio, so you do not need to upload it twice. Maximum 10 MB.</span>
 <div aria-live="polite" class="hint" id="imageReferenceName">No reference image selected.</div>
 </div>
 <div class="form-grid">
@@ -2448,6 +2448,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   );
 
   let currentUser = null;
+  window.laneDancerReferencePhoto = null;
   let currentFiles = [];
   let currentVideoFiles = [];
   let currentImageFiles = [];
@@ -2766,7 +2767,8 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   if (imageReferenceInput) {
     imageReferenceInput.addEventListener("change", function() {
       const file = this.files && this.files[0];
-      document.getElementById("imageReferenceName").textContent = file ? "Selected: " + file.name : "No reference image selected.";
+      window.laneDancerReferencePhoto = file || null;
+      document.getElementById("imageReferenceName").textContent = file ? "Selected: " + file.name + " · Available in Dance Choreography Studio" : "No reference image selected.";
     });
   }
 
@@ -4435,7 +4437,9 @@ async function startDanceStudioGeneration(){
  const prompt=document.getElementById("dancePrompt").value.trim();
  if(prompt.length<10){alert("Please enter a creative direction of at least 10 characters.");return;}
  if(prompt.length>1000){alert("Your video prompt must not exceed 1,000 characters.");return;}
- const image=null;
+ const image=window.laneDancerReferencePhoto||null;
+ if(!image){alert("Please upload your dancer photo in AI Image Studio → Upload Reference Image first. The same photo will be reused here automatically.");return;}
+ if(!["image/jpeg","image/png","image/webp"].includes(image.type)||image.size>10*1024*1024){alert("The saved dancer photo must be a JPG, PNG or WEBP image under 10 MB. Please select it again in AI Image Studio.");return;}
  let audio=document.getElementById("danceMusicFile").files[0];
  if(!audio){alert("Please upload your MP3 music file.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
