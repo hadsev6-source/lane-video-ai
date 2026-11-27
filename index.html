@@ -4156,6 +4156,12 @@ function updateMyDancePromptCounter(){
 }
 document.getElementById("myDancePrompt")?.addEventListener("input",updateMyDancePromptCounter);
 updateMyDancePromptCounter();
+function updateMyDancePrice(){
+ const el=document.getElementById("myDancePrice");if(!el)return;
+ const owner=currentUser?.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerEur=15*0.216*0.9168,ownerCredits=Math.max(1,Math.round(providerEur*140));
+ el.textContent=owner?"15 секунди · "+ownerCredits.toLocaleString()+" кредита · твоята себестойност":"15 секунди · 541 кредита";
+}
+updateMyDancePrice();
 
 async function startMyDanceMusicGeneration(){
  const button=document.getElementById("myDanceGenerateButton"),status=document.getElementById("myDanceStatus"),result=document.getElementById("myDanceResult");
@@ -4178,7 +4184,8 @@ async function startMyDanceMusicGeneration(){
   status.textContent="Подготвям MP3 файла...";
   const audio=await trimDanceAudioReference(audioFile,14.8);
   if(!audio.size)throw new Error("MP3 файлът не може да бъде обработен.");
-  if(!confirm("Да генерирам ли 15-секундно видео за 541 кредита?"))return;
+  const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=15*0.216,ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:541;
+  if(!confirm("Да генерирам ли 15-секундно видео за "+chargeCredits+" кредита?"+(isOwner?" (ориентировъчна себестойност на доставчика)":"")))return;
   button.disabled=true;button.textContent="КАЧВАНЕ И СТАРТИРАНЕ...";status.textContent="Качвам MP3 файла и референтните снимки...";
   result.replaceChildren();
   const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
