@@ -2115,7 +2115,62 @@ body>#myfiles,#myfiles{display:none}
  <div class="dance-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="dancePreviewTitle">
   <div class="dance-preview-top"><div><span class="dance-preview-kicker">LANE SAYS LOVE</span><h2 id="dancePreviewTitle">AI DANCE STUDIO</h2><p>Create dance videos with your direction, reference image and music.</p></div><button type="button" class="face-lab-close" onclick="closeDanceStudioPreview()">CLOSE ✕</button></div>
   <div class="dance-preview-notice">LIVE BETA · Seedance 2.5 · 720p · 15 or 30 seconds. Music uploads are used as audio references; exact beat-by-beat choreography is not guaranteed.</div>
-  <div class="dance-preview-grid">
+  <style id="dance-mode-picker-styles">
+#danceStudioPreview .dance-mode-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0 24px}
+#danceStudioPreview .dance-mode-card{display:flex;flex-direction:column;overflow:hidden;text-align:left;padding:0;border:1px solid #a66a25;border-radius:15px;background:linear-gradient(145deg,#1a1209,#080808 72%);color:#fff;cursor:pointer;min-width:0;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+#danceStudioPreview .dance-mode-card:hover{transform:translateY(-3px);border-color:#ffad42;box-shadow:0 8px 24px #e88c2630}
+#danceStudioPreview .dance-mode-art{height:116px;display:flex;align-items:center;justify-content:center;font-size:54px;color:#ff9b32;background:radial-gradient(circle at 50% 45%,#63330f 0,#241306 42%,#090909 78%);border-bottom:1px solid #75451d}
+#danceStudioPreview .dance-mode-copy{padding:13px;display:grid;gap:7px}
+#danceStudioPreview .dance-mode-copy strong{font-size:16px;color:#fff}
+#danceStudioPreview .dance-mode-copy span{font-size:12px;line-height:1.5;color:#c9b9a4}
+#danceStudioPreview .dance-mode-copy em{font-style:normal;color:#ffb45d;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+#danceStudioPreview .dance-mode-workspace{display:none;margin:16px 0;padding:18px;border:1px solid #8c5a25;border-radius:14px;background:linear-gradient(145deg,#171109,#080808)}
+#danceStudioPreview .dance-mode-workspace h3{margin:0 0 8px;color:#ffbd70}
+#danceStudioPreview .dance-mode-workspace p{color:#c9bba8;line-height:1.55}
+#danceStudioPreview .dance-mode-workspace label{display:block;margin:13px 0 7px;color:#f1dfc8;font-size:13px;font-weight:700}
+#danceStudioPreview .dance-mode-workspace textarea,#danceStudioPreview .dance-mode-workspace input,#danceStudioPreview .dance-mode-workspace select{width:100%;padding:11px;background:#080808;color:#fff;border:1px solid #5a432b;border-radius:8px}
+#danceStudioPreview .dance-mode-workspace textarea{min-height:90px}
+#danceStudioPreview .dance-mode-workspace .dance-mode-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#danceStudioPreview .dance-mode-status{padding:12px;border:1px solid #76501f;border-radius:9px;background:#1b140a;color:#e9c99e;font-size:12px;line-height:1.5}
+#danceStudioPreview .dance-mode-back{display:none;margin:0 0 12px;border:1px solid #9a672c;border-radius:30px;padding:9px 14px;background:#1b1309;color:#ffd29a;font-weight:800;cursor:pointer}
+#danceStudioPreview .dance-preview-dialog.mode-active .dance-mode-picker{display:none}
+#danceStudioPreview .dance-preview-dialog.mode-active .dance-mode-workspace{display:block}
+#danceStudioPreview .dance-preview-dialog.mode-active .dance-preview-grid{display:none}
+#danceStudioPreview .dance-preview-dialog.show-legacy-generator .dance-mode-picker{display:none}
+#danceStudioPreview .dance-preview-dialog.show-legacy-generator .dance-mode-back{display:inline-flex}
+#danceStudioPreview .dance-preview-dialog.show-legacy-generator .dance-preview-grid{display:grid}
+@media(max-width:760px){#danceStudioPreview .dance-mode-picker{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#danceStudioPreview .dance-mode-art{height:92px;font-size:42px}#danceStudioPreview .dance-mode-copy{padding:10px}#danceStudioPreview .dance-mode-copy strong{font-size:14px}#danceStudioPreview .dance-mode-copy span{font-size:11px}}
+@media(max-width:420px){#danceStudioPreview .dance-mode-fields{grid-template-columns:1fr}}
+</style>
+<div class="dance-mode-picker" aria-label="Choose a Dance Studio creation mode">
+ <button class="dance-mode-card" type="button" onclick="openDanceMode('faceSwap')"><span class="dance-mode-art" aria-hidden="true">◎</span><span class="dance-mode-copy"><strong>Face Swap</strong><span>Постави избрано лице върху танцьор във видео.</span><em>Отвори Face Swap →</em></span></button>
+ <button class="dance-mode-card" type="button" onclick="openDanceMode('podcast')"><span class="dance-mode-art" aria-hidden="true">🎙</span><span class="dance-mode-copy"><strong>AI Podcast</strong><span>Създай участници, разговор, реплики и подкаст сцена.</span><em>Отвори подкаст →</em></span></button>
+ <button class="dance-mode-card" type="button" onclick="openDanceMode('musicVideo')"><span class="dance-mode-art" aria-hidden="true">♫</span><span class="dance-mode-copy"><strong>AI Music Video</strong><span>Планирай песен с вокали и видео към нея.</span><em>Отвори музикално видео →</em></span></button>
+ <button class="dance-mode-card" type="button" onclick="openDanceMode('danceMusic')"><span class="dance-mode-art" aria-hidden="true">♬</span><span class="dance-mode-copy"><strong>Dance to My Music</strong><span>Качи собствен MP3 и създай танцово видео по него.</span><em>Използвай MP3 →</em></span></button>
+ <button class="dance-mode-card" type="button" onclick="openDanceMode('danceVideo')"><span class="dance-mode-art" aria-hidden="true">✦</span><span class="dance-mode-copy"><strong>AI Dance Video</strong><span>Опиши танцьорите, хореографията и сцената.</span><em>Създай танцово видео →</em></span></button>
+</div>
+<button type="button" class="dance-mode-back" onclick="backToDanceModes()">← BACK TO CREATION MODES</button>
+<section class="dance-mode-workspace" id="dancePodcastWorkspace">
+ <h3>AI PODCAST · WORKSPACE PREVIEW</h3>
+ <p>Опиши сцената и диалога. Това е интерфейсна подготовка; генерирането на говор и синхронизацията още не са свързани.</p>
+ <div class="dance-mode-fields"><div><label for="dancePodcastCast">Участници</label><select id="dancePodcastCast"><option>Двама участници</option><option>Един водещ</option><option>Трима участници</option></select></div><div><label for="dancePodcastLength">Продължителност</label><select id="dancePodcastLength"><option>5 секунди</option><option>10 секунди</option><option selected>15 секунди</option></select></div></div>
+ <label for="dancePodcastScene">Сцена и обстановка</label><textarea id="dancePodcastScene" placeholder="Например: модерен подкаст, двама души седят срещу микрофони..."></textarea>
+ <label for="dancePodcastDialogue">Точен текст на разговора</label><textarea id="dancePodcastDialogue" placeholder="Участник 1: ...&#10;Участник 2: ..."></textarea>
+ <div class="dance-mode-fields"><div><label for="dancePodcastVoice1">Глас на участник 1</label><select id="dancePodcastVoice1"><option>Мъжки</option><option>Женски</option></select></div><div><label for="dancePodcastVoice2">Глас на участник 2</label><select id="dancePodcastVoice2"><option>Женски</option><option>Мъжки</option></select></div></div>
+ <div class="dance-mode-status">Интерфейсна визуализация. Не стартира платена генерация и не променя старите настройки.</div>
+ <button class="video-tool-action" type="button" disabled>GENERATION CONNECTION PENDING</button>
+</section>
+<section class="dance-mode-workspace" id="danceMusicVideoWorkspace">
+ <h3>AI MUSIC VIDEO · WORKSPACE PREVIEW</h3>
+ <p>Подготви идея за песента, вокалите и визуалната история. Връзката между SongGPT и видео генерацията ще се добави отделно.</p>
+ <div class="dance-mode-fields"><div><label for="danceMvGenre">Музикален стил</label><select id="danceMvGenre"><option>Afrobeats</option><option>Pop</option><option>Dance / EDM</option><option>Hip-Hop</option><option>R&amp;B</option><option>Custom</option></select></div><div><label for="danceMvVocal">Вокали</label><select id="danceMvVocal"><option>Женски вокал</option><option>Мъжки вокал</option><option>Дует</option><option>Инструментал</option></select></div></div>
+ <label for="danceMvLyrics">Текст на песента / тема</label><textarea id="danceMvLyrics" placeholder="Напиши текста, припева или идеята за песента..."></textarea>
+ <label for="danceMvVisual">Описание на музикалното видео</label><textarea id="danceMvVisual" placeholder="Опиши изпълнителя, сцената, движението, камерата и атмосферата..."></textarea>
+ <div class="dance-mode-fields"><div><label for="danceMvDuration">Видео дължина</label><select id="danceMvDuration"><option>5 секунди</option><option>10 секунди</option><option selected>15 секунди</option></select></div><div><label for="danceMvRatio">Формат</label><select id="danceMvRatio"><option>9:16 Portrait</option><option>16:9 Landscape</option></select></div></div>
+ <div class="dance-mode-status">Интерфейсна визуализация. Не стартира платена генерация и не променя тарифите на iMusic Studio.</div>
+ <button class="video-tool-action" type="button" disabled>GENERATION CONNECTION PENDING</button>
+</section>
+<div class="dance-preview-grid">
    <section class="dance-preview-card"><h3>01 / SCENE & LOCATION</h3><label>Choose your setting</label><select id="danceLocation"><option>Beach / Seaside</option><option>Mountain</option><option>City Street</option><option>Night Club</option><option>Dance Studio</option><option>Urban Rooftop</option><option>Custom Location</option></select><label>Scene description</label><textarea id="danceScene" placeholder="Describe the location, lighting, atmosphere and camera style..."></textarea></section>
    <section class="dance-preview-card"><h3>02 / CHARACTERS</h3><label>Dance cast</label><select id="danceCast"><option>Mixed Dance Group</option><option>Male Dancers</option><option>Female Dancers</option><option>Solo Performer</option></select><label>Number of dancers</label><select id="danceCount"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>8</option><option>10</option></select><label>Appearance & outfits</label><textarea id="danceOutfits" placeholder="Describe dancers, clothing and visual style..."></textarea><label class="dance-preview-upload">Upload reference photo (JPG, PNG, WEBP · max 10 MB)<input id="danceReferenceImage" type="file" accept="image/jpeg,image/png,image/webp"></label></section>
    <section class="dance-preview-card"><h3>03 / DANCE & CHOREOGRAPHY</h3><label>Dance style</label><select id="danceStyle"><option>Afro Swing</option><option>Afrobeat</option><option>Amapiano</option><option>Hip-Hop</option><option>Dancehall</option><option>Street Dance</option><option>Salsa</option><option>Contemporary</option><option>Custom Style</option></select><label>Choreography direction</label><textarea id="danceChoreo" placeholder="Describe footwork, arm movements, formations, synchronization, lead dancer and transitions..."></textarea><label>Performance energy</label><select id="danceEnergy"><option>High Energy</option><option>Relaxed & Smooth</option><option>Powerful</option><option>Playful</option><option>Elegant</option></select></section>
@@ -4030,8 +4085,44 @@ async function startDanceStudioGeneration(){
  }catch(e){status.textContent=e.message||"An error occurred.";button.textContent="TRY AGAIN";}
  finally{button.disabled=false;}
 }
+function openDanceMode(mode){
+ const dialog=document.querySelector("#danceStudioPreview .dance-preview-dialog");
+ if(!dialog)return;
+ dialog.classList.remove("mode-active","show-legacy-generator");
+ document.querySelectorAll("#danceStudioPreview .dance-mode-workspace").forEach(el=>el.style.display="none");
+ if(mode==="faceSwap"){
+  closeDanceStudioPreview();
+  openFaceSwapComingSoon();
+  return;
+ }
+ if(mode==="danceVideo"||mode==="danceMusic"){
+  dialog.classList.add("show-legacy-generator");
+  const title=document.getElementById("dancePreviewTitle");
+  if(title)title.textContent=mode==="danceMusic"?"DANCE TO MY MUSIC":"AI DANCE VIDEO";
+  if(mode==="danceMusic"){
+   const checkbox=document.getElementById("danceUseMusicReference");
+   if(checkbox&&!checkbox.checked){checkbox.checked=true;checkbox.dispatchEvent(new Event("change",{bubbles:true}));}
+   document.getElementById("danceMusicFile")?.scrollIntoView({block:"center",behavior:"smooth"});
+  }
+  return;
+ }
+ dialog.classList.add("mode-active");
+ const workspace=document.getElementById(mode==="podcast"?"dancePodcastWorkspace":"danceMusicVideoWorkspace");
+ if(workspace)workspace.style.display="block";
+ const title=document.getElementById("dancePreviewTitle");
+ if(title)title.textContent=mode==="podcast"?"AI PODCAST":"AI MUSIC VIDEO";
+}
+function backToDanceModes(){
+ const dialog=document.querySelector("#danceStudioPreview .dance-preview-dialog");
+ if(!dialog)return;
+ dialog.classList.remove("mode-active","show-legacy-generator");
+ document.querySelectorAll("#danceStudioPreview .dance-mode-workspace").forEach(el=>el.style.display="none");
+ const title=document.getElementById("dancePreviewTitle");
+ if(title)title.textContent="AI DANCE STUDIO";
+}
 function openDanceStudioPreview(){
  const m=document.getElementById("danceStudioPreview");if(!m)return;
+ backToDanceModes();
  m.classList.add("open");m.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
 }
 function closeDanceStudioPreview(){
