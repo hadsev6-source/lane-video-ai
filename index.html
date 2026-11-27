@@ -4434,14 +4434,14 @@ function lanePriceBreakdown(el,rows,owner,heading){
  const money=usd=>laneFormatUsd(usd);
  el.innerHTML='<div style="font-weight:700;margin-bottom:7px">'+heading+'</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px">'+rows.map(r=>'<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #553038;padding:5px 0"><span>'+r.label+'</span><strong style="text-align:right">'+(owner?money(r.usd)+' · '+r.ownerCredits.toLocaleString()+' credits':r.customerCredits.toLocaleString()+' credits')+'</strong></div>').join('')+'</div><div class="mini-note" style="margin-top:7px">'+(owner?'Owner view · estimated provider cost and equivalent LANE credits.':'Customer price · LANE credits only, including the 30% markup.')+'</div>';
 }
-function laneBuildPriceRows(durations,rate,providerForDuration){
- return durations.map(d=>{const usd=providerForDuration?providerForDuration(d):d*rate;return {label:d+' sec',usd,ownerCredits:laneOwnerCredits(usd,'ceil'),customerCredits:laneCustomerCredits(usd)};});
+function laneBuildPriceRows(durations,rate,providerForDuration,ownerRounding="ceil"){
+ return durations.map(d=>{const usd=providerForDuration?providerForDuration(d):d*rate;return {label:d+" sec",usd,ownerCredits:laneOwnerCredits(usd,typeof ownerRounding==="function"?ownerRounding(d):ownerRounding),customerCredits:laneCustomerCredits(usd)};});
 }
 function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.30));}
 function updateDanceMvPrice(){
  const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;
  const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20,30,40,50],.20,x=>x<=30?x*.20:x*.03);
- rows.push(...laneBuildPriceRows([60,120,180,240],.03));
+ rows.push(...laneBuildPriceRows([60,120,180,240],.03,null,"round"));
  lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  const selected=rows.find(r=>r.label===d+" sec");
  if(selected)el.dataset.selectedPrice=owner?moneySafe(selected.usd)+" / "+selected.ownerCredits+" credits":selected.customerCredits+" credits";
@@ -4467,7 +4467,7 @@ function updateNewVideoCost(){
 }
 function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15),owner=isLaneOwnerAccount(),el=document.getElementById("dancePrice");
- const rows=laneBuildPriceRows([5,10,15],.216);rows.push(...laneBuildPriceRows([30,40,50],.03));
+ const rows=laneBuildPriceRows([5,10,15],.216);rows.push(...laneBuildPriceRows([30,40,50],.03,null,"round"));
  lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
  if(typeof updateDanceMvPrice==="function")updateDanceMvPrice();
