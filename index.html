@@ -1272,6 +1272,23 @@ body>#myfiles,#myfiles{display:none}
 .dance-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.dance-preview-card{padding:16px;border:1px solid #34363b;border-radius:12px;background:#17191e;display:flex;flex-direction:column;gap:8px;min-width:0}.dance-preview-card h3{font-size:13px;color:#ffb66a;margin:0 0 5px;letter-spacing:.07em}.dance-preview-card label{font-size:11px;color:#ddd;font-weight:800}.dance-preview-card input,.dance-preview-card select,.dance-preview-card textarea{box-sizing:border-box;width:100%;padding:11px;border-radius:8px;border:1px solid #4b4e55;background:#0e1014;color:#fff;font:inherit}.dance-preview-card textarea{min-height:75px;resize:vertical}.dance-preview-help{color:#aaa;font-size:12px;line-height:1.5;margin:4px 0}.dance-preview-footer{margin-top:16px;padding:16px;border:1px solid #444;border-radius:12px;background:#191919;display:flex;align-items:center;justify-content:space-between;gap:16px}.dance-preview-footer p{margin:6px 0;color:#ccc;font-size:13px}.dance-preview-footer small{color:#ffbd75}.dance-preview-footer button{padding:12px 18px;border:0;border-radius:8px;background:#ff9b32;color:#160c03;font-weight:900}
 @media(max-width:650px){.dance-preview-dialog{padding:14px}.dance-preview-grid{grid-template-columns:1fr}.dance-preview-hero{min-height:180px;padding:18px}.dance-preview-footer{align-items:flex-start;flex-direction:column}.dance-preview-top h2{font-size:22px}}
 
+\n/* Mobile touch fix: keep studio controls above decorative layers and reliably tappable. */
+@media (max-width: 800px) {
+ #danceStudioPreview .video-tool-action,
+ #danceStudioPreview .dance-audio-preview-btn,
+ #danceStudioPreview button,
+ #danceStudioPreview select,
+ #danceStudioPreview input,
+ #danceStudioPreview textarea {
+  pointer-events:auto !important;
+  touch-action:manipulation;
+ }
+ #danceStudioPreview .video-tool-action,
+ #danceStudioPreview .dance-audio-preview-btn { position:relative; z-index:20; min-height:46px; }
+ #danceStudioPreview .dance-preview-dialog { position:relative; z-index:1001; }
+ #danceStudioPreview .dance-preview-card,
+ #danceStudioPreview .dance-mode-workspace { position:relative; }
+}
 </style>
 
 
@@ -4606,9 +4623,9 @@ async function startMyDanceMusicGeneration(){
   if(!audioFile){alert("Please upload an MP3 file.");return;}if(prompt.length<10||prompt.length>1000){alert("Please enter a dance description from 10 to 1,000 characters.");return;}
   if(audioFile.size>128*1024*1024||!(/\.mp3$/i.test(audioFile.name)||["audio/mpeg","audio/mp3"].includes(audioFile.type))){alert("Please choose an MP3 under 128 MB.");return;}
   if(images.length>3||images.some(x=>x.size>10*1024*1024||!["image/jpeg","image/png","image/webp"].includes(x.type))){alert("Upload up to 3 JPG, PNG or WEBP reference images, maximum 10 MB each.");return;}
-  button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
-  try{const selection=window.myDanceAudioSelection;if(!selection||!myDanceDecodedAudio||myDanceDecodedAudio.duration<30||Math.abs(selection.end-selection.start-30)>.05)throw new Error("Select a full 30-second segment in the audio waveform first.");const clip=await trimDanceAudioRange(audioFile,selection.start,selection.start+30);await startOmnVideoFlow({mode:"dance-to-music",prompt,duration:30,ratio:"16:9",audioFile:clip,images,status,result,button});}
-  catch(e){status.textContent=e.message||"Could not start OmnAPI generation.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE VIDEO · 30 SECONDS";}
+  button.disabled=true;button.textContent="CHECKING WAVESPEED PRICE...";result.replaceChildren();
+  try{const selection=window.myDanceAudioSelection;if(!selection||!myDanceDecodedAudio||myDanceDecodedAudio.duration<30||Math.abs(selection.end-selection.start-30)>.05)throw new Error("Select a full 30-second segment in the audio waveform first.");const clip=await trimDanceAudioRange(audioFile,selection.start,selection.start+30);await startWaveSpeedVideoFlow({mode:"dance-to-music",prompt,duration:30,ratio:"16:9",audioFile:clip,images,status,result,button});}
+  catch(e){status.textContent=e.message||"Could not start WaveSpeed generation.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE VIDEO · 30 SECONDS";}
   return;
  }
  if(!currentUser){alert("Please sign in to continue.");return;}
@@ -4682,8 +4699,8 @@ async function startDanceStudioGeneration(){
   if(!audio){alert("Please upload your MP3 music file.");return;}if(audio.size>128*1024*1024||!(audio.type==="audio/mpeg"||audio.type==="audio/mp3"||/\.mp3$/i.test(audio.name))){alert("Please upload a valid MP3 under 128 MB.");return;}
   const style=document.getElementById("danceStyleChoice")?.value||"";if(!style){alert("Please choose a dance style.");return;}
   button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
-  try{audio=await trimDanceAudioReference(audio,30);const brief="Create a 30-second dance choreography music video. Main dancer must be the person in the performer reference photo; preserve their identity and appearance. Dance style: "+style+". Choreography: "+prompt+". Synchronize the full-body movements precisely to the uploaded music. Use clear full-body framing and professional cinematic camera work.";await startOmnVideoFlow({mode:"choreography",prompt:brief,duration:30,ratio:document.getElementById("danceRatio").value,audioFile:audio,images:[image],status,result,button});}
-  catch(e){status.textContent=e.message||"Could not start OmnAPI choreography.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE CHOREOGRAPHY";}
+  try{audio=await trimDanceAudioReference(audio,30);const brief="Create a 30-second dance choreography music video. Main dancer must be the person in the performer reference photo; preserve their identity and appearance. Dance style: "+style+". Choreography: "+prompt+". Synchronize the full-body movements precisely to the uploaded music. Use clear full-body framing and professional cinematic camera work.";await startWaveSpeedVideoFlow({mode:"choreography",prompt:brief,duration:30,ratio:document.getElementById("danceRatio").value,audioFile:audio,images:[image],status,result,button});}
+  catch(e){status.textContent=e.message||"Could not start WaveSpeed choreography.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE CHOREOGRAPHY";}
   return;
  }
  if(!currentUser){alert("Please sign in first.");return;}
@@ -4763,7 +4780,44 @@ async function populateDanceMusicVideoSongs(){
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
 }
-async async function startOmnVideoFlow(options){
+async async function startWaveSpeedVideoFlow(options){
+ const status=options.status,result=options.result,button=options.button;
+ const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
+ if(!token)throw new Error("Your session has expired. Please sign in again.");
+ const form=new FormData();
+ for(const [k,v] of Object.entries({mode:options.mode,prompt:options.prompt,duration:String(options.duration),ratio:options.ratio||"16:9",resolution:"480p",songPath:options.songPath||""}))if(v!==""&&v!=null)form.append(k,String(v));
+ if(options.audioFile)form.append("musicFile",options.audioFile);
+ (options.images||[]).forEach((file,i)=>form.append(options.mode==="choreography"?"referenceImage":"referenceImage"+i,file));
+ status.textContent="Calculating WaveSpeed price. No credits are charged yet...";
+ const quoteResponse=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
+ const quoteText=await quoteResponse.text();let quote={};try{quote=JSON.parse(quoteText)}catch{quote={error:quoteText.slice(0,400)}}
+ if(!quoteResponse.ok||!quote.success)throw new Error(quote.error||"Could not calculate the WaveSpeed price.");
+ const priceLine=quote.owner?"Owner account · no customer credits charged.":quote.credits.toLocaleString()+" LANE credits, including 30% LANE markup.";
+ const usdLine="Provider estimate: $"+quote.providerUsd.toFixed(2)+" · Customer price: $"+quote.customerUsd.toFixed(2);
+ if(!confirm("WAVESPEED MUSIC VIDEO\n\nDuration: "+quote.duration+" seconds\nResolution: 480p\n"+usdLine+"\n"+priceLine+"\n\nStart the paid video generation?")){status.textContent="Quote ready. Generation cancelled; no credits were charged.";return;}
+ status.textContent="Confirmed. Submitting your video to WaveSpeed...";
+ const buyResponse=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"purchase",generationId:quote.generationId})});
+ const buyText=await buyResponse.text();let purchase={};try{purchase=JSON.parse(buyText)}catch{purchase={error:buyText.slice(0,400)}}
+ if(!buyResponse.ok||!purchase.success)throw new Error(purchase.error||"WaveSpeed could not start the generation.");
+ status.textContent="WaveSpeed is generating your video. "+(purchase.creditsUsed?"Charged: "+purchase.creditsUsed+" LANE credits.":"");
+ button.textContent="VIDEO GENERATING...";
+ let finished=false;
+ for(let i=0;i<180;i++){
+  await new Promise(r=>setTimeout(r,10000));
+  const poll=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",generationId:quote.generationId})});
+  const raw=await poll.text();let p={};try{p=JSON.parse(raw)}catch{p={error:raw.slice(0,400)}}
+  if(!poll.ok)throw new Error(p.error||"Could not check WaveSpeed generation status.");
+  if(p.status==="SUCCEEDED"&&p.videoUrl){
+   const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=p.videoUrl;video.style.cssText="width:100%;max-width:100%;margin-top:12px;border-radius:12px";
+   const link=document.createElement("a");link.href=p.videoUrl;link.download="LANE-AI-WaveSpeed-Music-Video.mp4";link.rel="noopener";link.textContent="⬇ DOWNLOAD VIDEO";link.style.display="block";link.style.marginTop="10px";
+   result.replaceChildren(video,link);status.textContent="Completed! Your video is saved in your LANE library.";button.textContent="GENERATE ANOTHER VIDEO";finished=true;break;
+  }
+  if(p.status==="FAILED")throw new Error(p.error||"WaveSpeed generation failed. Any confirmed refund is reflected in your LANE credits.");
+  status.textContent="WaveSpeed status: processing · "+(i+1)+"/180";
+ }
+ if(!finished){status.textContent="Your video is still processing. Check My Files before starting another generation. Reference: "+quote.generationId;button.textContent="CHECK AGAIN";button.disabled=false;return;}
+}
+async function startOmnVideoFlow(options){
  const status=options.status,result=options.result,button=options.button;
  const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
  if(!token)throw new Error("Your session has expired. Please sign in again.");
@@ -4808,7 +4862,7 @@ async function startFullLengthMusicVideoGeneration(){
  if(prompt.length<10||prompt.length>1000){alert("Please describe your music video in 10 to 1,000 characters.");return;}
  if(![60,120,180,240].includes(duration)){alert("Please select a duration from 1 to 4 minutes.");return;}
  button.disabled=true;button.textContent="CHECKING OMN PRICE...";result.replaceChildren();
- try{await startOmnVideoFlow({mode:"music",prompt,duration,ratio:document.getElementById("danceMvRatio")?.value==="landscape"?"16:9":"9:16",songPath:currentUser.id+"/"+fileName,status,result,button});}
+ try{await startWaveSpeedVideoFlow({mode:"music",prompt,duration,ratio:document.getElementById("danceMvRatio")?.value==="landscape"?"16:9":"9:16",songPath:currentUser.id+"/"+fileName,status,result,button});}
  catch(e){status.textContent=e.message||"OmnAPI generation failed.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE MUSIC VIDEO";}
 }
 async function startDanceMusicVideoGeneration(){
