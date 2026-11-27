@@ -2431,22 +2431,51 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
     <input id="danceMusicFile" type="file" accept=".mp3,audio/mpeg" required>
     <input id="danceUseMusicReference" type="checkbox" checked hidden>
    </section>
+   <section class="dance-preview-card choreo-card">
+    <h3>03 / DANCE STYLE</h3>
+    <label for="danceStyleChoice">Choose the dance style</label>
+    <select id="danceStyleChoice" required>
+     <option value="" selected disabled>Select a dance style</option>
+     <option value="Afrobeat">Afrobeat</option>
+     <option value="Afroswing">Afroswing</option>
+     <option value="Amapiano">Amapiano</option>
+     <option value="R&B">R&amp;B</option>
+     <option value="R&amp;B Solo">R&amp;B Solo</option>
+     <option value="Hip-Hop">Hip-Hop</option>
+     <option value="Dancehall">Dancehall</option>
+     <option value="Afrobeats Fusion">Afrobeats Fusion</option>
+     <option value="Street Dance">Street Dance</option>
+     <option value="Commercial Pop">Commercial Pop</option>
+     <option value="Jazz Funk">Jazz Funk</option>
+     <option value="Contemporary">Contemporary</option>
+     <option value="House">House</option>
+     <option value="Reggaeton">Reggaeton</option>
+     <option value="Latin">Latin</option>
+     <option value="Salsa">Salsa</option>
+     <option value="Bachata">Bachata</option>
+     <option value="K-Pop">K-Pop</option>
+     <option value="Vogue / Femme">Vogue / Femme</option>
+     <option value="Heels Dance">Heels Dance</option>
+     <option value="Freestyle">Freestyle</option>
+    </select>
+    <p class="dance-preview-help">The selected style guides the choreography. Describe the exact moves in the next field.</p>
+   </section>
    <section class="dance-preview-card choreo-card choreo-prompt-card">
-    <h3>03 / CHOREOGRAPHY PROMPT</h3>
+    <h3>04 / CHOREOGRAPHY PROMPT</h3>
     <label for="dancePrompt">Describe exactly how the person should dance</label>
     <textarea id="dancePrompt" maxlength="1000" placeholder="Example: A woman performs a sensual R&B choreography in a stylish nightclub. Smooth body waves, controlled hip movements, expressive arm patterns, precise steps on the beat, a slow turn and a confident final pose. Keep her face and appearance consistent with the uploaded photo." required></textarea>
     <div class="dance-preview-help" id="dancePromptCounter" aria-live="polite">0 / 1,000 characters</div>
     <p class="dance-preview-help">Include the dance style, location, mood, body movements, footwork, rhythm, transitions and ending pose.</p>
    </section>
    <section class="dance-preview-card choreo-card">
-    <h3>04 / VIDEO SETTINGS</h3>
+    <h3>05 / VIDEO SETTINGS</h3>
     <label for="danceDuration">Video duration</label>
     <select id="danceDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select>
     <label for="danceRatio">Video format</label>
     <select id="danceRatio"><option value="9:16">Portrait 9:16</option><option value="16:9">Landscape 16:9</option></select>
    </section>
    <section class="dance-preview-card choreo-card">
-    <h3>05 / GENERATION</h3>
+    <h3>06 / GENERATION</h3>
     <div class="dance-preview-help" id="dancePrice">15 seconds · 541 credits · Customer price</div>
     <p class="dance-preview-help">Seedance 2.0 · 720p. Your uploaded photo defines the dancer; your MP3 defines the music and rhythm.</p>
     <button class="video-tool-action" id="danceGenerateButton" type="button" onclick="startDanceStudioGeneration()">GENERATE CHOREOGRAPHY</button>
@@ -4558,8 +4587,8 @@ async function startDanceStudioGeneration(){
   const {data:sessionData}=await supabaseClient.auth.getSession(), token=sessionData?.session?.access_token;
   if(!token)throw new Error("Your session has expired. Please sign in again.");
   const form=new FormData();
-  const choreographyPrompt="Use the person in the uploaded reference photo as the only dancer. Preserve their identity, face, hairstyle, clothing appearance and body proportions. Create a full-body dance performance precisely synchronized to the uploaded MP3. Choreography direction: "+prompt;
-  const vals={prompt:choreographyPrompt,duration,ratio:document.getElementById("danceRatio").value,location:"As described in the choreography prompt",cast:"Solo Performer",dancers:"1",outfits:"Preserve the appearance in the uploaded reference photo",danceStyle:"As described in the choreography prompt",choreography:prompt,energy:"As described in the choreography prompt",genre:"Match the uploaded MP3",bpm:"Match the uploaded MP3",lyrics:"",musicPrompt:"Use the uploaded MP3 as the exact music reference and synchronize every movement to its rhythm.",videoDirection:choreographyPrompt};
+  const selectedDanceStyle=document.getElementById("danceStyleChoice")?.value||"";if(!selectedDanceStyle){alert("Please choose a dance style.");return;}const choreographyPrompt="Use the person in the uploaded reference photo as the only dancer. Preserve their identity, face, hairstyle, clothing appearance and body proportions. Create a full-body dance performance precisely synchronized to the uploaded MP3. Dance style: "+selectedDanceStyle+". Choreography direction: "+prompt;
+  const vals={prompt:choreographyPrompt,duration,ratio:document.getElementById("danceRatio").value,location:"As described in the choreography prompt",cast:"Solo Performer",dancers:"1",outfits:"Preserve the appearance in the uploaded reference photo",danceStyle:selectedDanceStyle,choreography:prompt,energy:"As described in the choreography prompt",genre:"Match the uploaded MP3",bpm:"Match the uploaded MP3",lyrics:"",musicPrompt:"Use the uploaded MP3 as the exact music reference and synchronize every movement to its rhythm.",videoDirection:choreographyPrompt};
   Object.entries(vals).forEach(([k,v])=>form.append(k,String(v)));
   if(image)form.append("referenceImage",image);if(audio)form.append("musicFile",audio);
   const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
