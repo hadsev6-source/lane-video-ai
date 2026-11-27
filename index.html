@@ -4,6 +4,12 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script>
+  // Keep OAuth PKCE storage on one origin: the verifier must be saved and read on the same host.
+  if (window.location.hostname === "lane-video-ai.com") {
+    window.location.replace("https://www.lane-video-ai.com" + window.location.pathname + window.location.search + window.location.hash);
+  }
+</script>
 <title>LANE AI VIDEO STUDIO — Video, Image & Music</title>
 <meta content="Create images, videos and songs with LANE AI STUDIO." name="description"/>
 <meta property="og:type" content="website"/>
