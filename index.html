@@ -4426,27 +4426,28 @@ function updateLanePricingMode(){
   :"CUSTOMER PRICING · Signed in as a customer. Standard customer credit prices apply.";
 }
 function laneOwnerCredits(usd,rounding="round"){const eur=Number(usd)*0.9168*140;return Math.max(1,rounding==="ceil"?Math.ceil(eur):Math.round(eur));}
+function laneOwnerProviderLabel(usd,credits,detail){return "OWNER · "+detail+" · Provider API cost: $"+Number(usd).toFixed(3)+" · "+credits.toLocaleString()+" credits";}
 function updateImagePrice(){
  const el=document.getElementById("imageCostPreview");if(!el)return;
  const owner=isLaneOwnerAccount(),credits=owner?laneOwnerCredits(0.014):15;
- el.textContent=owner?"Your owner price: "+credits+" credits per image · estimated provider cost €0.01":"Customer price: 15 credits per image";
+ el.textContent=owner?laneOwnerProviderLabel(0.014,credits,"DeepInfra · per image"):"15 credits per image";
 }
 function updateMusicPrice(){
  const el=document.getElementById("songPricePreview");if(!el)return;
  const owner=isLaneOwnerAccount(),credits=owner?laneOwnerCredits(0.10):25;
- el.textContent=owner?"Your owner price: "+credits+" credits per song · estimated provider cost $0.10":"Customer price: 25 credits per complete song";
+ el.textContent=owner?laneOwnerProviderLabel(0.10,credits,"SongGPT · per song"):"25 credits per song";
 }
 function updateNewVideoCost(){
  const duration=Number(document.getElementById("videoDuration")?.value||5),el=document.getElementById("videoEstimatedCost");if(!el)return;
  const owner=isLaneOwnerAccount(),model=duration<=10?"Runway Gen-4.5":"Seedance 2.5";
  const usd=duration*(duration<=10?0.12:0.20),credits=owner?laneOwnerCredits(usd):({5:192,10:303,15:557,20:743,30:1114})[duration];
- el.textContent=owner?credits+" credits · owner estimate · "+model+" · €"+(usd*0.9168).toFixed(2):credits+" credits · customer price · "+model;
+ el.textContent=owner?laneOwnerProviderLabel(usd,credits,model+" · "+duration+" sec") : credits+" credits";
 }
 function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15), owner=isLaneOwnerAccount();
  const providerUsd=d*0.216, providerEur=providerUsd*0.9168, ownerCredits=laneOwnerCredits(providerUsd);
  const customerCredits=({5:181,10:361,15:541})[d]||0;
- const text=d===30?"30 seconds · Omn Music Video · exact quote before generation + 30% LANE markup":owner?d+" seconds · "+ownerCredits.toLocaleString()+" credits · Estimated provider cost: €"+providerEur.toFixed(2)+" (owner rate)":d+" seconds · "+customerCredits.toLocaleString()+" credits · Customer price";
+ const text=d===30?(owner?"30 sec · WaveSpeed quote shown before generation":"30 sec · Price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+d+" sec") : customerCredits.toLocaleString()+" credits";
  for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
 }
@@ -4498,7 +4499,7 @@ function getMyDanceDuration(){return Number(document.getElementById("myDanceDura
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
  const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd),customerCredits=({10:361,15:541})[duration];
- el.textContent=duration===30?"30 seconds · Omn Music Video · exact quote before generation + 30% LANE markup":owner?duration+" seconds · "+ownerCredits.toLocaleString()+" credits · estimated provider cost: €"+(providerUsd*0.9168).toFixed(2)+" (owner rate)":duration+" seconds · "+customerCredits.toLocaleString()+" credits · customer price";
+ el.textContent=duration===30?(owner?"30 sec · WaveSpeed quote shown before generation":"30 sec · Price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+duration+" sec"):customerCredits.toLocaleString()+" credits";
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
  if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
@@ -4792,14 +4793,14 @@ async function startWaveSpeedVideoFlow(options){
  const quoteResponse=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
  const quoteText=await quoteResponse.text();let quote={};try{quote=JSON.parse(quoteText)}catch{quote={error:quoteText.slice(0,400)}}
  if(!quoteResponse.ok||!quote.success)throw new Error(quote.error||"Could not calculate the WaveSpeed price.");
- const priceLine=quote.owner?"Owner account · no customer credits charged.":quote.credits.toLocaleString()+" LANE credits, including 30% LANE markup.";
- const usdLine="Provider estimate: $"+quote.providerUsd.toFixed(2)+" · Customer price: $"+quote.customerUsd.toFixed(2);
+ const priceLine=quote.owner?"OWNER API COST: $"+quote.providerUsd.toFixed(2)+" · "+quote.credits.toLocaleString()+" credits (no markup)":quote.credits.toLocaleString()+" credits";
+ const usdLine=quote.owner?"Provider API price: $"+quote.providerUsd.toFixed(2):"";
  if(!confirm("WAVESPEED MUSIC VIDEO\n\nDuration: "+quote.duration+" seconds\nResolution: 480p\n"+usdLine+"\n"+priceLine+"\n\nStart the paid video generation?")){status.textContent="Quote ready. Generation cancelled; no credits were charged.";return;}
  status.textContent="Confirmed. Submitting your video to WaveSpeed...";
  const buyResponse=await fetch(SUPABASE_URL+"/functions/v1/wavespeed-music-video",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"purchase",generationId:quote.generationId})});
  const buyText=await buyResponse.text();let purchase={};try{purchase=JSON.parse(buyText)}catch{purchase={error:buyText.slice(0,400)}}
  if(!buyResponse.ok||!purchase.success)throw new Error(purchase.error||"WaveSpeed could not start the generation.");
- status.textContent="WaveSpeed is generating your video. "+(purchase.creditsUsed?"Charged: "+purchase.creditsUsed+" LANE credits.":"");
+ status.textContent="WaveSpeed is generating your video. "+(purchase.creditsUsed?"Charged: "+purchase.creditsUsed+" credits.":"");
  button.textContent="VIDEO GENERATING...";
  let finished=false;
  for(let i=0;i<180;i++){
