@@ -4450,7 +4450,7 @@ function updateNewVideoCost(){
 }
 function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15), owner=isLaneOwnerAccount();
- const providerUsd=d*0.216, providerEur=providerUsd*0.9168, ownerCredits=laneOwnerCredits(providerUsd);
+ const providerUsd=d*0.216, ownerCredits=laneOwnerCredits(providerUsd,"ceil");
  const customerCredits=d===30?0:laneCustomerCredits(providerUsd);
  const text=d===30?(owner?"OWNER · WaveSpeed API quote shown before generation":"Credit price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+d+" sec") : customerCredits.toLocaleString()+" credits";
  for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
