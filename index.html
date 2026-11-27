@@ -3919,8 +3919,11 @@ function closeStudioWorkspace() {
 
 
 function updateDancePrice(){
- const d=Number(document.getElementById("danceDuration")?.value||15), el=document.getElementById("dancePrice"), credits=({5:128,10:247,15:372})[d]||0;
- if(el)el.textContent=d+" seconds · "+credits.toLocaleString()+" credits · Estimated provider cost: $"+(d*0.216).toFixed(2)+" (720p).";
+ const d=Number(document.getElementById("danceDuration")?.value||15), el=document.getElementById("dancePrice");
+ const owner=currentUser?.id==="dce2d514-964d-49be-b83d-45e6721b49a7";
+ const customerCredits=({5:128,10:247,15:372})[d]||0, providerUsd=d*0.216;
+ const ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140));
+ if(el)el.textContent=d+" seconds · "+(owner?ownerCredits:customerCredits).toLocaleString()+" credits · "+(owner?"Your provider cost: $":"Estimated provider cost: $")+providerUsd.toFixed(2)+" (720p).";
 }
 document.getElementById("danceDuration")?.addEventListener("change",updateDancePrice);
 function updateDancePromptCounter(){
@@ -3938,9 +3941,12 @@ async function startDanceStudioGeneration(){
  const image=document.getElementById("danceReferenceImage").files[0], audio=document.getElementById("danceMusicFile").files[0];
  if(image&&image.size>10*1024*1024){alert("Reference image maximum size is 10 MB.");return;}
  if(audio&&audio.size>30*1024*1024){alert("Music reference maximum size is 30 MB.");return;}
- const duration=Number(document.getElementById("danceDuration").value), credits=({5:128,10:247,15:372})[duration]||0;
+ const duration=Number(document.getElementById("danceDuration").value);
+ const owner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7";
+ const providerUsd=duration*0.216, customerCredits=({5:128,10:247,15:372})[duration]||0;
+ const credits=owner?Math.max(1,Math.round(providerUsd*0.9168*140)):customerCredits;
  if(!credits){alert("Please select a supported video duration.");return;}
- if(!confirm("Generate a "+duration+"-second Dance Studio video for "+credits+" credits?"))return;
+ if(!confirm("Generate a "+duration+"-second Dance Studio video for "+credits+" credits?"+(owner?" (provider cost: $"+providerUsd.toFixed(2)+")":"")))return;
  button.disabled=true;button.textContent="UPLOADING & STARTING...";status.textContent="Uploading references and submitting your video...";
  result.replaceChildren();
  try{
