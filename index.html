@@ -2222,8 +2222,7 @@ header.site-header #headerGoogleSignIn svg { display:block !important; width:18p
           <div id="newVideoResult" style="margin-top:14px"></div>
         </div>
       </div>
-      <div class="video-builder-model"><b>Runway Gen-4.5</b><span>Automatically selected for 5–10 second videos.</span></div>
-      <div class="video-builder-model"><b>Seedance 2.5</b><span>Automatically selected for 15–30 second videos.</span></div>
+      <div class="video-builder-model"><b>WaveSpeed · Wan 3.0</b><span>Automatically selected for 5–30 second text-to-video generation at 480p.</span></div>
       <div class="video-builder-model"><b>Your LANE library stays connected</b><span>Existing account, credits, payment and My Files features remain part of the platform.</span></div>
     </aside>
   </div>
@@ -2952,7 +2951,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
       if (error || !data?.success || !data?.generationId || !data?.taskId) {
         throw new Error(data?.error || error?.message || "The video request could not be started.");
       }
-      const modelLabel = data.model === "seedance2_5" ? "Seedance 2.5" : "Runway Gen-4.5";
+      const modelLabel = data.model === "wavespeed-wan-3.0" ? "WaveSpeed Wan 3.0" : "WaveSpeed";
       setNewVideoStatus("GENERATING", "Your video is being created.");
       setLaneGenerationProgress(result,"GENERATING");
       button.textContent = "VIDEO GENERATING...";
