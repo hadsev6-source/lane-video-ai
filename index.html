@@ -1291,6 +1291,17 @@ body>#myfiles,#myfiles{display:none}
 
 
 /* Dance Studio — five clear creation choices on the homepage, replacing the old Face Lab hero. */
+/* Full-bleed Dance to My Music feature card */
+.dance-home-mode.dance-home-mode-featured{position:relative;isolation:isolate;grid-column:span 2;min-height:360px;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:10px;padding:clamp(22px,3vw,38px);border:1px solid #51434a;border-radius:18px;background:#090909;color:#fff;box-shadow:0 14px 36px #000b;text-align:left}
+.dance-home-mode.dance-home-mode-featured:hover{transform:translateY(-3px);border-color:#fff;box-shadow:0 18px 42px #000c}
+.dance-home-mode-featured .dance-home-mode-image{position:absolute;inset:0;z-index:-2;width:100%;height:100%;min-height:100%;object-fit:cover;object-position:center 42%;display:block}
+.dance-home-mode-featured:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.03) 18%,rgba(0,0,0,.16) 42%,rgba(0,0,0,.88) 100%)}
+.dance-home-mode-featured strong{font-size:clamp(22px,3vw,38px);font-weight:950;line-height:1.05;letter-spacing:.035em;text-shadow:0 2px 18px #000}
+.dance-home-mode-featured>span:not(.dance-home-mode-icon){min-height:0;color:#f1eeee;font-size:14px;line-height:1.45;text-shadow:0 2px 12px #000}
+.dance-home-mode-featured em{display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:7px;padding:0 22px;border:1px solid rgba(255,255,255,.8);border-radius:7px;background:rgba(10,10,10,.64);color:#fff;font-size:12px;font-weight:900;letter-spacing:.08em}
+@media(max-width:900px){.dance-home-mode.dance-home-mode-featured{grid-column:span 2;min-height:330px}}
+@media(max-width:600px){.dance-home-mode.dance-home-mode-featured{grid-column:1/-1;min-height:360px;padding:22px 20px;border-radius:14px}.dance-home-mode-featured .dance-home-mode-image{object-position:center 40%}.dance-home-mode-featured strong{font-size:clamp(25px,8vw,34px)}.dance-home-mode-featured em{min-height:48px;font-size:12px}}
+
 .dance-home-mode-grid{width:min(1700px,96%);margin:18px auto 28px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
 .dance-home-mode{min-width:0;min-height:225px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;padding:18px 15px;border:1px solid #ff9b32;border-radius:16px;background:radial-gradient(ellipse at 50% 5%,#69370f88,transparent 55%),linear-gradient(145deg,#1a1209,#080808 72%);color:#fff;text-align:left;cursor:pointer;box-shadow:0 8px 26px #0009,0 0 14px #e88c2620;transition:transform .18s,border-color .18s,box-shadow .18s}
 .dance-home-mode:hover{transform:translateY(-3px);border-color:#ffd080;box-shadow:0 10px 28px #e88c2640}
@@ -1683,7 +1694,7 @@ body>#myfiles,#myfiles{display:none}
     
     
     <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('musicVideo')"><img class="dance-home-mode-image" src="https://is1-ssl.mzstatic.com/image/thumb/Video211/v4/c6/c6/a4/c6c6a462-3197-3ac5-5473-7f36e18a0097/3617399370354_1_01.jpg/1920x1080mv.jpg" alt="Singer performing in a recording studio" loading="lazy"><strong>AI MUSIC VIDEO</strong><span>Създай песен с вокали и видео към нея</span><em>CREATE MUSIC VIDEO →</em></button>
-    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceMusic')"><img class="dance-home-mode-image" src="https://static.wixstatic.com/media/4e2636_58eb6ba1ac054bad97d8e2fd4c269484~mv2.jpg/v1/fill/w_816%2Ch_539%2Cal_c%2Cq_85%2Cusm_0.66_1.00_0.01%2Cenc_auto/4e2636_58eb6ba1ac054bad97d8e2fd4c269484~mv2.jpg" alt="Afrobeats dancers moving to their own music" loading="lazy"><strong>DANCE TO MY MUSIC</strong><span>Качи собствен MP3 и създай танцово видео</span><em>USE MY MP3 →</em></button>
+    <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceMusic')"><img class="dance-home-mode-image" src="https://raw.githubusercontent.com/hadsev6-source/lane-video-ai/main/WhatsApp%20Image%202026-11-22%20at%2020.01.19.jpeg" alt="Dance to My Music studio cover" loading="eager"><strong>DANCE TO MY MUSIC</strong><span>Качи собствен MP3 и създай танцово видео</span><em>USE MY MP3 →</em></button>
     <button type="button" class="dance-home-mode" onclick="openDanceModeFromHome('danceVideo')"><img class="dance-home-mode-image" src="https://image.atsw.de/atsw/production/2024-07/bigfm-hiphop-web-clean-1600x1600.jpg?crop=1600%2C1200%2C0%2C301&rect=0%2C301%2C1600%2C1200" alt="Hip-hop dancers performing choreography" loading="lazy"><strong>AI DANCE VIDEO</strong><span>Опиши танцьорите и хореографията</span><em>CREATE DANCE VIDEO →</em></button>
   </div>
 
