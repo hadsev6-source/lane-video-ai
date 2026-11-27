@@ -4436,7 +4436,7 @@ function laneDurationLabel(seconds){
 function lanePriceBreakdown(el,rows,owner,heading){
  if(!el)return;
  const money=usd=>laneFormatUsd(usd);
- el.innerHTML='<div style="font-weight:700;margin-bottom:7px">'+heading+'</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px">'+rows.map(r=>'<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #553038;padding:5px 0"><span>'+laneDurationLabel(r.seconds||parseInt(r.label,10))+'</span><strong style="text-align:right">'+(owner?money(r.usd)+' · '+r.ownerCredits.toLocaleString()+' credits':r.customerCredits.toLocaleString()+' credits')+'</strong></div>').join('')+'</div><div class="mini-note" style="margin-top:7px">'+(owner?'Owner view · estimated provider cost and equivalent LANE credits.':'Customer price · LANE credits only, including the 50% markup.')+'</div>';
+ el.innerHTML='<div style="font-weight:700;margin-bottom:7px">'+heading+'</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px">'+rows.map(r=>'<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #553038;padding:5px 0"><span>'+laneDurationLabel(r.seconds||parseInt(r.label,10))+'</span><strong style="text-align:right">'+(owner?money(r.usd)+' · '+r.ownerCredits.toLocaleString()+' credits':r.customerCredits.toLocaleString()+' credits')+'</strong></div>').join('')+'</div><div class="mini-note" style="margin-top:7px">'+(owner?'Owner view · estimated provider cost and equivalent LANE credits.':'Customer price · LANE credits only, including the 30% markup.')+'</div>';
 }
 function laneBuildPriceRows(durations,rate,providerForDuration,ownerRounding="ceil"){
  return durations.map(d=>{const usd=providerForDuration?providerForDuration(d):d*rate;return {seconds:d,usd,ownerCredits:laneOwnerCredits(usd,typeof ownerRounding==="function"?ownerRounding(d):ownerRounding),customerCredits:laneCustomerCredits(usd)};});
@@ -4444,10 +4444,10 @@ function laneBuildPriceRows(durations,rate,providerForDuration,ownerRounding="ce
 function laneShowSelectedPrice(duration,providerUsd,title){
  if(!currentUser)return;
  const owner=isLaneOwnerAccount(),credits=owner?laneOwnerCredits(providerUsd,duration>=30?"round":"ceil"):laneCustomerCredits(providerUsd);
- const lines=owner?("WaveSpeed reference price: "+laneFormatUsd(providerUsd)+"\nOwner credit equivalent: "+credits.toLocaleString()+" credits"):("Price: "+credits.toLocaleString()+" LANE credits (includes 50% markup)");
+ const lines=owner?("WaveSpeed reference price: "+laneFormatUsd(providerUsd)+"\nOwner credit equivalent: "+credits.toLocaleString()+" credits"):("Price: "+credits.toLocaleString()+" LANE credits (includes 30% markup)");
  alert(title+"\n\nSelected duration: "+laneDurationLabel(duration)+"\n"+lines+"\n\nReference price before generation. No credits have been charged.");
 }
-function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.50));}
+function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.30));}
 function updateDanceMvPrice(){
  const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;
  const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20,30,60,120,180,240],.03,null,"round");
@@ -4477,7 +4477,7 @@ function updateDancePrice(){
  const d=Number(document.getElementById("danceDuration")?.value||15),owner=isLaneOwnerAccount(),el=document.getElementById("dancePrice");
  const rows=laneBuildPriceRows([10,15,30],.216);
  lanePriceBreakdown(el,rows,owner,"DANCE STUDIO · SEEDANCE 2.0 · 720p");
- updateLanePricingMode();updateNewVideoCost();
+ updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
  if(typeof updateDanceMvPrice==="function")updateDanceMvPrice();
  if(typeof updateMyDancePrice==="function")updateMyDancePrice();
 }
