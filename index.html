@@ -1300,7 +1300,7 @@ body>#myfiles,#myfiles{display:none}
 .dance-home-mode em{margin-top:auto;color:#ffb45d;font-size:10px;font-style:normal;font-weight:900;letter-spacing:.06em}
 @media(max-width:900px){.dance-home-mode-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.dance-home-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px auto 22px}.dance-home-mode{min-height:205px;padding:13px 11px;gap:8px}.dance-home-mode-icon{height:65px;font-size:42px}.dance-home-mode strong{font-size:13px}.dance-home-mode>span:not(.dance-home-mode-icon){font-size:11px;min-height:46px}.dance-home-mode em{font-size:9px}}
-\n.dance-clip-control{margin:16px 0;padding:16px;border:1px solid #8d6ab4;border-radius:12px;background:#171020}.dance-clip-control>label{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;margin-bottom:12px;color:#f2eaff}.dance-clip-control input[type=range]{width:100%;height:42px;padding:0;accent-color:#c58aff;cursor:ew-resize;touch-action:pan-y}.dance-clip-readout{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#bca9d3}.dance-clip-readout span{display:grid;gap:5px}.dance-clip-readout strong{font-size:17px;color:#fff;font-variant-numeric:tabular-nums}.dance-wave-handle{display:none!important}.dance-wave-selection{background:rgba(175,105,255,.3)!important;border-left:3px solid #d6aaff!important;border-right:3px solid #d6aaff!important}\n</style>
+\n.dance-clip-control{margin:16px 0;padding:16px;border:1px solid #8d6ab4;border-radius:12px;background:#171020}.dance-clip-control>label{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;margin-bottom:12px;color:#f2eaff}.dance-clip-control input[type=range]{width:100%;height:42px;padding:0;accent-color:#c58aff;cursor:ew-resize;touch-action:pan-y}.dance-clip-readout{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#bca9d3}.dance-clip-readout span{display:grid;gap:5px}.dance-clip-readout strong{font-size:17px;color:#fff;font-variant-numeric:tabular-nums}.dance-wave-handle{display:none!important}.dance-wave-selection{background:rgba(175,105,255,.22)!important;border-left:2px solid #d6aaff!important;border-right:2px solid #d6aaff!important}.dance-wave-playhead{position:absolute;z-index:4;top:0;bottom:0;left:0;width:2px;background:#fff;box-shadow:0 0 7px #fff;pointer-events:none;display:none}.dance-wave-playhead:before{content:"";position:absolute;top:0;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff}#danceStudioPreview .dance-waveform-wrap{height:150px!important;cursor:crosshair}#danceStudioPreview .dance-wave-help{line-height:1.5;margin-top:8px}.dance-time-ruler{display:flex;justify-content:space-between;color:#bca9d3;font-size:10px;font-variant-numeric:tabular-nums;padding:5px 2px 0}</style>
 
 <style>
 /* Credit packages: always three cards per row, including mobile */
@@ -2308,6 +2308,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
   <div class="dance-audio-editor-head"><strong>YOUR AUDIO</strong><span id="myDanceAudioDuration">Loading audio...</span></div>
   <div class="dance-waveform-wrap" id="myDanceWaveformWrap">
    <canvas id="myDanceWaveform" aria-label="Audio waveform"></canvas>
+   <div class="dance-wave-playhead" id="myDanceWavePlayhead" aria-hidden="true"></div>
    <div class="dance-wave-selection" id="myDanceWaveSelection"></div>
    <button type="button" class="dance-wave-handle dance-wave-handle-start" id="myDanceStartHandle" aria-label="Drag to set clip start"></button>
    <button type="button" class="dance-wave-handle dance-wave-handle-end" id="myDanceEndHandle" aria-label="Drag to set clip end"></button>
@@ -4204,9 +4205,16 @@ function drawMyDanceWaveform(){
  const rect=wrap.getBoundingClientRect(),ratio=window.devicePixelRatio||1,width=Math.max(1,Math.floor(rect.width*ratio)),height=Math.max(1,Math.floor(rect.height*ratio));
  canvas.width=width;canvas.height=height;
  const ctx=canvas.getContext("2d");ctx.clearRect(0,0,width,height);
- const data=myDanceDecodedAudio.getChannelData(0),step=Math.max(1,Math.floor(data.length/width)),middle=height/2;
- for(let x=0;x<width;x++){let peak=0;const from=x*step,to=Math.min(data.length,from+step);for(let i=from;i<to;i++)peak=Math.max(peak,Math.abs(data[i]));const bar=Math.max(2,peak*height*.88);ctx.fillStyle="#9a82b8";ctx.fillRect(x,middle-bar/2,Math.max(1,ratio),bar);}
- updateMyDanceWaveSelection();
+ const data=myDanceDecodedAudio.getChannelData(0),middle=height/2,buckets=Math.max(1,Math.floor(width/2)),samplesPerBucket=Math.max(1,Math.floor(data.length/buckets));
+ for(let x=0;x<buckets;x++){
+  const from=x*samplesPerBucket,to=Math.min(data.length,from+samplesPerBucket);let peak=0,sum=0;
+  for(let i=from;i<to;i++){const v=Math.abs(data[i]);if(v>peak)peak=v;sum+=v*v;}
+  const rms=Math.sqrt(sum/Math.max(1,to-from)),amplitude=Math.max(peak*.62,rms*2.2),bar=Math.max(3,amplitude*height*.88);
+  ctx.fillStyle=peak>.72?"#e0b6ff":peak>.35?"#c18bea":"#9871bd";
+  ctx.fillRect(x*2+0.5*ratio,middle-bar/2,Math.max(1,1.35*ratio),bar);
+ }
+ ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=ratio;ctx.beginPath();ctx.moveTo(0,middle);ctx.lineTo(width,middle);ctx.stroke();
+ updateMyDanceWaveSelection();updateMyDancePlayhead();
 }
 function updateMyDanceWaveSelection(){
  const duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection||{start:0,end:Math.min(15,duration)},clipLength=Math.min(15,duration);
@@ -4220,6 +4228,22 @@ function updateMyDanceWaveSelection(){
  const slider=document.getElementById("myDanceClipStart"),sv=document.getElementById("myDanceClipStartValue"),ev=document.getElementById("myDanceClipEndValue");
  if(slider){slider.max=String(Math.max(0,duration-clipLength));slider.value=String(start);}
  if(sv)sv.textContent=formatDanceTime(start);if(ev)ev.textContent=formatDanceTime(end);
+}
+function updateMyDancePlayhead(){
+ const playhead=document.getElementById("myDanceWavePlayhead"),duration=myDanceDecodedAudio?.duration||0,audio=document.getElementById("myDanceAudioPreview");
+ if(!playhead||!duration)return;const current=Number(audio?.currentTime)||0;
+ playhead.style.left=(Math.max(0,Math.min(1,current/duration))*100)+"%";
+ playhead.style.display=audio&&!audio.paused?"block":"none";
+}
+function seekMyDanceWaveform(event){
+ const wrap=document.getElementById("myDanceWaveformWrap"),audio=document.getElementById("myDanceAudioPreview"),duration=myDanceDecodedAudio?.duration||0;
+ if(!wrap||!audio||!duration)return;const rect=wrap.getBoundingClientRect(),ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+ audio.currentTime=ratio*duration;updateMyDancePlayhead();
+}
+function updateMyDanceTimeRuler(){
+ const wrap=document.getElementById("myDanceWaveformWrap"),duration=myDanceDecodedAudio?.duration||0;if(!wrap||!duration)return;
+ let ruler=document.getElementById("myDanceTimeRuler");if(!ruler){ruler=document.createElement("div");ruler.id="myDanceTimeRuler";ruler.className="dance-time-ruler";wrap.insertAdjacentElement("afterend",ruler);}
+ const count=4;ruler.replaceChildren();for(let i=0;i<=count;i++){const tick=document.createElement("span");tick.textContent=formatDanceTime(duration*i/count);ruler.appendChild(tick);}
 }
 function setMyDanceSelectionFromPointer(event){
  const wrap=document.getElementById("myDanceWaveformWrap"),duration=myDanceDecodedAudio?.duration||0;if(!wrap||!duration)return;
@@ -4239,21 +4263,23 @@ function setupMyDanceAudioEditor(){
    const duration=myDanceDecodedAudio.duration;if(!Number.isFinite(duration)||duration<=0)throw new Error("Could not read this audio file.");
    const end=Math.min(15,duration);window.myDanceAudioSelection={start:0,end};
    document.getElementById("myDanceAudioDuration").textContent="Track length · "+formatDanceTime(duration);
-   drawMyDanceWaveform();
+   drawMyDanceWaveform();updateMyDanceTimeRuler();
   }catch(error){myDanceDecodedAudio=null;window.myDanceAudioSelection=null;document.getElementById("myDanceAudioDuration").textContent=error.message;throw error;}
  });
  const clipSlider=document.getElementById("myDanceClipStart");clipSlider?.addEventListener("input",()=>{const duration=myDanceDecodedAudio?.duration||0,length=Math.min(15,duration),start=Number(clipSlider.value)||0;window.myDanceAudioSelection={start,end:Math.min(duration,start+length)};updateMyDanceWaveSelection();});
+ document.getElementById("myDanceWaveformWrap")?.addEventListener("click",seekMyDanceWaveform);
+ audio?.addEventListener("timeupdate",updateMyDancePlayhead);audio?.addEventListener("play",updateMyDancePlayhead);audio?.addEventListener("pause",updateMyDancePlayhead);audio?.addEventListener("seeked",updateMyDancePlayhead);
  document.addEventListener("pointermove",event=>{if(myDanceDragMode)setMyDanceSelectionFromPointer(event);});
  document.addEventListener("pointerup",()=>{myDanceDragMode=null;});
  preview?.addEventListener("click",async()=>{
   if(!myDanceDecodedAudio||!window.myDanceAudioSelection)return;
-  const selection=window.myDanceAudioSelection;audio.currentTime=selection.start;
+  const selection=window.myDanceAudioSelection;audio.pause();audio.currentTime=selection.start;
   try{await audio.play();}catch(error){document.getElementById("myDanceAudioDuration").textContent="Tap the audio player to start playback.";return;}
   const stopAt=()=>{if(audio.currentTime>=selection.end){audio.pause();audio.removeEventListener("timeupdate",stopAt);}};
-  audio.addEventListener("timeupdate",stopAt);
+  audio.addEventListener("timeupdate",stopAt);updateMyDancePlayhead();
  });
  audio?.addEventListener("ended",()=>{});
- window.addEventListener("resize",drawMyDanceWaveform);
+ window.addEventListener("resize",()=>{drawMyDanceWaveform();updateMyDanceTimeRuler();});
 }
 setupMyDanceAudioEditor();
 async function trimDanceAudioRange(file,startSeconds,endSeconds){
