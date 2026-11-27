@@ -2353,6 +2353,8 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
 <section class="dance-mode-workspace" id="danceToMyMusicWorkspace">
  <h3>DANCE TO MY MUSIC</h3>
  <p>Upload your MP3, choose the dancers, and select the exact music segment for your video.</p>
+ <label for="myDanceDuration">VIDEO DURATION</label>
+ <select id="myDanceDuration"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option></select>
  <label for="myDanceMusicFile">UPLOAD MP3 FILE · REQUIRED</label>
  <input id="myDanceMusicFile" type="file" accept=".mp3,audio/mpeg" required>
  <div id="myDanceAudioEditor" class="dance-audio-editor" hidden>
@@ -2362,8 +2364,8 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
    <div class="dance-wave-playhead" id="myDanceWavePlayhead" aria-hidden="true"></div>
    <div class="dance-wave-selection" id="myDanceWaveSelection"></div>
   </div>
-  <div class="dance-wave-help">Move the large slider to choose where your 15-second clip starts. The highlighted area shows the exact clip.</div>
-  <div class="dance-clip-control"><label for="myDanceClipStart">CLIP START POSITION</label><input id="myDanceClipStart" type="range" min="0" max="0" step="0.1" value="0"><div class="dance-clip-readout"><span>START <strong id="myDanceClipStartValue">00:00.0</strong></span><span>FIXED LENGTH <strong>15.0 sec</strong></span><span>END <strong id="myDanceClipEndValue">00:15.0</strong></span></div></div>
+  <div class="dance-wave-help">Choose where your selected-length clip starts. The highlighted area shows the exact clip.</div>
+  <div class="dance-clip-control"><label for="myDanceClipStart">CLIP START POSITION</label><input id="myDanceClipStart" type="range" min="0" max="0" step="0.1" value="0"><div class="dance-clip-readout"><span>START <strong id="myDanceClipStartValue">00:00.0</strong></span><span>CLIP LENGTH <strong id="myDanceClipLength">15.0 sec</strong></span><span>END <strong id="myDanceClipEndValue">00:15.0</strong></span></div></div>
   <div class="dance-audio-times"><span id="myDanceStartTime">00:00.0</span><strong id="myDanceSelectionLength">Selected clip · 14.8 sec</strong><span id="myDanceEndTime">00:14.8</span></div>
   <button type="button" class="dance-audio-preview-btn" id="myDancePreviewSelection">▶ Preview Selection</button>
   <audio id="myDanceAudioPreview" preload="metadata"></audio>
@@ -4264,11 +4266,16 @@ function updateMyDancePromptCounter(){
 }
 document.getElementById("myDancePrompt")?.addEventListener("input",updateMyDancePromptCounter);
 updateMyDancePromptCounter();
+function getMyDanceDuration(){return Number(document.getElementById("myDanceDuration")?.value||15);}
 function updateMyDancePrice(){
- const el=document.getElementById("myDancePrice");if(!el)return;
- const owner=isLaneOwnerAccount(),providerEur=15*0.216*0.9168,ownerCredits=laneOwnerCredits(15*0.216);
- el.textContent=owner?"15 seconds · "+ownerCredits.toLocaleString()+" credits · estimated cost":"15 seconds · 541 credits";
+ const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
+ const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd),customerCredits=({10:361,15:541})[duration];
+ el.textContent=owner?duration+" seconds · "+ownerCredits.toLocaleString()+" credits · estimated provider cost: €"+(providerUsd*0.9168).toFixed(2)+" (owner rate)":duration+" seconds · "+customerCredits.toLocaleString()+" credits · customer price";
+ const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
+ const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
+ if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
 }
+document.getElementById("myDanceDuration")?.addEventListener("change",updateMyDancePrice);
 updateMyDancePrice();
 
 let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePreviewStopHandler=null;
@@ -4292,7 +4299,7 @@ function drawMyDanceWaveform(){
  updateMyDanceWaveSelection();updateMyDancePlayhead();
 }
 function updateMyDanceWaveSelection(){
- const duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection||{start:0,end:Math.min(15,duration)},clipLength=15;
+ const duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection||{start:0,end:Math.min(getMyDanceDuration(),duration)},clipLength=getMyDanceDuration();
  const start=Math.max(0,Math.min(Number(selection.start)||0,Math.max(0,duration-clipLength))),end=Math.min(duration,start+clipLength);
  selection.start=start;selection.end=end;
  const left=duration?start/duration*100:0,right=duration?end/duration*100:0,region=document.getElementById("myDanceWaveSelection");
@@ -4334,7 +4341,7 @@ function updateMyDanceTimeRuler(){
 }
 function setMyDanceSelectionFromPointer(event){
  const wrap=document.getElementById("myDanceWaveformWrap"),duration=myDanceDecodedAudio?.duration||0;if(!wrap||!duration)return;
- const length=Math.min(15,duration),rect=wrap.getBoundingClientRect(),position=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))*duration,start=Math.max(0,Math.min(position-length/2,duration-length));
+ const length=Math.min(getMyDanceDuration(),duration),rect=wrap.getBoundingClientRect(),position=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))*duration,start=Math.max(0,Math.min(position-length/2,duration-length));
  window.myDanceAudioSelection={start,end:start+length};updateMyDanceWaveSelection();
 }
 function setupMyDanceAudioEditor(){
@@ -4347,13 +4354,13 @@ function setupMyDanceAudioEditor(){
   try{
    const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(!AudioContextClass)throw new Error("Audio preview is not supported in this browser.");
    const context=new AudioContextClass();try{myDanceDecodedAudio=await context.decodeAudioData(await file.arrayBuffer());}finally{await context.close().catch(()=>{});}
-   const duration=myDanceDecodedAudio.duration;if(!Number.isFinite(duration)||duration<15)throw new Error("This track is shorter than 15 seconds. Please upload an MP3 that is at least 15 seconds long.");
-   window.myDanceAudioSelection={start:0,end:15};audio.currentTime=0;
-   document.getElementById("myDanceAudioDuration").textContent="Track length · "+formatDanceTime(duration)+" · Select any 15-second segment";
+   const duration=myDanceDecodedAudio.duration,clipLength=getMyDanceDuration();if(!Number.isFinite(duration)||duration<clipLength)throw new Error("This track is shorter than "+clipLength+" seconds. Please upload a longer MP3.");
+   window.myDanceAudioSelection={start:0,end:clipLength};audio.currentTime=0;
+   document.getElementById("myDanceAudioDuration").textContent="Track length · "+formatDanceTime(duration)+" · Select any "+clipLength+"-second segment";
    drawMyDanceWaveform();updateMyDanceTimeRuler();
   }catch(error){myDanceDecodedAudio=null;window.myDanceAudioSelection=null;document.getElementById("myDanceAudioDuration").textContent=error.message;throw error;}
  });
- const clipSlider=document.getElementById("myDanceClipStart");clipSlider?.addEventListener("input",()=>{const duration=myDanceDecodedAudio?.duration||0;if(duration<15)return;const start=Math.max(0,Math.min(Number(clipSlider.value)||0,duration-15));window.myDanceAudioSelection={start,end:start+15};updateMyDanceWaveSelection();playMyDanceSelection(start);});
+ const clipSlider=document.getElementById("myDanceClipStart");clipSlider?.addEventListener("input",()=>{const duration=myDanceDecodedAudio?.duration||0,clipLength=getMyDanceDuration();if(duration<clipLength)return;const start=Math.max(0,Math.min(Number(clipSlider.value)||0,duration-clipLength));window.myDanceAudioSelection={start,end:start+clipLength};updateMyDanceWaveSelection();playMyDanceSelection(start);});
  document.getElementById("myDanceWaveformWrap")?.addEventListener("click",seekMyDanceWaveform);
  audio?.addEventListener("timeupdate",updateMyDancePlayhead);audio?.addEventListener("play",updateMyDancePlayhead);audio?.addEventListener("pause",updateMyDancePlayhead);audio?.addEventListener("seeked",updateMyDancePlayhead);
  document.addEventListener("pointermove",event=>{if(myDanceDragMode)setMyDanceSelectionFromPointer(event);});
@@ -4402,18 +4409,19 @@ async function startMyDanceMusicGeneration(){
   status.textContent="Preparing your selected audio segment...";
   const selection=window.myDanceAudioSelection;
   if(!selection||!myDanceDecodedAudio)throw new Error("Upload an MP3 and choose the audio segment first.");
-  if(myDanceDecodedAudio.duration<15||Math.abs((selection.end-selection.start)-15)>.05)throw new Error("Please select a full 15-second segment from your MP3.");
-  const audio=await trimDanceAudioRange(audioFile,selection.start,selection.start+15);
+  const duration=getMyDanceDuration();
+  if(myDanceDecodedAudio.duration<duration||Math.abs((selection.end-selection.start)-duration)>.05)throw new Error("Please select a full "+duration+"-second segment from your MP3.");
+  const audio=await trimDanceAudioRange(audioFile,selection.start,selection.start+duration);
   if(!audio.size)throw new Error("The selected audio segment could not be processed.");
-  const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=15*0.216,ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:541;
-  if(!confirm("Generate a 15-second video for "+chargeCredits+" credits?"+(isOwner?" (estimated provider cost)":"")))return;
+  const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=duration*0.216,ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:({10:361,15:541})[duration];
+  if(!confirm("Generate a "+duration+"-second video for "+chargeCredits+" credits?"+(isOwner?" (estimated provider cost)":"")))return;
   button.disabled=true;button.textContent="UPLOADING AND STARTING...";status.textContent="Uploading your audio and reference images...";
   result.replaceChildren();
   const {data:sessionData}=await supabaseClient.auth.getSession(),token=sessionData?.session?.access_token;
   if(!token)throw new Error("Your session has expired. Please sign in again.");
   const form=new FormData();
   form.append("simpleMode","1");form.append("prompt",prompt);form.append("videoDirection",prompt);
-  form.append("duration","15");form.append("ratio","16:9");form.append("dancers",String(dancers));
+  form.append("duration",String(duration));form.append("ratio","16:9");form.append("dancers",String(dancers));
   form.append("musicFile",audio);
   images.forEach((file,index)=>form.append("referenceImage"+index,file));
   const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
