@@ -2495,7 +2495,7 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
  <label for="danceMvVisual">VIDEO DESCRIPTION</label>
  <textarea id="danceMvVisual" maxlength="1000" placeholder="Describe the artist, location, story, camera movement, atmosphere and visual style..."></textarea>
  <div class="dance-mode-fields">
-  <div><label for="danceMvDuration">VIDEO DURATION</label><select id="danceMvDuration"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div>
+  <div><label for="danceMvDuration">VIDEO DURATION</label><select id="danceMvDuration"><optgroup label="SHORT CLIPS"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></optgroup><optgroup label="FULL-LENGTH VIDEO"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option></optgroup></select></div>
   <div><label for="danceMvRatio">VIDEO FORMAT</label><select id="danceMvRatio"><option value="portrait">9:16 Portrait</option><option value="landscape">16:9 Landscape</option></select></div>
  </div>
  <div class="dance-mode-status" id="danceMvStatus">Choose a saved song and describe your video. The selected song will be converted to the required audio format automatically.</div>
@@ -4740,7 +4740,21 @@ async function populateDanceMusicVideoSongs(){
   songs.forEach(file=>select.add(new Option(file.name,file.name)));
  }catch(error){select.innerHTML='<option value="">Could not load saved songs</option>';document.getElementById("danceMvStatus").textContent=error.message||"Could not load your music library.";}
 }
+async function startFullLengthMusicVideoGeneration(){
+ const status=document.getElementById("danceMvStatus");
+ const fileName=document.getElementById("danceMvSong")?.value||"";
+ const prompt=document.getElementById("danceMvVisual")?.value.trim()||"";
+ const duration=Number(document.getElementById("danceMvDuration")?.value||60);
+ if(!currentUser){alert("Please sign in first.");return;}
+ if(!fileName){alert("Please select a song from your saved music library.");return;}
+ if(prompt.length<10){alert("Please describe your music video in at least 10 characters.");return;}
+ if(prompt.length>1000){alert("Your video description must not exceed 1,000 characters.");return;}
+ if(![60,120,180,240].includes(duration)){alert("Please select a full-length duration from 1 to 4 minutes.");return;}
+ if(status)status.textContent="Your "+(duration/60)+"-minute music video is configured in LANE AI MUSIC VIDEO STUDIO. The long-form provider connection will be added next. No generation has started and no credits have been charged.";
+}
 async function startDanceMusicVideoGeneration(){
+ const requestedDuration=Number(document.getElementById("danceMvDuration")?.value||15);
+ if(requestedDuration>30)return startFullLengthMusicVideoGeneration();
  const button=document.getElementById("danceMvGenerateButton"),status=document.getElementById("danceMvStatus"),result=document.getElementById("danceMvResult");
  if(!currentUser){alert("Please sign in first.");return;}
  const fileName=document.getElementById("danceMvSong")?.value||"",prompt=document.getElementById("danceMvVisual")?.value.trim()||"",duration=Number(document.getElementById("danceMvDuration")?.value||15),ratio=document.getElementById("danceMvRatio")?.value||"portrait";
