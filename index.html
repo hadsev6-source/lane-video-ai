@@ -4528,13 +4528,13 @@ let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePr
 function getMyDanceDuration(){return Number(document.getElementById("myDanceDuration")?.value||15);}
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
- const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15],.216);rows.push(...laneBuildPriceRows([30],.03,null,"round"));
+ const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,30],.03,null,"round");
  lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
  if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
 }
-document.getElementById("myDanceDuration")?.addEventListener("change",()=>{updateMyDancePrice();const d=getMyDanceDuration();laneShowSelectedPrice(d,d<=15?d*.216:d*.03,"DANCE TO MY MUSIC");});
+document.getElementById("myDanceDuration")?.addEventListener("change",()=>{updateMyDancePrice();const d=getMyDanceDuration();laneShowSelectedPrice(d,d*.03,"DANCE TO MY MUSIC");});
 updateMyDancePrice();
 
 window.myDanceAudioSelection={start:0,end:14.8};
@@ -4648,14 +4648,14 @@ async function trimDanceAudioRange(file,startSeconds,endSeconds){
 }
 async function startMyDanceMusicGeneration(){
  const button=document.getElementById("myDanceGenerateButton"),status=document.getElementById("myDanceStatus"),result=document.getElementById("myDanceResult");
- if(getMyDanceDuration()===30){
+ if([10,15,30].includes(getMyDanceDuration())){
   if(!currentUser){alert("Please sign in to continue.");return;}
   const audioFile=document.getElementById("myDanceMusicFile").files?.[0],prompt=document.getElementById("myDancePrompt").value.trim(),images=Array.from(document.getElementById("myDanceImages").files||[]);
   if(!audioFile){alert("Please upload an MP3 file.");return;}if(prompt.length<10||prompt.length>1000){alert("Please enter a dance description from 10 to 1,000 characters.");return;}
   if(audioFile.size>128*1024*1024||!(/\.mp3$/i.test(audioFile.name)||["audio/mpeg","audio/mp3"].includes(audioFile.type))){alert("Please choose an MP3 under 128 MB.");return;}
   if(images.length>3||images.some(x=>x.size>10*1024*1024||!["image/jpeg","image/png","image/webp"].includes(x.type))){alert("Upload up to 3 JPG, PNG or WEBP reference images, maximum 10 MB each.");return;}
   button.disabled=true;button.textContent="CHECKING WAVESPEED PRICE...";result.replaceChildren();
-  try{const selection=window.myDanceAudioSelection;if(!selection||!myDanceDecodedAudio||myDanceDecodedAudio.duration<30||Math.abs(selection.end-selection.start-30)>.05)throw new Error("Select a full 30-second segment in the audio waveform first.");const clip=await trimDanceAudioRange(audioFile,selection.start,selection.start+30);await startWaveSpeedVideoFlow({mode:"dance-to-music",prompt,duration:30,ratio:"16:9",audioFile:clip,images,status,result,button});}
+  try{const selection=window.myDanceAudioSelection;const duration=getMyDanceDuration();if(!selection||!myDanceDecodedAudio||myDanceDecodedAudio.duration<duration||Math.abs(selection.end-selection.start-duration)>.05)throw new Error("Select a full "+duration+"-second segment in the audio waveform first.");const clip=await trimDanceAudioRange(audioFile,selection.start,selection.start+duration);await startWaveSpeedVideoFlow({mode:"dance-to-music",prompt,duration,ratio:"16:9",audioFile:clip,images,status,result,button});}
   catch(e){status.textContent=e.message||"Could not start WaveSpeed generation.";}finally{button.disabled=false;if(button.textContent==="CHECKING OMN PRICE...")button.textContent="GENERATE VIDEO · 30 SECONDS";}
   return;
  }
