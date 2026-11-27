@@ -4427,9 +4427,26 @@ function updateLanePricingMode(){
   :"CUSTOMER PRICING · Signed in as a customer. Standard customer credit prices apply.";
 }
 function laneOwnerCredits(usd,rounding="round"){const eur=Number(usd)*0.9168*140;return Math.max(1,rounding==="ceil"?Math.ceil(eur):Math.round(eur));}
-function laneOwnerProviderLabel(usd,credits,detail){return "OWNER · "+detail+" · Provider API cost: $"+Number(usd).toFixed(3)+" · "+credits.toLocaleString()+" credits";}
+function laneFormatUsd(value){return "$"+Number(value).toFixed(2).replace(/\\.?0+$/,"");}
+function laneOwnerProviderLabel(usd,credits,detail){return "OWNER · "+detail+" · Estimated cost: "+laneFormatUsd(usd)+" · "+credits.toLocaleString()+" credits";}
+function lanePriceBreakdown(el,rows,owner,heading){
+ if(!el)return;
+ const money=usd=>laneFormatUsd(usd);
+ el.innerHTML='<div style="font-weight:700;margin-bottom:7px">'+heading+'</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px">'+rows.map(r=>'<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #553038;padding:5px 0"><span>'+r.label+'</span><strong style="text-align:right">'+(owner?money(r.usd)+' · '+r.ownerCredits.toLocaleString()+' credits':r.customerCredits.toLocaleString()+' credits')+'</strong></div>').join('')+'</div><div class="mini-note" style="margin-top:7px">'+(owner?'Owner view · estimated provider cost and equivalent LANE credits.':'Customer price · LANE credits only, including the 30% markup.')+'</div>';
+}
+function laneBuildPriceRows(durations,rate,providerForDuration){
+ return durations.map(d=>{const usd=providerForDuration?providerForDuration(d):d*rate;return {label:d+' sec',usd,ownerCredits:laneOwnerCredits(usd,'ceil'),customerCredits:laneCustomerCredits(usd)};});
+}
 function laneCustomerCredits(usd){return Math.max(1,Math.ceil(Number(usd)*0.9168*140*1.30));}
-function updateDanceMvPrice(){const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;const owner=isLaneOwnerAccount();if(d>30){el.textContent=owner?"OWNER · WaveSpeed API quote shown before generation · no LANE markup":"Credit price shown before generation";return;}const usd=d*0.20,credits=owner?laneOwnerCredits(usd,"ceil"):laneCustomerCredits(usd);el.textContent=owner?laneOwnerProviderLabel(usd,credits,"Runway · "+d+" sec"):credits.toLocaleString()+" credits";}
+function updateDanceMvPrice(){
+ const el=document.getElementById("danceMvPrice"),d=Number(document.getElementById("danceMvDuration")?.value||15);if(!el)return;
+ const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15,20,30,40,50],.20,x=>x<=30?x*.20:x*.03);
+ rows.push(...laneBuildPriceRows([60,120,180,240],.03));
+ lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
+ const selected=rows.find(r=>r.label===d+" sec");
+ if(selected)el.dataset.selectedPrice=owner?moneySafe(selected.usd)+" / "+selected.ownerCredits+" credits":selected.customerCredits+" credits";
+}
+function moneySafe(value){return laneFormatUsd(value);}
 document.getElementById("danceMvDuration")?.addEventListener("change",updateDanceMvPrice);
 updateDanceMvPrice();
 function updateImagePrice(){
@@ -4449,12 +4466,12 @@ function updateNewVideoCost(){
  el.textContent=owner?laneOwnerProviderLabel(usd,credits,model+" · "+duration+" sec") : credits+" credits";
 }
 function updateDancePrice(){
- const d=Number(document.getElementById("danceDuration")?.value||15), owner=isLaneOwnerAccount();
- const providerUsd=d*0.216, ownerCredits=laneOwnerCredits(providerUsd,"ceil");
- const customerCredits=d===30?0:laneCustomerCredits(providerUsd);
- const text=d===30?(owner?"OWNER · WaveSpeed API quote shown before generation":"Credit price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+d+" sec") : customerCredits.toLocaleString()+" credits";
- for(const id of ["dancePrice","myDancePrice"]){const el=document.getElementById(id);if(el)el.textContent=text;}
+ const d=Number(document.getElementById("danceDuration")?.value||15),owner=isLaneOwnerAccount(),el=document.getElementById("dancePrice");
+ const rows=laneBuildPriceRows([5,10,15],.216);rows.push(...laneBuildPriceRows([30,40,50],.03));
+ lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  updateLanePricingMode();updateImagePrice();updateMusicPrice();updateNewVideoCost();
+ if(typeof updateDanceMvPrice==="function")updateDanceMvPrice();
+ if(typeof updateMyDancePrice==="function")updateMyDancePrice();
 }
 document.getElementById("danceDuration")?.addEventListener("change",updateDancePrice);
 function updateDancePromptCounter(){
@@ -4503,8 +4520,8 @@ let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePr
 function getMyDanceDuration(){return Number(document.getElementById("myDanceDuration")?.value||15);}
 function updateMyDancePrice(){
  const el=document.getElementById("myDancePrice"),duration=getMyDanceDuration();if(!el)return;
- const owner=isLaneOwnerAccount(),providerUsd=duration*0.216,ownerCredits=laneOwnerCredits(providerUsd,"ceil"),customerCredits=laneCustomerCredits(providerUsd);
- el.textContent=duration===30?(owner?"OWNER · WaveSpeed API quote shown before generation":"Credit price shown before generation"):owner?laneOwnerProviderLabel(providerUsd,ownerCredits,"WaveSpeed · "+duration+" sec"):customerCredits.toLocaleString()+" credits";
+ const owner=isLaneOwnerAccount(),rows=laneBuildPriceRows([10,15],.216);rows.push(...laneBuildPriceRows([30,40,50],.03));
+ lanePriceBreakdown(el,rows,owner,"ESTIMATED PRICE BY VIDEO LENGTH");
  const button=document.getElementById("myDanceGenerateButton");if(button)button.textContent="GENERATE VIDEO · "+duration+" SECONDS";
  const clipLabel=document.getElementById("myDanceClipLength");if(clipLabel)clipLabel.textContent=duration.toFixed(1)+" sec";
  if(myDanceDecodedAudio){const d=myDanceDecodedAudio.duration;if(d<duration){window.myDanceAudioSelection={start:0,end:d};}else{const start=Math.min(window.myDanceAudioSelection?.start||0,d-duration);window.myDanceAudioSelection={start,end:start+duration};}updateMyDanceWaveSelection();}
