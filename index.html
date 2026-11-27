@@ -2134,7 +2134,7 @@ body>#myfiles,#myfiles{display:none}
 #danceStudioPreview .dance-audio-times{font-size:11px;font-variant-numeric:tabular-nums}
 #danceStudioPreview .dance-audio-times strong{color:#dcb7ff;font-size:12px;text-align:center}
 #danceStudioPreview .dance-audio-preview-btn{display:block;width:100%;margin-top:12px;padding:11px;border:1px solid #9a61d4;border-radius:9px;background:#25163a;color:#fff;font-weight:800;cursor:pointer}
-#danceStudioPreview #myDanceAudioPreview{display:block;width:100%;height:34px;margin-top:9px;accent-color:#a855f7}
+#danceStudioPreview #myDanceAudioPreview{display:none!important}
 #danceStudioPreview .dance-audio-editor[hidden]{display:none!important}
 @media(max-width:480px){#danceStudioPreview .dance-audio-editor{padding:10px}#danceStudioPreview .dance-audio-times{font-size:10px}#danceStudioPreview .dance-audio-times strong{font-size:10px}}
 
@@ -2310,14 +2310,12 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
    <canvas id="myDanceWaveform" aria-label="Audio waveform"></canvas>
    <div class="dance-wave-playhead" id="myDanceWavePlayhead" aria-hidden="true"></div>
    <div class="dance-wave-selection" id="myDanceWaveSelection"></div>
-   <button type="button" class="dance-wave-handle dance-wave-handle-start" id="myDanceStartHandle" aria-label="Drag to set clip start"></button>
-   <button type="button" class="dance-wave-handle dance-wave-handle-end" id="myDanceEndHandle" aria-label="Drag to set clip end"></button>
   </div>
   <div class="dance-wave-help">Move the large slider to choose where your 15-second clip starts. The highlighted area shows the exact clip.</div>
   <div class="dance-clip-control"><label for="myDanceClipStart">CLIP START POSITION</label><input id="myDanceClipStart" type="range" min="0" max="0" step="0.1" value="0"><div class="dance-clip-readout"><span>START <strong id="myDanceClipStartValue">00:00.0</strong></span><span>FIXED LENGTH <strong>15.0 sec</strong></span><span>END <strong id="myDanceClipEndValue">00:15.0</strong></span></div></div>
   <div class="dance-audio-times"><span id="myDanceStartTime">00:00.0</span><strong id="myDanceSelectionLength">Selected clip · 14.8 sec</strong><span id="myDanceEndTime">00:14.8</span></div>
   <button type="button" class="dance-audio-preview-btn" id="myDancePreviewSelection">▶ Preview Selection</button>
-  <audio id="myDanceAudioPreview" controls preload="metadata"></audio>
+  <audio id="myDanceAudioPreview" preload="metadata"></audio>
  </div>
  <label for="myDanceCount">NUMBER OF DANCERS</label>
  <select id="myDanceCount"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>8</option><option>10</option></select>
@@ -4196,7 +4194,7 @@ function updateMyDancePrice(){
 }
 updateMyDancePrice();
 
-let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null;
+let myDanceDecodedAudio=null,myDanceAudioUrl=null,myDanceDragMode=null,myDancePreviewStopHandler=null;
 window.myDanceAudioSelection={start:0,end:14.8};
 function formatDanceTime(seconds){const value=Math.max(0,Number(seconds)||0),minutes=Math.floor(value/60),rest=(value-minutes*60).toFixed(1).padStart(4,"0");return String(minutes).padStart(2,"0")+":"+rest;}
 function drawMyDanceWaveform(){
@@ -4217,8 +4215,8 @@ function drawMyDanceWaveform(){
  updateMyDanceWaveSelection();updateMyDancePlayhead();
 }
 function updateMyDanceWaveSelection(){
- const duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection||{start:0,end:Math.min(15,duration)},clipLength=Math.min(15,duration);
- const start=Math.max(0,Math.min(selection.start,Math.max(0,duration-clipLength))),end=Math.min(duration,start+clipLength);
+ const duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection||{start:0,end:Math.min(15,duration)},clipLength=15;
+ const start=Math.max(0,Math.min(Number(selection.start)||0,Math.max(0,duration-clipLength))),end=Math.min(duration,start+clipLength);
  selection.start=start;selection.end=end;
  const left=duration?start/duration*100:0,right=duration?end/duration*100:0,region=document.getElementById("myDanceWaveSelection");
  if(region){region.style.left=left+"%";region.style.width=Math.max(0,right-left)+"%";}
@@ -4233,12 +4231,24 @@ function updateMyDancePlayhead(){
  const playhead=document.getElementById("myDanceWavePlayhead"),duration=myDanceDecodedAudio?.duration||0,audio=document.getElementById("myDanceAudioPreview");
  if(!playhead||!duration)return;const current=Number(audio?.currentTime)||0;
  playhead.style.left=(Math.max(0,Math.min(1,current/duration))*100)+"%";
- playhead.style.display=audio&&!audio.paused?"block":"none";
+ playhead.style.display="block";
+}
+async function playMyDanceSelection(fromTime){
+ const audio=document.getElementById("myDanceAudioPreview"),selection=window.myDanceAudioSelection;
+ if(!audio||!myDanceDecodedAudio||!selection)return;
+ if(myDancePreviewStopHandler)audio.removeEventListener("timeupdate",myDancePreviewStopHandler);
+ const start=Math.max(selection.start,Math.min(Number.isFinite(fromTime)?fromTime:selection.start,selection.end-.05));
+ audio.currentTime=start;updateMyDancePlayhead();
+ myDancePreviewStopHandler=()=>{if(audio.currentTime>=selection.end-.03){audio.pause();audio.currentTime=selection.end;updateMyDancePlayhead();audio.removeEventListener("timeupdate",myDancePreviewStopHandler);myDancePreviewStopHandler=null;}};
+ audio.addEventListener("timeupdate",myDancePreviewStopHandler);
+ try{await audio.play();}catch(error){audio.removeEventListener("timeupdate",myDancePreviewStopHandler);myDancePreviewStopHandler=null;const label=document.getElementById("myDanceAudioDuration");if(label)label.textContent="Tap Preview Selection to allow audio playback.";return;}
+ updateMyDancePlayhead();
 }
 function seekMyDanceWaveform(event){
- const wrap=document.getElementById("myDanceWaveformWrap"),audio=document.getElementById("myDanceAudioPreview"),duration=myDanceDecodedAudio?.duration||0;
- if(!wrap||!audio||!duration)return;const rect=wrap.getBoundingClientRect(),ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
- audio.currentTime=ratio*duration;updateMyDancePlayhead();
+ const wrap=document.getElementById("myDanceWaveformWrap"),duration=myDanceDecodedAudio?.duration||0,selection=window.myDanceAudioSelection;
+ if(!wrap||!duration||!selection)return;const rect=wrap.getBoundingClientRect(),ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+ const target=Math.max(selection.start,Math.min(ratio*duration,selection.end-.05));
+ playMyDanceSelection(target);
 }
 function updateMyDanceTimeRuler(){
  const wrap=document.getElementById("myDanceWaveformWrap"),duration=myDanceDecodedAudio?.duration||0;if(!wrap||!duration)return;
@@ -4260,25 +4270,20 @@ function setupMyDanceAudioEditor(){
   try{
    const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(!AudioContextClass)throw new Error("Audio preview is not supported in this browser.");
    const context=new AudioContextClass();try{myDanceDecodedAudio=await context.decodeAudioData(await file.arrayBuffer());}finally{await context.close().catch(()=>{});}
-   const duration=myDanceDecodedAudio.duration;if(!Number.isFinite(duration)||duration<=0)throw new Error("Could not read this audio file.");
-   const end=Math.min(15,duration);window.myDanceAudioSelection={start:0,end};
-   document.getElementById("myDanceAudioDuration").textContent="Track length · "+formatDanceTime(duration);
+   const duration=myDanceDecodedAudio.duration;if(!Number.isFinite(duration)||duration<15)throw new Error("This track is shorter than 15 seconds. Please upload an MP3 that is at least 15 seconds long.");
+   window.myDanceAudioSelection={start:0,end:15};audio.currentTime=0;
+   document.getElementById("myDanceAudioDuration").textContent="Track length · "+formatDanceTime(duration)+" · Select any 15-second segment";
    drawMyDanceWaveform();updateMyDanceTimeRuler();
   }catch(error){myDanceDecodedAudio=null;window.myDanceAudioSelection=null;document.getElementById("myDanceAudioDuration").textContent=error.message;throw error;}
  });
- const clipSlider=document.getElementById("myDanceClipStart");clipSlider?.addEventListener("input",()=>{const duration=myDanceDecodedAudio?.duration||0,length=Math.min(15,duration),start=Number(clipSlider.value)||0;window.myDanceAudioSelection={start,end:Math.min(duration,start+length)};updateMyDanceWaveSelection();});
+ const clipSlider=document.getElementById("myDanceClipStart");clipSlider?.addEventListener("input",()=>{const duration=myDanceDecodedAudio?.duration||0;if(duration<15)return;const start=Math.max(0,Math.min(Number(clipSlider.value)||0,duration-15));window.myDanceAudioSelection={start,end:start+15};updateMyDanceWaveSelection();playMyDanceSelection(start);});
  document.getElementById("myDanceWaveformWrap")?.addEventListener("click",seekMyDanceWaveform);
  audio?.addEventListener("timeupdate",updateMyDancePlayhead);audio?.addEventListener("play",updateMyDancePlayhead);audio?.addEventListener("pause",updateMyDancePlayhead);audio?.addEventListener("seeked",updateMyDancePlayhead);
  document.addEventListener("pointermove",event=>{if(myDanceDragMode)setMyDanceSelectionFromPointer(event);});
  document.addEventListener("pointerup",()=>{myDanceDragMode=null;});
- preview?.addEventListener("click",async()=>{
-  if(!myDanceDecodedAudio||!window.myDanceAudioSelection)return;
-  const selection=window.myDanceAudioSelection;audio.pause();audio.currentTime=selection.start;
-  try{await audio.play();}catch(error){document.getElementById("myDanceAudioDuration").textContent="Tap the audio player to start playback.";return;}
-  const stopAt=()=>{if(audio.currentTime>=selection.end){audio.pause();audio.removeEventListener("timeupdate",stopAt);}};
-  audio.addEventListener("timeupdate",stopAt);updateMyDancePlayhead();
- });
- audio?.addEventListener("ended",()=>{});
+ preview?.addEventListener("click",()=>playMyDanceSelection(window.myDanceAudioSelection?.start));
+ audio?.addEventListener("timeupdate",updateMyDancePlayhead);audio?.addEventListener("play",updateMyDancePlayhead);audio?.addEventListener("pause",updateMyDancePlayhead);audio?.addEventListener("seeked",updateMyDancePlayhead);
+ audio?.addEventListener("ended",()=>{updateMyDancePlayhead();});
  window.addEventListener("resize",()=>{drawMyDanceWaveform();updateMyDanceTimeRuler();});
 }
 setupMyDanceAudioEditor();
@@ -4320,7 +4325,8 @@ async function startMyDanceMusicGeneration(){
   status.textContent="Preparing your selected audio segment...";
   const selection=window.myDanceAudioSelection;
   if(!selection||!myDanceDecodedAudio)throw new Error("Upload an MP3 and choose the audio segment first.");
-  const audio=await trimDanceAudioRange(audioFile,selection.start,selection.end);
+  if(myDanceDecodedAudio.duration<15||Math.abs((selection.end-selection.start)-15)>.05)throw new Error("Please select a full 15-second segment from your MP3.");
+  const audio=await trimDanceAudioRange(audioFile,selection.start,selection.start+15);
   if(!audio.size)throw new Error("The selected audio segment could not be processed.");
   const isOwner=currentUser.id==="dce2d514-964d-49be-b83d-45e6721b49a7",providerUsd=15*0.216,ownerCredits=Math.max(1,Math.round(providerUsd*0.9168*140)),chargeCredits=isOwner?ownerCredits:541;
   if(!confirm("Generate a 15-second video for "+chargeCredits+" credits?"+(isOwner?" (estimated provider cost)":"")))return;
@@ -4334,14 +4340,16 @@ async function startMyDanceMusicGeneration(){
   form.append("musicFile",audio);
   images.forEach((file,index)=>form.append("referenceImage"+index,file));
   const response=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY},body:form});
-  const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"Video generation could not be started.");
+  const responseText=await response.text();let data={};try{data=JSON.parse(responseText);}catch{data={error:responseText.slice(0,500)||"The generation service returned an unreadable response."};}
+  if(!response.ok||!data.success)throw new Error(data.error||"Video generation could not be started.");
   status.textContent="Seedance 2.0 is generating your video. Credits used: "+data.creditsUsed+".";
   button.textContent="PROCESSING...";
-  let finished=false;
+  let finished=false,keepDisabled=false;
   for(let i=0;i<180;i++){
    await new Promise(resolve=>setTimeout(resolve,10000));
    const poll=await fetch(SUPABASE_URL+"/functions/v1/dance-studio",{method:"POST",headers:{Authorization:"Bearer "+token,apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",generationId:data.generationId})});
-   const p=await poll.json();
+   const pollText=await poll.text();let p={};try{p=JSON.parse(pollText);}catch{p={error:pollText.slice(0,500)||"Could not read generation status."};}
+   if(!poll.ok)throw new Error(p.error||"Could not check generation status (HTTP "+poll.status+").");
    if(p.status==="SUCCEEDED"&&p.videoUrl){
     const video=document.createElement("video");video.controls=true;video.playsInline=true;video.src=p.videoUrl;video.style.cssText="width:100%;max-width:100%;margin-top:12px;border-radius:12px";
     const download=document.createElement("a");download.href=p.videoUrl;download.download="LANE-AI-Dance-Video.mp4";download.rel="noopener";download.textContent="⬇ DOWNLOAD VIDEO";download.className="dance-audio-preview-btn";download.style.display="block";download.style.textAlign="center";download.style.textDecoration="none";download.style.marginTop="12px";
@@ -4353,9 +4361,9 @@ async function startMyDanceMusicGeneration(){
    if(p.status==="FAILED"||p.error)throw new Error(p.error||"Video generation failed.");
    status.textContent="Processing video... Check "+(i+1)+"/180.";
   }
-  if(!finished){status.textContent="Still processing. Reference: "+data.generationId;button.textContent="PROCESSING...";}
+  if(!finished){status.textContent="Still processing. Reference: "+data.generationId+". Check your generation history before starting another video.";button.textContent="PROCESSING...";keepDisabled=true;}
  }catch(error){status.textContent=error.message||"An error occurred.";button.textContent="TRY AGAIN";}
- finally{button.disabled=false;}
+ finally{button.disabled=keepDisabled;}
 }
 
 async function startDanceStudioGeneration(){
