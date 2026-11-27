@@ -1855,6 +1855,50 @@ body>#myfiles,#myfiles{display:none}
 .lane-account-modal{display:none;position:fixed;inset:0;z-index:5000;background:#000d;padding:14px;align-items:center;justify-content:center}.lane-account-modal.open{display:flex}.lane-account-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0b0b0b;border:1px solid #ff9d19;border-radius:14px;padding:18px;color:#fff}.lane-account-dialog>button{float:right}.lane-account-dialog h2{margin:8px 0 18px}.lane-account-history{display:grid;gap:8px}.lane-account-history-row{display:grid;gap:4px;padding:12px;border:1px solid #60401e;border-radius:8px;background:#17120c}.lane-account-history-row span,.lane-account-history-row small{color:#c8c0b7}
 
 
+/* Mobile header: keep brand/menu on row one and credits/Google sign-in on row two. */
+@media (max-width:760px) {
+  header.site-header {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    grid-template-areas:"brand menu" "credits auth" !important;
+    align-items:center !important;
+    column-gap:10px !important;
+    row-gap:12px !important;
+    padding:12px 14px 14px !important;
+    flex-wrap:unset !important;
+  }
+  header.site-header > .logo { grid-area:brand !important; min-width:0 !important; font-size:clamp(20px,5.5vw,27px) !important; }
+  header.site-header > .lane-croissant { display:none !important; }
+  header.site-header > .credit-counter {
+    grid-area:credits !important;
+    position:static !important;
+    top:auto !important; right:auto !important; left:auto !important;
+    transform:none !important; justify-self:start !important;
+    min-width:66px !important; min-height:38px !important;
+    margin:0 !important;
+  }
+  header.site-header > .visual-nav {
+    grid-area:auth !important;
+    display:flex !important;
+    width:auto !important; min-width:0 !important;
+    flex:none !important; order:initial !important;
+    justify-content:flex-end !important;
+    margin:0 !important; padding:0 !important;
+  }
+  header.site-header > .visual-nav a { display:none !important; }
+  header.site-header > .visual-nav #headerGoogleSignIn {
+    display:inline-flex !important; min-height:40px !important;
+    padding:8px 12px !important; gap:8px !important;
+    font-size:12px !important;
+  }
+  header.site-header > .main-menu { grid-area:menu !important; justify-self:end !important; order:initial !important; }
+}
+@media (max-width:360px) {
+  header.site-header { column-gap:6px !important; padding-left:10px !important; padding-right:10px !important; }
+  header.site-header > .logo { font-size:19px !important; letter-spacing:1px !important; }
+  header.site-header > .visual-nav #headerGoogleSignIn { padding:7px 8px !important; font-size:11px !important; }
+}
+
 /* Keep the Google sign-in action clearly visible on every homepage layout. */
 header.site-header nav.visual-nav { display:flex !important; visibility:visible !important; opacity:1 !important; }
 header.site-header #headerGoogleSignIn { display:inline-flex !important; visibility:visible !important; opacity:1 !important; align-items:center !important; justify-content:center !important; gap:9px !important; min-height:40px !important; padding:8px 15px !important; background:#fff !important; color:#202124 !important; border:1px solid #d5d5d5 !important; border-radius:6px !important; font-size:13px !important; font-weight:700 !important; white-space:nowrap !important; }
