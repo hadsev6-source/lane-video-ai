@@ -3381,6 +3381,24 @@ header.site-header>.lane-croissant{margin-left:4px!important;margin-right:2px!im
     showAuthMessage("Connecting to Google...");
 
     try {
+      // If the browser retained an expired/revoked refresh token, clear only the
+      // local Supabase session before starting a fresh Google OAuth flow.
+      // Keep any valid signed-in session untouched.
+      try {
+        const { data: existingSession, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError || !existingSession?.session) {
+          const { error: clearError } = await supabaseClient.auth.signOut({ scope: "local" });
+          if (clearError) console.warn("Could not clear the stale local auth session:", clearError);
+          currentUser = null;
+        }
+      } catch (sessionRecoveryError) {
+        console.warn("Clearing stale local auth session before Google sign-in:", sessionRecoveryError);
+        try {
+          await supabaseClient.auth.signOut({ scope: "local" });
+        } catch (_) {}
+        currentUser = null;
+      }
+
       const { data, error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
